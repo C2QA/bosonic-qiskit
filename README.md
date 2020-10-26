@@ -1,1 +1,31 @@
 # c2qa-qiskit
+
+NQI C2QA project to simulate hybrid qubits within QisKit.
+
+## Install
+
+Use a Python virtual environment to install compatible version of QisKit.
+
+```bash
+git clone https://github.com/tjstavenger-pnnl/c2qa-qiskit.git
+cd c2qa-qiskit
+./install-dependencies.sh
+```
+
+## Activate Virtual Environment
+
+Before using c2qa-qiskit, first install the depencies (as above) and then activate the Python virtual environment.
+
+```bash
+cd <path/to/c2qa-qiskit>
+source venv/bin/activate
+```
+
+## Run the code
+
+After activating the Python virtual environment, run the scripts. For example:
+
+```bash
+cd <path/to/c2qa-qiskit>
+python3 -m bq.script.py
+```
