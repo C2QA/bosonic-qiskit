@@ -3,6 +3,7 @@ import c2qa
 import numpy
 import qiskit
 
+
 def test_gates():
     """ Verify that we can use the gates, not that they are actually working. """
 
@@ -20,7 +21,7 @@ def test_gates():
     z_b = -1
 
     # ==== Initialize circuit =====
-    
+
     qmr = c2qa.qumoderegister.QumodeRegister(n_qumodes, n_qubits_per_mode)
     qr = qiskit.QuantumRegister(n_qubits)
     cr = qiskit.ClassicalRegister(n_cbits)

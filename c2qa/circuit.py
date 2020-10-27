@@ -7,7 +7,7 @@ import numpy
 
 class CVCircuit(QuantumCircuit):
     def __init__(self, qmr: QumodeRegister, qr: QuantumRegister, cr: ClassicalRegister, name: str = None):
-        super().__init__(qmr.qreg, qr, cr, name = name)
+        super().__init__(qmr.qreg, qr, cr, name=name)
 
         self.qmr = qmr
         self.qr = qr
@@ -21,7 +21,7 @@ class CVCircuit(QuantumCircuit):
         for qumode, n in enumerate(fock_states):
             if n >= self.qmr.cutoff:
                 raise ValueError("The parameter n should be lower than the cutoff")
-            
+
             vector = numpy.zeros((self.qmr.cutoff,))
             vector[n] = 1
 
@@ -45,7 +45,7 @@ class CVCircuit(QuantumCircuit):
         self.unitary(obj=operator, qubits=qumode_a + qumode_b, label='BS')
 
 
-    def cv_d(self, alpha, qumode):       
+    def cv_d(self, alpha, qumode):
         operator = self.ops.d(alpha)
 
         self.unitary(obj=operator, qubits=qumode, label='D')
@@ -53,8 +53,6 @@ class CVCircuit(QuantumCircuit):
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode_a, qumode_b):
         self.append(self.cv_conditional('Dc', self.ops.d(alpha), self.ops.d(beta)), [ctrl] + qumode_a + qumode_b)
-        # self.append(UnitaryGate(self.ops.D(alpha)).control(num_ctrl_qubits = 1, label = 'Da', ctrl_state = 0), [ctrl] + qumode_a)
-        # self.append(UnitaryGate(self.ops.D(beta)).control(num_ctrl_qubits = 1, label = 'Db', ctrl_state = 1), [ctrl] + qumode_b)
 
 
     def cv_r(self, phi, qumode):
@@ -68,10 +66,9 @@ class CVCircuit(QuantumCircuit):
        
         self.unitary(obj=operator, qubits=qumode, label = 'S')
 
+
     def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a, qumode_b):
         self.append(self.cv_conditional('Sc', self.ops.s(z_a), self.ops.s(z_b)), [ctrl] + qumode_a + qumode_b)
-        # self.append(UnitaryGate(self.ops.S(z_a)).control(num_ctrl_qubits = 1, label = 'Sa', ctrl_state = 0), [ctrl] + qumode_a)
-        # self.append(UnitaryGate(self.ops.S(z_b)).control(num_ctrl_qubits = 1, label = 'Sb', ctrl_state = 1), [ctrl] + qumode_b)
 
 
     def cv_s2(self, z, qumode_a, qumode_b):

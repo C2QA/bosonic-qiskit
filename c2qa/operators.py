@@ -2,6 +2,7 @@ from c2qa.qumoderegister import QumodeRegister
 import numpy as np
 from scipy.linalg import expm
 
+
 class CVOperators:
     def __init__(self, qmr: QumodeRegister):        
         I = np.eye(qmr.cutoff)
