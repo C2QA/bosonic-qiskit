@@ -29,7 +29,7 @@ def test_conditonal_displacement():
     cr = qiskit.ClassicalRegister(1)
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize([0, 0])
-    circuit.initialize([0, 1], qr[1]) # qr[0] will init to zero
+    circuit.initialize([0, 1], qr[1])  # qr[0] will init to zero
 
     circuit.cv_cnd_d(1, -1, qr[0], qmr[0], qmr[1])
     circuit.cv_cnd_d(-1, 1, qr[0], qmr[0], qmr[1])
@@ -52,7 +52,7 @@ def test_conditonal_squeezing():
     cr = qiskit.ClassicalRegister(1)
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize([0, 0])
-    circuit.initialize([0, 1], qr[1]) # qr[0] will init to zero
+    circuit.initialize([0, 1], qr[1])  # qr[0] will init to zero
 
     circuit.cv_cnd_s(1, -1, qr[0], qmr[0], qmr[1])
     circuit.cv_cnd_s(-1, 1, qr[0], qmr[0], qmr[1])
