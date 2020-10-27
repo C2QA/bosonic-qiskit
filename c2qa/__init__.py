@@ -1,4 +1,4 @@
 """Top-level package for c2qa-qiskit."""
 
-import c2qa.circuit
-import c2qa.qumoderegister
+from c2qa.circuit import CVCircuit
+from c2qa.qumoderegister import QumodeRegister

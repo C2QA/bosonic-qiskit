@@ -4,7 +4,7 @@ from scipy.linalg import expm
 
 
 class CVOperators:
-    def __init__(self, qmr: QumodeRegister):        
+    def __init__(self, qmr: QumodeRegister):
         # Annihilation operator
         self.a = np.zeros((qmr.cutoff, qmr.cutoff))
         for i in range(qmr.cutoff - 1):

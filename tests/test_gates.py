@@ -22,10 +22,10 @@ def test_gates():
 
     # ==== Initialize circuit =====
 
-    qmr = c2qa.qumoderegister.QumodeRegister(n_qumodes, n_qubits_per_mode)
+    qmr = c2qa.QumodeRegister(n_qumodes, n_qubits_per_mode)
     qr = qiskit.QuantumRegister(n_qubits)
     cr = qiskit.ClassicalRegister(n_cbits)
-    circuit = c2qa.circuit.CVCircuit(qmr, qr, cr)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.initialize([0, 0])
 
     # ==== Build circuit ====
