@@ -10,10 +10,9 @@ class QumodeRegister:
 
         # Aggregate the QuantumRegister representing these qumodes as
         # extending the class confuses QisKit when overriding __getitem__().
-        # It doesn't expect a list of Qubit back when indexing a single value 
+        # It doesn't expect a list of Qubit back when indexing a single value
         # (i.e., qmr[0] is represented by multiple qubits).
         self.qreg = QuantumRegister(size=self.size, name=name)
-
 
     def __getitem__(self, key: int):
         start = self.num_qubits_per_mode * key

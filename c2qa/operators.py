@@ -5,12 +5,10 @@ from scipy.linalg import expm
 
 class CVOperators:
     def __init__(self, qmr: QumodeRegister):        
-        I = np.eye(qmr.cutoff)
-        
         # Annihilation operator
         self.a = np.zeros((qmr.cutoff, qmr.cutoff))
         for i in range(qmr.cutoff - 1):
-            self.a[i, i + 1]= np.sqrt(i + 1)
+            self.a[i, i + 1] = np.sqrt(i + 1)
 
         # Creation operator
         self.a_dag = self.a.conj().T
@@ -19,11 +17,11 @@ class CVOperators:
         self.N = np.matmul(self.a_dag, self.a)
 
         # 2-qumodes operators
-        self.a1 = np.kron(self.a, I)
-        self.a2 = np.kron(I, self.a)
+        eye = np.eye(qmr.cutoff)
+        self.a1 = np.kron(self.a, eye)
+        self.a2 = np.kron(eye, self.a)
         self.a1_dag = self.a1.conj().T
         self.a2_dag = self.a2.conj().T
-
 
     def bs(self, phi):
         """ Two-mode beam splitter opertor """
@@ -37,20 +35,17 @@ class CVOperators:
 
         return expm(arg)
 
-
     def d(self, alpha):
         """ Displacement operator """
         arg = (alpha * self.a_dag) - (np.conjugate(alpha) * self.a)
 
         return expm(arg)
 
-
     def r(self, theta):
         """ Phase space rotation operator """
         arg = 1j * theta * self.N
 
         return expm(arg)
-
 
     def s(self, zeta):
         """ Single-mode squeezing operator """
@@ -59,7 +54,6 @@ class CVOperators:
         arg = 0.5 * ((np.conjugate(zeta) * a_sqr) - (zeta * a_dag_sqr))
 
         return expm(arg)
-
 
     def s2(self, zeta):
         """ Two-mode squeezing operator """
