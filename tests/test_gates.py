@@ -3,23 +3,8 @@ import c2qa
 import numpy
 import qiskit
 
-def test_qiskit():
-    """ Verify we can do a simple QisKit circuit without our custom gates. """
-    qr = qiskit.QuantumRegister(6)
-    cr = qiskit.ClassicalRegister(6)
-    circuit = qiskit.circuit.QuantumCircuit(qr, cr) 
-    circuit.cx(qr[0:1], qr[2])
-
-    backend = qiskit.Aer.get_backend('statevector_simulator')
-    job = qiskit.execute(circuit, backend)
-    result = job.result()
-    state = result.get_statevector(circuit)
-
-    assert(True)
-    print(state)
-
 def test_gates():
-    """ Just verify that we can call the gates, not that they are actually working. """
+    """ Verify that we can use the gates, not that they are actually working. """
 
     # ===== Constants =====
 
@@ -55,8 +40,6 @@ def test_gates():
     circuit.cv_cnd_d(alpha, beta, qr[0], qmr[0], qmr[1])
     circuit.cv_cnd_s(z_a, z_b, qr[0], qmr[0], qmr[1])
 
-    print(circuit)
-
     # ==== Compilation =====
 
     backend = qiskit.Aer.get_backend('statevector_simulator')
@@ -66,5 +49,5 @@ def test_gates():
 
     # ==== Tests ====
 
-    assert(True)
+    assert(result.success)
     print(state)

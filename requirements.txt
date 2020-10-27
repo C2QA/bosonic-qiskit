@@ -1,3 +1,2 @@
 pytest==6.1.1
 qiskit==0.23.0
-thewalrus==0.14.0
