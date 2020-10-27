@@ -4,6 +4,147 @@ import numpy
 import qiskit
 
 
+def test_beamsplitter():
+    qmr = c2qa.QumodeRegister(2, 1)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0, 0])
+
+    circuit.cv_bs(numpy.pi/2, qmr[0], qmr[1])
+    circuit.cv_bs(-(numpy.pi/2), qmr[0], qmr[1])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[0], 1+0j))
+
+
+def test_conditonal_displacement():
+    qmr = c2qa.QumodeRegister(2, 1)
+    qr = qiskit.QuantumRegister(2)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0, 0])
+    circuit.initialize([0, 1], qr[1]) # qr[0] will init to zero
+
+    circuit.cv_cnd_d(1, -1, qr[0], qmr[0], qmr[1])
+    circuit.cv_cnd_d(-1, 1, qr[0], qmr[0], qmr[1])
+
+    circuit.cv_cnd_d(1, -1, qr[1], qmr[0], qmr[1])
+    circuit.cv_cnd_d(-1, 1, qr[1], qmr[0], qmr[1])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[8], 1+0j))
+
+
+def test_conditonal_squeezing():
+    qmr = c2qa.QumodeRegister(2, 1)
+    qr = qiskit.QuantumRegister(2)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0, 0])
+    circuit.initialize([0, 1], qr[1]) # qr[0] will init to zero
+
+    circuit.cv_cnd_s(1, -1, qr[0], qmr[0], qmr[1])
+    circuit.cv_cnd_s(-1, 1, qr[0], qmr[0], qmr[1])
+
+    circuit.cv_cnd_s(1, -1, qr[1], qmr[0], qmr[1])
+    circuit.cv_cnd_s(-1, 1, qr[1], qmr[0], qmr[1])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[8], 1+0j))
+
+
+def test_displacement():
+    qmr = c2qa.QumodeRegister(1, 1)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0])
+
+    circuit.cv_d(1, qmr[0])
+    circuit.cv_d(-1, qmr[0])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[0], 1+0j))
+
+
+def test_rotation():
+    qmr = c2qa.QumodeRegister(1, 1)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0])
+
+    circuit.cv_r(numpy.pi/2, qmr[0])
+    circuit.cv_r(-(numpy.pi/2), qmr[0])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[0], 1+0j))
+
+
+def test_squeezing():
+    qmr = c2qa.QumodeRegister(1, 1)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0])
+
+    circuit.cv_s(1, qmr[0])
+    circuit.cv_s(-1, qmr[0])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[0], 1+0j))
+
+
+def test_two_mode_squeezing():
+    qmr = c2qa.QumodeRegister(2, 1)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize([0, 0])
+
+    circuit.cv_s2(1, qmr[0], qmr[1])
+    circuit.cv_s2(-1, qmr[0], qmr[1])
+
+    backend = qiskit.Aer.get_backend('statevector_simulator')
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    state = result.get_statevector(circuit)
+
+    assert(result.success)
+    assert(numpy.isclose(state[0], 1+0j))
+
+
 def test_gates():
     """ Verify that we can use the gates, not that they are actually working. """
 
@@ -26,7 +167,7 @@ def test_gates():
     qr = qiskit.QuantumRegister(n_qubits)
     cr = qiskit.ClassicalRegister(n_cbits)
     circuit = c2qa.CVCircuit(qmr, qr, cr)
-    circuit.initialize([0, 0])
+    circuit.cv_initialize([0, 0])
 
     # ==== Build circuit ====
 

@@ -15,7 +15,7 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators(self.qmr)
 
-    def initialize(self, fock_states):
+    def cv_initialize(self, fock_states):
         """ Initialize qumodes to the given fock_states. """
         for qumode, n in enumerate(fock_states):
             if n >= self.qmr.cutoff:
