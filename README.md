@@ -23,9 +23,4 @@ source venv/bin/activate
 
 ## Run the code
 
-After activating the Python virtual environment, run the scripts. For example:
-
-```bash
-cd <path/to/c2qa-qiskit>
-python3 -m bq.script.py
-```
+After activating the Python virtual environment, develop and run your Python scripts as normal.
