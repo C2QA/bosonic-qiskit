@@ -19,8 +19,8 @@ def test_beamsplitter():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[0], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[0], 1+0j)
 
 
 def test_conditonal_displacement():
@@ -42,8 +42,8 @@ def test_conditonal_displacement():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[8], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[8], 1+0j)
 
 
 def test_conditonal_squeezing():
@@ -65,8 +65,8 @@ def test_conditonal_squeezing():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[8], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[8], 1+0j)
 
 
 def test_displacement():
@@ -84,8 +84,8 @@ def test_displacement():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[0], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[0], 1+0j)
 
 
 def test_rotation():
@@ -103,8 +103,8 @@ def test_rotation():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[0], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[0], 1+0j)
 
 
 def test_squeezing():
@@ -122,8 +122,8 @@ def test_squeezing():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[0], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[0], 1+0j)
 
 
 def test_two_mode_squeezing():
@@ -141,8 +141,8 @@ def test_two_mode_squeezing():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
-    assert(numpy.isclose(state[0], 1+0j))
+    assert result.success
+    assert numpy.isclose(state[0], 1+0j)
 
 
 def test_gates():
@@ -191,5 +191,5 @@ def test_gates():
 
     # ==== Tests ====
 
-    assert(result.success)
+    assert result.success
     print(state)

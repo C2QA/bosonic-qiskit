@@ -13,5 +13,5 @@ def test_qiskit():
     result = job.result()
     state = result.get_statevector(circuit)
 
-    assert(result.success)
+    assert result.success
     print(state)
