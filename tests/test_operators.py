@@ -14,7 +14,7 @@ class TestUnitary:
 
     def test_d(self):
         assert is_unitary_matrix(self.ops.d(1))
-    
+
     def test_r(self):
         assert is_unitary_matrix(self.ops.r(1))
 
