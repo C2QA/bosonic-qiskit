@@ -23,7 +23,7 @@ class CVOperators:
         self.a1_dag = self.a1.conj().T
         self.a2_dag = self.a2.conj().T
 
-    def bs(self, phi):
+    def bs(self, g):
         """ Two-mode beam splitter opertor """
         a12dag = np.matmul(self.a1, self.a2_dag)
         a1dag2 = np.matmul(self.a1_dag, self.a2)
@@ -31,7 +31,7 @@ class CVOperators:
         # FIXME -- See Steve 5.4
         #   phi as g(t)
         #   - as +, but QisKit validates that not being unitary
-        arg = (phi * a12dag) - (np.conjugate(phi) * a1dag2)
+        arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
 
         return expm(arg)
 
@@ -55,7 +55,7 @@ class CVOperators:
 
         return expm(arg)
 
-    def s2(self, zeta):
+    def s2(self, g):
         """ Two-mode squeezing operator """
         a12_dag = np.matmul(self.a1_dag, self.a2_dag)
         a12 = np.matmul(self.a1, self.a2)
@@ -63,6 +63,6 @@ class CVOperators:
         # FIXME -- See Steve 5.7
         #   zeta as g(t)
         #   use of imaginary, but QisKit validates that is not unitary
-        arg = (np.conjugate(zeta) * a12_dag) - (zeta * a12)
+        arg = (np.conjugate(g) * a12_dag) - (g * a12)
 
         return expm(arg)
