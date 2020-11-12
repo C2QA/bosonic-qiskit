@@ -4,9 +4,9 @@ from scipy.linalg import expm
 
 
 class CVOperators:
-    def __init__(self, qmr: QumodeRegister):
+    def __init__(self, qmr: QumodeRegister, dtype = complex):
         # Annihilation operator
-        self.a = np.zeros((qmr.cutoff, qmr.cutoff))
+        self.a = np.zeros((qmr.cutoff, qmr.cutoff), dtype=dtype)
         for i in range(qmr.cutoff - 1):
             self.a[i, i + 1] = np.sqrt(i + 1)
 
@@ -17,7 +17,7 @@ class CVOperators:
         self.N = np.matmul(self.a_dag, self.a)
 
         # 2-qumodes operators
-        eye = np.eye(qmr.cutoff)
+        eye = np.eye(qmr.cutoff, dtype=dtype)
         self.a1 = np.kron(self.a, eye)
         self.a2 = np.kron(eye, self.a)
         self.a1_dag = self.a1.conj().T
