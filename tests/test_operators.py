@@ -5,6 +5,7 @@ from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import random
 
 class TestUnitary:
+    """Verify operators are unitary"""
 
     def setup_method(self, method):
         qmr = c2qa.QumodeRegister(1, 1)

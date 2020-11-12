@@ -6,7 +6,7 @@ from scipy.linalg import expm
 class CVOperators:
     def __init__(self, qmr: QumodeRegister):
         # Annihilation operator
-        self.a = np.sqrt(np.diag(range(1, qmr.cutoff), k=1))
+        self.a = np.diag(np.sqrt(range(1, qmr.cutoff)), k=1)
 
         # Creation operator
         self.a_dag = self.a.conj().T
