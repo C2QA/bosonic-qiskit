@@ -3,17 +3,29 @@ from qiskit.extensions import UnitaryGate
 from c2qa.operators import CVOperators
 from c2qa.qumoderegister import QumodeRegister
 import numpy
+import warnings
 
 
 class CVCircuit(QuantumCircuit):
-    def __init__(self, qmr: QumodeRegister, qr: QuantumRegister, cr: ClassicalRegister, name: str = None):
-        super().__init__(qmr.qreg, qr, cr, name=name)
+    def __init__(self, *regs, name: str = None):
+        self.qmr = None
+        registers = []
 
-        self.qmr = qmr
-        self.qr = qr
-        self.cr = cr
+        for reg in regs:
+            if isinstance(reg, QumodeRegister):
+                if self.qmr is not None:
+                    warnings.warn("More than one QumodeRegister provided. Using the last one for cutoff.", UserWarning)
+                self.qmr = reg
+                registers.append(self.qmr.qreg)
+            else:
+                registers.append(reg)
+        
+        if self.qmr is None:
+            raise ValueError("At least one QumodeRegister must be provided.")
 
-        self.ops = CVOperators(self.qmr)
+        super().__init__(*registers, name=name)
+
+        self.ops = CVOperators(self.qmr.cutoff)
 
     def cv_initialize(self, fock_states):
         """ Initialize qumodes to the given fock_states. """

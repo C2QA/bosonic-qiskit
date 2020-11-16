@@ -8,8 +8,7 @@ class TestUnitary:
     """Verify operators are unitary"""
 
     def setup_method(self, method):
-        qmr = c2qa.QumodeRegister(2, 2)
-        self.ops = CVOperators(qmr)
+        self.ops = CVOperators(4)
 
     def test_bs(self):
         assert is_unitary_matrix(self.ops.bs(random.random()))
@@ -33,8 +32,7 @@ class TestMatrices:
     """
 
     def setup_method(self, method):
-        qmr = c2qa.QumodeRegister(2, 2)
-        self.ops = CVOperators(qmr)
+        self.ops = CVOperators(4)
         
     def test_bs(self):
         op = self.ops.bs(random.random())
