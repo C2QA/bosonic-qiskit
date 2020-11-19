@@ -27,16 +27,23 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators(self.qmr.cutoff)
 
-    def cv_initialize(self, fock_states):
-        """ Initialize qumodes to the given fock_states. """
-        for qumode, n in enumerate(fock_states):
-            if n >= self.qmr.cutoff:
-                raise ValueError("The parameter n should be lower than the cutoff")
+    def cv_initialize(self, fock_state, qumodes):
+        """ Initialize the qumode to a Fock state. """
 
-            vector = numpy.zeros((self.qmr.cutoff,))
-            vector[n] = 1
+        # Qumodes are already represented as arrays of qubits,
+        # but if this is an array of arrays, then we are initializing multiple qumodes.
+        modes = qumodes
+        if not isinstance(qumodes[0], list):
+            modes = [qumodes]
 
-            super().initialize(vector, self.qmr[qumode])
+        if fock_state > self.qmr.cutoff:
+            raise ValueError("The given Fock state is greater than the cutoff.")
+
+        for qumode in modes:
+            value = numpy.zeros((self.qmr.cutoff,))
+            value[fock_state] = 1
+
+            super().initialize(value, [qumode])
 
     def cv_conditional(self, name, op_a, op_b):
         """ Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state) """
