@@ -79,8 +79,8 @@ def test_beamsplitter_once():
 
     result = execute_circuit(circuit)
 
-    # FIXME - Beam splitter gate does not change state vector
-    #         Both Strawberry Fields & FockWits are the same, too.    
+    # TODO - Beam splitter gate does not change state vector
+    #        Both Strawberry Fields & FockWits are the same, too.    
     # assert_changed(result, circuit)
     assert_unchanged(result, circuit)
 
@@ -101,11 +101,11 @@ def test_conditonal_displacement():
 
     alpha = random.random()
     beta = random.random()
-    circuit.cv_cnd_d(alpha, -beta, qr[0], qmr[0], qmr[1])
-    circuit.cv_cnd_d(-alpha, beta, qr[0], qmr[0], qmr[1])
+    circuit.cv_cnd_d(alpha, -beta, qr[0], qmr[0])
+    circuit.cv_cnd_d(-alpha, beta, qr[0], qmr[0])
 
-    circuit.cv_cnd_d(alpha, -beta, qr[1], qmr[0], qmr[1])
-    circuit.cv_cnd_d(-alpha, beta, qr[1], qmr[0], qmr[1])
+    circuit.cv_cnd_d(alpha, -beta, qr[1], qmr[0])
+    circuit.cv_cnd_d(-alpha, beta, qr[1], qmr[0])
 
     result = execute_circuit(circuit)
     assert_unchanged(result, circuit)
@@ -116,11 +116,11 @@ def test_conditonal_squeezing():
 
     alpha = random.random()
     beta = random.random()
-    circuit.cv_cnd_s(alpha, -beta, qr[0], qmr[0], qmr[1])
-    circuit.cv_cnd_s(-alpha, beta, qr[0], qmr[0], qmr[1])
+    circuit.cv_cnd_s(alpha, -beta, qr[0], qmr[0])
+    circuit.cv_cnd_s(-alpha, beta, qr[0], qmr[0])
 
-    circuit.cv_cnd_s(alpha, -beta, qr[1], qmr[0], qmr[1])
-    circuit.cv_cnd_s(-alpha, beta, qr[1], qmr[0], qmr[1])
+    circuit.cv_cnd_s(alpha, -beta, qr[1], qmr[0])
+    circuit.cv_cnd_s(-alpha, beta, qr[1], qmr[0])
 
     result = execute_circuit(circuit)
     assert_unchanged(result, circuit)
@@ -155,8 +155,8 @@ def test_rotation_once():
 
     result = execute_circuit(circuit)
 
-    # FIXME - Rotation gate does not change state vector.
-    #         Both Strawberry Fields & FockWits are the same, too.
+    # TODO - Rotation gate does not change state vector.
+    #        Both Strawberry Fields & FockWits are the same, too.
     # assert_changed(result, circuit)
     assert_unchanged(result, circuit)
 
@@ -240,9 +240,12 @@ def test_gates():
     circuit.cv_s2(z_a, qmr[0], qmr[1])
 
     # Hybrid qubit-cavity gates
-    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[0], qmr[1])
-    circuit.cv_cnd_s(z_a, z_b, qr[0], qmr[0], qmr[1])
+    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[0])
+    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[1])
+    circuit.cv_cnd_s(z_a, z_b, qr[0], qmr[0])
+    circuit.cv_cnd_s(z_a, z_b, qr[0], qmr[1])
 
     result = execute_circuit(circuit)
 
     assert result.success
+
