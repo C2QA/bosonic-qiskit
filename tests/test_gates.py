@@ -78,7 +78,11 @@ def test_beamsplitter_once():
     circuit.cv_bs(phi, qmr[0], qmr[1])
 
     result = execute_circuit(circuit)
-    assert_changed(result, circuit)
+
+    # FIXME - Beam splitter gate does not change state vector
+    #         Both Strawberry Fields & FockWits are the same, too.    
+    # assert_changed(result, circuit)
+    assert_unchanged(result, circuit)
 
 
 def test_beamsplitter_twice():
@@ -146,19 +150,23 @@ def test_displacement_twice():
 def test_rotation_once():
     circuit, qmr = create_unconditional()
 
-    phi = random.random()
-    circuit.cv_r(phi, qmr[0])
+    theta = random.random()
+    circuit.cv_r(theta, qmr[0])
 
     result = execute_circuit(circuit)
-    assert_changed(result, circuit)
+
+    # FIXME - Rotation gate does not change state vector.
+    #         Both Strawberry Fields & FockWits are the same, too.
+    # assert_changed(result, circuit)
+    assert_unchanged(result, circuit)
 
 
 def test_rotation_twice():
     circuit, qmr = create_unconditional()
 
-    phi = random.random()
-    circuit.cv_r(phi, qmr[0])
-    circuit.cv_r(-phi, qmr[0])
+    theta = random.random()
+    circuit.cv_r(theta, qmr[0])
+    circuit.cv_r(-theta, qmr[0])
 
     result = execute_circuit(circuit)
     assert_unchanged(result, circuit)
