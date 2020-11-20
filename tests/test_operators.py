@@ -35,21 +35,31 @@ class TestMatrices:
         self.ops = CVOperators(4)
         
     def test_bs(self):
-        op = self.ops.bs(random.random())
-        assert numpy.count_nonzero(op)
+        one = self.ops.bs(1)
+        rand = self.ops.bs(random.random())
+
+        assert not numpy.allclose(one, rand)
 
     def test_d(self):
-        op = self.ops.d(random.random())
-        assert numpy.count_nonzero(op)
+        one = self.ops.d(1)
+        rand = self.ops.d(random.random())
+
+        assert not numpy.allclose(one, rand)
 
     def test_r(self):
-        op = self.ops.r(random.random())
-        assert numpy.count_nonzero(op)
+        one = self.ops.r(1)
+        rand = self.ops.r(random.random())
+
+        assert not numpy.allclose(one, rand)
 
     def test_s(self):
-        op = self.ops.s(random.random())
-        assert numpy.count_nonzero(op)
+        one = self.ops.s(1)
+        rand = self.ops.s(random.random())
+
+        assert not numpy.allclose(one, rand)
 
     def test_s2(self):
-        op = self.ops.s2(random.random())
-        assert numpy.count_nonzero(op)
+        one = self.ops.s2(1)
+        rand = self.ops.s2(random.random())
+
+        assert not numpy.allclose(one, rand)
