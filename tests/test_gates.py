@@ -147,6 +147,36 @@ def test_displacement_twice():
     assert_unchanged(result, circuit)
 
 
+def test_displacement_calibration(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(1, 2)
+        qr = qiskit.QuantumRegister(1)
+        cr = qiskit.ClassicalRegister(1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        
+        # qr[0] and cr[0] will init to zero
+        circuit.cv_initialize(0, qmr[0])
+
+        alpha = numpy.sqrt(numpy.pi)
+        
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(alpha, -alpha, qr[0], qmr[0])
+        circuit.cv_d(alpha * 1j, qmr[0])
+        circuit.cv_cnd_d(-alpha, alpha, qr[0], qmr[0])
+        circuit.cv_d(-alpha * 1j, qmr[0])
+        circuit.h(qr[0])
+        circuit.measure(qr[0], cr[0])
+
+        result = execute_circuit(circuit)
+        assert result.success
+
+        state = result.get_statevector(circuit)
+        counts = result.get_counts(circuit)
+
+        print(circuit.draw("text"))
+        print(state)
+        print(counts.int_outcomes())
+
 def test_rotation_once():
     circuit, qmr = create_unconditional()
 
