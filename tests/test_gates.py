@@ -48,6 +48,7 @@ def execute_circuit(circuit: c2qa.CVCircuit):
 def assert_changed(result, circuit: c2qa.CVCircuit):
     assert result.success
     state = result.get_statevector(circuit)
+    print()
     print(circuit.draw("text"))
     print(state)
 
@@ -58,6 +59,7 @@ def assert_changed(result, circuit: c2qa.CVCircuit):
 def assert_unchanged(result, circuit: c2qa.CVCircuit):
     assert result.success
     state = result.get_statevector(circuit)
+    print()
     print(circuit.draw("text"))
     print(state)
 
@@ -173,6 +175,7 @@ def test_displacement_calibration(capsys):
         state = result.get_statevector(circuit)
         counts = result.get_counts(circuit)
 
+        print()
         print(circuit.draw("text"))
         print(state)
         print(counts.int_outcomes())
