@@ -1,4 +1,3 @@
-from c2qa.qumoderegister import QumodeRegister
 import numpy as np
 from scipy.linalg import expm
 

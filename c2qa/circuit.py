@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.extensions import UnitaryGate
 from c2qa.operators import CVOperators
 from c2qa.qumoderegister import QumodeRegister
@@ -19,7 +19,7 @@ class CVCircuit(QuantumCircuit):
                 registers.append(self.qmr.qreg)
             else:
                 registers.append(reg)
-        
+
         if self.qmr is None:
             raise ValueError("At least one QumodeRegister must be provided.")
 
