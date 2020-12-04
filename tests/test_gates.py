@@ -164,9 +164,6 @@ def test_cond_displacement_gate_vs_two_separate():
     result = execute_circuit(circuit)
     assert result.success
     state_cnd = result.get_statevector(circuit)
-    print()
-    print(circuit.draw("text"))
-    print(state_cnd)
 
     # Circuit using two controlled unitaries
     qmr = c2qa.QumodeRegister(1, 2)
@@ -179,9 +176,6 @@ def test_cond_displacement_gate_vs_two_separate():
     result = execute_circuit(circuit)
     assert result.success
     state_unitary = result.get_statevector(circuit)
-    print()
-    print(circuit.draw("text"))
-    print(state_unitary)
 
     assert numpy.allclose(state_cnd, state_unitary)
 
@@ -213,7 +207,7 @@ def test_displacement_calibration(capsys):
         counts = result.get_counts(circuit)
 
         print()
-        print(circuit.draw("text"))
+        # print(circuit.draw("text"))
         print(state)
         print(counts.int_outcomes())
 
