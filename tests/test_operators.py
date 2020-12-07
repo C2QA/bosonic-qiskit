@@ -1,8 +1,8 @@
-import c2qa
 import numpy
 from c2qa.operators import CVOperators
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import random
+
 
 class TestUnitary:
     """Verify operators are unitary"""
@@ -33,7 +33,7 @@ class TestMatrices:
 
     def setup_method(self, method):
         self.ops = CVOperators(4)
-        
+
     def test_bs(self):
         one = self.ops.bs(1)
         rand = self.ops.bs(random.random())

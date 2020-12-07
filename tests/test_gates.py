@@ -11,7 +11,7 @@ def count_nonzero(statevector):
     for state in statevector:
         if numpy.isclose(state, 0):
             nonzero -= 1
-    
+
     return nonzero
 
 
@@ -19,10 +19,10 @@ def create_conditional(num_qumodes: int = 2, num_qubits_per_mode: int = 2):
     qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_mode)
     qr = qiskit.QuantumRegister(2)
     circuit = c2qa.CVCircuit(qmr, qr)
-    
+
     for qumode in range(num_qumodes):
         circuit.cv_initialize(0, qmr[qumode])
-    
+
     circuit.initialize([0, 1], qr[1])  # qr[0] will init to zero
 
     return circuit, qmr, qr
@@ -48,6 +48,7 @@ def execute_circuit(circuit: c2qa.CVCircuit):
 def assert_changed(result, circuit: c2qa.CVCircuit):
     assert result.success
     state = result.get_statevector(circuit)
+    print()
     print(circuit.draw("text"))
     print(state)
 
@@ -58,6 +59,7 @@ def assert_changed(result, circuit: c2qa.CVCircuit):
 def assert_unchanged(result, circuit: c2qa.CVCircuit):
     assert result.success
     state = result.get_statevector(circuit)
+    print()
     print(circuit.draw("text"))
     print(state)
 
@@ -68,7 +70,7 @@ def assert_unchanged(result, circuit: c2qa.CVCircuit):
 def test_no_gates():
     circuit, qmr = create_unconditional()
     result = execute_circuit(circuit)
-    assert_unchanged(result, circuit)    
+    assert_unchanged(result, circuit)
 
 
 def test_beamsplitter_once():
@@ -80,7 +82,7 @@ def test_beamsplitter_once():
     result = execute_circuit(circuit)
 
     # TODO - Beam splitter gate does not change state vector
-    #        Both Strawberry Fields & FockWits are the same, too.    
+    #        Both Strawberry Fields & FockWits are the same, too.
     # assert_changed(result, circuit)
     assert_unchanged(result, circuit)
 
@@ -145,6 +147,69 @@ def test_displacement_twice():
 
     result = execute_circuit(circuit)
     assert_unchanged(result, circuit)
+
+
+def test_cond_displacement_gate_vs_two_separate():
+    from qiskit.extensions import UnitaryGate
+    alpha = numpy.sqrt(numpy.pi)
+    beta = -alpha
+
+    # Circuit using cnd_d
+    qmr = c2qa.QumodeRegister(1, 2)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
+    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[0])
+    result = execute_circuit(circuit)
+    assert result.success
+    state_cnd = result.get_statevector(circuit)
+
+    # Circuit using two controlled unitaries
+    qmr = c2qa.QumodeRegister(1, 2)
+    qr = qiskit.QuantumRegister(1)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
+    circuit.append(UnitaryGate(circuit.ops.d(alpha)).control(num_ctrl_qubits=1, ctrl_state=0), [qr[0]] + qmr[0])
+    circuit.append(UnitaryGate(circuit.ops.d(beta)).control(num_ctrl_qubits=1, ctrl_state=1), [qr[0]] + qmr[0])
+    result = execute_circuit(circuit)
+    assert result.success
+    state_unitary = result.get_statevector(circuit)
+
+    assert numpy.allclose(state_cnd, state_unitary)
+
+
+def test_displacement_calibration(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(1, 2)
+        qr = qiskit.QuantumRegister(1)
+        cr = qiskit.ClassicalRegister(1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+        # qr[0] and cr[0] will init to zero
+        circuit.cv_initialize(0, qmr[0])
+
+        alpha = numpy.sqrt(numpy.pi)
+
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(alpha, -alpha, qr[0], qmr[0])
+        circuit.cv_d(alpha * 1j, qmr[0])
+        circuit.cv_cnd_d(-alpha, alpha, qr[0], qmr[0])
+        circuit.cv_d(-alpha * 1j, qmr[0])
+        circuit.h(qr[0])
+        circuit.measure(qr[0], cr[0])
+
+        result = execute_circuit(circuit)
+        assert result.success
+
+        state = result.get_statevector(circuit)
+        counts = result.get_counts(circuit)
+
+        print()
+        # print(circuit.draw("text"))
+        print(state)
+        print(counts.int_outcomes())
 
 
 def test_rotation_once():
@@ -218,12 +283,6 @@ def test_gates():
     """ Verify that we can use the gates, not that they are actually working. """
 
     # ===== Constants =====
-
-    n_qubits_per_mode = 3
-    n_qumodes = 2
-    n_qubits = 3
-    n_cbits = 6
-
     alpha = 1
     beta = -1
     phi = numpy.pi/2
@@ -248,4 +307,3 @@ def test_gates():
     result = execute_circuit(circuit)
 
     assert result.success
-

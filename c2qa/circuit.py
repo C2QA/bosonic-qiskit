@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.extensions import UnitaryGate
 from c2qa.operators import CVOperators
 from c2qa.qumoderegister import QumodeRegister
@@ -19,7 +19,7 @@ class CVCircuit(QuantumCircuit):
                 registers.append(self.qmr.qreg)
             else:
                 registers.append(reg)
-        
+
         if self.qmr is None:
             raise ValueError("At least one QumodeRegister must be provided.")
 
@@ -45,13 +45,13 @@ class CVCircuit(QuantumCircuit):
 
             super().initialize(value, [qumode])
 
-    def cv_conditional(self, name, op_a, op_b):
+    def cv_conditional(self, name, op_0, op_1):
         """ Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state) """
-        sub_qmr = QumodeRegister(1, self.qmr.num_qubits_per_mode)
         sub_qr = QuantumRegister(1)
-        sub_circ = QuantumCircuit(sub_qmr.qreg, sub_qr, name=name)
-        sub_circ.append(UnitaryGate(op_a).control(num_ctrl_qubits=1, ctrl_state=0), [sub_qr[0]] + sub_qmr[0])
-        sub_circ.append(UnitaryGate(op_b).control(num_ctrl_qubits=1, ctrl_state=1), [sub_qr[0]] + sub_qmr[0])
+        sub_qmr = QumodeRegister(1, self.qmr.num_qubits_per_mode)
+        sub_circ = QuantumCircuit(sub_qr, sub_qmr.qreg, name=name)
+        sub_circ.append(UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0), [sub_qr[0]] + sub_qmr[0])
+        sub_circ.append(UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1), [sub_qr[0]] + sub_qmr[0])
 
         return sub_circ.to_instruction()
 
@@ -65,8 +65,8 @@ class CVCircuit(QuantumCircuit):
 
         self.unitary(obj=operator, qubits=qumode, label='D')
 
-    def cv_cnd_d(self, alpha, beta, ctrl, qumode_a):
-        self.append(self.cv_conditional('Dc', self.ops.d(alpha), self.ops.d(beta)), [ctrl] + qumode_a)
+    def cv_cnd_d(self, alpha, beta, ctrl, qumode):
+        self.append(self.cv_conditional('Dc', self.ops.d(alpha), self.ops.d(beta)), [ctrl] + qumode)
 
     def cv_r(self, phi, qumode):
         operator = self.ops.r(phi)
