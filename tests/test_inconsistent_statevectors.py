@@ -40,7 +40,7 @@ def qumode_initialize(circuit, fock_state, qumode):
     circuit.initialize(value, qumode)
 
 
-def run_displacement_calibration():
+def run_displacement_calibration(enable_measure):
     """
     Run the simulation that has different state vector results on Windows vs Linux.
 
@@ -52,7 +52,8 @@ def run_displacement_calibration():
 
     qmr = qiskit.QuantumRegister(num_qubits_per_mode)  # qumode register
     qr = qiskit.QuantumRegister(1)
-    circuit = qiskit.QuantumCircuit(qmr, qr)
+    cr = qiskit.ClassicalRegister(1)
+    circuit = qiskit.QuantumCircuit(qmr, qr, cr)
 
     # qr[0] will init to zero
     
@@ -68,21 +69,34 @@ def run_displacement_calibration():
     conditional_displacement_gate(circuit, -alpha, alpha, qr[0], qmr[0:])
     displacemnt_gate(circuit, -alpha * 1j, qmr[0:])
     circuit.h(qr[0])
-    # circuit.measure(qr[0], cr[0])
+
+    if (enable_measure):
+        circuit.measure(qr[0], cr[0])
 
     backend = qiskit.Aer.get_backend('statevector_simulator')
     job = qiskit.execute(circuit, backend)
     result = job.result()
     state = result.get_statevector(circuit)
+    counts = result.get_counts(circuit)
 
-    print()
     print(state)
+    print(counts.int_outcomes())
 
 
 def test_displacement_calibration(capsys):
     with capsys.disabled():
-        run_displacement_calibration()
+        print()
+        print("Without Measure:")
+        run_displacement_calibration(False)
+        print()
+        print("With measure:")
+        run_displacement_calibration(True)
 
 if __name__ == "__main__":
-    run_displacement_calibration()
+    print()
+    print("Without Measure:")
+    run_displacement_calibration(False)
+    print()
+    print("With measure:")
+    run_displacement_calibration(True)
 
