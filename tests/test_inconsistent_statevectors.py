@@ -50,18 +50,15 @@ def run_displacement_calibration(enable_measure):
       - Simulate the circuit.
     """
 
+    # Instantiate QisKit registers & circuit
     qmr = qiskit.QuantumRegister(num_qubits_per_mode)  # qumode register
     qr = qiskit.QuantumRegister(1)
     cr = qiskit.ClassicalRegister(1)
     circuit = qiskit.QuantumCircuit(qmr, qr, cr)
-
-    # qr[0] will init to zero
     
-    # Initialize the qumode
+    # Initialize the qumode Fock state
+    # qr[0] and cr[0] will init to zero
     qumode_initialize(circuit, 0, qmr[0:])
-
-    conditional_displacement_gate(circuit, alpha, -alpha, qr[0], qmr[0:])
-    conditional_displacement_gate(circuit, -alpha, alpha, qr[0], qmr[0:])
 
     circuit.h(qr[0])
     conditional_displacement_gate(circuit, alpha, -alpha, qr[0], qmr[0:])
@@ -83,20 +80,18 @@ def run_displacement_calibration(enable_measure):
     print(counts.int_outcomes())
 
 
-def test_displacement_calibration(capsys):
-    with capsys.disabled():
-        print()
-        print("Without Measure:")
-        run_displacement_calibration(False)
-        print()
-        print("With measure:")
-        run_displacement_calibration(True)
-
-if __name__ == "__main__":
+def main():
     print()
     print("Without Measure:")
     run_displacement_calibration(False)
     print()
     print("With measure:")
     run_displacement_calibration(True)
+
+def test_displacement_calibration(capsys):
+    with capsys.disabled():
+        main()
+
+if __name__ == "__main__":
+    main()
 
