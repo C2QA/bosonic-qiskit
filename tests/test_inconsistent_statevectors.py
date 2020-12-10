@@ -62,9 +62,9 @@ def run_displacement_calibration(enable_measure):
 
     circuit.h(qr[0])
     conditional_displacement_gate(circuit, alpha, -alpha, qr[0], qmr[0:])
-    displacemnt_gate(circuit, alpha * 1j, qmr[0:])
+    displacemnt_gate(circuit, 1j * alpha, qmr[0:])
     conditional_displacement_gate(circuit, -alpha, alpha, qr[0], qmr[0:])
-    displacemnt_gate(circuit, -alpha * 1j, qmr[0:])
+    displacemnt_gate(circuit, -1j * alpha, qmr[0:])
     circuit.h(qr[0])
 
     if (enable_measure):
