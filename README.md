@@ -24,3 +24,8 @@ source venv/bin/activate
 ## Run the code
 
 After activating the Python virtual environment, develop and run your Python scripts as normal.
+
+### Tutorials
+
+Jupyter Notebook tutorials can be found in the `tutorials` folder. JupyterLab is a dependency found in `requirements.txt`, so after installing and activating the virtual environment, to run the tutorials simply start Jupyter with `jupyter lab` and then navigate to the desired tutorial.
+

@@ -194,9 +194,9 @@ def test_displacement_calibration(capsys):
 
         circuit.h(qr[0])
         circuit.cv_cnd_d(alpha, -alpha, qr[0], qmr[0])
-        circuit.cv_d(alpha * 1j, qmr[0])
+        circuit.cv_d(1j * alpha, qmr[0])
         circuit.cv_cnd_d(-alpha, alpha, qr[0], qmr[0])
-        circuit.cv_d(-alpha * 1j, qmr[0])
+        circuit.cv_d(-1j * alpha, qmr[0])
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
