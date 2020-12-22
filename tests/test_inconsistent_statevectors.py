@@ -55,7 +55,7 @@ def run_displacement_calibration(enable_measure):
     qr = qiskit.QuantumRegister(1)
     cr = qiskit.ClassicalRegister(1)
     circuit = qiskit.QuantumCircuit(qmr, qr, cr)
-    
+
     # Initialize the qumode Fock state
     # qr[0] and cr[0] will init to zero
     qumode_initialize(circuit, 0, qmr[0:])
@@ -88,10 +88,11 @@ def main():
     print("With measure:")
     run_displacement_calibration(True)
 
+
 def test_displacement_calibration(capsys):
     with capsys.disabled():
         main()
 
+
 if __name__ == "__main__":
     main()
-
