@@ -2,6 +2,7 @@
 
 
 # Copy from https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/terra/qis_adv/wigner.py
+#  Jupyter Notebook at https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/terra/qis_adv/wigner_functions.ipynb
 
 
 # Copyright 2018, IBM.
