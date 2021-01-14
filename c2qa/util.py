@@ -8,7 +8,7 @@ import qutip
 def cv_partial_trace(circuit:CVCircuit, state_vector:Statevector):
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
-    # TODO find indices of qubits representing qumodes
+    # Find indices of qubits representing qumodes
     qargs = []
     for reg in circuit.qmregs:
         qargs.extend(reg.qreg)
@@ -36,7 +36,7 @@ def plot_wigner_fock_state(circuit:CVCircuit, state_vector:Statevector, file:str
     cont = ax.contourf(xvec, xvec, w_fock, 100)
     ax.set_xlabel("x")
     ax.set_ylabel("p")
-    cb = fig.colorbar(cont, ax=ax) # add colour bar
+    cb = fig.colorbar(cont, ax=ax)
 
     if file:
         matplotlib.pyplot.savefig(file)
