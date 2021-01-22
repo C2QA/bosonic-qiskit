@@ -23,15 +23,14 @@ def cv_partial_trace(circuit:CVCircuit, state_vector:Statevector):
     return partial_trace(state_vector, indices)
 
 def plot_wigner_fock_state(circuit:CVCircuit, state_vector:Statevector, file:str = None):
-    """ Produce a Matplotlib figure for the Wigner function on the given density matrix. 
+    """ Produce a Matplotlib figure for the Wigner function on the given state vector. 
         
-        Following example from QuTiP to plot Fock state at http://qutip.org/docs/latest/guide/guide-visualization.html#wigner-function 
+        This code follows the example from QuTiP to plot Fock state at http://qutip.org/docs/latest/guide/guide-visualization.html#wigner-function 
         NOTE: On Windows QuTiP requires MS Visual C++ Redistributable v14+
     """
     xvec = numpy.linspace(-5,5,200)
     density_matrix = cv_partial_trace(circuit, state_vector)
-    print(density_matrix)
-    w_fock = qutip.wigner(qutip.Qobj(density_matrix), xvec, xvec)
+    w_fock = qutip.wigner(qutip.Qobj(density_matrix.data), xvec, xvec)
     fig, ax = matplotlib.pyplot.subplots(constrained_layout=True)
     cont = ax.contourf(xvec, xvec, w_fock, 100)
     ax.set_xlabel("x")
