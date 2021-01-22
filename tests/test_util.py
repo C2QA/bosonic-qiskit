@@ -42,27 +42,35 @@ def test_partial_trace_zero(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
         qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = c2qa.CVCircuit(qmr, qr)
 
-        # qr[0] and cr[0] will init to zero
+        circuit.initialize([1,0], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
-        state = Statevector.from_instruction(circuit)
+        state = qiskit.quantum_info.Statevector.from_instruction(circuit)
+        state_data = state.data
+        trace = c2qa.util.cv_partial_trace(circuit, state)
 
-        print(c2qa.util.cv_partial_trace(circuit, state))
+        print("Partial trace Fock state zero")
+        print(state)
+        print(state_data)
+        print(trace)
 
 
 def test_partial_trace_one(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
         qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = c2qa.CVCircuit(qmr, qr)
 
-        # qr[0] and cr[0] will init to zero
+        circuit.initialize([1,0], qr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state = Statevector.from_instruction(circuit)
+        state = qiskit.quantum_info.Statevector.from_instruction(circuit)
+        state_data = state.data
+        trace = c2qa.util.cv_partial_trace(circuit, state)
 
-        print(c2qa.util.cv_partial_trace(circuit, state))
+        print("Partial trace Fock state one")
+        print(state)
+        print(state_data)
+        print(trace)

@@ -8,14 +8,15 @@ def cv_partial_trace(circuit:c2qa.CVCircuit, state_vector:qiskit.quantum_info.St
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
     # Find indices of qubits representing qumodes
-    qargs = []
+    qmargs = []
     for reg in circuit.qmregs:
-        qargs.extend(reg.qreg)
+        qmargs.extend(reg.qreg)
 
+    # Trace over the qubits not representing qumodes
     index = 0
     indices = []
     for qubit in circuit.qubits:
-        if qubit in qargs:
+        if qubit not in qmargs:
             indices.append(index)
         index += 1
 
