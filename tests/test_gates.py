@@ -48,9 +48,9 @@ def execute_circuit(circuit: c2qa.CVCircuit):
 def assert_changed(result, circuit: c2qa.CVCircuit):
     assert result.success
     state = result.get_statevector(circuit)
-    print()
-    print(circuit.draw("text"))
-    print(state)
+    # print()
+    # print(circuit.draw("text"))
+    # print(state)
 
     # TODO - better understand what the state vector results should be
     assert count_nonzero(state) > 1
@@ -59,9 +59,9 @@ def assert_changed(result, circuit: c2qa.CVCircuit):
 def assert_unchanged(result, circuit: c2qa.CVCircuit):
     assert result.success
     state = result.get_statevector(circuit)
-    print()
-    print(circuit.draw("text"))
-    print(state)
+    # print()
+    # print(circuit.draw("text"))
+    # print(state)
 
     # TODO - better understand what the state vector results should be
     assert count_nonzero(state) == 1
@@ -206,10 +206,10 @@ def test_displacement_calibration(capsys):
         state = result.get_statevector(circuit)
         counts = result.get_counts(circuit)
 
-        print()
+        # print()
         # print(circuit.draw("text"))
-        print(state)
-        print(counts.int_outcomes())
+        # print(state)
+        # print(counts.int_outcomes())
 
 
 def test_rotation_once():

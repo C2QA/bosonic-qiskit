@@ -1,9 +1,11 @@
+import warnings
+
+import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.extensions import UnitaryGate
+
 from c2qa.operators import CVOperators
 from c2qa.qumoderegister import QumodeRegister
-import numpy
-import warnings
 
 
 class CVCircuit(QuantumCircuit):
@@ -40,7 +42,7 @@ class CVCircuit(QuantumCircuit):
             raise ValueError("The given Fock state is greater than the cutoff.")
 
         for qumode in modes:
-            value = numpy.zeros((self.qmregs[-1].cutoff,))
+            value = np.zeros((self.qmregs[-1].cutoff,))
             value[fock_state] = 1
 
             super().initialize(value, [qumode])
