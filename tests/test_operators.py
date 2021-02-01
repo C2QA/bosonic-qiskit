@@ -45,8 +45,8 @@ class TestMatrices:
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
             op = self.ops.bs(numpy.pi / 4)
-            print()
-            print(op)
+            # print()
+            # print(op)
 
             assert len(op)
 
@@ -61,8 +61,8 @@ class TestMatrices:
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
             op = self.ops.d(numpy.pi / 2)
-            print()
-            print(op)
+            # print()
+            # print(op)
 
             assert len(op)
 

@@ -18,8 +18,8 @@ def test_plot_zero(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         state = Statevector.from_instruction(circuit)
-        print("Qumode initialized to zero:")
-        print(state)
+        # print("Qumode initialized to zero:")
+        # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/zero.png")
 
 def test_plot_one(capsys):
@@ -33,8 +33,8 @@ def test_plot_one(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state = Statevector.from_instruction(circuit)
-        print("Qumode initialized to one:")
-        print(state)
+        # print("Qumode initialized to one:")
+        # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/one.png")
 
 
@@ -51,10 +51,10 @@ def test_partial_trace_zero(capsys):
         state_data = state.data
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
-        print("Partial trace Fock state zero")
-        print(state)
-        print(state_data)
-        print(trace)
+        # print("Partial trace Fock state zero")
+        # print(state)
+        # print(state_data)
+        # print(trace)
 
 
 def test_partial_trace_one(capsys):
@@ -70,7 +70,7 @@ def test_partial_trace_one(capsys):
         state_data = state.data
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
-        print("Partial trace Fock state one")
-        print(state)
-        print(state_data)
-        print(trace)
+        # print("Partial trace Fock state one")
+        # print(state)
+        # print(state_data)
+        # print(trace)
