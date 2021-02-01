@@ -76,23 +76,11 @@ def run_displacement_calibration(enable_measure):
     state = result.get_statevector(circuit)
     counts = result.get_counts(circuit)
 
-    print(state)
-    print(counts.int_outcomes())
-
-
-def main():
-    print()
-    print("Without Measure:")
-    run_displacement_calibration(False)
-    print()
-    print("With measure:")
-    run_displacement_calibration(True)
+    # print(state)
+    # print(counts.int_outcomes())
 
 
 def test_displacement_calibration(capsys):
     with capsys.disabled():
-        main()
-
-
-if __name__ == "__main__":
-    main()
+        run_displacement_calibration(False)
+        run_displacement_calibration(True)
