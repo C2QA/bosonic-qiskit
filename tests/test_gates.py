@@ -1,8 +1,8 @@
+import random
 
 import c2qa
 import numpy
 import qiskit
-import random
 
 
 def count_nonzero(statevector):
@@ -38,7 +38,7 @@ def create_unconditional(num_qumodes: int = 2, num_qubits_per_mode: int = 2):
 
 
 def execute_circuit(circuit: c2qa.CVCircuit):
-    backend = qiskit.Aer.get_backend('statevector_simulator')
+    backend = qiskit.Aer.get_backend("statevector_simulator")
     job = qiskit.execute(circuit, backend)
     result = job.result()
 
@@ -151,6 +151,7 @@ def test_displacement_twice():
 
 def test_cond_displacement_gate_vs_two_separate():
     from qiskit.extensions import UnitaryGate
+
     alpha = numpy.sqrt(numpy.pi)
     beta = -alpha
 
@@ -171,8 +172,14 @@ def test_cond_displacement_gate_vs_two_separate():
     cr = qiskit.ClassicalRegister(1)
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
-    circuit.append(UnitaryGate(circuit.ops.d(alpha)).control(num_ctrl_qubits=1, ctrl_state=0), [qr[0]] + qmr[0])
-    circuit.append(UnitaryGate(circuit.ops.d(beta)).control(num_ctrl_qubits=1, ctrl_state=1), [qr[0]] + qmr[0])
+    circuit.append(
+        UnitaryGate(circuit.ops.d(alpha)).control(num_ctrl_qubits=1, ctrl_state=0),
+        [qr[0]] + qmr[0],
+    )
+    circuit.append(
+        UnitaryGate(circuit.ops.d(beta)).control(num_ctrl_qubits=1, ctrl_state=1),
+        [qr[0]] + qmr[0],
+    )
     result = execute_circuit(circuit)
     assert result.success
     state_unitary = result.get_statevector(circuit)
@@ -285,7 +292,7 @@ def test_gates():
     # ===== Constants =====
     alpha = 1
     beta = -1
-    phi = numpy.pi/2
+    phi = numpy.pi / 2
     z_a = 1
     z_b = -1
 

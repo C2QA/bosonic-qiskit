@@ -2,10 +2,9 @@ import numpy
 import qiskit
 import scipy.linalg
 
-
 # Define parameters
 num_qubits_per_mode = 2
-cutoff = 2**num_qubits_per_mode
+cutoff = 2 ** num_qubits_per_mode
 alpha = numpy.sqrt(numpy.pi)
 
 
@@ -23,12 +22,18 @@ def displacemnt_gate(circuit, arg, qumode):
 def conditional_displacement_gate(circuit, arg_0, arg_1, qbit, qumode):
     """Append a conditional displacement to the circuit
     Displace by arg_0 if qbit is 0, by arg_1 if qbit is 1."""
-    
+
     op_0 = displacement_operator(arg_0)
     op_1 = displacement_operator(arg_1)
 
-    circuit.append(qiskit.extensions.UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0), [qbit] + qumode)
-    circuit.append(qiskit.extensions.UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1), [qbit] + qumode)
+    circuit.append(
+        qiskit.extensions.UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
+        [qbit] + qumode,
+    )
+    circuit.append(
+        qiskit.extensions.UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
+        [qbit] + qumode,
+    )
 
 
 def qumode_initialize(circuit, fock_state, qumode):
@@ -67,10 +72,10 @@ def run_displacement_calibration(enable_measure):
     displacemnt_gate(circuit, -1j * alpha, qmr[0:])
     circuit.h(qr[0])
 
-    if (enable_measure):
+    if enable_measure:
         circuit.measure(qr[0], cr[0])
 
-    backend = qiskit.Aer.get_backend('statevector_simulator')
+    backend = qiskit.Aer.get_backend("statevector_simulator")
     job = qiskit.execute(circuit, backend)
     result = job.result()
     state = result.get_statevector(circuit)

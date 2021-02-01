@@ -16,7 +16,10 @@ class CVCircuit(QuantumCircuit):
         for reg in regs:
             if isinstance(reg, QumodeRegister):
                 if len(self.qmregs) > 0:
-                    warnings.warn("More than one QumodeRegister provided. Using the last one for cutoff.", UserWarning)
+                    warnings.warn(
+                        "More than one QumodeRegister provided. Using the last one for cutoff.",
+                        UserWarning,
+                    )
                 self.qmregs.append(reg)
                 registers.append(reg.qreg)
             else:
@@ -52,38 +55,50 @@ class CVCircuit(QuantumCircuit):
         sub_qr = QuantumRegister(1)
         sub_qmr = QumodeRegister(1, self.qmregs[-1].num_qubits_per_mode)
         sub_circ = QuantumCircuit(sub_qr, sub_qmr.qreg, name=name)
-        sub_circ.append(UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0), [sub_qr[0]] + sub_qmr[0])
-        sub_circ.append(UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1), [sub_qr[0]] + sub_qmr[0])
+        sub_circ.append(
+            UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
+            [sub_qr[0]] + sub_qmr[0],
+        )
+        sub_circ.append(
+            UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
+            [sub_qr[0]] + sub_qmr[0],
+        )
 
         return sub_circ.to_instruction()
 
     def cv_bs(self, phi, qumode_a, qumode_b):
         operator = self.ops.bs(phi)
 
-        self.unitary(obj=operator, qubits=qumode_a + qumode_b, label='BS')
+        self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="BS")
 
     def cv_d(self, alpha, qumode):
         operator = self.ops.d(alpha)
 
-        self.unitary(obj=operator, qubits=qumode, label='D')
+        self.unitary(obj=operator, qubits=qumode, label="D")
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode):
-        self.append(self.cv_conditional('Dc', self.ops.d(alpha), self.ops.d(beta)), [ctrl] + qumode)
+        self.append(
+            self.cv_conditional("Dc", self.ops.d(alpha), self.ops.d(beta)),
+            [ctrl] + qumode,
+        )
 
     def cv_r(self, phi, qumode):
         operator = self.ops.r(phi)
 
-        self.unitary(obj=operator, qubits=qumode, label='R')
+        self.unitary(obj=operator, qubits=qumode, label="R")
 
     def cv_s(self, z, qumode):
         operator = self.ops.s(z)
 
-        self.unitary(obj=operator, qubits=qumode, label='S')
+        self.unitary(obj=operator, qubits=qumode, label="S")
 
     def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a):
-        self.append(self.cv_conditional('Sc', self.ops.s(z_a), self.ops.s(z_b)), [ctrl] + qumode_a)
+        self.append(
+            self.cv_conditional("Sc", self.ops.s(z_a), self.ops.s(z_b)),
+            [ctrl] + qumode_a,
+        )
 
     def cv_s2(self, z, qumode_a, qumode_b):
         operator = self.ops.s2(z)
 
-        self.unitary(obj=operator, qubits=qumode_a + qumode_b, label='S2')
+        self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="S2")

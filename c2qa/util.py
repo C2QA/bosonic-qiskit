@@ -6,7 +6,7 @@ from qutip import Qobj, wigner
 from c2qa import CVCircuit
 
 
-def cv_partial_trace(circuit:CVCircuit, state_vector:Statevector):
+def cv_partial_trace(circuit: CVCircuit, state_vector: Statevector):
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
     # Find indices of qubits representing qumodes
@@ -24,13 +24,16 @@ def cv_partial_trace(circuit:CVCircuit, state_vector:Statevector):
 
     return partial_trace(state_vector, indices)
 
-def plot_wigner_fock_state(circuit:CVCircuit, state_vector:Statevector, file:str = None):
-    """ Produce a Matplotlib figure for the Wigner function on the given state vector. 
-        
-        This code follows the example from QuTiP to plot Fock state at http://qutip.org/docs/latest/guide/guide-visualization.html#wigner-function 
-        NOTE: On Windows QuTiP requires MS Visual C++ Redistributable v14+
+
+def plot_wigner_fock_state(
+    circuit: CVCircuit, state_vector: Statevector, file: str = None
+):
+    """Produce a Matplotlib figure for the Wigner function on the given state vector.
+
+    This code follows the example from QuTiP to plot Fock state at http://qutip.org/docs/latest/guide/guide-visualization.html#wigner-function
+    NOTE: On Windows QuTiP requires MS Visual C++ Redistributable v14+
     """
-    xvec = np.linspace(-5,5,200)
+    xvec = np.linspace(-5, 5, 200)
     density_matrix = cv_partial_trace(circuit, state_vector)
     w_fock = wigner(Qobj(density_matrix.data), xvec, xvec)
     fig, ax = plt.subplots(constrained_layout=True)

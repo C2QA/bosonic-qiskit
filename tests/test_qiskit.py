@@ -8,7 +8,7 @@ def test_qiskit():
     circuit = qiskit.circuit.QuantumCircuit(qr, cr)
     circuit.cx(qr[0:1], qr[2])
 
-    backend = qiskit.Aer.get_backend('statevector_simulator')
+    backend = qiskit.Aer.get_backend("statevector_simulator")
     job = qiskit.execute(circuit, backend)
     result = job.result()
     state = result.get_statevector(circuit)

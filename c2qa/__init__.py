@@ -2,6 +2,7 @@
 # flake8: noqa
 
 import logging
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 # Import order between QuTiP and QisKit is important, QuTiP fails if QisKit is imported first.

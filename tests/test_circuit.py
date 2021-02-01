@@ -28,4 +28,8 @@ def test_correct():
 
 
 def test_with_classical():
-    c2qa.CVCircuit(qiskit.QuantumRegister(1), c2qa.QumodeRegister(1, 1), qiskit.ClassicalRegister(1))
+    c2qa.CVCircuit(
+        qiskit.QuantumRegister(1),
+        c2qa.QumodeRegister(1, 1),
+        qiskit.ClassicalRegister(1),
+    )

@@ -1,11 +1,8 @@
 import c2qa
+import numpy
 import qiskit
 from qiskit.quantum_info import Statevector
-import numpy
 
-    # TODO add legend for colors (make negative blue, positive red), figure out integral of Wigner function
-    #      check cutoff, plot initial wigner function for original state, need to remove qubit state from statevector as it isn't part of fock state
-    #      perform partial trace over qubit (look in qutip) to basically throw out qubit to disregard the qubit reigster
 
 def test_plot_zero(capsys):
     with capsys.disabled():
@@ -22,8 +19,9 @@ def test_plot_zero(capsys):
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/zero.png")
 
+
 def test_plot_one(capsys):
-    with capsys.disabled(): 
+    with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
@@ -44,7 +42,7 @@ def test_partial_trace_zero(capsys):
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
-        circuit.initialize([1,0], qr[0])
+        circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
         state = qiskit.quantum_info.Statevector.from_instruction(circuit)
@@ -63,7 +61,7 @@ def test_partial_trace_one(capsys):
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
-        circuit.initialize([1,0], qr[0])
+        circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(1, qmr[0])
 
         state = qiskit.quantum_info.Statevector.from_instruction(circuit)

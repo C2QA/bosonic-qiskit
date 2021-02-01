@@ -1,7 +1,8 @@
+import random
+
 import numpy
 from c2qa.operators import CVOperators
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
-import random
 
 
 class TestUnitary:
@@ -41,7 +42,7 @@ class TestMatrices:
         assert not numpy.allclose(one, rand)
 
     def test_bs_across_os(self, capsys):
-        """Doesn't actually test anything, but as it is run across platforms by GitHub 
+        """Doesn't actually test anything, but as it is run across platforms by GitHub
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
             op = self.ops.bs(numpy.pi / 4)
@@ -57,7 +58,7 @@ class TestMatrices:
         assert not numpy.allclose(one, rand)
 
     def test_d_across_os(self, capsys):
-        """Doesn't actually test anything, but as it is run across platforms by GitHub 
+        """Doesn't actually test anything, but as it is run across platforms by GitHub
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
             op = self.ops.d(numpy.pi / 2)
