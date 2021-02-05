@@ -1,6 +1,8 @@
+import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 from qiskit.quantum_info import Statevector, partial_trace
+from qiskit.result import Result
 from qutip import Qobj, wigner
 
 from c2qa import CVCircuit
@@ -41,7 +43,7 @@ def plot_wigner_fock_state(
     density_matrix = cv_partial_trace(circuit, state_vector)
     w_fock = wigner(Qobj(density_matrix.data), xvec, xvec)
     fig, ax = plt.subplots(constrained_layout=True)
-    cont = ax.contourf(xvec, xvec, w_fock, 100)
+    cont = ax.contourf(x=xvec, y=xvec, z=w_fock, levels=100)
     ax.set_xlabel("x")
     ax.set_ylabel("p")
     fig.colorbar(cont, ax=ax)
@@ -50,3 +52,48 @@ def plot_wigner_fock_state(
         plt.savefig(file)
     else:
         plt.show()
+
+
+def animate_wigner_fock_state(circuit: CVCircuit, result: Result, file: str = None):
+    # Calculate the Wigner functions for each frame
+    xvec = np.linspace(-5, 5, 200)
+    w_fock = []
+    for frame in range(circuit.animation_steps):
+        state_vector = result.data(circuit)["snapshots"]["statevector"][
+            circuit.get_snapshot_name(frame)
+        ][0]
+        density_matrix = cv_partial_trace(circuit, state_vector)
+        w_fock.append(wigner(Qobj(density_matrix.data), xvec, xvec))
+
+    # Create empty plot to animate
+    fig, ax = plt.subplots(constrained_layout=True)
+
+    # Animate
+    anim = matplotlib.animation.FuncAnimation(
+        fig=fig,
+        func=_animate,
+        frames=circuit.animation_steps,
+        fargs=(fig, ax, xvec, w_fock),
+        interval=200,
+        repeat=True,
+    )
+
+    # Save to file using ffmpeg or display
+    if file:
+        writervideo = matplotlib.animation.FFMpegWriter(fps=60)
+        anim.save(file, writer=writervideo)
+    else:
+        plt.show()
+
+
+def _animate(frame, *fargs):
+    fig = fargs[0]
+    ax = fargs[1]
+    xvec = fargs[2]
+    w_fock = fargs[3]
+
+    ax.clear()
+    cont = ax.contourf(xvec, xvec, w_fock[frame], levels=100)
+    ax.set_xlabel("x")
+    ax.set_ylabel("p")
+    # fig.colorbar(cont, ax=ax)  # FIXME Colorbar shifts position in animation?
