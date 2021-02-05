@@ -1,5 +1,4 @@
 import c2qa
-import numpy
 import qiskit
 from qiskit.quantum_info import Statevector
 
@@ -46,12 +45,12 @@ def test_partial_trace_zero(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         state = qiskit.quantum_info.Statevector.from_instruction(circuit)
-        state_data = state.data
         trace = c2qa.util.cv_partial_trace(circuit, state)
+        assert(trace)
 
         # print("Partial trace Fock state zero")
         # print(state)
-        # print(state_data)
+        # print(state.data)
         # print(trace)
 
 
@@ -65,10 +64,10 @@ def test_partial_trace_one(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state = qiskit.quantum_info.Statevector.from_instruction(circuit)
-        state_data = state.data
         trace = c2qa.util.cv_partial_trace(circuit, state)
+        assert(trace)
 
         # print("Partial trace Fock state one")
         # print(state)
-        # print(state_data)
+        # print(state.data)
         # print(trace)

@@ -81,6 +81,9 @@ def run_displacement_calibration(enable_measure):
     state = result.get_statevector(circuit)
     counts = result.get_counts(circuit)
 
+    assert(len(state) > 0)
+    assert(counts)
+
     # print(state)
     # print(counts.int_outcomes())
 
