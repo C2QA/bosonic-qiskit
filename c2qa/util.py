@@ -30,7 +30,7 @@ def plot_wigner_fock_state(
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
-    This code follows the example from QuTiP to plot Fock state at 
+    This code follows the example from QuTiP to plot Fock state at
     http://qutip.org/docs/latest/guide/guide-visualization.html#wigner-function.
 
     NOTE: On Windows QuTiP requires MS Visual C++ Redistributable v14+
