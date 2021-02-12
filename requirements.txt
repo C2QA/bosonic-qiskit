@@ -1,5 +1,4 @@
-qiskit==0.23.4
-qutip==4.5.2
+qiskit==0.23.5
 
 # For drawing circuits and state vectors (matplotlib 3.3.0+ is incompatible)
 matplotlib==3.2.2
