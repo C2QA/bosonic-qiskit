@@ -1,5 +1,6 @@
 import c2qa
 import numpy
+import pytest
 import qiskit
 from qiskit.quantum_info import Statevector
 
@@ -73,7 +74,7 @@ def test_partial_trace_one(capsys):
         # print(state.data)
         # print(trace)
 
-
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
