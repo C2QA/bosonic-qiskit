@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qiskit.quantum_info import Statevector, partial_trace
 from qiskit.result import Result
-from qutip import Qobj, wigner
+
+# Wigner plotting is currently non-functinal
+# from qutip import Qobj, wigner
 
 from c2qa import CVCircuit
 
