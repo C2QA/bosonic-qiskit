@@ -32,7 +32,7 @@ class CVCircuit(QuantumCircuit):
 
         super().__init__(*registers, name=name)
 
-        self.ops = CVOperators(self.qmregs[-1].cutoff)
+        self.ops = CVOperators(self.cutoff)
 
         self.animated = not math.isnan(animation_segments)
         if self.animated and animation_segments < 1:
@@ -40,6 +40,10 @@ class CVCircuit(QuantumCircuit):
         else:
             self._animation_segments = animation_segments
         self.animation_steps = 0
+
+    @property
+    def cutoff(self):
+        return self.qmregs[-1].cutoff
 
     def get_snapshot_name(self, index: int):
         """Return the string statevector snapshot name for the given frame index."""
