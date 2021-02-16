@@ -36,20 +36,11 @@ def plot_wigner_fock_state(
     density_matrix = cv_partial_trace(circuit, state_vector)
     w_fock = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
-    # FIXME contourf gets array index out of bounds
-    # fig, ax = plt.subplots(constrained_layout=True)
-    # cont = ax.contourf(x=xvec, y=xvec, z=w_fock, levels=100)
-    # ax.set_xlabel("x")
-    # ax.set_ylabel("p")
-    # fig.colorbar(cont, ax=ax)
-
-    # Copy from Strawberry Fields sample at https://strawberryfields.ai/photonics/demos/run_gate_visualization.html#vacuum-state
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    X, P = np.meshgrid(xvec, xvec)
-    ax.plot_surface(X, P, w_fock, cmap="RdYlGn", lw=0.5, rstride=1, cstride=1)
-    fig.set_size_inches(4.8, 5)
-    ax.set_axis_off()
+    fig, ax = plt.subplots(constrained_layout=True)
+    cont = ax.contourf(xvec, xvec, w_fock, 100)
+    ax.set_xlabel("x")
+    ax.set_ylabel("p")
+    fig.colorbar(cont, ax=ax)
 
     if file:
         plt.savefig(file)
@@ -58,6 +49,15 @@ def plot_wigner_fock_state(
 
 
 def animate_wigner_fock_state(circuit: CVCircuit, result: Result, file: str = None):
+    """
+    Animate the Wigner function at each step defined in the given CVCirctuit.
+    
+    This assumes the CVCircuit was simulated with an animation_segments > 0 to
+    act as the frames of the generated movie.
+
+    The ffmpeg binary must be on your system PATH in order to execute this
+    function.
+    """
     # Calculate the Wigner functions for each frame
     xvec = np.linspace(-5, 5, 200)
     w_fock = []
@@ -103,7 +103,16 @@ def _animate(frame, *fargs):
 
 
 def _wigner(density_matrix: DensityMatrix, xvec, pvec, cutoff: int, hbar: int = 2):
-    r"""Calculates the discretized Wigner function of the specified mode.
+    r"""
+    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
+
+    Strawberry Fields is released under the Apache License: https://github.com/XanaduAI/strawberryfields/blob/master/LICENSE
+
+    See:
+        <https://github.com/XanaduAI/strawberryfields/blob/e46bd122faff39976cc9052cc1a6472762c415b4/strawberryfields/backends/states.py#L725-L780>
+
+
+    Calculates the discretized Wigner function of the specified mode.
     .. note::
         This code is a modified version of the 'iterative' method of the
         `wigner function provided in QuTiP <http://qutip.org/docs/4.0.2/apidoc/functions.html?highlight=wigner#qutip.wigner.wigner>`_,
@@ -118,11 +127,6 @@ def _wigner(density_matrix: DensityMatrix, xvec, pvec, cutoff: int, hbar: int = 
     Returns:
         array: 2D array of size [len(xvec), len(pvec)], containing reduced Wigner function
         values for specified x and p values.
-
-    See:
-        <https://github.com/XanaduAI/strawberryfields/blob/e46bd122faff39976cc9052cc1a6472762c415b4/strawberryfields/backends/states.py#L725-L780>
-
-        Strawberry Fields is released under the Apache License: https://github.com/XanaduAI/strawberryfields/blob/master/LICENSE
     """
     rho = density_matrix.data
     Q, P = np.meshgrid(xvec, pvec)
