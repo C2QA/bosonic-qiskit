@@ -85,8 +85,8 @@ def animate_wigner_fock_state(circuit: CVCircuit, result: Result, file: str = No
     if file:
         writervideo = matplotlib.animation.FFMpegWriter(fps=60)
         anim.save(file, writer=writervideo)
-    else:
-        plt.show()
+    
+    return anim
 
 
 def _animate(frame, *fargs):
