@@ -75,6 +75,26 @@ def test_plot_one(capsys):
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/one.png")
 
+def test_plot_projection(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qr = qiskit.QuantumRegister(size=1)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+        dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+
+        circuit.initialize([1, 0], qr[0])
+        circuit.cv_initialize(0, qmr[0])
+
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+
+        state = Statevector.from_instruction(circuit)
+
+        c2qa.util.plot_wigner_interference(
+            circuit, state, file="tests/projection.png"
+        )        
+
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate(capsys):

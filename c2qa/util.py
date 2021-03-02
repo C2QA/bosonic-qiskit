@@ -9,6 +9,60 @@ from qiskit.result import Result
 from c2qa import CVCircuit
 
 
+def _project(a: np.ndarray, b: np.ndarray):
+    """ Project vector a on vector b """
+
+    # Find norm of the vector v
+    b_norm = np.sqrt(sum(b**2))
+
+    # Project a onto b using np.dot() 
+    return (np.dot(a, b) / b_norm**2) * b
+
+
+def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file: str = None):
+    """Produce a Matplotlib figure for the Wigner function on the given state vector."""
+
+
+    # FIXME -- Build appropriately sized matrix as projection operator
+
+    # zero = np.array([[1, 0], [0, 0]])
+    # one = np.array([[0, 0], [0, 1]])
+
+    zero = np.zeros(len(state_vector.data))
+    zero[0] = 1
+
+    one = np.zeros(len(state_vector.data))
+    one[1] = 1
+
+
+    xvec = np.linspace(-5, 5, 200)
+    state = np.array(state_vector.data)
+
+    # Two horizontal subplots, at double the default width
+    fig, axs = plt.subplots(1, 2, figsize=(12.8,4.8))
+
+    projection = _project(state, zero)
+    # projection = zero.dot(state)
+    w_fock = _wigner(projection, xvec, xvec, circuit.cutoff)
+    cont = axs[0].contourf(xvec, xvec, w_fock, 100)
+    axs[0].set_xlabel("x")
+    axs[0].set_ylabel("p")
+    fig.colorbar(cont, ax=axs[0])
+
+    projection = _project(state, one)
+    # projection = one.dot(state)
+    w_fock = _wigner(projection, xvec, xvec, circuit.cutoff)
+    cont = axs[1].contourf(xvec, xvec, w_fock, 100)
+    axs[1].set_xlabel("x")
+    axs[1].set_ylabel("p")
+    fig.colorbar(cont, ax=axs[1])
+
+    if file:
+        plt.savefig(file)
+    else:
+        plt.show()
+
+
 def cv_partial_trace(circuit: CVCircuit, state_vector: Statevector):
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
@@ -101,8 +155,7 @@ def _animate(frame, *fargs):
     ax.set_ylabel("p")
     # fig.colorbar(cont, ax=ax)  # FIXME Colorbar shifts position in animation?
 
-
-def _wigner(density_matrix: DensityMatrix, xvec, pvec, cutoff: int, hbar: int = 2):
+def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
     Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
 
@@ -128,7 +181,12 @@ def _wigner(density_matrix: DensityMatrix, xvec, pvec, cutoff: int, hbar: int = 
         array: 2D array of size [len(xvec), len(pvec)], containing reduced Wigner function
         values for specified x and p values.
     """
-    rho = density_matrix.data
+    if isinstance(state, Statevector):
+        rho = DensityMatrix(state).data
+    elif isinstance(state, DensityMatrix):
+        rho = state.data
+    else:
+        rho = DensityMatrix(state).data
     Q, P = np.meshgrid(xvec, pvec)
     A = (Q + P * 1.0j) / (2 * np.sqrt(hbar / 2))
 
