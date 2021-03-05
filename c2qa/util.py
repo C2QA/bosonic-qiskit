@@ -9,16 +9,6 @@ from qiskit.result import Result
 from c2qa import CVCircuit
 
 
-def _project(a: np.ndarray, b: np.ndarray):
-    """ Project vector a on vector b """
-
-    # Find norm of the vector v
-    b_norm = np.sqrt(sum(b**2))
-
-    # Project a onto b using np.dot() 
-    return (np.dot(a, b) / b_norm**2) * b
-
-
 def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file: str = None):
     """Produce a Matplotlib figure for the Wigner function on the given state vector."""
 
@@ -27,12 +17,22 @@ def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file
 
     # zero = np.array([[1, 0], [0, 0]])
     # one = np.array([[0, 0], [0, 1]])
+    zero = np.array([1, 0])
+    one = np.array([0, 1])
 
-    zero = np.zeros(len(state_vector.data))
-    zero[0] = 1
 
-    one = np.zeros(len(state_vector.data))
-    one[1] = 1
+    # qubit_indices = _find_qubit_indices(circuit)
+    # dims = state_vector.dims(qubit_indices)
+    # trace_systems = len(state_vector.dims()) - 1 - np.array(qubit_indices)
+    # zero = np.zeros(len(state_vector.data))
+    # zero[0] = 1
+
+    # one = np.zeros(len(state_vector.data))
+    # one[1] = 1
+
+# U is state_vector
+# V is zero or one
+# ((V*Vt) / (Vt*V)) * U
 
 
     xvec = np.linspace(-5, 5, 200)
@@ -63,8 +63,12 @@ def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file
         plt.show()
 
 
-def cv_partial_trace(circuit: CVCircuit, state_vector: Statevector):
-    """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
+def _find_qubit_indices(circuit: CVCircuit):
+    """
+    Return the indices of the qubits from the circuit that are not in a QumodeRegister
+    
+    I.e., the indices to the qubits themselves, not the qubits representing the bosonic modes.
+    """
 
     # Find indices of qubits representing qumodes
     qmargs = []
@@ -78,6 +82,25 @@ def cv_partial_trace(circuit: CVCircuit, state_vector: Statevector):
         if qubit not in qmargs:
             indices.append(index)
         index += 1
+
+    return indices
+
+
+def _project(a: np.ndarray, b: np.ndarray):
+    """ Project vector a on vector b """
+    # return (np.dot(a, b) / np.dot(b, b)) * b
+
+    # U is state_vector
+    # V is zero or one
+    # ((V*Vt) / (Vt*V)) * U
+    scalar = (b * b.T) / (b.T * b)
+    return scalar * a
+
+
+def cv_partial_trace(circuit: CVCircuit, state_vector: Statevector):
+    """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
+
+    indices = _find_qubit_indices(circuit)
 
     return partial_trace(state_vector, indices)
 
