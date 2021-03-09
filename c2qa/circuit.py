@@ -72,18 +72,24 @@ class CVCircuit(QuantumCircuit):
 
             super().initialize(value, [qumode])
 
-    def cv_conditional(self, name, op_0, op_1):
+    def cv_conditional(self, name, op_0, op_1, num_qumodes = 1):
         """ Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state) """
         sub_qr = QuantumRegister(1)
-        sub_qmr = QumodeRegister(1, self.qmregs[-1].num_qubits_per_mode)
+        sub_qmr = QumodeRegister(num_qumodes, self.qmregs[-1].num_qubits_per_mode)
         sub_circ = QuantumCircuit(sub_qr, sub_qmr.qreg, name=name)
+
+        # TODO Use size of op_0 and op_1 to calculate the number of qumodes instead of using parameter
+        qargs = [sub_qr[0]]
+        for i in range(num_qumodes):
+            qargs += sub_qmr[i]
+
         sub_circ.append(
             UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
-            [sub_qr[0]] + sub_qmr[0],
+            qargs
         )
         sub_circ.append(
             UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
-            [sub_qr[0]] + sub_qmr[0],
+            qargs
         )
 
         return sub_circ.to_instruction()
@@ -99,6 +105,25 @@ class CVCircuit(QuantumCircuit):
         else:
             operator = self.ops.bs(phi)
             self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="BS")
+
+    def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
+        if self.animated:
+            segment_phi = phi / self._animation_segments
+            segment_chi = chi / self._animation_segments
+
+            for _ in range(self._animation_segments):
+                self.append(
+                    self.cv_conditional(
+                        "BSc", self.ops.bs(segment_phi), self.ops.bs(segment_chi), num_qumodes=2
+                    ),
+                    [ctrl] + qumode_a + qumode_b
+                )
+                self._snapshot_animation()
+        else:
+            self.append(
+                self.cv_conditional("BSc", self.ops.bs(phi), self.ops.bs(chi), num_qumodes=2),
+                [ctrl] + qumode_a + qumode_b
+            )
 
     def cv_d(self, alpha, qumode):
         if self.animated:
@@ -122,13 +147,13 @@ class CVCircuit(QuantumCircuit):
                     self.cv_conditional(
                         "Dc", self.ops.d(segment_alpha), self.ops.d(segment_beta)
                     ),
-                    [ctrl] + qumode,
+                    [ctrl] + qumode
                 )
                 self._snapshot_animation()
         else:
             self.append(
                 self.cv_conditional("Dc", self.ops.d(alpha), self.ops.d(beta)),
-                [ctrl] + qumode,
+                [ctrl] + qumode
             )
 
     def cv_r(self, phi, qumode):
@@ -165,13 +190,13 @@ class CVCircuit(QuantumCircuit):
                     self.cv_conditional(
                         "Sc", self.ops.s(segment_z_a), self.ops.s(segment_z_b)
                     ),
-                    [ctrl] + qumode_a,
+                    [ctrl] + qumode_a
                 )
                 self._snapshot_animation()
         else:
             self.append(
                 self.cv_conditional("Sc", self.ops.s(z_a), self.ops.s(z_b)),
-                [ctrl] + qumode_a,
+                [ctrl] + qumode_a
             )
 
     def cv_s2(self, z, qumode_a, qumode_b):
