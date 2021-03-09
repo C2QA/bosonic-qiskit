@@ -86,6 +86,20 @@ def test_beamsplitter_once():
     # assert_changed(result, circuit)
     assert_unchanged(result, circuit)
 
+def test_conditional_beamsplitter():
+    circuit, qmr, qr = create_conditional()
+
+    phi = random.random()
+    chi = random.random()
+    circuit.cv_cnd_bs(phi, chi, qr[0], qmr[0], qmr[1])
+
+    result = execute_circuit(circuit)
+
+    # TODO - Beam splitter gate does not change state vector
+    #        Both Strawberry Fields & FockWits are the same, too.
+    # assert_changed(result, circuit)
+    assert_unchanged(result, circuit)    
+
 
 def test_beamsplitter_twice():
     circuit, qmr = create_unconditional()
