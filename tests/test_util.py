@@ -75,13 +75,13 @@ def test_plot_one(capsys):
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/one.png")
 
-@pytest.mark.skip(reason="Work in progress, not operational yet.")
+# @pytest.mark.skip(reason="Work in progress, not operational yet.")
 def test_plot_projection(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=2, num_qubits_per_mode=4)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
         qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        # cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr)
 
         dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
 

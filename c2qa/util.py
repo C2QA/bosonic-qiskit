@@ -1,4 +1,5 @@
 from copy import copy
+import math
 
 import matplotlib.animation
 import matplotlib.pyplot as plt
@@ -12,45 +13,40 @@ from c2qa import CVCircuit
 def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file: str = None):
     """Produce a Matplotlib figure for the Wigner function on the given state vector."""
 
-
-    # FIXME -- Build appropriately sized matrix as projection operator
+    state_len = len(state_vector.data)
+    eye = np.identity(state_len, dtype=int)
 
     zero = np.array([[1, 0], [0, 0]])
     one = np.array([[0, 0], [0, 1]])
-    # zero = np.array([1, 0])
-    # one = np.array([0, 1])
 
-
-    # qubit_indices = _find_qubit_indices(circuit)
-    # dims = state_vector.dims(qubit_indices)
-    # trace_systems = len(state_vector.dims()) - 1 - np.array(qubit_indices)
-
-    # zero = np.zeros(len(state_vector.data))
-    # zero[0] = 1
-
-    # one = np.zeros(len(state_vector.data))
-    # one[1] = 1
+    zero_tensor = np.kron(zero, eye)
+    one_tensor = np.kron(one, eye)
 
     xvec = np.linspace(-5, 5, 200)
-    state = np.array(state_vector.data)
 
     # Two horizontal subplots, at double the default width
     fig, axs = plt.subplots(1, 2, figsize=(12.8,4.8))
 
-    projection = _project(state, zero)
-    # projection = zero.dot(state)
-    w_fock = _wigner(projection, xvec, xvec, circuit.cutoff)
+    state = DensityMatrix(state_vector).data
+    # state = state_vector.data
+    projection = np.kron(state, zero_tensor)
+    trace = cv_partial_trace(circuit, projection)
+
+    w_fock = _wigner(trace, xvec, xvec, circuit.cutoff)
     cont = axs[0].contourf(xvec, xvec, w_fock, 100)
     axs[0].set_xlabel("x")
     axs[0].set_ylabel("p")
+    axs[0].set_title("Projection onto zero")
     fig.colorbar(cont, ax=axs[0])
 
-    projection = _project(state, one)
-    # projection = one.dot(state)
-    w_fock = _wigner(projection, xvec, xvec, circuit.cutoff)
+    projection = np.kron(state, one_tensor)
+    trace = cv_partial_trace(circuit, projection)
+
+    w_fock = _wigner(trace, xvec, xvec, circuit.cutoff)
     cont = axs[1].contourf(xvec, xvec, w_fock, 100)
     axs[1].set_xlabel("x")
     axs[1].set_ylabel("p")
+    axs[1].set_title("Projection onto one")
     fig.colorbar(cont, ax=axs[1])
 
     if file:
@@ -82,24 +78,7 @@ def _find_qubit_indices(circuit: CVCircuit):
     return indices
 
 
-def _project(a: np.ndarray, b: np.ndarray):
-    """ Project vector a on vector b """
-    # print("projecting")
-    # print(f"  {a}")
-    # print(" onto")
-    # print(f"  {b}")
-
-    projection = (np.dot(a, b) / np.dot(b, b)) * b
-    # print(" =")
-    # print(f"  {projection}")
-    return projection
-
-    # scalar = (b * b.T) / (b.T * b)
-    # scalar = b * np.linalg.inv(b.T * b) * b.T
-    # return scalar * a
-
-
-def cv_partial_trace(circuit: CVCircuit, state_vector: Statevector):
+def cv_partial_trace(circuit: CVCircuit, state_vector):
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
     indices = _find_qubit_indices(circuit)
@@ -211,7 +190,7 @@ def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     elif isinstance(state, DensityMatrix):
         rho = state.data
     else:
-        rho = DensityMatrix(state).data
+        rho = state
     Q, P = np.meshgrid(xvec, pvec)
     A = (Q + P * 1.0j) / (2 * np.sqrt(hbar / 2))
 
