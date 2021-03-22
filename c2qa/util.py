@@ -29,20 +29,21 @@ def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file
 
     state = DensityMatrix(state_vector).data
     # state = state_vector.data
-    projection = np.kron(state, zero_tensor)
-    trace = cv_partial_trace(circuit, projection)
 
-    w_fock = _wigner(trace, xvec, xvec, circuit.cutoff)
+    zero_projection = np.kron(state, zero_tensor)
+    zero_trace = cv_partial_trace(circuit, zero_projection)
+
+    w_fock = _wigner(zero_trace, xvec, xvec, circuit.cutoff)
     cont = axs[0].contourf(xvec, xvec, w_fock, 100)
     axs[0].set_xlabel("x")
     axs[0].set_ylabel("p")
     axs[0].set_title("Projection onto zero")
     fig.colorbar(cont, ax=axs[0])
 
-    projection = np.kron(state, one_tensor)
-    trace = cv_partial_trace(circuit, projection)
+    one_projection = np.kron(state, one_tensor)
+    one_trace = cv_partial_trace(circuit, one_projection)
 
-    w_fock = _wigner(trace, xvec, xvec, circuit.cutoff)
+    w_fock = _wigner(one_trace, xvec, xvec, circuit.cutoff)
     cont = axs[1].contourf(xvec, xvec, w_fock, 100)
     axs[1].set_xlabel("x")
     axs[1].set_ylabel("p")
