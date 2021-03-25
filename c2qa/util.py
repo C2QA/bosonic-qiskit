@@ -15,8 +15,9 @@ def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file
 
     # Create identity
     #   TODO What size should it be?
-    state_len = len(state_vector.data)
-    eye = np.identity(state_len, dtype=int)
+    # state_len = len(state_vector.data)
+    # eye = np.identity(state_len, dtype=int)
+    eye = np.identity(2, dtype=int)
 
     # Calculate projectors for zero and one
     zero = np.array([[1, 0], [0, 0]])
