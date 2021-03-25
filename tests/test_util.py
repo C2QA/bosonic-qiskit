@@ -78,7 +78,7 @@ def test_plot_one(capsys):
 # @pytest.mark.skip(reason="Work in progress, not operational yet.")
 def test_plot_projection(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
         qr = qiskit.QuantumRegister(size=1)
         # cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
@@ -88,7 +88,7 @@ def test_plot_projection(capsys):
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
 
-        circuit.h(qr[0])
+        # circuit.h(qr[0])
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
 
         state = Statevector.from_instruction(circuit)

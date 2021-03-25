@@ -13,43 +13,55 @@ from c2qa import CVCircuit
 def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file: str = None):
     """Produce a Matplotlib figure for the Wigner function on the given state vector."""
 
+    # Create identity
+    #   TODO What size should it be?
     state_len = len(state_vector.data)
     eye = np.identity(state_len, dtype=int)
 
+    # Calculate projectors for zero and one
     zero = np.array([[1, 0], [0, 0]])
     one = np.array([[0, 0], [0, 1]])
+    zero_projector = np.kron(zero, eye)
+    one_projector = np.kron(one, eye)
 
-    zero_tensor = np.kron(zero, eye)
-    one_tensor = np.kron(one, eye)
-
-    xvec = np.linspace(-5, 5, 200)
-
-    # Two horizontal subplots, at double the default width
-    fig, axs = plt.subplots(1, 2, figsize=(12.8,4.8))
-
+    # TODO Should we tensor the state vector or the density matrix array?
+    #   QisKit partial_trace() fails with "Input not a quantum state" error when using state vector.
     state = DensityMatrix(state_vector).data
     # state = state_vector.data
 
-    zero_projection = np.kron(state, zero_tensor)
-    zero_trace = cv_partial_trace(circuit, zero_projection)
+    # Project state onto zero and one
+    zero_projection = np.kron(state, zero_projector)
+    one_projection = np.kron(state, one_projector)
 
-    w_fock = _wigner(zero_trace, xvec, xvec, circuit.cutoff)
-    cont = axs[0].contourf(xvec, xvec, w_fock, 100)
+    # TODO Add Pauli Z
+
+    # Trace over qubit
+    #   TODO Does QisKit partial_trace() work correctly after projection?
+    #     The projection isn't the same size/shape as original state vector.
+    #     The qubit indices from the circuit and original state vector won't match the indices in the new matrices.
+    zero_trace = cv_partial_trace(circuit, zero_projection)
+    one_trace = cv_partial_trace(circuit, one_projection)
+    
+    # Calculate Wigner functions
+    xvec = np.linspace(-5, 5, 200)
+    zero_wigner = _wigner(zero_trace, xvec, xvec, circuit.cutoff)
+    one_wigner = _wigner(one_trace, xvec, xvec, circuit.cutoff)
+
+    # Plot using matplot lib on two horizontal subplots, at double the default width
+    fig, axs = plt.subplots(1, 2, figsize=(12.8,4.8))
+    cont = axs[0].contourf(xvec, xvec, zero_wigner, 100)
     axs[0].set_xlabel("x")
     axs[0].set_ylabel("p")
     axs[0].set_title("Projection onto zero")
     fig.colorbar(cont, ax=axs[0])
 
-    one_projection = np.kron(state, one_tensor)
-    one_trace = cv_partial_trace(circuit, one_projection)
-
-    w_fock = _wigner(one_trace, xvec, xvec, circuit.cutoff)
-    cont = axs[1].contourf(xvec, xvec, w_fock, 100)
+    cont = axs[1].contourf(xvec, xvec, one_wigner, 100)
     axs[1].set_xlabel("x")
     axs[1].set_ylabel("p")
     axs[1].set_title("Projection onto one")
     fig.colorbar(cont, ax=axs[1])
 
+    # Save to file or display
     if file:
         plt.savefig(file)
     else:
