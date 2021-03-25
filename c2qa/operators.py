@@ -4,6 +4,9 @@ from scipy.linalg import expm
 
 class CVOperators:
     def __init__(self, cutoff: int):
+        # FIXME verify sizes of matrices/arrays are correct. 
+        #   Large cutoffs make 
+
         # Annihilation operator
         self.a = np.diag(np.sqrt(range(1, cutoff)), k=1)
 
@@ -14,11 +17,11 @@ class CVOperators:
         self.N = np.matmul(self.a_dag, self.a)
 
         # 2-qumodes operators
-        eye = np.eye(cutoff)
-        self.a1 = np.kron(self.a, eye)
-        self.a2 = np.kron(eye, self.a)
-        self.a1_dag = self.a1.conj().T
-        self.a2_dag = self.a2.conj().T
+        # eye = np.eye(cutoff)
+        # self.a1 = np.kron(self.a, eye)  # TODO why is numpy.kron make 3D array?
+        # self.a2 = np.kron(eye, self.a)
+        # self.a1_dag = self.a1.conj().T
+        # self.a2_dag = self.a2.conj().T
 
     def bs(self, g):
         """ Two-mode beam splitter opertor """

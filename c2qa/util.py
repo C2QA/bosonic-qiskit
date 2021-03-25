@@ -15,9 +15,10 @@ def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file
 
     # Create identity
     #   TODO What size should it be?
-    # state_len = len(state_vector.data)
-    # eye = np.identity(state_len, dtype=int)
-    eye = np.identity(2, dtype=int)
+    state_len = len(state_vector.data)
+    # TODO shouldn't have to math.floorm should check that length is even
+    eye = np.identity(math.floor(state_len / 2), dtype=int)
+    # eye = np.identity(2, dtype=int)
 
     # Calculate projectors for zero and one
     zero = np.array([[1, 0], [0, 0]])
@@ -27,12 +28,12 @@ def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file
 
     # TODO Should we tensor the state vector or the density matrix array?
     #   QisKit partial_trace() fails with "Input not a quantum state" error when using state vector.
-    state = DensityMatrix(state_vector).data
-    # state = state_vector.data
+    # state = DensityMatrix(state_vector).data
+    state = state_vector.data
 
     # Project state onto zero and one
-    zero_projection = np.kron(state, zero_projector)
-    one_projection = np.kron(state, one_projector)
+    zero_projection = zero_projector * state
+    one_projection = one_projector * state
 
     # TODO Add Pauli Z
 
@@ -96,16 +97,21 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
     indices = _find_qubit_indices(circuit)
-
+    print(f"here {indices}")
     return partial_trace(state_vector, indices)
 
 
 def plot_wigner_fock_state(
-    circuit: CVCircuit, state_vector: Statevector, file: str = None
+    circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector."""
     xvec = np.linspace(-5, 5, 200)
-    density_matrix = cv_partial_trace(circuit, state_vector)
+
+    if trace:
+        density_matrix = cv_partial_trace(circuit, state_vector)
+    else:
+        density_matrix = state_vector
+
     w_fock = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
     fig, ax = plt.subplots(constrained_layout=True)

@@ -46,13 +46,21 @@ def test_partial_trace_one(capsys):
 
 def test_plot_zero(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
 
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = 0.5
+
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
+
+        # circuit.h(qr[0])
+        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_h()
+        circuit.cv_d(dist, qmr[0])
 
         state = Statevector.from_instruction(circuit)
         # print("Qumode initialized to zero:")
@@ -78,18 +86,20 @@ def test_plot_one(capsys):
 # @pytest.mark.skip(reason="Work in progress, not operational yet.")
 def test_plot_projection(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
         qr = qiskit.QuantumRegister(size=1)
         # cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
-        dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = 0.5
 
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
 
         # circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_d(dist, qmr[0])
 
         state = Statevector.from_instruction(circuit)
 
@@ -125,4 +135,42 @@ def test_animate(capsys):
 
         c2qa.util.animate_wigner_fock_state(
             circuit, result, file="tests/displacement.mp4"
+        )
+
+
+
+
+
+
+# pauli z average
+def test_pauli(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
+        qr = qiskit.QuantumRegister(size=1)
+        # cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = 0.5
+
+        # qr[0] and cr[0] will init to zero
+        circuit.cv_initialize(0, qmr[0])
+
+        # circuit.h(qr[0])
+        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_d(dist, qmr[0])
+
+        state = Statevector.from_instruction(circuit)
+
+        circuit.z(qr[0])
+        state_p = Statevector.from_instruction(circuit)
+
+        proj = c2qa.util.cv_partial_trace(circuit, state)
+
+        proj_p = c2qa.util.cv_partial_trace(circuit, state_p)
+
+        proj_avg = (proj - proj_p) / 2
+
+        c2qa.util.plot_wigner_fock_state(
+            circuit, proj_avg, trace = False, file="tests/pauli.png"
         )
