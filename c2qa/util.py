@@ -9,8 +9,78 @@ from qiskit.result import Result
 
 from c2qa import CVCircuit
 
+def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
+    """
+    Plot the projection onto 0, 1, +, - for the given circuit.
 
-def plot_wigner_interference(circuit: CVCircuit, state_vector: Statevector, file: str = None):
+    This is limited to CVCircuit with only one qubit, also provided as a parameter.
+    """
+    # Get unaltered state vector and partial trace
+    state = Statevector.from_instruction(circuit)
+    trace = cv_partial_trace(circuit, state)
+
+    # Project onto 0 and 1 using Pauli Z
+    circuit.z(qubit)
+    state_z = Statevector.from_instruction(circuit)
+    trace_z = cv_partial_trace(circuit, state_z)
+    projection_zero = (trace + trace_z) / 2
+    projection_one = (trace - trace_z) / 2
+    
+    # Clean up by popping off the Pauli Z
+    circuit.data.pop()
+
+    # Project onto + and - using Pauli X
+    circuit.x(qubit)
+    state_x = Statevector.from_instruction(circuit)
+    trace_x = cv_partial_trace(circuit, state_x)
+    projection_plus = (trace + trace_x) / 2
+    projection_minus = (trace - trace_x) / 2
+
+    # Clean up by popping of the Pauli X
+    circuit.data.pop()
+
+    # Calculate Wigner functions
+    xvec = np.linspace(-5, 5, 200)
+    wigner_zero = _wigner(projection_zero, xvec, xvec, circuit.cutoff)
+    wigner_one = _wigner(projection_one, xvec, xvec, circuit.cutoff)
+    wigner_plus = _wigner(projection_plus, xvec, xvec, circuit.cutoff)
+    wigner_minus = _wigner(projection_minus, xvec, xvec, circuit.cutoff)
+
+    # Plot using matplotlib on four subplots, at double the default width & height
+    fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8,12.8))
+
+    cont = ax0.contourf(xvec, xvec, wigner_zero, 100)
+    ax0.set_xlabel("x")
+    ax0.set_ylabel("p")
+    ax0.set_title("Projection onto zero")
+    fig.colorbar(cont, ax=ax0)
+
+    cont = ax1.contourf(xvec, xvec, wigner_one, 100)
+    ax1.set_xlabel("x")
+    ax1.set_ylabel("p")
+    ax1.set_title("Projection onto one")
+    fig.colorbar(cont, ax=ax1)
+
+    cont = ax2.contourf(xvec, xvec, wigner_plus, 100)
+    ax2.set_xlabel("x")
+    ax2.set_ylabel("p")
+    ax2.set_title("Projection onto plus")
+    fig.colorbar(cont, ax=ax2)
+
+    cont = ax3.contourf(xvec, xvec, wigner_minus, 100)
+    ax3.set_xlabel("x")
+    ax3.set_ylabel("p")
+    ax3.set_title("Projection onto minus")
+    fig.colorbar(cont, ax=ax3)
+
+    # Save to file or display
+    if file:
+        plt.savefig(file)
+    else:
+        plt.show()
+
+
+def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, file: str = None):
     """Produce a Matplotlib figure for the Wigner function on the given state vector."""
 
     # Create identity
@@ -97,7 +167,7 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
     """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
 
     indices = _find_qubit_indices(circuit)
-    print(f"here {indices}")
+
     return partial_trace(state_vector, indices)
 
 

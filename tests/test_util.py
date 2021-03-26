@@ -83,8 +83,8 @@ def test_plot_one(capsys):
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/one.png")
 
-# @pytest.mark.skip(reason="Work in progress, not operational yet.")
-def test_plot_projection(capsys):
+@pytest.mark.skip(reason="Work in progress, not operational yet.")
+def test_plot_projection_old(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
         qr = qiskit.QuantumRegister(size=1)
@@ -103,7 +103,7 @@ def test_plot_projection(capsys):
 
         state = Statevector.from_instruction(circuit)
 
-        c2qa.util.plot_wigner_interference(
+        c2qa.util.plot_wigner_interference_old(
             circuit, state, file="tests/projection.png"
         )        
 
@@ -142,7 +142,7 @@ def test_animate(capsys):
 
 
 
-# pauli z average
+@pytest.mark.skip(reason="Nathan & Tim pair session debugging")
 def test_pauli(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
@@ -194,3 +194,23 @@ def test_pauli(capsys):
         c2qa.util.plot_wigner_fock_state(
             circuit, proj_avg, trace = False, file="tests/pauli.png"
         )
+
+
+def test_plot_wigner_interference(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qr = qiskit.QuantumRegister(size=1)
+        # cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = 0.5
+
+        # qr[0] and cr[0] will init to zero
+        circuit.cv_initialize(0, qmr[0])
+
+        # circuit.h(qr[0])
+        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_d(dist, qmr[0])
+
+        c2qa.util.plot_wigner_interference(circuit, qr[0], file="tests/interference.png")
