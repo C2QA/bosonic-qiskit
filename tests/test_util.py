@@ -162,6 +162,9 @@ def test_pauli(capsys):
 
         state = Statevector.from_instruction(circuit)
 
+        # TODO make sure we get a copy so z doesn't get in there
+        circuitx = circuit
+
         circuit.z(qr[0])
         state_p = Statevector.from_instruction(circuit)
 
@@ -169,7 +172,24 @@ def test_pauli(capsys):
 
         proj_p = c2qa.util.cv_partial_trace(circuit, state_p)
 
+        # |0X0| is +
+        # |1X1| is -
         proj_avg = (proj - proj_p) / 2
+
+
+        circuitx.x(qr[0])
+        state_p = Statevector.from_instruction(circuitx)
+
+        proj = c2qa.util.cv_partial_trace(circuitx, state)
+
+        proj_p = c2qa.util.cv_partial_trace(circuitx, state_p)
+
+        # |+X+| is +
+        # |-X-| is -
+        proj_avg = (proj - proj_p) / 2
+
+
+
 
         c2qa.util.plot_wigner_fock_state(
             circuit, proj_avg, trace = False, file="tests/pauli.png"

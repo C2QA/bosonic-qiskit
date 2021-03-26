@@ -15,6 +15,8 @@ class CVCircuit(QuantumCircuit):
         self.qmregs = []
         registers = []
 
+        num_qumodes = 0
+
         for reg in regs:
             if isinstance(reg, QumodeRegister):
                 if len(self.qmregs) > 0:
@@ -22,6 +24,7 @@ class CVCircuit(QuantumCircuit):
                         "More than one QumodeRegister provided. Using the last one for cutoff.",
                         UserWarning,
                     )
+                num_qumodes += reg.num_qumodes
                 self.qmregs.append(reg)
                 registers.append(reg.qreg)
             else:
@@ -32,7 +35,7 @@ class CVCircuit(QuantumCircuit):
 
         super().__init__(*registers, name=name)
 
-        self.ops = CVOperators(self.cutoff)
+        self.ops = CVOperators(self.cutoff, num_qumodes)
 
         self.animated = not math.isnan(animation_segments)
         if self.animated and animation_segments < 1:
