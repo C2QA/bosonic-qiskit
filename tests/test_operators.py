@@ -9,7 +9,7 @@ class TestUnitary:
     """Verify operators are unitary"""
 
     def setup_method(self, method):
-        self.ops = CVOperators(4)
+        self.ops = CVOperators(cutoff=4, num_qumodes=2)
 
     def test_bs(self):
         assert is_unitary_matrix(self.ops.bs(random.random()))
@@ -33,7 +33,7 @@ class TestMatrices:
     """
 
     def setup_method(self, method):
-        self.ops = CVOperators(4)
+        self.ops = CVOperators(cutoff=4, num_qumodes=2)
 
     def test_bs(self):
         one = self.ops.bs(1)
