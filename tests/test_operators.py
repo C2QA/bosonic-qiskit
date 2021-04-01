@@ -35,6 +35,15 @@ class TestMatrices:
     def setup_method(self, method):
         self.ops = CVOperators(cutoff=4, num_qumodes=2)
 
+    def test_a(self, capsys):  
+        # From https://github.com/XanaduAI/strawberryfields/blob/master/strawberryfields/backends/fockbackend/ops.py#L208-L215
+        trunc = 4  # equal to CVOperators cutoff
+        ret = numpy.zeros((trunc, trunc), dtype=numpy.complex128)
+        for i in range(1, trunc):
+            ret[i - 1][i] = numpy.sqrt(i)
+
+        assert numpy.allclose(self.ops.a, ret)
+
     def test_bs(self):
         one = self.ops.bs(1)
         rand = self.ops.bs(random.random())
