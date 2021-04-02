@@ -46,21 +46,13 @@ def test_partial_trace_one(capsys):
 
 def test_plot_zero(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
 
-        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
-        dist = 0.5
-
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
-
-        # circuit.h(qr[0])
-        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-        circuit.cv_h()
-        circuit.cv_d(dist, qmr[0])
 
         state = Statevector.from_instruction(circuit)
         # print("Qumode initialized to zero:")
