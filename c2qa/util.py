@@ -4,10 +4,25 @@ import math
 import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
+import qiskit
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 from qiskit.result import Result
 
 from c2qa import CVCircuit
+
+
+def simulate(circuit: CVCircuit):
+    """
+    Convenience function to simulate using statevetor_simulator backend.
+
+    Returns Statevector
+    """
+    # return Statevector.from_instruction(circuit)
+    backend = qiskit.Aer.get_backend("statevector_simulator")
+    job = qiskit.execute(circuit, backend)
+    result = job.result()
+    return Statevector(result.get_statevector(circuit))
+
 
 def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     """
@@ -16,12 +31,12 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
     """
     # Get unaltered state vector and partial trace
-    state = Statevector.from_instruction(circuit)
+    state = simulate(circuit)
     trace = cv_partial_trace(circuit, state)
 
     # Project onto 0 and 1 using Pauli Z
     circuit.z(qubit)
-    state_z = Statevector.from_instruction(circuit)
+    state_z = simulate(circuit)
     trace_z = cv_partial_trace(circuit, state_z)
     projection_zero = (trace + trace_z) / 2
     projection_one = (trace - trace_z) / 2
@@ -31,7 +46,7 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
 
     # Project onto + and - using Pauli X
     circuit.x(qubit)
-    state_x = Statevector.from_instruction(circuit)
+    state_x = simulate(circuit)
     trace_x = cv_partial_trace(circuit, state_x)
     projection_plus = (trace + trace_x) / 2
     projection_minus = (trace - trace_x) / 2

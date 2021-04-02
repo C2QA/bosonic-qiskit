@@ -15,7 +15,7 @@ def test_partial_trace_zero(capsys):
         circuit.initialize([0, 1], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
-        state = qiskit.quantum_info.Statevector.from_instruction(circuit)
+        state = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
         assert state.dims() == (2, 2, 2)
@@ -37,7 +37,7 @@ def test_partial_trace_one(capsys):
         circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state = qiskit.quantum_info.Statevector.from_instruction(circuit)
+        state = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
         assert state.dims() == (2, 2, 2)
@@ -60,7 +60,7 @@ def test_plot_zero(capsys):
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
 
-        state = Statevector.from_instruction(circuit)
+        state = c2qa.util.simulate(circuit)
         # print("Qumode initialized to zero:")
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/zero.png")
@@ -76,7 +76,7 @@ def test_plot_one(capsys):
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(1, qmr[0])
 
-        state = Statevector.from_instruction(circuit)
+        state = c2qa.util.simulate(circuit)
         # print("Qumode initialized to one:")
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/one.png")
@@ -99,7 +99,7 @@ def test_plot_projection_old(capsys):
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
         # circuit.cv_d(dist, qmr[0])
 
-        state = Statevector.from_instruction(circuit)
+        state = c2qa.util.simulate(circuit)
 
         c2qa.util.plot_wigner_interference_old(
             circuit, state, file="tests/projection.png"
@@ -158,13 +158,13 @@ def test_pauli(capsys):
         # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
         circuit.cv_d(dist, qmr[0])
 
-        state = Statevector.from_instruction(circuit)
+        state = c2qa.util.simulate(circuit)
 
         # TODO make sure we get a copy so z doesn't get in there
         circuitx = circuit
 
         circuit.z(qr[0])
-        state_p = Statevector.from_instruction(circuit)
+        state_p = c2qa.util.simulate(circuit)
 
         proj = c2qa.util.cv_partial_trace(circuit, state)
 
@@ -176,7 +176,7 @@ def test_pauli(capsys):
 
 
         circuitx.x(qr[0])
-        state_p = Statevector.from_instruction(circuitx)
+        state_p = c2qa.util.simulate(circuitx)
 
         proj = c2qa.util.cv_partial_trace(circuitx, state)
 
