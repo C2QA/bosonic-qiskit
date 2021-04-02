@@ -114,10 +114,15 @@ def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, 
     zero_trace = cv_partial_trace(circuit, zero_projection)
     one_trace = cv_partial_trace(circuit, one_projection)
     
+    state_trace = cv_partial_trace(circuit, state)
+
+    projection_zero = (state_trace + zero_trace) / 2
+    projection_one = (state_trace - one_trace) / 2
+
     # Calculate Wigner functions
     xvec = np.linspace(-5, 5, 200)
-    zero_wigner = _wigner(zero_trace, xvec, xvec, circuit.cutoff)
-    one_wigner = _wigner(one_trace, xvec, xvec, circuit.cutoff)
+    zero_wigner = _wigner(projection_zero, xvec, xvec, circuit.cutoff)
+    one_wigner = _wigner(projection_one, xvec, xvec, circuit.cutoff)
 
     # Plot using matplot lib on two horizontal subplots, at double the default width
     fig, axs = plt.subplots(1, 2, figsize=(12.8,4.8))
