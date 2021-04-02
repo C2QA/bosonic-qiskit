@@ -2,7 +2,7 @@ import c2qa
 import numpy
 import pytest
 import qiskit
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Statevector, DensityMatrix
 
 
 
@@ -12,17 +12,20 @@ def test_partial_trace_zero(capsys):
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
-        circuit.initialize([1, 0], qr[0])
+        circuit.initialize([0, 1], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
         state = qiskit.quantum_info.Statevector.from_instruction(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
-        assert trace
+
+        assert state.dims() == (2, 2, 2)
+        assert trace.dims() == (2, 2)
+        prob = trace.probabilities_dict()
+        numpy.testing.assert_almost_equal(prob["00"], 1.0)
 
         # print("Partial trace Fock state zero")
-        # print(state)
-        # print(state.data)
-        # print(trace)
+        # print(DensityMatrix(state).probabilities_dict())
+        # print(trace.probabilities_dict())
 
 
 def test_partial_trace_one(capsys):
@@ -36,12 +39,15 @@ def test_partial_trace_one(capsys):
 
         state = qiskit.quantum_info.Statevector.from_instruction(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
-        assert trace
+
+        assert state.dims() == (2, 2, 2)
+        assert trace.dims() == (2, 2)
+        prob = trace.probabilities_dict()
+        numpy.testing.assert_almost_equal(prob["01"], 1.0)
 
         # print("Partial trace Fock state one")
-        # print(state)
-        # print(state.data)
-        # print(trace)
+        # print(DensityMatrix(state).probabilities_dict())
+        # print(trace.probabilities_dict())
 
 
 def test_plot_zero(capsys):
@@ -51,16 +57,8 @@ def test_plot_zero(capsys):
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
 
-        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
-        dist = 0.5
-
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
-
-        # circuit.h(qr[0])
-        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-        circuit.cv_h()
-        circuit.cv_d(dist, qmr[0])
 
         state = Statevector.from_instruction(circuit)
         # print("Qumode initialized to zero:")
@@ -92,14 +90,14 @@ def test_plot_projection_old(capsys):
         circuit = c2qa.CVCircuit(qmr, qr)
 
         # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
-        dist = 0.5
+        dist = 1
 
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
 
-        # circuit.h(qr[0])
-        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-        circuit.cv_d(dist, qmr[0])
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        # circuit.cv_d(dist, qmr[0])
 
         state = Statevector.from_instruction(circuit)
 
@@ -200,17 +198,16 @@ def test_plot_wigner_interference(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
         qr = qiskit.QuantumRegister(size=1)
-        # cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
         # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
-        dist = 0.5
+        dist = 1.0
 
-        # qr[0] and cr[0] will init to zero
+        # qr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
 
-        # circuit.h(qr[0])
-        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-        circuit.cv_d(dist, qmr[0])
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        # circuit.cv_d(dist, qmr[0])
 
         c2qa.util.plot_wigner_interference(circuit, qr[0], file="tests/interference.png")
