@@ -52,7 +52,7 @@ def test_partial_trace_one(capsys):
 
 def test_plot_zero(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=5)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
