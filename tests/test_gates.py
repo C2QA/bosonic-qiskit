@@ -3,7 +3,6 @@ import random
 import c2qa
 import numpy
 import qiskit
-from qiskit import Aer
 
 
 def count_nonzero(statevector):

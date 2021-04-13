@@ -12,7 +12,7 @@ from c2qa.qumoderegister import QumodeRegister
 class CVCircuit(QuantumCircuit):
     def __init__(self, *regs, name: str = None, animation_segments: int = math.nan):
         """
-        Initialize the registers (at least one must be QumodeRegister), set 
+        Initialize the registers (at least one must be QumodeRegister), set
         the circuit name, and the number of steps to animate (default is to not animate).
         """
         self.qmregs = []

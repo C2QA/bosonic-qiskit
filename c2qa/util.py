@@ -294,7 +294,7 @@ def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     Calculates the discretized Wigner function of the specified mode.
     .. note::
         This code is a modified version of the "iterative" method of the
-        `wigner function provided in QuTiP 
+        `wigner function provided in QuTiP
         <http://qutip.org/docs/4.0.2/apidoc/functions.html?highlight=wigner#qutip.wigner.wigner>`_,
         which is released under the BSD license, with the following
         copyright notice:
