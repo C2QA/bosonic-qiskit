@@ -73,7 +73,7 @@ class CVCircuit(QuantumCircuit):
             value = np.zeros((self.qmregs[-1].cutoff,))
             value[fock_state] = 1
 
-            super().initialize(value, [qumode])
+            super().initialize(value, qumode)
 
     def cv_conditional(self, name, op_0, op_1, num_qumodes = 1):
         """ Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state) """

@@ -5,34 +5,33 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
+from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 from qiskit.result import Result
 
 from c2qa import CVCircuit
 
 
-def simulate(circuit: CVCircuit, backend_name: str = "statevector_simulator"):
+def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
     """
-    Convenience function to simulate using statevetor_simulator backend.
+    Convenience function to simulate using the given backend.
 
     Returns Statevector
     """
-    if backend_name == "statevector_simulator":
-        # return Statevector.from_instruction(circuit)
-        backend = qiskit.Aer.get_backend("statevector_simulator")
-        job = qiskit.execute(circuit, backend)
-        result = job.result()
-        return Statevector(result.get_statevector(circuit))
-    elif backend_name =="qasm_simulator":
-        backend = qiskit.Aer.get_backend("qasm_simulator")
-        snapshot_name = "simulate_results"
-        circuit.snapshot(snapshot_name)
-        job = qiskit.execute(circuit, backend)
-        result = job.result()
-        return result.data()["snapshots"]["statevector"][snapshot_name][0]
-    else:
-        raise ValueError(f"Unknown backend {backend_name}") 
+    save_statevector(circuit)
 
+    # Transpile for simulator
+    simulator = qiskit.Aer.get_backend(backend_name)
+    circuit_compiled = qiskit.transpile(circuit, simulator)
+
+    # Run and get statevector
+    result = simulator.run(circuit_compiled).result()
+    state = Statevector(result.get_statevector(circuit_compiled))
+
+    # Clean up by popping off the SaveStatevector
+    circuit.data.pop()
+
+    return state
 
 def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     """
