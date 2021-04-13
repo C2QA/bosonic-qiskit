@@ -28,17 +28,18 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
     result = simulator.run(circuit_compiled).result()
     state = Statevector(result.get_statevector(circuit_compiled))
 
-    # Clean up by popping off the SaveStatevector
+    # Clean up by popping off the SaveStatevector instruction
     circuit.data.pop()
 
     return state
+
 
 def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     """
     Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
-    """    
+    """
     # Get unaltered state vector and partial trace
     state = simulate(circuit)
     trace = cv_partial_trace(circuit, state)
@@ -76,7 +77,7 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     wigner_minus = _wigner(projection_minus, xvec, xvec, circuit.cutoff)
 
     # Plot using matplotlib on four subplots, at double the default width & height
-    fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8,12.8))
+    fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
 
     cont = ax0.contourf(xvec, xvec, wigner_zero, 100, cmap="RdBu_r")
     ax0.set_xlabel("x")
@@ -140,7 +141,7 @@ def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, 
     #     The qubit indices from the circuit and original state vector won"t match the indices in the new matrices.
     zero_trace = cv_partial_trace(circuit, zero_projection)
     one_trace = cv_partial_trace(circuit, one_projection)
-    
+
     state_trace = cv_partial_trace(circuit, state)
 
     projection_zero = (state_trace + zero_trace) / 2
@@ -152,7 +153,7 @@ def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, 
     one_wigner = _wigner(projection_one, xvec, xvec, circuit.cutoff)
 
     # Plot using matplot lib on two horizontal subplots, at double the default width
-    fig, axs = plt.subplots(1, 2, figsize=(12.8,4.8))
+    fig, axs = plt.subplots(1, 2, figsize=(12.8, 4.8))
     cont = axs[0].contourf(xvec, xvec, zero_wigner, 100)
     axs[0].set_xlabel("x")
     axs[0].set_ylabel("p")
@@ -175,7 +176,7 @@ def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, 
 def _find_qubit_indices(circuit: CVCircuit):
     """
     Return the indices of the qubits from the circuit that are not in a QumodeRegister
-    
+
     I.e., the indices to the qubits themselves, not the qubits representing the bosonic modes.
     """
 
@@ -231,7 +232,7 @@ def plot_wigner_fock_state(
 def animate_wigner_fock_state(circuit: CVCircuit, result: Result, file: str = None):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
-    
+
     This assumes the CVCircuit was simulated with an animation_segments > 0 to
     act as the frames of the generated movie.
 
@@ -265,21 +266,20 @@ def animate_wigner_fock_state(circuit: CVCircuit, result: Result, file: str = No
     if file:
         writervideo = matplotlib.animation.FFMpegWriter(fps=60)
         anim.save(file, writer=writervideo)
-    
+
     return anim
 
 
 def _animate(frame, *fargs):
-    fig = fargs[0]
     ax = fargs[1]
     xvec = fargs[2]
     w_fock = fargs[3]
 
     ax.clear()
-    cont = ax.contourf(xvec, xvec, w_fock[frame], levels=100)
+    ax.contourf(xvec, xvec, w_fock[frame], levels=100)
     ax.set_xlabel("x")
     ax.set_ylabel("p")
-    # fig.colorbar(cont, ax=ax)  # FIXME Colorbar shifts position in animation?
+
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
@@ -294,7 +294,8 @@ def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     Calculates the discretized Wigner function of the specified mode.
     .. note::
         This code is a modified version of the "iterative" method of the
-        `wigner function provided in QuTiP <http://qutip.org/docs/4.0.2/apidoc/functions.html?highlight=wigner#qutip.wigner.wigner>`_,
+        `wigner function provided in QuTiP 
+        <http://qutip.org/docs/4.0.2/apidoc/functions.html?highlight=wigner#qutip.wigner.wigner>`_,
         which is released under the BSD license, with the following
         copyright notice:
         Copyright (C) 2011 and later, P.D. Nation, J.R. Johansson,

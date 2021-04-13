@@ -11,7 +11,10 @@ from c2qa.qumoderegister import QumodeRegister
 
 class CVCircuit(QuantumCircuit):
     def __init__(self, *regs, name: str = None, animation_segments: int = math.nan):
-        """Initialize the registers (at least one must be QumodeRegister), set the circuit name, and the number of steps to animate (default is to not animate)."""
+        """
+        Initialize the registers (at least one must be QumodeRegister), set 
+        the circuit name, and the number of steps to animate (default is to not animate).
+        """
         self.qmregs = []
         registers = []
 
@@ -75,7 +78,7 @@ class CVCircuit(QuantumCircuit):
 
             super().initialize(value, qumode)
 
-    def cv_conditional(self, name, op_0, op_1, num_qumodes = 1):
+    def cv_conditional(self, name, op_0, op_1, num_qumodes: int = 1):
         """ Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state) """
         sub_qr = QuantumRegister(1)
         sub_qmr = QumodeRegister(num_qumodes, self.qmregs[-1].num_qubits_per_mode)

@@ -4,9 +4,6 @@ from scipy.linalg import expm
 
 class CVOperators:
     def __init__(self, cutoff: int, num_qumodes: int):
-        # FIXME verify sizes of matrices/arrays are correct. 
-        #   Large cutoffs make 
-
         # Annihilation operator
         self.a = np.diag(np.sqrt(range(1, cutoff)), k=1)
 
