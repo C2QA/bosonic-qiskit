@@ -11,17 +11,27 @@ from qiskit.result import Result
 from c2qa import CVCircuit
 
 
-def simulate(circuit: CVCircuit):
+def simulate(circuit: CVCircuit, backend_name: str = "statevector_simulator"):
     """
     Convenience function to simulate using statevetor_simulator backend.
 
     Returns Statevector
     """
-    # return Statevector.from_instruction(circuit)
-    backend = qiskit.Aer.get_backend("statevector_simulator")
-    job = qiskit.execute(circuit, backend)
-    result = job.result()
-    return Statevector(result.get_statevector(circuit))
+    if backend_name == "statevector_simulator":
+        # return Statevector.from_instruction(circuit)
+        backend = qiskit.Aer.get_backend("statevector_simulator")
+        job = qiskit.execute(circuit, backend)
+        result = job.result()
+        return Statevector(result.get_statevector(circuit))
+    elif backend_name =="qasm_simulator":
+        backend = qiskit.Aer.get_backend("qasm_simulator")
+        snapshot_name = "simulate_results"
+        circuit.snapshot(snapshot_name)
+        job = qiskit.execute(circuit, backend)
+        result = job.result()
+        return result.data()["snapshots"]["statevector"][snapshot_name][0]
+    else:
+        raise ValueError(f"Unknown backend {backend_name}") 
 
 
 def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
@@ -29,25 +39,30 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
-    """
+    """    
     # Get unaltered state vector and partial trace
     state = simulate(circuit)
     trace = cv_partial_trace(circuit, state)
+    state_h = state.data.conjugate().transpose()
 
     # Project onto 0 and 1 using Pauli Z
     circuit.z(qubit)
     state_z = simulate(circuit)
-    trace_z = cv_partial_trace(circuit, state_z)
+    temp_z = state_z.data * state_h
+    trace_z = cv_partial_trace(circuit, temp_z)
+
     projection_zero = (trace + trace_z) / 2
     projection_one = (trace - trace_z) / 2
-    
+
     # Clean up by popping off the Pauli Z
     circuit.data.pop()
 
     # Project onto + and - using Pauli X
     circuit.x(qubit)
     state_x = simulate(circuit)
-    trace_x = cv_partial_trace(circuit, state_x)
+    temp_x = state_x.data * state_h
+    trace_x = cv_partial_trace(circuit, temp_x)
+
     projection_plus = (trace + trace_x) / 2
     projection_minus = (trace - trace_x) / 2
 
@@ -64,25 +79,25 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8,12.8))
 
-    cont = ax0.contourf(xvec, xvec, wigner_zero, 100)
+    cont = ax0.contourf(xvec, xvec, wigner_zero, 100, cmap="RdBu_r")
     ax0.set_xlabel("x")
     ax0.set_ylabel("p")
     ax0.set_title("Projection onto zero")
     fig.colorbar(cont, ax=ax0)
 
-    cont = ax1.contourf(xvec, xvec, wigner_one, 100)
+    cont = ax1.contourf(xvec, xvec, wigner_one, 100, cmap="RdBu_r")
     ax1.set_xlabel("x")
     ax1.set_ylabel("p")
     ax1.set_title("Projection onto one")
     fig.colorbar(cont, ax=ax1)
 
-    cont = ax2.contourf(xvec, xvec, wigner_plus, 100)
+    cont = ax2.contourf(xvec, xvec, wigner_plus, 100, cmap="RdBu_r")
     ax2.set_xlabel("x")
     ax2.set_ylabel("p")
     ax2.set_title("Projection onto plus")
     fig.colorbar(cont, ax=ax2)
 
-    cont = ax3.contourf(xvec, xvec, wigner_minus, 100)
+    cont = ax3.contourf(xvec, xvec, wigner_minus, 100, cmap="RdBu_r")
     ax3.set_xlabel("x")
     ax3.set_ylabel("p")
     ax3.set_title("Projection onto minus")
@@ -101,7 +116,7 @@ def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, 
     # Create identity
     #   TODO What size should it be?
     state_len = len(state_vector.data)
-    # TODO shouldn't have to math.floorm should check that length is even
+    # TODO shouldn"t have to math.floorm should check that length is even
     eye = np.identity(math.floor(state_len / 2), dtype=int)
     # eye = np.identity(2, dtype=int)
 
@@ -120,12 +135,10 @@ def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, 
     zero_projection = zero_projector * state
     one_projection = one_projector * state
 
-    # TODO Add Pauli Z
-
     # Trace over qubit
     #   TODO Does QisKit partial_trace() work correctly after projection?
     #     The projection isn't the same size/shape as original state vector.
-    #     The qubit indices from the circuit and original state vector won't match the indices in the new matrices.
+    #     The qubit indices from the circuit and original state vector won"t match the indices in the new matrices.
     zero_trace = cv_partial_trace(circuit, zero_projection)
     one_trace = cv_partial_trace(circuit, one_projection)
     
@@ -281,7 +294,7 @@ def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
 
     Calculates the discretized Wigner function of the specified mode.
     .. note::
-        This code is a modified version of the 'iterative' method of the
+        This code is a modified version of the "iterative" method of the
         `wigner function provided in QuTiP <http://qutip.org/docs/4.0.2/apidoc/functions.html?highlight=wigner#qutip.wigner.wigner>`_,
         which is released under the BSD license, with the following
         copyright notice:
