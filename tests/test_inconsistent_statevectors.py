@@ -1,5 +1,6 @@
 import numpy
 import qiskit
+from qiskit import Aer
 import scipy.linalg
 
 # Define parameters
@@ -72,10 +73,12 @@ def run_displacement_calibration(enable_measure):
     displacemnt_gate(circuit, -1j * alpha, qmr[0:])
     circuit.h(qr[0])
 
+    circuit.save_statevector()
+
     if enable_measure:
         circuit.measure(qr[0], cr[0])
 
-    backend = qiskit.Aer.get_backend("statevector_simulator")
+    backend = Aer.get_backend("aer_simulator")
     job = qiskit.execute(circuit, backend)
     result = job.result()
     state = result.get_statevector(circuit)

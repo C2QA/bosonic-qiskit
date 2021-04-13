@@ -10,7 +10,7 @@ def test_qiskit():
     circuit.cx(qr[0:1], qr[2])
     circuit.save_statevector()
 
-    backend = qiskit.Aer.get_backend("aer_simulator")
+    backend = Aer.get_backend("aer_simulator")
     job = backend.run(circuit)
     result = job.result()
     state = result.get_statevector(circuit)

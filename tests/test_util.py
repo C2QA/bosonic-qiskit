@@ -14,7 +14,7 @@ def test_partial_trace_zero(capsys):
         circuit.initialize([0, 1], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
-        state = c2qa.util.simulate(circuit)
+        _, state = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
         assert state.dims() == (2, 2, 2)
@@ -36,7 +36,7 @@ def test_partial_trace_one(capsys):
         circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state = c2qa.util.simulate(circuit)
+        _, state = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
         assert state.dims() == (2, 2, 2)
@@ -64,7 +64,7 @@ def test_plot_zero(capsys):
         circuit.h(qr[0])
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
 
-        state = c2qa.util.simulate(circuit)
+        _, state = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
         c2qa.util.plot_wigner_fock_state(circuit, trace, file="tests/zero.png", trace=False)
 
@@ -79,7 +79,7 @@ def test_plot_one(capsys):
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(1, qmr[0])
 
-        state = c2qa.util.simulate(circuit)
+        _, state = c2qa.util.simulate(circuit)
         # print("Qumode initialized to one:")
         # print(state)
         c2qa.util.plot_wigner_fock_state(circuit, state, file="tests/one.png")
@@ -103,11 +103,11 @@ def test_plot_projection_old(capsys):
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
         # circuit.cv_d(dist, qmr[0])
 
-        state = c2qa.util.simulate(circuit)
+        _, state = c2qa.util.simulate(circuit)
 
         c2qa.util.plot_wigner_interference_old(
             circuit, state, file="tests/projection.png"
-        )        
+        )
 
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
@@ -155,7 +155,7 @@ def test_plot_wigner_interference_manual(capsys):
         circuit.h(qr[0])
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
 
-        state = c2qa.util.simulate(circuit)
+        _, state = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
         state_h = state.data.conjugate().transpose()
 
@@ -171,7 +171,7 @@ def test_plot_wigner_interference_manual(capsys):
         circuit_z.cv_cnd_d(dist, -dist, qr_z[0], qmr_z[0])
         circuit_z.z(qr_z[0])
 
-        state_z = c2qa.util.simulate(circuit_z)
+        _, state_z = c2qa.util.simulate(circuit_z)
         temp_z = state_z.data * state_h
         trace_z = c2qa.util.cv_partial_trace(circuit_z, temp_z)
 
@@ -202,7 +202,7 @@ def test_plot_wigner_interference_manual(capsys):
         circuit_x.cv_cnd_d(dist, -dist, qr_x[0], qmr_x[0])
         circuit_x.x(qr_x[0])
 
-        state_x = c2qa.util.simulate(circuit_x)
+        _, state_x = c2qa.util.simulate(circuit_x)
         temp_x = state_x.data * state_h
         trace_x = c2qa.util.cv_partial_trace(circuit_x, temp_x)
 
