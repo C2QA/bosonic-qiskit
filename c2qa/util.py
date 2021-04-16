@@ -79,35 +79,30 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
 
-    cont = ax0.contourf(xvec, xvec, wigner_zero, 100, cmap="RdBu_r")
-    ax0.set_xlabel("x")
-    ax0.set_ylabel("p")
-    ax0.set_title("Projection onto zero")
-    fig.colorbar(cont, ax=ax0)
-
-    cont = ax1.contourf(xvec, xvec, wigner_one, 100, cmap="RdBu_r")
-    ax1.set_xlabel("x")
-    ax1.set_ylabel("p")
-    ax1.set_title("Projection onto one")
-    fig.colorbar(cont, ax=ax1)
-
-    cont = ax2.contourf(xvec, xvec, wigner_plus, 100, cmap="RdBu_r")
-    ax2.set_xlabel("x")
-    ax2.set_ylabel("p")
-    ax2.set_title("Projection onto plus")
-    fig.colorbar(cont, ax=ax2)
-
-    cont = ax3.contourf(xvec, xvec, wigner_minus, 100, cmap="RdBu_r")
-    ax3.set_xlabel("x")
-    ax3.set_ylabel("p")
-    ax3.set_title("Projection onto minus")
-    fig.colorbar(cont, ax=ax3)
+    _add_contourf(ax0, fig, "Projection onto zero", xvec, xvec, wigner_zero)
+    _add_contourf(ax1, fig, "Projection onto one", xvec, xvec, wigner_one)
+    _add_contourf(ax2, fig, "Projection onto plus", xvec, xvec, wigner_plus)
+    _add_contourf(ax3, fig, "Projection onto minus", xvec, xvec, wigner_minus)
 
     # Save to file or display
     if file:
         plt.savefig(file)
     else:
         plt.show()
+
+
+def _add_contourf(ax, fig, title, x, y, z):
+    """Add a matplotlib contourf plot with color levels based on min/max values in z."""
+    amax = np.amax(z)
+    amin = abs(np.amin(z))
+    max_value = max(amax, amin)
+    color_levels = np.linspace(-max_value, max_value, 100)
+
+    cont = ax.contourf(x, y, z, color_levels, cmap="RdBu_r")
+    ax.set_xlabel("x")
+    ax.set_ylabel("p")
+    ax.set_title(title)
+    fig.colorbar(cont, ax=ax)
 
 
 def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, file: str = None):
