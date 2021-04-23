@@ -41,30 +41,47 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
     """
     # Get unaltered state vector and partial trace
-    _, state = simulate(circuit)
-    trace = cv_partial_trace(circuit, state)
-    state_h = state.data.conjugate().transpose()
+    _, x = simulate(circuit)
+    xH = x.data.conjugate().transpose()
 
     # Project onto 0 and 1 using Pauli Z
     circuit.z(qubit)
-    _, state_z = simulate(circuit)
-    temp_z = state_z.data * state_h
-    trace_z = cv_partial_trace(circuit, temp_z)
+    _, y = simulate(circuit)
+    yH = y.data.conjugate().transpose()
 
-    projection_zero = (trace + trace_z) / 2
-    projection_one = (trace - trace_z) / 2
+    x_xH = x.data * xH
+    x_yH = x.data * yH
+    y_xH = y.data * xH
+    y_yH = y.data * yH
+
+    trace_x_xH = cv_partial_trace(circuit, x_xH)
+    trace_x_yH = cv_partial_trace(circuit, x_yH)
+    trace_y_xH = cv_partial_trace(circuit, y_xH)
+    trace_y_yH = cv_partial_trace(circuit, y_yH)
+
+    projection_zero = (trace_x_xH + trace_x_yH + trace_y_xH + trace_y_yH) / 4
+    projection_one = (trace_x_xH - trace_x_yH - trace_y_xH + trace_y_yH) / 4
 
     # Clean up by popping off the Pauli Z
     circuit.data.pop()
 
     # Project onto + and - using Pauli X
     circuit.x(qubit)
-    _, state_x = simulate(circuit)
-    temp_x = state_x.data * state_h
-    trace_x = cv_partial_trace(circuit, temp_x)
+    _, y = simulate(circuit)
+    yH = y.data.conjugate().transpose()
 
-    projection_plus = (trace + trace_x) / 2
-    projection_minus = (trace - trace_x) / 2
+    x_xH = x.data * xH
+    x_yH = x.data * yH
+    y_xH = y.data * xH
+    y_yH = y.data * yH
+
+    trace_x_xH = cv_partial_trace(circuit, x_xH)
+    trace_x_yH = cv_partial_trace(circuit, x_yH)
+    trace_y_xH = cv_partial_trace(circuit, y_xH)
+    trace_y_yH = cv_partial_trace(circuit, y_yH)
+
+    projection_plus = (trace_x_xH + trace_x_yH + trace_y_xH + trace_y_yH) / 4
+    projection_minus = (trace_x_xH - trace_x_yH - trace_y_xH + trace_y_yH) / 4
 
     # Clean up by popping of the Pauli X
     circuit.data.pop()
