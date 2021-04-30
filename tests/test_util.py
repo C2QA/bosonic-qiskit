@@ -1,7 +1,9 @@
 import c2qa
 import matplotlib.pyplot as plt
 import numpy
+from pathlib import Path
 import pytest
+import scipy.special as ssp
 import qiskit
 
 
@@ -265,3 +267,48 @@ def test_plot_wigner_interference(capsys):
         # circuit.cv_d(dist, qmr[0])
 
         c2qa.util.plot_wigner_interference(circuit, qr[0], file="tests/interference.png")
+
+
+def _generate_cat(parity: int, cutoff: int):
+        # Prepare cat state
+        #   See https://github.com/XanaduAI/strawberryfields/blob/896557c42f6ab07efed79fa402503628bd75bb23/strawberryfields/ops.py#L861-L884
+        alpha = numpy.sqrt(3)
+
+        # Zero is even cat state, 1 is odd
+        phi = numpy.pi * parity
+        l = numpy.arange(cutoff)[:, numpy.newaxis]
+
+        # normalization constant
+        temp = numpy.exp(-0.5 * numpy.abs(alpha) ** 2)
+        N = temp / numpy.sqrt(2 * (1 + numpy.cos(phi) * temp ** 4))
+
+        # coherent states
+        # Need to cast  alpha to float before exponentiation to avoid overflow
+        c1 = ((1.0 * alpha) ** l) / numpy.sqrt(ssp.factorial(l))
+        c2 = ((-1.0 * alpha) ** l) / numpy.sqrt(ssp.factorial(l))
+        # add them up with a relative phase
+        ket = (c1 + numpy.exp(1j * phi) * c2) * N
+
+        # in order to support broadcasting, the batch axis has been located at last axis, but backend expects it up as first axis
+        ket = numpy.transpose(ket)
+
+        # drop dummy batch axis if it is not necessary
+        ket = numpy.squeeze(ket)
+
+        # Create QisKit Statevector from cat state
+        return qiskit.quantum_info.Statevector(ket)
+
+
+def test_wigner_cat_state(capsys):
+    with capsys.disabled():
+        cutoff = 2 ** 4
+
+        even_filename = "tests/wigner_even.png"
+        state_even = _generate_cat(0, cutoff)
+        c2qa.util.plot_wigner(state_even, cutoff, file=even_filename)
+        assert Path(even_filename).is_file()
+
+        odd_filename = "tests/wigner_odd.png"
+        state_odd = _generate_cat(1, cutoff)
+        c2qa.util.plot_wigner(state_odd, cutoff, file=odd_filename)
+        assert Path(odd_filename).is_file()

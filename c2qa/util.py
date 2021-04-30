@@ -219,18 +219,30 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
 def plot_wigner_fock_state(
     circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None
 ):
-    """Produce a Matplotlib figure for the Wigner function on the given state vector."""
-    xvec = np.linspace(-5, 5, 200)
+    """
+    Produce a Matplotlib figure for the Wigner function on the given state vector.
 
+    Optionally perform partial trace.
+    """
     if trace:
         density_matrix = cv_partial_trace(circuit, state_vector)
     else:
         density_matrix = state_vector
 
-    w_fock = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+    plot_wigner(density_matrix, circuit.cutoff, file)
+
+def plot_wigner(state, cutoff: int, file: str = None):
+    """Produce a Matplotlib figure for the Wigner function on the given state vector."""
+    xvec = np.linspace(-5, 5, 200)
+    w_fock = _wigner(state, xvec, xvec, cutoff)
+
+    amax = np.amax(w_fock)
+    amin = abs(np.amin(w_fock))
+    max_value = max(amax, amin)
+    color_levels = np.linspace(-max_value, max_value, 100)
 
     fig, ax = plt.subplots(constrained_layout=True)
-    cont = ax.contourf(xvec, xvec, w_fock, 100)
+    cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
     fig.colorbar(cont, ax=ax)
