@@ -31,7 +31,7 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
     # Clean up by popping off the SaveStatevector instruction
     circuit.data.pop()
 
-    return result, state
+    return state, result
 
 
 def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
@@ -41,12 +41,12 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
     """
     # Get unaltered state vector and partial trace
-    _, x = simulate(circuit)
+    x, _ = simulate(circuit)
     xT = x.data.conjugate().transpose()
 
     # Project onto 0 and 1 using Pauli Z
     circuit.z(qubit)
-    _, y = simulate(circuit)
+    y, _ = simulate(circuit)
     yT = y.data.conjugate().transpose()
 
     x_xT = x.data * xT
@@ -67,7 +67,7 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
 
     # Project onto + and - using Pauli X
     circuit.x(qubit)
-    _, y = simulate(circuit)
+    y, _ = simulate(circuit)
     yT = y.data.conjugate().transpose()
 
     x_xT = x.data * xT
