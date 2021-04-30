@@ -42,25 +42,25 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     """
     # Get unaltered state vector and partial trace
     _, x = simulate(circuit)
-    xH = x.data.conjugate().transpose()
+    xT = x.data.conjugate().transpose()
 
     # Project onto 0 and 1 using Pauli Z
     circuit.z(qubit)
     _, y = simulate(circuit)
-    yH = y.data.conjugate().transpose()
+    yT = y.data.conjugate().transpose()
 
-    x_xH = x.data * xH
-    x_yH = x.data * yH
-    y_xH = y.data * xH
-    y_yH = y.data * yH
+    x_xT = x.data * xT
+    x_yT = x.data * yT
+    y_xT = y.data * xT
+    y_yT = y.data * yT
 
-    trace_x_xH = cv_partial_trace(circuit, x_xH)
-    trace_x_yH = cv_partial_trace(circuit, x_yH)
-    trace_y_xH = cv_partial_trace(circuit, y_xH)
-    trace_y_yH = cv_partial_trace(circuit, y_yH)
+    trace_x_xT = cv_partial_trace(circuit, x_xT)
+    trace_x_yT = cv_partial_trace(circuit, x_yT)
+    trace_y_xT = cv_partial_trace(circuit, y_xT)
+    trace_y_yT = cv_partial_trace(circuit, y_yT)
 
-    projection_zero = (trace_x_xH + trace_x_yH + trace_y_xH + trace_y_yH) / 4
-    projection_one = (trace_x_xH - trace_x_yH - trace_y_xH + trace_y_yH) / 4
+    projection_zero = (trace_x_xT + trace_x_yT + trace_y_xT + trace_y_yT) / 4
+    projection_one = (trace_x_xT - trace_x_yT - trace_y_xT + trace_y_yT) / 4
 
     # Clean up by popping off the Pauli Z
     circuit.data.pop()
@@ -68,20 +68,20 @@ def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
     # Project onto + and - using Pauli X
     circuit.x(qubit)
     _, y = simulate(circuit)
-    yH = y.data.conjugate().transpose()
+    yT = y.data.conjugate().transpose()
 
-    x_xH = x.data * xH
-    x_yH = x.data * yH
-    y_xH = y.data * xH
-    y_yH = y.data * yH
+    x_xT = x.data * xT
+    x_yT = x.data * yT
+    y_xT = y.data * xT
+    y_yT = y.data * yT
 
-    trace_x_xH = cv_partial_trace(circuit, x_xH)
-    trace_x_yH = cv_partial_trace(circuit, x_yH)
-    trace_y_xH = cv_partial_trace(circuit, y_xH)
-    trace_y_yH = cv_partial_trace(circuit, y_yH)
+    trace_x_xT = cv_partial_trace(circuit, x_xT)
+    trace_x_yT = cv_partial_trace(circuit, x_yT)
+    trace_y_xT = cv_partial_trace(circuit, y_xT)
+    trace_y_yT = cv_partial_trace(circuit, y_yT)
 
-    projection_plus = (trace_x_xH + trace_x_yH + trace_y_xH + trace_y_yH) / 4
-    projection_minus = (trace_x_xH - trace_x_yH - trace_y_xH + trace_y_yH) / 4
+    projection_plus = (trace_x_xT + trace_x_yT + trace_y_xT + trace_y_yT) / 4
+    projection_minus = (trace_x_xT - trace_x_yT - trace_y_xT + trace_y_yT) / 4
 
     # Clean up by popping of the Pauli X
     circuit.data.pop()
