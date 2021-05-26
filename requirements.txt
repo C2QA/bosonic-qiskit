@@ -6,3 +6,6 @@ pylatexenc==2.8
 
 # Installing current cryptography 3.3.1 failed in Windows 10, force previous minor build version.
 cryptography==3.2.1
+
+
+strawberryfields==0.15.1

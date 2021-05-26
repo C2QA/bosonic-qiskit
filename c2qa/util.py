@@ -12,6 +12,33 @@ from qiskit.result import Result
 from c2qa import CVCircuit
 
 
+def measure_all_xyz(circuit: qiskit.QuantumCircuit):
+    """
+    Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
+
+    Returns state, result tuples each for the X, Y, and Z basis.    
+    """
+
+    # QuantumCircuit.measure_all(False) returns a copy of the circuit with measurement gates.
+    circuit_z = circuit.measure_all(False)
+    state_z, result_z = simulate(circuit_z)
+
+    circuit_x = circuit.copy()
+    for qubit in circuit_x.qubits:
+        circuit_x.h(qubit)
+    circuit_x.measure_all()  # Add measure gates in-place
+    state_x, result_x = simulate(circuit_x)
+
+    circuit_y = circuit.copy()
+    for qubit in circuit_y.qubits:
+        circuit_y.sdg(qubit)
+        circuit_y.h(qubit)
+    circuit_y.measure_all()  # Add measure gates in-place
+    state_y, result_y = simulate(circuit_y)
+
+    return (state_x, result_x), (state_y, result_y), (state_z, result_z)
+
+
 def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
     """
     Convenience function to simulate using the given backend.

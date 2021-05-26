@@ -1,3 +1,4 @@
+from qiskit.quantum_info.states.densitymatrix import DensityMatrix
 import c2qa
 import matplotlib.pyplot as plt
 import numpy
@@ -5,7 +6,7 @@ from pathlib import Path
 import pytest
 import scipy.special as ssp
 import qiskit
-
+from qiskit.visualization import plot_state_city, plot_histogram
 
 def test_partial_trace_zero(capsys):
     with capsys.disabled():
@@ -306,9 +307,95 @@ def test_wigner_cat_state(capsys):
         even_filename = "tests/wigner_even.png"
         state_even = _generate_cat(0, cutoff)
         c2qa.util.plot_wigner(state_even, cutoff, file=even_filename)
+        plot_state_city(state_even, figsize=(9, 7)).savefig("tests/plot_state_even.png")
         assert Path(even_filename).is_file()
 
         odd_filename = "tests/wigner_odd.png"
         state_odd = _generate_cat(1, cutoff)
         c2qa.util.plot_wigner(state_odd, cutoff, file=odd_filename)
         assert Path(odd_filename).is_file()
+
+
+def test_simulate_plot(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=3)
+        qr = qiskit.QuantumRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = 1.0
+
+        # qr[0] will init to zero
+        # circuit.cv_initialize(0, qmr[0])
+        # circuit.initialize([0,1], qr[0])
+        circuit.initialize([0,1], qmr[0][0])
+
+        # circuit.h(qr[0])
+        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+
+        state, result = c2qa.util.simulate(circuit)
+
+        print(state)
+        plot_state_city(state).savefig("tests/plot_state_city.png")
+        plot_histogram(result.get_counts(), figsize=(9, 7)).savefig("tests/plot_histogram.png")
+
+def test_circuit_cv_cat_state(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=3)
+        qr = qiskit.QuantumRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = numpy.sqrt(2)
+
+        # qr[0] will init to zero
+        circuit.cv_initialize(0, qmr[0])
+
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        # circuit.cv_d(dist, qmr[0])
+
+        state, result = c2qa.util.simulate(circuit)
+
+        trace = c2qa.util.cv_partial_trace(circuit, state)
+
+        print(state)
+        plot_state_city(state).savefig("tests/plot_state_city.png")
+        plot_histogram(result.get_counts(), figsize=(9, 7)).savefig("tests/plot_counts.png")
+        plot_histogram(trace.sample_counts(256), figsize=(9, 7)).savefig("tests/plot_trace.png")
+
+
+def test_circuit_cat_state(capsys):
+    with capsys.disabled():
+        qr = qiskit.QuantumRegister(size=2)
+        circuit = qiskit.circuit.QuantumCircuit(qr)
+
+        circuit.h(qr[0])
+        circuit.cx(qr[0], qr[1])
+
+        state, result = c2qa.util.simulate(circuit)
+        print(state)
+        plot_state_city(state).savefig("tests/plot_state_city.png")
+        plot_histogram(result.get_counts(), figsize=(9, 7)).savefig("tests/plot_histogram.png")
+
+
+def test_measure_all_xyz(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=3)
+        qr = qiskit.QuantumRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = numpy.sqrt(2)
+
+        # qr[0] will init to zero
+        circuit.cv_initialize(0, qmr[0])
+
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+
+        (state_x, result_x), (state_y, result_y), (state_z, result_z) = c2qa.util.measure_all_xyz(circuit)
+
+        plot_histogram(result_x.get_counts(), title="X", figsize=(9, 7)).savefig("tests/plot_histogram_x.png")
+        plot_histogram(result_y.get_counts(), title="Y", figsize=(9, 7)).savefig("tests/plot_histogram_y.png")
+        plot_histogram(result_z.get_counts(), title="Z", figsize=(9, 7)).savefig("tests/plot_histogram_z.png")

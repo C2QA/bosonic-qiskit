@@ -10,7 +10,7 @@ from c2qa.qumoderegister import QumodeRegister
 
 
 class CVCircuit(QuantumCircuit):
-    def __init__(self, *regs, name: str = None, animation_segments: int = math.nan):
+    def __init__(self, *regs, name: str = None, animation_segments: int = math.nan, probe_measure: bool = False):
         """
         Initialize the registers (at least one must be QumodeRegister), set
         the circuit name, and the number of steps to animate (default is to not animate).
@@ -19,6 +19,7 @@ class CVCircuit(QuantumCircuit):
         registers = []
 
         num_qumodes = 0
+        num_qubits = 0
 
         for reg in regs:
             if isinstance(reg, QumodeRegister):
@@ -32,9 +33,17 @@ class CVCircuit(QuantumCircuit):
                 registers.append(reg.qreg)
             else:
                 registers.append(reg)
+            
+            num_qubits += reg.size
 
         if len(self.qmregs) == 0:
             raise ValueError("At least one QumodeRegister must be provided.")
+
+        # Support measurement using probe qubits
+        self.probe_measure = probe_measure
+        if probe_measure:
+            self.probe = QuantumRegister(size=num_qubits, name="probe")
+            registers.append(self.probe)
 
         super().__init__(*registers, name=name)
 
@@ -216,3 +225,33 @@ class CVCircuit(QuantumCircuit):
         else:
             operator = self.ops.s2(z)
             self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="S2")
+
+    def measure_z(self, qubit, cbit):
+        if not self.probe_measure:
+            warnings.warn(
+                "Probe qubits not in use, set probe_measure to True for measure support.",
+                UserWarning,
+            )
+
+        return super.measure(qubit, cbit)
+
+    def measure_y(self, qubit, cbit):
+        if not self.probe_measure:
+            warnings.warn(
+                "Probe qubits not in use, set probe_measure to True for measure support.",
+                UserWarning,
+            )
+
+        self.sdg(qubit)
+        self.h(qubit)
+        return self.measure(qubit, cbit)
+
+    def measure_x(self, qubit, cbit):
+        if not self.probe_measure:
+            warnings.warn(
+                "Probe qubits not in use, set probe_measure to True for measure support.",
+                UserWarning,
+            )
+
+        self.h(qubit)
+        return self.measure(qubit, cbit)

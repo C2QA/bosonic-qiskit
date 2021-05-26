@@ -60,11 +60,35 @@ class TestMatrices:
 
             assert len(op)
 
-    def test_d(self):
-        one = self.ops.d(1)
-        rand = self.ops.d(random.random())
+    def test_d(self, capsys):
+        with capsys.disabled():
+            one = self.ops.d(1)
+            rand = self.ops.d(random.random())
 
-        assert not numpy.allclose(one, rand)
+            print()
+            # print("a")
+            # print(self.ops.a)
+            # print("a_dag")
+            # print(self.ops.a_dag)
+            print("1")
+            print(one)
+
+            neg_one = self.ops.d(-1)
+            print("-1")
+            print(neg_one)
+
+            assert not numpy.allclose(one, rand)
+
+    def test_compare_d(self, capsys):
+        with capsys.disabled():
+            ops = CVOperators(cutoff=40, num_qumodes=1)
+            # d = ops.d(0.3+0.5j)
+            # sf = d[0:5, 0:5]
+            d = ops.d(1)
+            sf = d[0:4, 0:4]
+            print(d)
+            print()
+            print(sf)
 
     def test_d_across_os(self, capsys):
         """Doesn't actually test anything, but as it is run across platforms by GitHub
