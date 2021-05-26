@@ -381,7 +381,7 @@ def test_circuit_cat_state(capsys):
 
 def test_measure_all_xyz(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=3)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
