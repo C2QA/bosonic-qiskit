@@ -341,21 +341,19 @@ def test_simulate_plot(capsys):
 
 def test_circuit_cv_cat_state(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=3)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
-        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
-        dist = numpy.sqrt(2)
+        dist = numpy.sqrt(3)
 
         # qr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-        # circuit.cv_d(dist, qmr[0])
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result = c2qa.util.simulate(circuit, shots=8192)
 
         trace = c2qa.util.cv_partial_trace(circuit, state)
 
@@ -364,19 +362,26 @@ def test_circuit_cv_cat_state(capsys):
         plot_histogram(result.get_counts(), figsize=(9, 7)).savefig("tests/plot_counts.png")
         plot_histogram(trace.sample_counts(256), figsize=(9, 7)).savefig("tests/plot_trace.png")
 
+        wigner_filename = "tests/wigner_cv_cat.png"
+        c2qa.util.plot_wigner_fock_state(circuit, state, file=wigner_filename)
+        assert Path(wigner_filename).is_file()
+
 
 def test_circuit_cat_state(capsys):
     with capsys.disabled():
-        qr = qiskit.QuantumRegister(size=2)
+        qr = qiskit.QuantumRegister(size=4)
         circuit = qiskit.circuit.QuantumCircuit(qr)
 
         circuit.h(qr[0])
         circuit.cx(qr[0], qr[1])
+        circuit.cx(qr[1], qr[2])
+        circuit.cx(qr[2], qr[3])
 
         state, result = c2qa.util.simulate(circuit)
         print(state)
         plot_state_city(state).savefig("tests/plot_state_city.png")
         plot_histogram(result.get_counts(), figsize=(9, 7)).savefig("tests/plot_histogram.png")
+        # c2qa.util.plot_wigner(state, 3, file="tests/wigner_cat.png")
 
 
 def test_measure_all_xyz(capsys):
@@ -401,6 +406,9 @@ def test_measure_all_xyz(capsys):
 
         print("result_x.get_counts() calculated probabilities")
         print(c2qa.util.get_probabilities(result_x))
+
+        print("result_x.to_dict()")
+        print(result_x.to_dict())
 
         plot_histogram(result_x.get_counts(), title="X", figsize=(9, 7)).savefig("tests/plot_histogram_x.png")
         plot_histogram(result_y.get_counts(), title="Y", figsize=(9, 7)).savefig("tests/plot_histogram_y.png")

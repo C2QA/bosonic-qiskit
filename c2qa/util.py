@@ -52,7 +52,7 @@ def get_probabilities(result: qiskit.result.Result):
     return probs
 
 
-def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
+def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int = 1024):
     """
     Convenience function to simulate using the given backend.
 
@@ -65,7 +65,7 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
     circuit_compiled = qiskit.transpile(circuit, simulator)
 
     # Run and get statevector
-    result = simulator.run(circuit_compiled).result()
+    result = simulator.run(circuit_compiled, shots=shots).result()
     state = Statevector(result.get_statevector(circuit_compiled))
 
     # Clean up by popping off the SaveStatevector instruction
@@ -257,7 +257,7 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
 
 
 def plot_wigner_fock_state(
-    circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None
+    circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200
 ):
     """
     Produce a Matplotlib figure for the Wigner function on the given state vector.
@@ -269,11 +269,11 @@ def plot_wigner_fock_state(
     else:
         density_matrix = state_vector
 
-    plot_wigner(density_matrix, circuit.cutoff, file)
+    plot_wigner(density_matrix, circuit.cutoff, file, axes_min, axes_max, axes_steps)
 
-def plot_wigner(state, cutoff: int, file: str = None):
+def plot_wigner(state, cutoff: int, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
     """Produce a Matplotlib figure for the Wigner function on the given state vector."""
-    xvec = np.linspace(-5, 5, 200)
+    xvec = np.linspace(axes_min, axes_max, axes_steps)
     w_fock = _wigner(state, xvec, xvec, cutoff)
 
     amax = np.amax(w_fock)
