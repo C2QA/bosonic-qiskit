@@ -396,6 +396,12 @@ def test_measure_all_xyz(capsys):
 
         (state_x, result_x), (state_y, result_y), (state_z, result_z) = c2qa.util.measure_all_xyz(circuit)
 
+        print("state_x.probabilities_dict()")
+        print(state_x.probabilities_dict())
+
+        print("result_x.get_counts() calculated probabilities")
+        print(c2qa.util.get_probabilities(result_x))
+
         plot_histogram(result_x.get_counts(), title="X", figsize=(9, 7)).savefig("tests/plot_histogram_x.png")
         plot_histogram(result_y.get_counts(), title="Y", figsize=(9, 7)).savefig("tests/plot_histogram_y.png")
         plot_histogram(result_z.get_counts(), title="Z", figsize=(9, 7)).savefig("tests/plot_histogram_z.png")

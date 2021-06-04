@@ -39,6 +39,19 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     return (state_x, result_x), (state_y, result_y), (state_z, result_z)
 
 
+def get_probabilities(result: qiskit.result.Result):
+    """Calculate the probabilities for each of the result's counts."""
+    shots = 0
+    counts = result.get_counts()
+    for count in counts:
+        shots += counts[count]
+    probs = {}
+    for count in counts:
+        probs[count] = counts[count] / shots
+    
+    return probs
+
+
 def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator"):
     """
     Convenience function to simulate using the given backend.
