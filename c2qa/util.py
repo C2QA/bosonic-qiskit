@@ -52,13 +52,16 @@ def get_probabilities(result: qiskit.result.Result):
     return probs
 
 
-def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int = 1024):
+def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int = 1024, add_save_statevector: bool = True):
     """
     Convenience function to simulate using the given backend.
 
     Returns Statevector
     """
-    save_statevector(circuit)
+
+    # If this is false, the user must have already called save_statevector!
+    if add_save_statevector:
+        save_statevector(circuit)
 
     # Transpile for simulator
     simulator = qiskit.Aer.get_backend(backend_name)
@@ -69,7 +72,8 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int
     state = Statevector(result.get_statevector(circuit_compiled))
 
     # Clean up by popping off the SaveStatevector instruction
-    circuit.data.pop()
+    if add_save_statevector:
+        circuit.data.pop()
 
     return state, result
 
@@ -152,7 +156,7 @@ def _add_contourf(ax, fig, title, x, y, z):
     """Add a matplotlib contourf plot with color levels based on min/max values in z."""
     amax = np.amax(z)
     amin = abs(np.amin(z))
-    max_value = max(amax, amin)
+    max_value = max(amax, amin, 0.0001)  # Force a range if amin/amax are equal
     color_levels = np.linspace(-max_value, max_value, 100)
 
     cont = ax.contourf(x, y, z, color_levels, cmap="RdBu_r")
