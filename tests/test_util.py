@@ -450,7 +450,7 @@ def test_measure_all_xyz(capsys):
 def test_repeat_until_success(capsys):
     with capsys.disabled():
         success = False
-        num_qubits_per_qumode = 6
+        num_qubits_per_qumode = 4
 
         while not success:
             qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
@@ -475,15 +475,16 @@ def test_repeat_until_success(capsys):
             success = "0" in counts and counts["0"] == 1
 
             if success:
+                wigner_filename = "tests/repeat_wigner.png"
+                c2qa.util.plot_wigner_fock_state(circuit, state, file=wigner_filename, trace=False)
+                assert Path(wigner_filename).is_file()
+
+                # Need to recreate circuit state prior to measure collapsing qubit state for projections
                 qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
                 qr = qiskit.QuantumRegister(size=1)
                 cr = qiskit.ClassicalRegister(size=1)
                 circuit = c2qa.CVCircuit(qmr, qr, cr)
                 circuit.initialize(state)
-
-                wigner_filename = "tests/repeat_wigner.png"
-                c2qa.util.plot_wigner_fock_state(circuit, state, file=wigner_filename, trace=True)
-                assert Path(wigner_filename).is_file()
 
                 wigner_filename = "tests/repeat_projection_wigner.png"
                 c2qa.util.plot_wigner_interference(circuit, qr[0], file=wigner_filename)
