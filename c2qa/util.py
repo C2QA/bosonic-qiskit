@@ -235,7 +235,7 @@ def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = Tru
         plt.show()
 
 
-def animate_wigner(circuit: CVCircuit, result: Result, file: str = None):
+def animate_wigner(circuit: CVCircuit, result: Result, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -246,7 +246,7 @@ def animate_wigner(circuit: CVCircuit, result: Result, file: str = None):
     function.
     """
     # Calculate the Wigner functions for each frame
-    xvec = np.linspace(-5, 5, 200)
+    xvec = np.linspace(axes_min, axes_max, axes_steps)
     w_fock = []
     for frame in range(circuit.animation_steps):
         state_vector = result.data(circuit)["snapshots"]["statevector"][
@@ -279,10 +279,15 @@ def animate_wigner(circuit: CVCircuit, result: Result, file: str = None):
 def _animate(frame, *fargs):
     ax = fargs[1]
     xvec = fargs[2]
-    w_fock = fargs[3]
+    w_fock = fargs[3][frame]
+
+    amax = np.amax(w_fock)
+    amin = np.amin(w_fock)
+    abs_max = max(amax, abs(amin))
+    color_levels = np.linspace(-abs_max, abs_max, 100)
 
     ax.clear()
-    ax.contourf(xvec, xvec, w_fock[frame], levels=100)
+    ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
 

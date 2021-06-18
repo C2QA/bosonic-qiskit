@@ -98,7 +98,7 @@ def test_animate(capsys):
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr, animation_segments=10)
 
-        dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
+        dist = 2
 
         circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(0, qmr[0])
@@ -111,12 +111,10 @@ def test_animate(capsys):
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
-        backend = qiskit.Aer.get_backend("statevector_simulator")
-        job = qiskit.execute(circuit, backend)
-        result = job.result()
+        state, result = c2qa.util.simulate(circuit)
 
         c2qa.util.animate_wigner(
-            circuit, result, file="tests/displacement.mp4"
+            circuit, result, file="tests/displacement.mp4", axes_min=-6, axes_max=6
         )
 
 
