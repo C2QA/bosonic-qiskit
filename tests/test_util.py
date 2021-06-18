@@ -193,7 +193,7 @@ def test_measure_all_xyz(capsys):
         plot_histogram(result_y.get_counts(), title="Y", figsize=(9, 7)).savefig("tests/plot_histogram_y.png")
         plot_histogram(result_z.get_counts(), title="Z", figsize=(9, 7)).savefig("tests/plot_histogram_z.png")
 
-def test_repeat_until_success(capsys):
+def test_cat_state_wigner_plot(capsys):
     with capsys.disabled():
         num_qubits_per_qumode = 4
         dist = 2
