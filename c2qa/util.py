@@ -52,7 +52,7 @@ def get_probabilities(result: qiskit.result.Result):
     return probs
 
 
-def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int = 1024, add_save_statevector: bool = True):
+def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int = 1024, add_save_statevector: bool = True, conditional_state_vector: bool = False):
     """
     Convenience function to simulate using the given backend.
 
@@ -61,7 +61,7 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int
 
     # If this is false, the user must have already called save_statevector!
     if add_save_statevector:
-        save_statevector(circuit)
+        circuit.save_statevector(conditional=conditional_state_vector)
 
     # Transpile for simulator
     simulator = qiskit.Aer.get_backend(backend_name)
@@ -69,11 +69,18 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int
 
     # Run and get statevector
     result = simulator.run(circuit_compiled, shots=shots).result()
-    state = Statevector(result.get_statevector(circuit_compiled))
 
-    # Clean up by popping off the SaveStatevector instruction
+    # The user may have added their own circuit.save_statevector
+    try:
+        if conditional_state_vector:
+            state = result.data()['statevector']  # Will get a dictionary of state vectors, one for each classical register value
+        else:
+            state = Statevector(result.get_statevector(circuit_compiled))
+    except:
+        state = None  # result.get_statevector() will fail if add_save_statevector is true
+
     if add_save_statevector:
-        circuit.data.pop()
+        circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
 
     return state, result
 

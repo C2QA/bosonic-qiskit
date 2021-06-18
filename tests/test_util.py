@@ -8,6 +8,7 @@ import scipy.special as ssp
 import qiskit
 from qiskit.visualization import plot_state_city, plot_histogram
 from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
+from qiskit.providers.aer.library.save_instructions.save_data import SaveAverageData
 
 def test_partial_trace_zero(capsys):
     with capsys.disabled():
@@ -194,43 +195,42 @@ def test_measure_all_xyz(capsys):
 
 def test_repeat_until_success(capsys):
     with capsys.disabled():
-        success = False
         num_qubits_per_qumode = 4
+        dist = 2
 
-        while not success:
-            qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
-            qr = qiskit.QuantumRegister(size=1)
-            cr = qiskit.ClassicalRegister(size=1)
-            circuit = c2qa.CVCircuit(qmr, qr, cr)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
+        qr = qiskit.QuantumRegister(size=1)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
 
-            dist = 2
+        circuit.initialize([1, 0], qr[0])
+        circuit.cv_initialize(0, qmr[0])
 
-            circuit.initialize([1, 0], qr[0])
-            circuit.cv_initialize(0, qmr[0])
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.h(qr[0])
+        circuit.measure(qr[0], cr[0])
 
-            circuit.h(qr[0])
-            circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-            circuit.h(qr[0])
-            # save_statevector(circuit)
-            circuit.measure(qr[0], cr[0])
+        # conditional_state_vector=True will return two state vectors, one for 0 and 1 classical register value
+        state, _ = c2qa.util.simulate(circuit, conditional_state_vector=True)
+        even_state = state["0x0"]
+        odd_state = state["0x1"]
 
-            state, result = c2qa.util.simulate(circuit, shots=1, add_save_statevector=True)
-            counts = result.get_counts()
-            print(counts)
-            success = "0" in counts and counts["0"] == 1
+        wigner_filename = "tests/repeat_wigner_even.png"
+        c2qa.util.plot_wigner(circuit, even_state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
+        assert Path(wigner_filename).is_file()
 
-            if success:
-                wigner_filename = "tests/repeat_wigner.png"
-                c2qa.util.plot_wigner(circuit, state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
-                assert Path(wigner_filename).is_file()
+        wigner_filename = "tests/repeat_wigner_odd.png"
+        c2qa.util.plot_wigner(circuit, odd_state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
+        assert Path(wigner_filename).is_file()
 
-                # # Need to recreate circuit state prior to measure collapsing qubit state for projections
-                # qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
-                # qr = qiskit.QuantumRegister(size=1)
-                # cr = qiskit.ClassicalRegister(size=1)
-                # circuit = c2qa.CVCircuit(qmr, qr, cr)
-                # circuit.initialize(state)
+        # # Need to recreate circuit state prior to measure collapsing qubit state for projections
+        # qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
+        # qr = qiskit.QuantumRegister(size=1)
+        # cr = qiskit.ClassicalRegister(size=1)
+        # circuit = c2qa.CVCircuit(qmr, qr, cr)
+        # circuit.initialize(state)
 
-                # wigner_filename = "tests/repeat_projection_wigner.png"
-                # c2qa.util.plot_wigner_projection(circuit, qr[0], file=wigner_filename)
-                # assert Path(wigner_filename).is_file()
+        # wigner_filename = "tests/repeat_projection_wigner.png"
+        # c2qa.util.plot_wigner_projection(circuit, qr[0], file=wigner_filename)
+        # assert Path(wigner_filename).is_file()
