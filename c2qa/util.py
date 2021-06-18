@@ -282,9 +282,11 @@ def _animate(frame, *fargs):
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
-    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
+    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies. Starwberry Fields used the QuTiP "iterative" implementation.
 
     Strawberry Fields is released under the Apache License: https://github.com/XanaduAI/strawberryfields/blob/master/LICENSE
+
+    QuTiP is released under the BSD 3-clause license: https://github.com/qutip/qutip/blob/master/LICENSE.txt
 
     See:
         <https://github.com/XanaduAI/strawberryfields/blob/e46bd122faff39976cc9052cc1a6472762c415b4/strawberryfields/backends/states.py#L725-L780>
