@@ -78,7 +78,7 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int
     return state, result
 
 
-def plot_wigner_interference(circuit: CVCircuit, qubit, file: str = None):
+def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
     """
     Plot the projection onto 0, 1, +, - for the given circuit.
 
@@ -166,69 +166,6 @@ def _add_contourf(ax, fig, title, x, y, z):
     fig.colorbar(cont, ax=ax)
 
 
-def plot_wigner_interference_old(circuit: CVCircuit, state_vector: Statevector, file: str = None):
-    """Produce a Matplotlib figure for the Wigner function on the given state vector."""
-
-    # Create identity
-    #   TODO What size should it be?
-    state_len = len(state_vector.data)
-    # TODO shouldn"t have to math.floorm should check that length is even
-    eye = np.identity(math.floor(state_len / 2), dtype=int)
-    # eye = np.identity(2, dtype=int)
-
-    # Calculate projectors for zero and one
-    zero = np.array([[1, 0], [0, 0]])
-    one = np.array([[0, 0], [0, 1]])
-    zero_projector = np.kron(zero, eye)
-    one_projector = np.kron(one, eye)
-
-    # TODO Should we tensor the state vector or the density matrix array?
-    #   QisKit partial_trace() fails with "Input not a quantum state" error when using state vector.
-    # state = DensityMatrix(state_vector).data
-    state = state_vector.data
-
-    # Project state onto zero and one
-    zero_projection = zero_projector * state
-    one_projection = one_projector * state
-
-    # Trace over qubit
-    #   TODO Does QisKit partial_trace() work correctly after projection?
-    #     The projection isn't the same size/shape as original state vector.
-    #     The qubit indices from the circuit and original state vector won"t match the indices in the new matrices.
-    zero_trace = cv_partial_trace(circuit, zero_projection)
-    one_trace = cv_partial_trace(circuit, one_projection)
-
-    state_trace = cv_partial_trace(circuit, state)
-
-    projection_zero = (state_trace + zero_trace) / 2
-    projection_one = (state_trace - one_trace) / 2
-
-    # Calculate Wigner functions
-    xvec = np.linspace(-5, 5, 200)
-    zero_wigner = _wigner(projection_zero, xvec, xvec, circuit.cutoff)
-    one_wigner = _wigner(projection_one, xvec, xvec, circuit.cutoff)
-
-    # Plot using matplot lib on two horizontal subplots, at double the default width
-    fig, axs = plt.subplots(1, 2, figsize=(12.8, 4.8))
-    cont = axs[0].contourf(xvec, xvec, zero_wigner, 100)
-    axs[0].set_xlabel("x")
-    axs[0].set_ylabel("p")
-    axs[0].set_title("Projection onto zero")
-    fig.colorbar(cont, ax=axs[0])
-
-    cont = axs[1].contourf(xvec, xvec, one_wigner, 100)
-    axs[1].set_xlabel("x")
-    axs[1].set_ylabel("p")
-    axs[1].set_title("Projection onto one")
-    fig.colorbar(cont, ax=axs[1])
-
-    # Save to file or display
-    if file:
-        plt.savefig(file)
-    else:
-        plt.show()
-
-
 def _find_qubit_indices(circuit: CVCircuit):
     """
     Return the indices of the qubits from the circuit that are not in a QumodeRegister
@@ -260,30 +197,24 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
     return partial_trace(state_vector, indices)
 
 
-def plot_wigner_fock_state(
-    circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200
-):
+def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, num_colors: int = 100):
     """
     Produce a Matplotlib figure for the Wigner function on the given state vector.
 
     Optionally perform partial trace.
     """
     if trace:
-        density_matrix = cv_partial_trace(circuit, state_vector)
+        state = cv_partial_trace(circuit, state_vector)
     else:
-        density_matrix = state_vector
+        state = state_vector
 
-    plot_wigner(density_matrix, circuit.cutoff, file, axes_min, axes_max, axes_steps)
-
-def plot_wigner(state, cutoff: int, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
-    """Produce a Matplotlib figure for the Wigner function on the given state vector."""
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    w_fock = _wigner(state, xvec, xvec, cutoff)
+    w_fock = _wigner(state, xvec, xvec, circuit.cutoff)
 
     amax = np.amax(w_fock)
-    amin = abs(np.amin(w_fock))
-    max_value = max(amax, amin)
-    color_levels = np.linspace(-max_value, max_value, 100)
+    amin = np.amin(w_fock)
+    abs_max = max(amax, abs(amin))
+    color_levels = np.linspace(-abs_max, abs_max, num_colors)
 
     fig, ax = plt.subplots(constrained_layout=True)
     cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
@@ -297,7 +228,7 @@ def plot_wigner(state, cutoff: int, file: str = None, axes_min: int = -5, axes_m
         plt.show()
 
 
-def animate_wigner_fock_state(circuit: CVCircuit, result: Result, file: str = None):
+def animate_wigner(circuit: CVCircuit, result: Result, file: str = None):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
 
