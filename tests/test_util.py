@@ -216,11 +216,11 @@ def test_cat_state_wigner_plot(capsys):
         even_state = state["0x0"]
         odd_state = state["0x1"]
 
-        wigner_filename = "tests/repeat_wigner_even.png"
+        wigner_filename = "tests/cat_wigner_even.png"
         c2qa.util.plot_wigner(circuit, even_state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
         assert Path(wigner_filename).is_file()
 
-        wigner_filename = "tests/repeat_wigner_odd.png"
+        wigner_filename = "tests/cat_wigner_odd.png"
         c2qa.util.plot_wigner(circuit, odd_state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
         assert Path(wigner_filename).is_file()
 
