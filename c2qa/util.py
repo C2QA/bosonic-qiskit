@@ -1,3 +1,4 @@
+import abc
 from copy import copy
 import math
 
@@ -5,11 +6,13 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
+from qiskit.circuit import classicalregister
 from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 from qiskit.result import Result
 
 from c2qa import CVCircuit
+from c2qa.operators import CVGate
 
 
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
@@ -235,7 +238,7 @@ def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = Tru
         plt.show()
 
 
-def animate_wigner(circuit: CVCircuit, result: Result, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
+def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -245,16 +248,56 @@ def animate_wigner(circuit: CVCircuit, result: Result, file: str = None, axes_mi
     The ffmpeg binary must be on your system PATH in order to execute this
     function.
     """
-    # Calculate the Wigner functions for each frame
+
+    # Simulate each frame, storing Wigner function data in w_fock
     xvec = np.linspace(axes_min, axes_max, axes_steps)
+
+    circuits = []  # Each frame will have its own circuit to simulate
+    
+    # base_circuit is copied each gate iteration to build circuit frames to simulate
+    base_circuit = circuit.copy()
+    base_circuit.data.clear()  # Is this safe -- could we copy without data?
+    for inst, qargs, cargs in reversed(circuit.data):
+        # TODO - get qubit & cbit for measure instead of using parameters
+        # qubit = xxx
+        # cbit = yyy
+
+        if isinstance(inst, CVGate):
+
+            # Build circuits for each frame
+            for index in range(1, animation_segments + 1):
+                sim_circuit = base_circuit.copy()
+
+                sim_circuit.append(inst.op.calculate_matrix(index, animation_segments), qargs, cargs)
+
+                sim_circuit.h(qubit)
+                sim_circuit.measure(qubit, cbit)
+
+                circuits.append(sim_circuit)
+                pass
+
+            # Append the full instruction for the next frame
+            base_circuit.append(inst, qargs, cargs)
+        else:
+            base_circuit.append(inst, qargs, cargs)
+
+            sim_circuit = base_circuit.copy()
+            sim_circuit.h(qubit)
+            sim_circuit.measure(qubit, cbit)
+
+            circuits.append(sim_circuit)
+
+    # Calculate the Wigner functions for each frame
     w_fock = []
-    for frame in range(circuit.animation_steps):
-        state_vector = result.data(circuit)["snapshots"]["statevector"][
-            circuit.get_snapshot_name(frame)
-        ][0]
-        density_matrix = cv_partial_trace(circuit, state_vector)
+    for circuit in circuits:  # TODO -- consider parallel simulation
+        state, _ = simulate(circuit, conditional_state_vector=True)
+        even_state = state["0x0"]
+        # odd_state = state["0x1"]
+
+        density_matrix = cv_partial_trace(circuit, even_state)
         w_fock.append(_wigner(density_matrix, xvec, xvec, circuit.cutoff))
 
+    # Animate w_fock Wigner function results
     # Create empty plot to animate
     fig, ax = plt.subplots(constrained_layout=True)
 

@@ -5,17 +5,19 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.extensions import UnitaryGate
 
-from c2qa.operators import CVOperators
+from c2qa.operators import CVGate, CVOperators, ParameterizedOperator
 from c2qa.qumoderegister import QumodeRegister
 
 
 class CVCircuit(QuantumCircuit):
-    def __init__(self, *regs, name: str = None, animation_segments: int = math.nan, probe_measure: bool = False):
+    def __init__(self, *regs, name: str = None, probe_measure: bool = False):
         """
         Initialize the registers (at least one must be QumodeRegister), set
         the circuit name, and the number of steps to animate (default is to not animate).
         """
         self.qmregs = []
+        self._qubit_regs = []  # This needs to be unique from qregs[] in the superclass
+
         registers = []
 
         num_qumodes = 0
@@ -31,10 +33,13 @@ class CVCircuit(QuantumCircuit):
                 num_qumodes += reg.num_qumodes
                 self.qmregs.append(reg)
                 registers.append(reg.qreg)
+                num_qubits += reg.size
+            elif isinstance(reg, QuantumRegister):
+                self._qubit_regs.append(reg)
+                registers.append(reg)
+                num_qubits += reg.size
             else:
                 registers.append(reg)
-            
-            num_qubits += reg.size
 
         if len(self.qmregs) == 0:
             raise ValueError("At least one QumodeRegister must be provided.")
@@ -49,25 +54,9 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators(self.cutoff, num_qumodes)
 
-        self.animated = not math.isnan(animation_segments)
-        if self.animated and animation_segments < 1:
-            self._animation_segments = 1
-        else:
-            self._animation_segments = animation_segments
-        self.animation_steps = 0
-
     @property
     def cutoff(self):
         return self.qmregs[-1].cutoff
-
-    def get_snapshot_name(self, index: int):
-        """Return the string statevector snapshot name for the given frame index."""
-        return f"frame_{index}"
-
-    def _snapshot_animation(self):
-        """Create a new statevector snapshot."""
-        self.snapshot(self.get_snapshot_name(self.animation_steps))
-        self.animation_steps += 1
 
     def cv_initialize(self, fock_state, qumodes):
         """ Initialize the qumode to a Fock state. """
@@ -99,132 +88,50 @@ class CVCircuit(QuantumCircuit):
             qargs += sub_qmr[i]
 
         sub_circ.append(
-            UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
+            CVGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
             qargs
         )
         sub_circ.append(
-            UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
+            CVGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
             qargs
         )
 
         return sub_circ.to_instruction()
 
     def cv_bs(self, phi, qumode_a, qumode_b):
-        if self.animated:
-            segment = phi / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                operator = self.ops.bs(segment)
-                self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="BS")
-                self._snapshot_animation()
-        else:
-            operator = self.ops.bs(phi)
-            self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="BS")
+        operator = ParameterizedOperator(self.ops.bs, phi)
+        self.append(CVGate(data=operator, label="BS"), qargs=qumode_a + qumode_b)
 
     def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
-        if self.animated:
-            segment_phi = phi / self._animation_segments
-            segment_chi = chi / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                self.append(
-                    self.cv_conditional(
-                        "BSc", self.ops.bs(segment_phi), self.ops.bs(segment_chi), num_qumodes=2
-                    ),
-                    [ctrl] + qumode_a + qumode_b
-                )
-                self._snapshot_animation()
-        else:
-            self.append(
-                self.cv_conditional("BSc", self.ops.bs(phi), self.ops.bs(chi), num_qumodes=2),
-                [ctrl] + qumode_a + qumode_b
-            )
+        op_0 = ParameterizedOperator(self.ops.bs, phi)
+        op_1 = ParameterizedOperator(self.ops.bs, chi)
+        self.append(self.cv_conditional("BSc", op_0, op_1, num_qumodes=2), [ctrl] + qumode_a + qumode_b)
 
     def cv_d(self, alpha, qumode):
-        if self.animated:
-            segment = alpha / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                operator = self.ops.d(segment)
-                self.unitary(obj=operator, qubits=qumode, label="D")
-                self._snapshot_animation()
-        else:
-            operator = self.ops.d(alpha)
-            self.unitary(obj=operator, qubits=qumode, label="D")
+        operator = ParameterizedOperator(self.ops.d, alpha)
+        self.append(CVGate(data=operator, label="D"), qargs=qumode)
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode):
-        if self.animated:
-            segment_alpha = alpha / self._animation_segments
-            segment_beta = beta / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                self.append(
-                    self.cv_conditional(
-                        "Dc", self.ops.d(segment_alpha), self.ops.d(segment_beta)
-                    ),
-                    [ctrl] + qumode
-                )
-                self._snapshot_animation()
-        else:
-            self.append(
-                self.cv_conditional("Dc", self.ops.d(alpha), self.ops.d(beta)),
-                [ctrl] + qumode
-            )
+        op_0 = ParameterizedOperator(self.ops.d, alpha)
+        op_1 = ParameterizedOperator(self.ops.d, beta)
+        self.append(self.cv_conditional("Dc", op_0, op_1), [ctrl] + qumode)
 
     def cv_r(self, phi, qumode):
-        if self.animated:
-            segment = phi / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                operator = self.ops.r(segment)
-                self.unitary(obj=operator, qubits=qumode, label="R")
-                self._snapshot_animation()
-        else:
-            operator = self.ops.r(phi)
-            self.unitary(obj=operator, qubits=qumode, label="R")
+        operator = ParameterizedOperator(self.ops.r, phi)
+        self.append(CVGate(data=operator, label="R"), qargs=qumode)
 
     def cv_s(self, z, qumode):
-        if self.animated:
-            segment = z / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                operator = self.ops.s(segment)
-                self.unitary(obj=operator, qubits=qumode, label="S")
-                self._snapshot_animation()
-        else:
-            operator = self.ops.s(z)
-            self.unitary(obj=operator, qubits=qumode, label="S")
+        operator = ParameterizedOperator(self.ops.s, z)
+        self.append(CVGate(data=operator, label="S"), qargs=qumode)
 
     def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a):
-        if self.animated:
-            segment_z_a = z_a / self._animation_segments
-            segment_z_b = z_b / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                self.append(
-                    self.cv_conditional(
-                        "Sc", self.ops.s(segment_z_a), self.ops.s(segment_z_b)
-                    ),
-                    [ctrl] + qumode_a
-                )
-                self._snapshot_animation()
-        else:
-            self.append(
-                self.cv_conditional("Sc", self.ops.s(z_a), self.ops.s(z_b)),
-                [ctrl] + qumode_a
-            )
+        op_0 = ParameterizedOperator(self.ops.s, z_a)
+        op_1 = ParameterizedOperator(self.ops.s, z_b)
+        self.append(self.cv_conditional("Sc", op_0, op_1), [ctrl] + qumode_a)
 
     def cv_s2(self, z, qumode_a, qumode_b):
-        if self.animated:
-            segment = z / self._animation_segments
-
-            for _ in range(self._animation_segments):
-                operator = self.ops.s2(segment)
-                self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="S2")
-                self._snapshot_animation()
-        else:
-            operator = self.ops.s2(z)
-            self.unitary(obj=operator, qubits=qumode_a + qumode_b, label="S2")
+        operator = ParameterizedOperator(self.ops.s2, z)
+        self.append(CVGate(data=operator, label="S2"), qargs=qumode_a + qumode_b)
 
     def measure_z(self, qubit, cbit):
         if not self.probe_measure:
