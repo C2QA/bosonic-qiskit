@@ -269,7 +269,8 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                sim_circuit.append(inst.op.calculate_matrix(index, animation_segments), qargs, cargs)
+                # TODO -- consider copying instruction and changing animation frame index to keep other values (like label)
+                sim_circuit.unitary(inst.op.calculate_matrix(index, animation_segments), qargs)
 
                 sim_circuit.h(qubit)
                 sim_circuit.measure(qubit, cbit)
@@ -306,7 +307,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
     anim = matplotlib.animation.FuncAnimation(
         fig=fig,
         func=_animate,
-        frames=circuit.animation_steps,
+        frames=animation_segments,
         fargs=(fig, ax, xvec, w_fock),
         interval=200,
         repeat=True,
