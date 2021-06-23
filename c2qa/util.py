@@ -262,8 +262,8 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         # qubit = xxx
         # cbit = yyy
 
-        print(inst)
-        if isinstance(inst, CVGate):
+        print(inst)  # FIXME -- the circuit prints in reverse order?
+        if isinstance(inst, CVGate):  # TODO -- handle conditional gates
 
             # Build circuits for each frame
             for index in range(1, animation_segments + 1):
