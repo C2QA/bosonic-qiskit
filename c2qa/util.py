@@ -262,6 +262,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         # qubit = xxx
         # cbit = yyy
 
+        print(inst)
         if isinstance(inst, CVGate):
 
             # Build circuits for each frame
