@@ -12,7 +12,7 @@ from qiskit.providers.aer.library.save_instructions.save_data import SaveAverage
 
 def test_partial_trace_zero(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -34,7 +34,7 @@ def test_partial_trace_zero(capsys):
 
 def test_partial_trace_one(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -56,7 +56,7 @@ def test_partial_trace_one(capsys):
 
 def test_plot_zero(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -76,7 +76,7 @@ def test_plot_zero(capsys):
 
 def test_plot_one(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=2)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
@@ -93,7 +93,7 @@ def test_plot_one(capsys):
 # @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
@@ -116,7 +116,7 @@ def test_animate(capsys):
 
 def test_plot_wigner_projection(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -135,7 +135,7 @@ def test_plot_wigner_projection(capsys):
 
 def test_simulate_plot(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=3)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=3)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -159,7 +159,7 @@ def test_simulate_plot(capsys):
 
 def test_measure_all_xyz(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=4)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
         qr = qiskit.QuantumRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -192,7 +192,7 @@ def test_cat_state_wigner_plot(capsys):
         num_qubits_per_qumode = 4
         dist = 2
 
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
@@ -219,7 +219,7 @@ def test_cat_state_wigner_plot(capsys):
         assert Path(wigner_filename).is_file()
 
         # # Need to recreate circuit state prior to measure collapsing qubit state for projections
-        # qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_mode=num_qubits_per_qumode)
+        # qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
         # qr = qiskit.QuantumRegister(size=1)
         # cr = qiskit.ClassicalRegister(size=1)
         # circuit = c2qa.CVCircuit(qmr, qr, cr)

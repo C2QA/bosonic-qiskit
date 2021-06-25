@@ -6,7 +6,7 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
-from qiskit.circuit import classicalregister
+from qiskit.circuit import classicalregister, ControlledGate
 from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 from qiskit.result import Result
@@ -257,12 +257,11 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
     # base_circuit is copied each gate iteration to build circuit frames to simulate
     base_circuit = circuit.copy()
     base_circuit.data.clear()  # Is this safe -- could we copy without data?
-    for inst, qargs, cargs in reversed(circuit.data):
+    for inst, qargs, cargs in circuit.data:
         # TODO - get qubit & cbit for measure instead of using parameters
         # qubit = xxx
         # cbit = yyy
 
-        print(inst)  # FIXME -- the circuit prints in reverse order?
         if isinstance(inst, CVGate):  # TODO -- handle conditional gates
 
             # Build circuits for each frame
@@ -270,14 +269,32 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
                 sim_circuit = base_circuit.copy()
 
                 # TODO -- consider copying instruction and changing animation frame index to keep other values (like label)
-                sim_circuit.unitary(inst.op.calculate_matrix(index, animation_segments), qargs)
+                sim_circuit.unitary(inst.op.calculate_matrix(index, animation_segments), qargs, label=inst.name)
 
                 sim_circuit.h(qubit)
                 sim_circuit.measure(qubit, cbit)
 
                 circuits.append(sim_circuit)
-                pass
 
+            # Append the full instruction for the next frame
+            base_circuit.append(inst, qargs, cargs)
+        elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
+            inst_0, qargs_0, cargs_0 = inst.definition.data[0]
+            inst_1, qargs_1, cargs_1 = inst.definition.data[1]
+
+            for index in range(1, animation_segments + 1):
+                sim_circuit = base_circuit.copy()
+
+                op_0 = inst_0.base_gate.op.calculate_matrix(index, animation_segments)
+                op_1 = inst_1.base_gate.op.calculate_matrix(index, animation_segments)
+
+                sim_circuit.append(CVCircuit.cv_conditional(inst.name, op_0, op_1, inst.num_qubits_per_qumode, inst.num_qumodes), qargs, cargs)
+
+                sim_circuit.h(qubit)
+                sim_circuit.measure(qubit, cbit)
+
+                circuits.append(sim_circuit)
+            
             # Append the full instruction for the next frame
             base_circuit.append(inst, qargs, cargs)
         else:
@@ -307,7 +324,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
     anim = matplotlib.animation.FuncAnimation(
         fig=fig,
         func=_animate,
-        frames=animation_segments,
+        frames=len(circuits),
         fargs=(fig, ax, xvec, w_fock),
         interval=200,
         repeat=True,
