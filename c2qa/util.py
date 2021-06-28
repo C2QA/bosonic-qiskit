@@ -1,15 +1,11 @@
-import abc
 from copy import copy
-import math
+import os
 
 import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
-from qiskit.circuit import classicalregister, ControlledGate
-from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
-from qiskit.result import Result
 
 from c2qa import CVCircuit
 from c2qa.operators import CVGate
@@ -262,22 +258,17 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         # qubit = xxx
         # cbit = yyy
 
-        if isinstance(inst, CVGate):  # TODO -- handle conditional gates
-
-            # Build circuits for each frame
+        if isinstance(inst, CVGate):
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                # TODO -- consider copying instruction and changing animation frame index to keep other values (like label)
                 sim_circuit.unitary(inst.op.calculate_matrix(index, animation_segments), qargs, label=inst.name)
 
+                # sim_circuit.barrier()
                 sim_circuit.h(qubit)
                 sim_circuit.measure(qubit, cbit)
 
                 circuits.append(sim_circuit)
-
-            # Append the full instruction for the next frame
-            base_circuit.append(inst, qargs, cargs)
         elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
             inst_0, qargs_0, cargs_0 = inst.definition.data[0]
             inst_1, qargs_1, cargs_1 = inst.definition.data[1]
@@ -290,25 +281,28 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
 
                 sim_circuit.append(CVCircuit.cv_conditional(inst.name, op_0, op_1, inst.num_qubits_per_qumode, inst.num_qumodes), qargs, cargs)
 
+                # sim_circuit.barrier()
                 sim_circuit.h(qubit)
                 sim_circuit.measure(qubit, cbit)
 
                 circuits.append(sim_circuit)
-            
-            # Append the full instruction for the next frame
-            base_circuit.append(inst, qargs, cargs)
         else:
-            base_circuit.append(inst, qargs, cargs)
-
             sim_circuit = base_circuit.copy()
+            sim_circuit.append(inst, qargs, cargs)
+
+            # sim_circuit.barrier()
             sim_circuit.h(qubit)
             sim_circuit.measure(qubit, cbit)
 
             circuits.append(sim_circuit)
+        
+        # Append the full instruction for the next frame
+        base_circuit.append(inst, qargs, cargs)
 
     # Calculate the Wigner functions for each frame
     w_fock = []
     for circuit in circuits:  # TODO -- consider parallel simulation
+        # print(circuit)
         state, _ = simulate(circuit, conditional_state_vector=True)
         even_state = state["0x0"]
         # odd_state = state["0x1"]
@@ -325,7 +319,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         fig=fig,
         func=_animate,
         frames=len(circuits),
-        fargs=(fig, ax, xvec, w_fock),
+        fargs=(fig, ax, xvec, w_fock, file),
         interval=200,
         repeat=True,
     )
@@ -342,6 +336,7 @@ def _animate(frame, *fargs):
     ax = fargs[1]
     xvec = fargs[2]
     w_fock = fargs[3][frame]
+    file = fargs[4]
 
     amax = np.amax(w_fock)
     amin = np.amin(w_fock)
@@ -352,6 +347,10 @@ def _animate(frame, *fargs):
     ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
+
+    if file:
+        os.makedirs(f"{file}_frames", exist_ok=True)
+        plt.savefig(f"{file}_frames/frame_{frame}.png")
 
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):

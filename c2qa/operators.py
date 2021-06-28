@@ -18,6 +18,9 @@ class ParameterizedOperator(Operator):
         for param in self.params:
             values.append(param * param_fraction)
 
+        values = tuple(values)
+
+        # print(f"Original {self.params} now {values}")
         return self.op_func(*values)
 
 
