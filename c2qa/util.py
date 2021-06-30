@@ -1,5 +1,6 @@
 from copy import copy
 import os
+import pathlib
 
 import matplotlib.animation
 import matplotlib.pyplot as plt
@@ -324,10 +325,19 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         repeat=True,
     )
 
-    # Save to file using ffmpeg or display
+    # Save to file using ffmpeg, Pillow (GIF), or display
     if file:
-        writervideo = matplotlib.animation.FFMpegWriter(fps=60)
-        anim.save(file, writer=writervideo)
+        file_path = pathlib.Path(file)
+
+        if file_path.suffix == ".mp4":
+            writer = matplotlib.animation.FFMpegWriter(fps=60)
+        elif file_path.suffix == ".gif":
+            writer = matplotlib.animation.PillowWriter(fps=60)
+        else:
+            print(f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF")
+            writer = matplotlib.animation.PillowWriter(fps=60)
+
+        anim.save(file, writer=writer)
 
     return anim
 

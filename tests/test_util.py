@@ -90,10 +90,32 @@ def test_plot_one(capsys):
         c2qa.util.plot_wigner(circuit, state, file="tests/one.png")
 
 
-# @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+        qr = qiskit.QuantumRegister(size=1)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+        dist = 3
+
+        circuit.initialize([1, 0], qr[0])
+        circuit.cv_initialize(0, qmr[0])
+
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+
+        wigner_filename = "tests/displacement.gif"
+        c2qa.util.animate_wigner(
+            circuit, qubit=qr[0], cbit=cr[0], file=wigner_filename, axes_min=-8, axes_max=8, animation_segments=5
+        )
+        assert Path(wigner_filename).is_file()
+
+
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
+def test_calibration_animate(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
