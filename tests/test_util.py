@@ -132,7 +132,7 @@ def test_calibration_animate(capsys):
         circuit.cv_d(-1j * dist, qmr[0])
 
         c2qa.util.animate_wigner(
-            circuit, qubit=qr[0], cbit=cr[0], file="tests/displacement.mp4", axes_min=-8, axes_max=8, animation_segments=5
+            circuit, qubit=qr[0], cbit=cr[0], file="tests/displacement.mp4", axes_min=-8, axes_max=8, animation_segments=48, shots=128
         )
 
 

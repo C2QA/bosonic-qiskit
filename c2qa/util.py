@@ -235,7 +235,7 @@ def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = Tru
         plt.show()
 
 
-def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
+def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10, shots: int = 1024, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -304,7 +304,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
     w_fock = []
     for circuit in circuits:  # TODO -- consider parallel simulation
         # print(circuit)
-        state, _ = simulate(circuit, conditional_state_vector=True)
+        state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
         even_state = state["0x0"]
         # odd_state = state["0x1"]
 
@@ -330,12 +330,12 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         file_path = pathlib.Path(file)
 
         if file_path.suffix == ".mp4":
-            writer = matplotlib.animation.FFMpegWriter(fps=60)
+            writer = matplotlib.animation.FFMpegWriter(fps=24)
         elif file_path.suffix == ".gif":
-            writer = matplotlib.animation.PillowWriter(fps=60)
+            writer = matplotlib.animation.PillowWriter(fps=24)
         else:
             print(f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF")
-            writer = matplotlib.animation.PillowWriter(fps=60)
+            writer = matplotlib.animation.PillowWriter(fps=24)
 
         anim.save(file, writer=writer)
 
