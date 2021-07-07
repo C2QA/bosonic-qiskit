@@ -15,8 +15,8 @@ def count_nonzero(statevector: qiskit.quantum_info.Statevector):
     return nonzero
 
 
-def create_conditional(num_qumodes: int = 2, num_qubits_per_mode: int = 2):
-    qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_mode)
+def create_conditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 2):
+    qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
     qr = qiskit.QuantumRegister(2)
     circuit = c2qa.CVCircuit(qmr, qr)
 
@@ -28,8 +28,8 @@ def create_conditional(num_qumodes: int = 2, num_qubits_per_mode: int = 2):
     return circuit, qmr, qr
 
 
-def create_unconditional(num_qumodes: int = 2, num_qubits_per_mode: int = 2):
-    qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_mode)
+def create_unconditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 2):
+    qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
     circuit = c2qa.CVCircuit(qmr)
     for qumode in range(num_qumodes):
         circuit.cv_initialize(0, qmr[qumode])

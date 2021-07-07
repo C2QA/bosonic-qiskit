@@ -1,5 +1,34 @@
 import numpy as np
+from qiskit.extensions.unitary import UnitaryGate
 from scipy.linalg import expm
+from qiskit.quantum_info import Operator
+
+
+class ParameterizedOperator(Operator):
+    def __init__(self, op_func, *params):
+        super().__init__(op_func(*params))
+
+        self.op_func = op_func
+        self.params = params
+
+    def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
+        param_fraction = current_step / total_steps
+
+        values = []
+        for param in self.params:
+            values.append(param * param_fraction)
+
+        values = tuple(values)
+
+        # print(f"Original {self.params} now {values}")
+        return self.op_func(*values)
+
+
+class CVGate(UnitaryGate):
+    def __init__(self, data, label=None):
+        super().__init__(data, label)
+
+        self.op = data
 
 
 class CVOperators:
