@@ -1,4 +1,7 @@
 from copy import copy
+import math
+import multiprocessing
+from multiprocessing import process
 import os
 import pathlib
 
@@ -236,7 +239,7 @@ def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = Tru
         plt.show()
 
 
-def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10, shots: int = 1024, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200):
+def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10, shots: int = 1024, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, processes: int = None):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -302,15 +305,12 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         base_circuit.append(inst, qargs, cargs)
 
     # Calculate the Wigner functions for each frame
-    w_fock = []
-    for circuit in circuits:  # TODO -- consider parallel simulation
-        # print(circuit)
-        state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
-        even_state = state["0x0"]
-        # odd_state = state["0x1"]
-
-        density_matrix = cv_partial_trace(circuit, even_state)
-        w_fock.append(_wigner(density_matrix, xvec, xvec, circuit.cutoff))
+    if not processes:
+        processes = math.floor(multiprocessing.cpu_count() / 2)
+        # print(f"Parallelizing simulations on pool of {math.floor(multiprocessing.cpu_count() / 2)} processes across {multiprocessing.cpu_count()} CPUs")
+    pool = multiprocessing.Pool(processes)
+    w_fock = pool.starmap(_simulate_wigner, ((circuit, xvec, shots) for circuit in circuits))
+    pool.close()
 
     # Animate w_fock Wigner function results
     # Create empty plot to animate
@@ -362,6 +362,15 @@ def _animate(frame, *fargs):
     if file:
         os.makedirs(f"{file}_frames", exist_ok=True)
         plt.savefig(f"{file}_frames/frame_{frame}.png")
+
+
+def _simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
+    state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
+    even_state = state["0x0"]
+    # odd_state = state["0x1"]
+
+    density_matrix = cv_partial_trace(circuit, even_state)
+    return _wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
