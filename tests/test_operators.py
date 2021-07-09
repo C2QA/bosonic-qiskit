@@ -9,10 +9,11 @@ def allclose(a, b) -> bool:
     from numpy import allclose
     from scipy.sparse.csr import csr_matrix
 
-    if isinstance(a, csr_matrix):
+    # If a and b are SciPy sparse matrices, they'll have a "toarray()" function
+    if hasattr(a, "toarray"):
         a = a.toarray()
 
-    if isinstance(b, csr_matrix):
+    if hasattr(b, "toarray"):
         b = b.toarray()
 
     return allclose(a, b)
@@ -52,11 +53,13 @@ class TestMatrices:
     """
 
     def setup_method(self, method):
-        self.ops = CVOperators(cutoff=4, num_qumodes=2)
+        self.cutoff = 4
+        self.num_qumodes = 2
+        self.ops = CVOperators(cutoff=self.cutoff, num_qumodes=self.num_qumodes)
 
     def test_a(self, capsys):
         # From https://github.com/XanaduAI/strawberryfields/blob/master/strawberryfields/backends/fockbackend/ops.py#L208-L215
-        trunc = 4  # equal to CVOperators cutoff
+        trunc = self.cutoff  # equal to CVOperators cutoff
         ret = numpy.zeros((trunc, trunc), dtype=numpy.complex128)
         for i in range(1, trunc):
             ret[i - 1][i] = numpy.sqrt(i)
@@ -98,17 +101,6 @@ class TestMatrices:
 
             assert not allclose(one, rand)
 
-    def test_compare_d(self, capsys):
-        with capsys.disabled():
-            ops = CVOperators(cutoff=40, num_qumodes=1)
-            # d = ops.d(0.3+0.5j)
-            # sf = d[0:5, 0:5]
-            d = ops.d(1)
-            sf = d[0:4, 0:4]
-            print(d)
-            print()
-            print(sf)
-
     def test_d_across_os(self, capsys):
         """Doesn't actually test anything, but as it is run across platforms by GitHub
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
@@ -117,7 +109,7 @@ class TestMatrices:
             # print()
             # print(op)
 
-            assert op.getnnnz()
+            assert op.nnz
 
     def test_r(self):
         one = self.ops.r(1)

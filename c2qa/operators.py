@@ -36,7 +36,8 @@ class CVGate(UnitaryGate):
 class CVOperators:
     def __init__(self, cutoff: int, num_qumodes: int):
         # Annihilation operator
-        self.a = scipy.sparse.csr_matrix.diagonal(scipy.sparse.csr_matrix(range(1, cutoff)).sqrt(), k=1)
+        data = numpy.sqrt(range(cutoff))
+        self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data))
 
         # Creation operator
         self.a_dag = self.a.conjugate().transpose()
@@ -48,7 +49,7 @@ class CVOperators:
         # 2-qumodes operators
         if num_qumodes > 1:
             eye = scipy.sparse.eye(cutoff)
-            self.a1 = scipy.sparse.kron(self.a, eye)  # TODO why is numpy.kron make 3D array? It runs out of memory at larger cutoffs.
+            self.a1 = scipy.sparse.kron(self.a, eye)
             self.a2 = scipy.sparse.kron(eye, self.a)
             self.a1_dag = self.a1.conjugate().transpose()
             self.a2_dag = self.a2.conjugate().transpose()
