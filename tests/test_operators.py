@@ -7,7 +7,6 @@ import numpy
 def allclose(a, b) -> bool:
     """Convert SciPy sparse matrices to ndarray and test with Numpy"""
     from numpy import allclose
-    from scipy.sparse.csr import csr_matrix
 
     # If a and b are SciPy sparse matrices, they'll have a "toarray()" function
     if hasattr(a, "toarray"):
@@ -22,6 +21,7 @@ def allclose(a, b) -> bool:
 def is_unitary_matrix(mat) -> bool:
     """Convert SciPy sparse matrix to ndarray and test with QisKit"""
     from qiskit.quantum_info.operators.predicates import is_unitary_matrix
+
     return is_unitary_matrix(mat.toarray())
 
 
