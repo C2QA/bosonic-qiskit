@@ -3,7 +3,7 @@ import numpy
 from pathlib import Path
 import pytest
 import qiskit
-from qiskit.visualization import plot_state_city, plot_histogram
+from qiskit.visualization import plot_histogram
 
 
 def test_partial_trace_zero(capsys):

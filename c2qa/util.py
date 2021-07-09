@@ -90,7 +90,7 @@ def simulate(
             state = Statevector(result.get_statevector(circuit_compiled))
     except:
         state = (
-            None  # result.get_statevector() will fail if add_save_statevector is true
+            None  # result.get_statevector() will fail if add_save_statevector is false
         )
 
     if add_save_statevector:
@@ -351,7 +351,6 @@ def animate_wigner(
     # Calculate the Wigner functions for each frame
     if not processes:
         processes = math.floor(multiprocessing.cpu_count() / 2)
-        # print(f"Parallelizing simulations on pool of {math.floor(multiprocessing.cpu_count() / 2)} processes across {multiprocessing.cpu_count()} CPUs")
     pool = multiprocessing.Pool(processes)
     w_fock = pool.starmap(
         _simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
@@ -423,7 +422,8 @@ def _simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
-    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies. Starwberry Fields used the QuTiP "iterative" implementation.
+    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies. 
+    Starwberry Fields used the QuTiP "iterative" implementation.
 
     Strawberry Fields is released under the Apache License: https://github.com/XanaduAI/strawberryfields/blob/master/LICENSE
 
