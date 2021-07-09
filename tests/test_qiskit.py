@@ -3,7 +3,7 @@ from qiskit import Aer
 
 
 def test_qiskit():
-    """ Verify we can do a simple QisKit circuit without our custom gates. """
+    """Verify we can do a simple QisKit circuit without our custom gates."""
     qr = qiskit.QuantumRegister(6)
     cr = qiskit.ClassicalRegister(6)
     circuit = qiskit.circuit.QuantumCircuit(qr, cr)

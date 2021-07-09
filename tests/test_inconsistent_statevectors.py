@@ -38,7 +38,7 @@ def conditional_displacement_gate(circuit, arg_0, arg_1, qbit, qumode):
 
 
 def qumode_initialize(circuit, fock_state, qumode):
-    """ Initialize the qumode to a Fock state. """
+    """Initialize the qumode to a Fock state."""
 
     value = numpy.zeros((cutoff,))
     value[fock_state] = 1
@@ -84,8 +84,8 @@ def run_displacement_calibration(enable_measure):
     state = result.get_statevector(circuit)
     counts = result.get_counts(circuit)
 
-    assert(len(state) > 0)
-    assert(counts)
+    assert len(state) > 0
+    assert counts
 
     # print(state)
     # print(counts.int_outcomes())

@@ -1,12 +1,10 @@
-from qiskit.quantum_info.states.densitymatrix import DensityMatrix
 import c2qa
-import matplotlib.pyplot as plt
 import numpy
 from pathlib import Path
 import pytest
-import scipy.special as ssp
 import qiskit
 from qiskit.visualization import plot_state_city, plot_histogram
+
 
 def test_partial_trace_zero(capsys):
     with capsys.disabled():
@@ -105,7 +103,13 @@ def test_animate(capsys):
 
         wigner_filename = "tests/displacement.gif"
         c2qa.util.animate_wigner(
-            circuit, qubit=qr[0], cbit=cr[0], file=wigner_filename, axes_min=-8, axes_max=8, animation_segments=5
+            circuit,
+            qubit=qr[0],
+            cbit=cr[0],
+            file=wigner_filename,
+            axes_min=-8,
+            axes_max=8,
+            animation_segments=5,
         )
         assert Path(wigner_filename).is_file()
 
@@ -130,7 +134,14 @@ def test_calibration_animate(capsys):
         circuit.cv_d(-1j * dist, qmr[0])
 
         c2qa.util.animate_wigner(
-            circuit, qubit=qr[0], cbit=cr[0], file="tests/displacement.mp4", axes_min=-8, axes_max=8, animation_segments=48, shots=128
+            circuit,
+            qubit=qr[0],
+            cbit=cr[0],
+            file="tests/displacement.mp4",
+            axes_min=-8,
+            axes_max=8,
+            animation_segments=48,
+            shots=128,
         )
 
 
@@ -153,30 +164,6 @@ def test_plot_wigner_projection(capsys):
         c2qa.util.plot_wigner_projection(circuit, qr[0], file="tests/interference.png")
 
 
-def test_simulate_plot(capsys):
-    with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=3)
-        qr = qiskit.QuantumRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr)
-
-        # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
-        dist = 1.0
-
-        # qr[0] will init to zero
-        # circuit.cv_initialize(0, qmr[0])
-        # circuit.initialize([0,1], qr[0])
-        circuit.initialize([0,1], qmr[0][0])
-
-        # circuit.h(qr[0])
-        # circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
-
-        state, result = c2qa.util.simulate(circuit)
-
-        print(state)
-        plot_state_city(state).savefig("tests/plot_state_city.png")
-        plot_histogram(result.get_counts(), figsize=(9, 7)).savefig("tests/plot_histogram.png")
-
-
 def test_measure_all_xyz(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
@@ -192,7 +179,11 @@ def test_measure_all_xyz(capsys):
         circuit.h(qr[0])
         circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
 
-        (state_x, result_x), (state_y, result_y), (state_z, result_z) = c2qa.util.measure_all_xyz(circuit)
+        (
+            (state_x, result_x),
+            (state_y, result_y),
+            (state_z, result_z),
+        ) = c2qa.util.measure_all_xyz(circuit)
 
         print("state_x.probabilities_dict()")
         print(state_x.probabilities_dict())
@@ -203,16 +194,25 @@ def test_measure_all_xyz(capsys):
         print("result_x.to_dict()")
         print(result_x.to_dict())
 
-        plot_histogram(result_x.get_counts(), title="X", figsize=(9, 7)).savefig("tests/plot_histogram_x.png")
-        plot_histogram(result_y.get_counts(), title="Y", figsize=(9, 7)).savefig("tests/plot_histogram_y.png")
-        plot_histogram(result_z.get_counts(), title="Z", figsize=(9, 7)).savefig("tests/plot_histogram_z.png")
+        plot_histogram(result_x.get_counts(), title="X", figsize=(9, 7)).savefig(
+            "tests/plot_histogram_x.png"
+        )
+        plot_histogram(result_y.get_counts(), title="Y", figsize=(9, 7)).savefig(
+            "tests/plot_histogram_y.png"
+        )
+        plot_histogram(result_z.get_counts(), title="Z", figsize=(9, 7)).savefig(
+            "tests/plot_histogram_z.png"
+        )
+
 
 def test_cat_state_wigner_plot(capsys):
     with capsys.disabled():
         num_qubits_per_qumode = 4
         dist = 2
 
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
+        qmr = c2qa.QumodeRegister(
+            num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode
+        )
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
@@ -231,11 +231,25 @@ def test_cat_state_wigner_plot(capsys):
         odd_state = state["0x1"]
 
         wigner_filename = "tests/cat_wigner_even.png"
-        c2qa.util.plot_wigner(circuit, even_state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
+        c2qa.util.plot_wigner(
+            circuit,
+            even_state,
+            file=wigner_filename,
+            trace=True,
+            axes_min=-6,
+            axes_max=6,
+        )
         assert Path(wigner_filename).is_file()
 
         wigner_filename = "tests/cat_wigner_odd.png"
-        c2qa.util.plot_wigner(circuit, odd_state, file=wigner_filename, trace=True, axes_min=-6, axes_max=6)
+        c2qa.util.plot_wigner(
+            circuit,
+            odd_state,
+            file=wigner_filename,
+            trace=True,
+            axes_min=-6,
+            axes_max=6,
+        )
         assert Path(wigner_filename).is_file()
 
         # # Need to recreate circuit state prior to measure collapsing qubit state for projections

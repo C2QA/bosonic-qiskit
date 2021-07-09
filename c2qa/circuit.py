@@ -1,9 +1,7 @@
-import math
 import warnings
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.extensions import UnitaryGate
 
 from c2qa.operators import CVGate, CVOperators, ParameterizedOperator
 from c2qa.qumoderegister import QumodeRegister
@@ -63,7 +61,7 @@ class CVCircuit(QuantumCircuit):
         return self.qmregs[-1].num_qubits_per_qumode
 
     def cv_initialize(self, fock_state, qumodes):
-        """ Initialize the qumode to a Fock state. """
+        """Initialize the qumode to a Fock state."""
 
         # Qumodes are already represented as arrays of qubits,
         # but if this is an array of arrays, then we are initializing multiple qumodes.
@@ -82,7 +80,7 @@ class CVCircuit(QuantumCircuit):
 
     @staticmethod
     def cv_conditional(name, op_0, op_1, num_qubits_per_qumode, num_qumodes=1):
-        """ Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state) """
+        """Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)"""
         sub_qr = QuantumRegister(1)
         sub_qmr = QumodeRegister(num_qumodes, num_qubits_per_qumode)
         sub_circ = QuantumCircuit(sub_qr, sub_qmr.qreg, name=name)
@@ -92,14 +90,8 @@ class CVCircuit(QuantumCircuit):
         for i in range(num_qumodes):
             qargs += sub_qmr[i]
 
-        sub_circ.append(
-            CVGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
-            qargs
-        )
-        sub_circ.append(
-            CVGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
-            qargs
-        )
+        sub_circ.append(CVGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0), qargs)
+        sub_circ.append(CVGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1), qargs)
 
         # Create a single instruction for the conditional gate, flag it for later processing
         inst = sub_circ.to_instruction()
@@ -116,7 +108,12 @@ class CVCircuit(QuantumCircuit):
     def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
         op_0 = ParameterizedOperator(self.ops.bs, phi)
         op_1 = ParameterizedOperator(self.ops.bs, chi)
-        self.append(CVCircuit.cv_conditional("BSc", op_0, op_1, self.num_qubits_per_qumode, num_qumodes=2), [ctrl] + qumode_a + qumode_b)
+        self.append(
+            CVCircuit.cv_conditional(
+                "BSc", op_0, op_1, self.num_qubits_per_qumode, num_qumodes=2
+            ),
+            [ctrl] + qumode_a + qumode_b,
+        )
 
     def cv_d(self, alpha, qumode):
         operator = ParameterizedOperator(self.ops.d, alpha)
@@ -125,7 +122,10 @@ class CVCircuit(QuantumCircuit):
     def cv_cnd_d(self, alpha, beta, ctrl, qumode):
         op_0 = ParameterizedOperator(self.ops.d, alpha)
         op_1 = ParameterizedOperator(self.ops.d, beta)
-        self.append(CVCircuit.cv_conditional("Dc", op_0, op_1, self.num_qubits_per_qumode), [ctrl] + qumode)
+        self.append(
+            CVCircuit.cv_conditional("Dc", op_0, op_1, self.num_qubits_per_qumode),
+            [ctrl] + qumode,
+        )
 
     def cv_r(self, phi, qumode):
         operator = ParameterizedOperator(self.ops.r, phi)
@@ -138,7 +138,10 @@ class CVCircuit(QuantumCircuit):
     def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a):
         op_0 = ParameterizedOperator(self.ops.s, z_a)
         op_1 = ParameterizedOperator(self.ops.s, z_b)
-        self.append(CVCircuit.cv_conditional("Sc", op_0, op_1, self.num_qubits_per_qumode), [ctrl] + qumode_a)
+        self.append(
+            CVCircuit.cv_conditional("Sc", op_0, op_1, self.num_qubits_per_qumode),
+            [ctrl] + qumode_a,
+        )
 
     def cv_s2(self, z, qumode_a, qumode_b):
         operator = ParameterizedOperator(self.ops.s2, z)

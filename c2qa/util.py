@@ -1,7 +1,6 @@
 from copy import copy
 import math
 import multiprocessing
-from multiprocessing import process
 import os
 import pathlib
 
@@ -9,7 +8,9 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
-from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
+from qiskit.providers.aer.library.save_instructions.save_statevector import (
+    save_statevector,
+)
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 
 from c2qa import CVCircuit
@@ -20,7 +21,7 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     """
     Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
 
-    Returns state, result tuples each for the X, Y, and Z basis.    
+    Returns state, result tuples each for the X, Y, and Z basis.
     """
 
     # QuantumCircuit.measure_all(False) returns a copy of the circuit with measurement gates.
@@ -52,11 +53,17 @@ def get_probabilities(result: qiskit.result.Result):
     probs = {}
     for count in counts:
         probs[count] = counts[count] / shots
-    
+
     return probs
 
 
-def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int = 1024, add_save_statevector: bool = True, conditional_state_vector: bool = False):
+def simulate(
+    circuit: CVCircuit,
+    backend_name: str = "aer_simulator",
+    shots: int = 1024,
+    add_save_statevector: bool = True,
+    conditional_state_vector: bool = False,
+):
     """
     Convenience function to simulate using the given backend.
 
@@ -77,11 +84,14 @@ def simulate(circuit: CVCircuit, backend_name: str = "aer_simulator", shots: int
     # The user may have added their own circuit.save_statevector
     try:
         if conditional_state_vector:
-            state = result.data()['statevector']  # Will get a dictionary of state vectors, one for each classical register value
+            # Will get a dictionary of state vectors, one for each classical register value
+            state = result.data()["statevector"]
         else:
             state = Statevector(result.get_statevector(circuit_compiled))
     except:
-        state = None  # result.get_statevector() will fail if add_save_statevector is true
+        state = (
+            None  # result.get_statevector() will fail if add_save_statevector is true
+        )
 
     if add_save_statevector:
         circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
@@ -201,14 +211,23 @@ def _find_qubit_indices(circuit: CVCircuit):
 
 
 def cv_partial_trace(circuit: CVCircuit, state_vector):
-    """ Return reduced density matrix by tracing out the qubits from the given Fock state vector. """
+    """Return reduced density matrix by tracing out the qubits from the given Fock state vector."""
 
     indices = _find_qubit_indices(circuit)
 
     return partial_trace(state_vector, indices)
 
 
-def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = True, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, num_colors: int = 100):
+def plot_wigner(
+    circuit: CVCircuit,
+    state_vector: Statevector,
+    trace: bool = True,
+    file: str = None,
+    axes_min: int = -5,
+    axes_max: int = 5,
+    axes_steps: int = 200,
+    num_colors: int = 100,
+):
     """
     Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -239,7 +258,18 @@ def plot_wigner(circuit: CVCircuit, state_vector: Statevector, trace: bool = Tru
         plt.show()
 
 
-def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10, shots: int = 1024, file: str = None, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, processes: int = None):
+def animate_wigner(
+    circuit: CVCircuit,
+    qubit,
+    cbit,
+    animation_segments: int = 10,
+    shots: int = 1024,
+    file: str = None,
+    axes_min: int = -5,
+    axes_max: int = 5,
+    axes_steps: int = 200,
+    processes: int = None,
+):
     """
     Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -254,7 +284,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
     xvec = np.linspace(axes_min, axes_max, axes_steps)
 
     circuits = []  # Each frame will have its own circuit to simulate
-    
+
     # base_circuit is copied each gate iteration to build circuit frames to simulate
     base_circuit = circuit.copy()
     base_circuit.data.clear()  # Is this safe -- could we copy without data?
@@ -267,7 +297,11 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                sim_circuit.unitary(inst.op.calculate_matrix(index, animation_segments), qargs, label=inst.name)
+                sim_circuit.unitary(
+                    inst.op.calculate_matrix(index, animation_segments),
+                    qargs,
+                    label=inst.name,
+                )
 
                 # sim_circuit.barrier()
                 sim_circuit.h(qubit)
@@ -284,7 +318,17 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
                 op_0 = inst_0.base_gate.op.calculate_matrix(index, animation_segments)
                 op_1 = inst_1.base_gate.op.calculate_matrix(index, animation_segments)
 
-                sim_circuit.append(CVCircuit.cv_conditional(inst.name, op_0, op_1, inst.num_qubits_per_qumode, inst.num_qumodes), qargs, cargs)
+                sim_circuit.append(
+                    CVCircuit.cv_conditional(
+                        inst.name,
+                        op_0,
+                        op_1,
+                        inst.num_qubits_per_qumode,
+                        inst.num_qumodes,
+                    ),
+                    qargs,
+                    cargs,
+                )
 
                 # sim_circuit.barrier()
                 sim_circuit.h(qubit)
@@ -300,7 +344,7 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
             sim_circuit.measure(qubit, cbit)
 
             circuits.append(sim_circuit)
-        
+
         # Append the full instruction for the next frame
         base_circuit.append(inst, qargs, cargs)
 
@@ -309,7 +353,9 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         processes = math.floor(multiprocessing.cpu_count() / 2)
         # print(f"Parallelizing simulations on pool of {math.floor(multiprocessing.cpu_count() / 2)} processes across {multiprocessing.cpu_count()} CPUs")
     pool = multiprocessing.Pool(processes)
-    w_fock = pool.starmap(_simulate_wigner, ((circuit, xvec, shots) for circuit in circuits))
+    w_fock = pool.starmap(
+        _simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
+    )
     pool.close()
 
     # Animate w_fock Wigner function results
@@ -335,7 +381,9 @@ def animate_wigner(circuit: CVCircuit, qubit, cbit, animation_segments: int = 10
         elif file_path.suffix == ".gif":
             writer = matplotlib.animation.PillowWriter(fps=24)
         else:
-            print(f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF")
+            print(
+                f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF"
+            )
             writer = matplotlib.animation.PillowWriter(fps=24)
 
         anim.save(file, writer=writer)
