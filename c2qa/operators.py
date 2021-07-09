@@ -7,7 +7,7 @@ import scipy.sparse.linalg
 
 class ParameterizedOperator(Operator):
     def __init__(self, op_func, *params):
-        super().__init__(op_func(*params))
+        super().__init__(op_func(*params).toarray())
 
         self.op_func = op_func
         self.params = params
@@ -21,16 +21,14 @@ class ParameterizedOperator(Operator):
 
         values = tuple(values)
 
-        return self.op_func(*values)
+        return self.op_func(*values).toarray()
 
 
 class CVGate(UnitaryGate):
     def __init__(self, data, label=None):
         super().__init__(data, label)
 
-        # This will convert the SciPy sparse matrix to a Numpy dense matrix,
-        # which may require considerable memory for large cutoff values.
-        self.op = data.toarray()
+        self.op = data
 
 
 class CVOperators:
