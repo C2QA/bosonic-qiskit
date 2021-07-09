@@ -1,4 +1,5 @@
 import qiskit
+from qiskit import Aer
 
 
 def test_qiskit():
@@ -7,9 +8,10 @@ def test_qiskit():
     cr = qiskit.ClassicalRegister(6)
     circuit = qiskit.circuit.QuantumCircuit(qr, cr)
     circuit.cx(qr[0:1], qr[2])
+    circuit.save_statevector()
 
-    backend = qiskit.Aer.get_backend("statevector_simulator")
-    job = qiskit.execute(circuit, backend)
+    backend = Aer.get_backend("aer_simulator")
+    job = backend.run(circuit)
     result = job.result()
     state = result.get_statevector(circuit)
 

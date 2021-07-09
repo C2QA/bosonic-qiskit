@@ -1,10 +1,11 @@
 import numpy
 import qiskit
+from qiskit import Aer
 import scipy.linalg
 
 # Define parameters
-num_qubits_per_mode = 2
-cutoff = 2 ** num_qubits_per_mode
+num_qubits_per_qumode = 2
+cutoff = 2 ** num_qubits_per_qumode
 alpha = numpy.sqrt(numpy.pi)
 
 
@@ -56,7 +57,7 @@ def run_displacement_calibration(enable_measure):
     """
 
     # Instantiate QisKit registers & circuit
-    qmr = qiskit.QuantumRegister(num_qubits_per_mode)  # qumode register
+    qmr = qiskit.QuantumRegister(num_qubits_per_qumode)  # qumode register
     qr = qiskit.QuantumRegister(1)
     cr = qiskit.ClassicalRegister(1)
     circuit = qiskit.QuantumCircuit(qmr, qr, cr)
@@ -72,10 +73,12 @@ def run_displacement_calibration(enable_measure):
     displacemnt_gate(circuit, -1j * alpha, qmr[0:])
     circuit.h(qr[0])
 
+    circuit.save_statevector()
+
     if enable_measure:
         circuit.measure(qr[0], cr[0])
 
-    backend = qiskit.Aer.get_backend("statevector_simulator")
+    backend = Aer.get_backend("aer_simulator")
     job = qiskit.execute(circuit, backend)
     result = job.result()
     state = result.get_statevector(circuit)
