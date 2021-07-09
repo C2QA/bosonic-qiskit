@@ -7,8 +7,6 @@ import pytest
 import scipy.special as ssp
 import qiskit
 from qiskit.visualization import plot_state_city, plot_histogram
-from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
-from qiskit.providers.aer.library.save_instructions.save_data import SaveAverageData
 
 def test_partial_trace_zero(capsys):
     with capsys.disabled():

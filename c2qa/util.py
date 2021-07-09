@@ -6,6 +6,7 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
+from qiskit.providers.aer.library.save_instructions.save_statevector import save_statevector
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 
 from c2qa import CVCircuit

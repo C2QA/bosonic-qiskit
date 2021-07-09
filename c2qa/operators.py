@@ -1,12 +1,13 @@
-import numpy as np
+import numpy
 from qiskit.extensions.unitary import UnitaryGate
-from scipy.linalg import expm
 from qiskit.quantum_info import Operator
+import scipy.sparse
+import scipy.sparse.linalg
 
 
 class ParameterizedOperator(Operator):
     def __init__(self, op_func, *params):
-        super().__init__(op_func(*params))
+        super().__init__(op_func(*params).toarray())
 
         self.op_func = op_func
         self.params = params
@@ -20,8 +21,7 @@ class ParameterizedOperator(Operator):
 
         values = tuple(values)
 
-        # print(f"Original {self.params} now {values}")
-        return self.op_func(*values)
+        return self.op_func(*values).toarray()
 
 
 class CVGate(UnitaryGate):
@@ -34,62 +34,70 @@ class CVGate(UnitaryGate):
 class CVOperators:
     def __init__(self, cutoff: int, num_qumodes: int):
         # Annihilation operator
-        self.a = np.diag(np.sqrt(range(1, cutoff)), k=1)
+        data = numpy.sqrt(range(cutoff))
+        self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data))
 
         # Creation operator
-        self.a_dag = self.a.conj().T
+        self.a_dag = self.a.conjugate().transpose()
 
         # Number operator
-        self.N = np.matmul(self.a_dag, self.a)
+        # self.N = scipy.sparse.matmul(self.a_dag, self.a)
+        self.N = self.a_dag * self.a
 
         # 2-qumodes operators
         if num_qumodes > 1:
-            eye = np.eye(cutoff)
-            self.a1 = np.kron(self.a, eye)  # TODO why is numpy.kron make 3D array? It runs out of memory at larger cutoffs.
-            self.a2 = np.kron(eye, self.a)
-            self.a1_dag = self.a1.conj().T
-            self.a2_dag = self.a2.conj().T
+            eye = scipy.sparse.eye(cutoff)
+            self.a1 = scipy.sparse.kron(self.a, eye)
+            self.a2 = scipy.sparse.kron(eye, self.a)
+            self.a1_dag = self.a1.conjugate().transpose()
+            self.a2_dag = self.a2.conjugate().transpose()
 
     def bs(self, g):
         """ Two-mode beam splitter opertor """
-        a12dag = np.matmul(self.a1, self.a2_dag)
-        a1dag2 = np.matmul(self.a1_dag, self.a2)
+        # a12dag = scipy.sparse.matmul(self.a1, self.a2_dag)
+        # a1dag2 = scipy.sparse.matmul(self.a1_dag, self.a2)
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
 
         # FIXME -- See Steve 5.4
         #   phi as g(t)
         #   - as +, but QisKit validates that not being unitary
-        arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        arg = (g * -1j * a12dag) - (numpy.conjugate(g * -1j) * a1dag2)
 
-        return expm(arg)
+        return scipy.sparse.linalg.expm(arg)
 
     def d(self, alpha):
         """ Displacement operator """
-        arg = (alpha * self.a_dag) - (np.conjugate(alpha) * self.a)
+        arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
 
-        return expm(arg)
+        return scipy.sparse.linalg.expm(arg)
 
     def r(self, theta):
         """ Phase space rotation operator """
         arg = 1j * theta * self.N
 
-        return expm(arg)
+        return scipy.sparse.linalg.expm(arg)
 
     def s(self, zeta):
         """ Single-mode squeezing operator """
-        a_sqr = np.matmul(self.a, self.a)
-        a_dag_sqr = np.matmul(self.a_dag, self.a_dag)
-        arg = 0.5 * ((np.conjugate(zeta) * a_sqr) - (zeta * a_dag_sqr))
+        # a_sqr = scipy.sparse.matmul(self.a, self.a)
+        # a_dag_sqr = scipy.sparse.matmul(self.a_dag, self.a_dag)
+        a_sqr = self.a * self.a
+        a_dag_sqr = self.a_dag * self.a_dag
+        arg = 0.5 * ((numpy.conjugate(zeta) * a_sqr) - (zeta * a_dag_sqr))
 
-        return expm(arg)
+        return scipy.sparse.linalg.expm(arg)
 
     def s2(self, g):
         """ Two-mode squeezing operator """
-        a12_dag = np.matmul(self.a1_dag, self.a2_dag)
-        a12 = np.matmul(self.a1, self.a2)
+        # a12_dag = scipy.sparse.matmul(self.a1_dag, self.a2_dag)
+        # a12 = scipy.sparse.matmul(self.a1, self.a2)
+        a12_dag = self.a1_dag * self.a2_dag
+        a12 = self.a1 * self.a2
 
         # FIXME -- See Steve 5.7
         #   zeta as g(t)
         #   use of imaginary, but QisKit validates that is not unitary
-        arg = (np.conjugate(g) * a12_dag) - (g * a12)
+        arg = (numpy.conjugate(g) * a12_dag) - (g * a12)
 
-        return expm(arg)
+        return scipy.sparse.linalg.expm(arg)
