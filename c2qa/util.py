@@ -349,7 +349,7 @@ def animate_wigner(
         base_circuit.append(inst, qargs, cargs)
 
     # Calculate the Wigner functions for each frame
-    if not processes or processes < 1
+    if not processes or processes < 1:
         processes = math.floor(multiprocessing.cpu_count() / 2)
         processes = max(processes, 1)  # prevent zero processes with 1 CPU
     pool = multiprocessing.Pool(processes)
