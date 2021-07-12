@@ -178,11 +178,15 @@ def test_cond_displacement_gate_vs_two_separate():
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
     circuit.append(
-        UnitaryGate(circuit.ops.d(alpha).toarray()).control(num_ctrl_qubits=1, ctrl_state=0),
+        UnitaryGate(circuit.ops.d(alpha).toarray()).control(
+            num_ctrl_qubits=1, ctrl_state=0
+        ),
         [qr[0]] + qmr[0],
     )
     circuit.append(
-        UnitaryGate(circuit.ops.d(beta).toarray()).control(num_ctrl_qubits=1, ctrl_state=1),
+        UnitaryGate(circuit.ops.d(beta).toarray()).control(
+            num_ctrl_qubits=1, ctrl_state=1
+        ),
         [qr[0]] + qmr[0],
     )
     state, result = c2qa.util.simulate(circuit)
@@ -218,8 +222,8 @@ def test_displacement_calibration(capsys):
         state = result.get_statevector(circuit)
         counts = result.get_counts(circuit)
 
-        assert(len(state) > 0)
-        assert(counts)
+        assert len(state) > 0
+        assert counts
 
         # print()
         # print(circuit.draw("text"))
@@ -295,7 +299,7 @@ def test_two_mode_squeezing_twice():
 
 
 def test_gates():
-    """ Verify that we can use the gates, not that they are actually working. """
+    """Verify that we can use the gates, not that they are actually working."""
 
     # ===== Constants =====
     alpha = 1

@@ -53,7 +53,7 @@ class CVOperators:
             self.a2_dag = self.a2.conjugate().transpose()
 
     def bs(self, g):
-        """ Two-mode beam splitter opertor """
+        """Two-mode beam splitter opertor"""
         # a12dag = scipy.sparse.matmul(self.a1, self.a2_dag)
         # a1dag2 = scipy.sparse.matmul(self.a1_dag, self.a2)
         a12dag = self.a1 * self.a2_dag
@@ -67,19 +67,19 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def d(self, alpha):
-        """ Displacement operator """
+        """Displacement operator"""
         arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
 
         return scipy.sparse.linalg.expm(arg)
 
     def r(self, theta):
-        """ Phase space rotation operator """
+        """Phase space rotation operator"""
         arg = 1j * theta * self.N
 
         return scipy.sparse.linalg.expm(arg)
 
     def s(self, zeta):
-        """ Single-mode squeezing operator """
+        """Single-mode squeezing operator"""
         # a_sqr = scipy.sparse.matmul(self.a, self.a)
         # a_dag_sqr = scipy.sparse.matmul(self.a_dag, self.a_dag)
         a_sqr = self.a * self.a
@@ -89,7 +89,7 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def s2(self, g):
-        """ Two-mode squeezing operator """
+        """Two-mode squeezing operator"""
         # a12_dag = scipy.sparse.matmul(self.a1_dag, self.a2_dag)
         # a12 = scipy.sparse.matmul(self.a1, self.a2)
         a12_dag = self.a1_dag * self.a2_dag
