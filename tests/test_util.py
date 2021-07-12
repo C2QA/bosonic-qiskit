@@ -86,7 +86,6 @@ def test_plot_one(capsys):
         c2qa.util.plot_wigner(circuit, state, file="tests/one.png")
 
 
-@pytest.mark.skip(reason="GitHub actions hang in Linux & MacOS when using multiprocess.Pool.starmap()")
 def test_animate(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
@@ -111,6 +110,7 @@ def test_animate(capsys):
             axes_min=-8,
             axes_max=8,
             animation_segments=5,
+            processes=1,
         )
         assert Path(wigner_filename).is_file()
 

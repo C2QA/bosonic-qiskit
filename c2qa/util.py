@@ -352,11 +352,17 @@ def animate_wigner(
     if not processes or processes < 1:
         processes = math.floor(multiprocessing.cpu_count() / 2)
         processes = max(processes, 1)  # prevent zero processes with 1 CPU
-    pool = multiprocessing.Pool(processes)
-    w_fock = pool.starmap(
-        _simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
-    )
-    pool.close()
+
+    if processes == 1:
+        w_fock = []
+        for circuit in circuits:
+            w_fock.append(_simulate_wigner(circuit, xvec, shots))
+    else:
+        pool = multiprocessing.Pool(processes)
+        w_fock = pool.starmap(
+            _simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
+        )
+        pool.close()
 
     # Animate w_fock Wigner function results
     # Create empty plot to animate
@@ -423,7 +429,7 @@ def _simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
-    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies. 
+    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
     Starwberry Fields used the QuTiP "iterative" implementation.
 
     Strawberry Fields is released under the Apache License: https://github.com/XanaduAI/strawberryfields/blob/master/LICENSE
