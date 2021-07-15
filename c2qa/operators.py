@@ -6,11 +6,12 @@ import scipy.sparse.linalg
 
 
 class ParameterizedOperator(Operator):
-    def __init__(self, op_func, *params):
+    def __init__(self, op_func, *params, dagger: bool = False):
         super().__init__(op_func(*params).toarray())
 
         self.op_func = op_func
         self.params = params
+        self.dagger = dagger
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
         param_fraction = current_step / total_steps
@@ -21,7 +22,12 @@ class ParameterizedOperator(Operator):
 
         values = tuple(values)
 
-        return self.op_func(*values).toarray()
+        if self.dagger:
+            result = self.op_func(*values).conjugate().transpose()
+        else:
+            result = self.op_func(*values)
+
+        return result.toarray()
 
 
 class CVGate(UnitaryGate):

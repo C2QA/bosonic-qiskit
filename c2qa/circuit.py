@@ -101,13 +101,13 @@ class CVCircuit(QuantumCircuit):
 
         return inst
 
-    def cv_bs(self, phi, qumode_a, qumode_b):
-        operator = ParameterizedOperator(self.ops.bs, phi)
+    def cv_bs(self, phi, qumode_a, qumode_b, dagger: bool = False):
+        operator = ParameterizedOperator(self.ops.bs, phi, dagger=dagger)
         self.append(CVGate(data=operator, label="BS"), qargs=qumode_a + qumode_b)
 
-    def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
-        op_0 = ParameterizedOperator(self.ops.bs, phi)
-        op_1 = ParameterizedOperator(self.ops.bs, chi)
+    def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b, phi_dagger: bool = False, chi_dagger: bool = False):
+        op_0 = ParameterizedOperator(self.ops.bs, phi, dagger=phi_dagger)
+        op_1 = ParameterizedOperator(self.ops.bs, chi, dagger=chi_dagger)
         self.append(
             CVCircuit.cv_conditional(
                 "BSc", op_0, op_1, self.num_qubits_per_qumode, num_qumodes=2
@@ -115,36 +115,36 @@ class CVCircuit(QuantumCircuit):
             [ctrl] + qumode_a + qumode_b,
         )
 
-    def cv_d(self, alpha, qumode):
-        operator = ParameterizedOperator(self.ops.d, alpha)
+    def cv_d(self, alpha, qumode, dagger: bool = False):
+        operator = ParameterizedOperator(self.ops.d, alpha, dagger=dagger)
         self.append(CVGate(data=operator, label="D"), qargs=qumode)
 
-    def cv_cnd_d(self, alpha, beta, ctrl, qumode):
-        op_0 = ParameterizedOperator(self.ops.d, alpha)
-        op_1 = ParameterizedOperator(self.ops.d, beta)
+    def cv_cnd_d(self, alpha, beta, ctrl, qumode, alpha_dagger: bool = False, beta_dagger: bool = False):
+        op_0 = ParameterizedOperator(self.ops.d, alpha, dagger=alpha_dagger)
+        op_1 = ParameterizedOperator(self.ops.d, beta, dagger=beta_dagger)
         self.append(
             CVCircuit.cv_conditional("Dc", op_0, op_1, self.num_qubits_per_qumode),
             [ctrl] + qumode,
         )
 
-    def cv_r(self, phi, qumode):
-        operator = ParameterizedOperator(self.ops.r, phi)
+    def cv_r(self, phi, qumode, dagger: bool = False):
+        operator = ParameterizedOperator(self.ops.r, phi, dagger=dagger)
         self.append(CVGate(data=operator, label="R"), qargs=qumode)
 
-    def cv_s(self, z, qumode):
-        operator = ParameterizedOperator(self.ops.s, z)
+    def cv_s(self, z, qumode, dagger: bool = False):
+        operator = ParameterizedOperator(self.ops.s, z, dagger=dagger)
         self.append(CVGate(data=operator, label="S"), qargs=qumode)
 
-    def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a):
-        op_0 = ParameterizedOperator(self.ops.s, z_a)
-        op_1 = ParameterizedOperator(self.ops.s, z_b)
+    def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a, z_a_dagger: bool = False, z_b__dagger: bool = False):
+        op_0 = ParameterizedOperator(self.ops.s, z_a, dagger=z_a_dagger)
+        op_1 = ParameterizedOperator(self.ops.s, z_b, dagger=z_b__dagger)
         self.append(
             CVCircuit.cv_conditional("Sc", op_0, op_1, self.num_qubits_per_qumode),
             [ctrl] + qumode_a,
         )
 
-    def cv_s2(self, z, qumode_a, qumode_b):
-        operator = ParameterizedOperator(self.ops.s2, z)
+    def cv_s2(self, z, qumode_a, qumode_b, dagger: bool = False):
+        operator = ParameterizedOperator(self.ops.s2, z, dagger=dagger)
         self.append(CVGate(data=operator, label="S2"), qargs=qumode_a + qumode_b)
 
     def measure_z(self, qubit, cbit):
