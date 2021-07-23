@@ -101,3 +101,7 @@ class CVOperators:
         arg = (numpy.conjugate(g) * a12_dag) - (g * a12)
 
         return scipy.sparse.linalg.expm(arg)
+
+    def aklt(self):
+        # build the matrix
+        return self.a1 * self.a2_dag
