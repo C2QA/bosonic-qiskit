@@ -18,10 +18,15 @@ from c2qa.operators import CVGate
 
 
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
-    """
-    Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
+    """Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
 
     Returns state, result tuples each for the X, Y, and Z basis.
+
+    Args:
+        circuit (qiskit.QuantumCircuit): circuit to measure qubits one
+
+    Returns:
+        x,y,z state & result tuples: (state, result) tuples for each x,y,z measurements
     """
 
     # QuantumCircuit.measure_all(False) returns a copy of the circuit with measurement gates.
@@ -45,7 +50,14 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
 
 
 def get_probabilities(result: qiskit.result.Result):
-    """Calculate the probabilities for each of the result's counts."""
+    """Calculate the probabilities for each of the result's counts.
+
+    Args:
+        result (qiskit.result.Result): QisKit result to calculate probabilities from
+
+    Returns:
+        dict: probablity dictionary of each state
+    """
     shots = 0
     counts = result.get_counts()
     for count in counts:
@@ -64,10 +76,19 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
 ):
-    """
-    Convenience function to simulate using the given backend.
+    """Convenience function to simulate using the given backend.
 
-    Returns Statevector
+    Handles calling into QisKit to simulate circuit using defined simulator.
+
+    Args:
+        circuit (CVCircuit): circuit to simulate
+        backend_name (str, optional): Simulator to use. Defaults to "aer_simulator".
+        shots (int, optional): Number of simulation shots. Defaults to 1024.
+        add_save_statevector (bool, optional): Set to True if a state_vector instruction should be added to the end of the circuit. Defaults to True.
+        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional (each state value gets its own state vector). Defaults to False.
+
+    Returns:
+        tuple: (state, result) tuple from simulation
     """
 
     # If this is false, the user must have already called save_statevector!
@@ -100,10 +121,14 @@ def simulate(
 
 
 def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
-    """
-    Plot the projection onto 0, 1, +, - for the given circuit.
+    """Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
+
+    Args:
+        circuit (CVCircuit): circuit to simulate and plot
+        qubit (Qubit): qubit to measure
+        file (str, optional): File path to save file, if None return plot. Defaults to None.
     """
     # Get unaltered state vector and partial trace
     x, _ = simulate(circuit)
@@ -211,7 +236,15 @@ def _find_qubit_indices(circuit: CVCircuit):
 
 
 def cv_partial_trace(circuit: CVCircuit, state_vector):
-    """Return reduced density matrix by tracing out the qubits from the given Fock state vector."""
+    """Return reduced density matrix by tracing out the qubits from the given Fock state vector.
+
+    Args:
+        circuit (CVCircuit): circuit with results to trace (to find Qubit index)
+        state_vector (Statevector): simulation results to trace over
+
+    Returns:
+        DensityMatrix: partial trace
+    """
 
     indices = _find_qubit_indices(circuit)
 
@@ -228,10 +261,19 @@ def plot_wigner(
     axes_steps: int = 200,
     num_colors: int = 100,
 ):
-    """
-    Produce a Matplotlib figure for the Wigner function on the given state vector.
+    """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
     Optionally perform partial trace.
+
+    Args:
+        circuit (CVCircuit): circuit with results to trace (to find Qubit index)
+        state_vector (Statevector): simulation results to trace over and plot
+        trace (bool, optional): True if qubits should be traced. Defaults to True.
+        file (str, optional): File path to save plot. If none, return plot. Defaults to None.
+        axes_min (int, optional): Minimum axes plot value. Defaults to -5.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 5.
+        axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
+        num_colors (int, optional): Number of color gradients in legend. Defaults to 100.
     """
     if trace:
         state = cv_partial_trace(circuit, state_vector)
@@ -270,14 +312,28 @@ def animate_wigner(
     axes_steps: int = 200,
     processes: int = None,
 ):
-    """
-    Animate the Wigner function at each step defined in the given CVCirctuit.
+    """Animate the Wigner function at each step defined in the given CVCirctuit.
 
     This assumes the CVCircuit was simulated with an animation_segments > 0 to
     act as the frames of the generated movie.
 
     The ffmpeg binary must be on your system PATH in order to execute this
     function.
+
+    Args:
+        circuit (CVCircuit): circuit to simulate and plot
+        qubit ([type]): qubit to measure
+        cbit ([type]): classical bit to measure into
+        animation_segments (int, optional): Number of segments to split each gate into for animation. Defaults to 10.
+        shots (int, optional): Number of simulation shots per frame. Defaults to 1024.
+        file (str, optional): File path to save. If None, return plot. Defaults to None.
+        axes_min (int, optional): Minimum axes plot value. Defaults to -5.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 5.
+        axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
+        processes (int, optional): Number of parallel Python processes to start. If None, perform serially in main process. Defaults to None.
+
+    Returns:
+        [type]: [description]
     """
 
     # Simulate each frame, storing Wigner function data in w_fock
@@ -398,6 +454,7 @@ def animate_wigner(
 
 
 def _animate(frame, *fargs):
+    """Generate individual matplotlib frame in animation."""
     ax = fargs[1]
     xvec = fargs[2]
     w_fock = fargs[3][frame]
@@ -419,6 +476,7 @@ def _animate(frame, *fargs):
 
 
 def _simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
+    """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
     state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
     even_state = state["0x0"]
     # odd_state = state["0x1"]
