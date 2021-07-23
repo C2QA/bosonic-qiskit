@@ -136,7 +136,7 @@ class CVCircuit(QuantumCircuit):
             phi (real): real phase
             qumode_a (list): list of qubits representing first qumode
             qumode_b (list): list of qubits representing second qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -152,7 +152,7 @@ class CVCircuit(QuantumCircuit):
             ctrl (Qubit): QisKit control Qubit
             qumode_a (list): list of qubits representing first qumode
             qumode_b (list): list of qubits representing second qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -171,7 +171,7 @@ class CVCircuit(QuantumCircuit):
         Args:
             alpha (real): displacement
             qumode (list): list of qubits representing qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -186,7 +186,7 @@ class CVCircuit(QuantumCircuit):
             beta (real): displacemet for 1 control
             ctrl (Qubit): QisKit control Qubit
             qumode (list): list of qubits representing qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -203,7 +203,7 @@ class CVCircuit(QuantumCircuit):
         Args:
             phi (real): rotation
             qumode (list): list of qubits representing qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -216,7 +216,7 @@ class CVCircuit(QuantumCircuit):
         Args:
             z (real): squeeze
             qumode (list): list of qubits representing qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -231,7 +231,7 @@ class CVCircuit(QuantumCircuit):
             z_b (real): squeeze for 1 control
             ctrl (Qubit): QisKit control Qubit
             qumode_a (list): list of qubits representing qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """
@@ -249,7 +249,7 @@ class CVCircuit(QuantumCircuit):
             z (real): squeeze
             qumode_a (list): list of qubits representing first qumode
             qumode_b (list): list of qubits representing second qumode
-        
+
         Returns:
             Instruction: QisKit instruction
         """

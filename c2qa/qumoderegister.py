@@ -6,6 +6,7 @@ class QumodeRegister:
 
     Implements __getitem__ to make QumodeRegister appear to work just like QuantumRegister with instances of CVCircuit.
     """
+
     def __init__(
         self, num_qumodes: int, num_qubits_per_qumode: int = 2, name: str = None
     ):

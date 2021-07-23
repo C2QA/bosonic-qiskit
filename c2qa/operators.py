@@ -44,7 +44,7 @@ class ParameterizedOperator(Operator):
 
 class CVGate(UnitaryGate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
-    
+
     def __init__(self, data, label=None):
         """Initialize CVGate
 
