@@ -8,19 +8,20 @@ import scipy.sparse.linalg
 class ParameterizedOperator(Operator):
     """Support parameterizing operators for circuit animations."""
 
-    def __init__(self, op_func, *params):
+    def __init__(self, op_func, *params, inverse: bool = False):
         """Initialize ParameterizedOperator.
 
         Args:
             op_func (function): function to call to generate operator matrix
             params (tuple): function parameters
+            inverse (bool): True to caclualte the inverse of the operator matrix
         """
 
         super().__init__(op_func(*params).toarray())
 
         self.op_func = op_func
         self.params = params
-        self.dagger = dagger
+        self.inverse = inverse
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
         """Calculate the operator matrix by executing the selected function. Increment the parameters based upon the current and total steps.
@@ -40,8 +41,8 @@ class ParameterizedOperator(Operator):
 
         values = tuple(values)
 
-        if self.dagger:
-            result = self.op_func(*values).conjugate().transpose()
+        if self.inverse:
+            result = scipy.sparse.linalg.inv(self.op_func(*values))
         else:
             result = self.op_func(*values)
 
