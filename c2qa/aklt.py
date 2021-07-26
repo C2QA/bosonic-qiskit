@@ -9,7 +9,7 @@ qbr = qiskit.QuantumRegister(size=1)
 circuit = c2qa.CVCircuit(qmr, qbr)
 
 # Initialize qubit to superposition
-circuit.initialize((1/np.sqrt(2))*np.array([1,1]), qbr[0])
+circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
 
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
 for i in range(qmr.num_qumodes):
@@ -17,12 +17,11 @@ for i in range(qmr.num_qumodes):
 
 state0, _ = c2qa.util.simulate(circuit)
 # print(state0)
-print("normalised initial state ",np.conj(state0.data).T.dot(state0))
+print("normalised initial state ", np.conj(state0.data).T.dot(state0))
 
-circuit.cv_aklt(7, qmr[0], qmr[1], qbr[0])
-
-state, _ = c2qa.util.simulate(circuit)
-print(state)
-print("normalised final state ",np.conj(state.data).T.dot(state))
-
-
+# circuit.cv_bs2m1q(qmr[0], qmr[1], qbr[0])
+circuit.cv_aklt(qmr[0], qmr[1], qbr[0])
+#
+# state, _ = c2qa.util.simulate(circuit)
+# print(state)
+# print("normalised final state ",np.conj(state.data).T.dot(state))
