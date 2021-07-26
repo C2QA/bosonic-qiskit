@@ -6,7 +6,16 @@ import scipy.sparse.linalg
 
 
 class ParameterizedOperator(Operator):
-    def __init__(self, op_func, *params, dagger: bool = False):
+    """Support parameterizing operators for circuit animations."""
+
+    def __init__(self, op_func, *params):
+        """Initialize ParameterizedOperator.
+
+        Args:
+            op_func (function): function to call to generate operator matrix
+            params (tuple): function parameters
+        """
+
         super().__init__(op_func(*params).toarray())
 
         self.op_func = op_func
@@ -14,6 +23,15 @@ class ParameterizedOperator(Operator):
         self.dagger = dagger
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
+        """Calculate the operator matrix by executing the selected function. Increment the parameters based upon the current and total steps.
+
+        Args:
+            current_step (int, optional): Current step within total_steps. Defaults to 1.
+            total_steps (int, optional): Total steps to increment parameters. Defaults to 1.
+
+        Returns:
+            ndarray: operator matrix
+        """
         param_fraction = current_step / total_steps
 
         values = []
@@ -31,14 +49,30 @@ class ParameterizedOperator(Operator):
 
 
 class CVGate(UnitaryGate):
+    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
+
     def __init__(self, data, label=None):
+        """Initialize CVGate
+
+        Args:
+            data (ndarray): operator matrix
+            label (string, optional): Gate name. Defaults to None.
+        """
         super().__init__(data, label)
 
         self.op = data
 
 
 class CVOperators:
+    """Build operator matrices for continuously variable bosonic gates."""
+
     def __init__(self, cutoff: int, num_qumodes: int):
+        """Initialize shared matrices used in building operators.
+
+        Args:
+            cutoff (int): qumode cutoff level
+            num_qumodes (int): number of qumodes being represented
+        """
         # Annihilation operator
         data = numpy.sqrt(range(cutoff))
         self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data))
@@ -59,9 +93,14 @@ class CVOperators:
             self.a2_dag = self.a2.conjugate().transpose()
 
     def bs(self, g):
-        """Two-mode beam splitter opertor"""
-        # a12dag = scipy.sparse.matmul(self.a1, self.a2_dag)
-        # a1dag2 = scipy.sparse.matmul(self.a1_dag, self.a2)
+        """Two-mode beam splitter opertor
+
+        Args:
+            g (real): real phase
+
+        Returns:
+            ndarray: operator matrix
+        """
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
@@ -73,21 +112,40 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def d(self, alpha):
-        """Displacement operator"""
+        """Displacement operator
+
+        Args:
+            alpha (real): displacement
+
+        Returns:
+            ndarray: operator matrix
+        """
         arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
 
         return scipy.sparse.linalg.expm(arg)
 
     def r(self, theta):
-        """Phase space rotation operator"""
+        """Phase space rotation operator
+
+        Args:
+            theta (real): rotation
+
+        Returns:
+            ndarray: operator matrix
+        """
         arg = 1j * theta * self.N
 
         return scipy.sparse.linalg.expm(arg)
 
     def s(self, zeta):
-        """Single-mode squeezing operator"""
-        # a_sqr = scipy.sparse.matmul(self.a, self.a)
-        # a_dag_sqr = scipy.sparse.matmul(self.a_dag, self.a_dag)
+        """Single-mode squeezing operator
+
+        Args:
+            zeta (real): squeeze
+
+        Returns:
+            ndarray: operator matrix
+        """
         a_sqr = self.a * self.a
         a_dag_sqr = self.a_dag * self.a_dag
         arg = 0.5 * ((numpy.conjugate(zeta) * a_sqr) - (zeta * a_dag_sqr))
@@ -95,9 +153,14 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def s2(self, g):
-        """Two-mode squeezing operator"""
-        # a12_dag = scipy.sparse.matmul(self.a1_dag, self.a2_dag)
-        # a12 = scipy.sparse.matmul(self.a1, self.a2)
+        """Two-mode squeezing operator
+
+        Args:
+            g (real): squeeze
+
+        Returns:
+            ndarray: operator matrix
+        """
         a12_dag = self.a1_dag * self.a2_dag
         a12 = self.a1 * self.a2
 
