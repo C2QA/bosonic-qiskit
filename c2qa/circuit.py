@@ -101,11 +101,12 @@ class CVCircuit(QuantumCircuit):
 
         return inst
 
-    def cv_aklt(self, qumode_a, qumode_b):
-        operator = ParameterizedOperator(self.ops.aklt)
-        self.append(CVGate(data=operator, label="AKLT"), qargs=qumode_a + qumode_b)
+    def cv_aklt(self, g, qumode_a, qumode_b, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.aklt, g)
+        self.append(CVGate(data=operator, label="AKLT"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_bs(self, phi, qumode_a, qumode_b):
+        print('hello')
         operator = ParameterizedOperator(self.ops.bs, phi)
         self.append(CVGate(data=operator, label="BS"), qargs=qumode_a + qumode_b)
 

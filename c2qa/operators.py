@@ -102,6 +102,13 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def aklt(self):
-        # build the matrix
-        return self.a1 * self.a2_dag
+    def aklt(self, g):
+        eyeqb=scipy.sparse.eye(2)
+        print('home')
+        a12dag = scipy.sparse.kron(self.a1, eyeqb) * scipy.sparse.kron(self.a2_dag, eyeqb)
+        print(a12dag.toarray())
+        a1dag2 = scipy.sparse.kron(self.a1_dag, eyeqb) * scipy.sparse.kron(self.a2, eyeqb)
+        arg = (g*-1j * a12dag) - (numpy.conjugate(g*-1j) * a1dag2)
+
+        return scipy.sparse.linalg.expm(arg)
+        # return self.a1 * self.a2_dag
