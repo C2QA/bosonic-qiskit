@@ -85,11 +85,12 @@ class CVOperators:
         # self.N = scipy.sparse.matmul(self.a_dag, self.a)
         self.N = self.a_dag * self.a
 
+        self.eye = scipy.sparse.eye(cutoff)
+
         # 2-qumodes operators
         if num_qumodes > 1:
-            eye = scipy.sparse.eye(cutoff)
-            self.a1 = scipy.sparse.kron(self.a, eye)
-            self.a2 = scipy.sparse.kron(eye, self.a)
+            self.a1 = scipy.sparse.kron(self.a, self.eye)
+            self.a2 = scipy.sparse.kron(self.eye, self.a)
             self.a1_dag = self.a1.conjugate().transpose()
             self.a2_dag = self.a2.conjugate().transpose()
 
