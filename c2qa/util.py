@@ -178,10 +178,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
 
     # Calculate Wigner functions
     xvec = np.linspace(-5, 5, 200)
-    wigner_zero = _wigner(projection_zero, xvec, xvec, circuit.cutoff)
-    wigner_one = _wigner(projection_one, xvec, xvec, circuit.cutoff)
-    wigner_plus = _wigner(projection_plus, xvec, xvec, circuit.cutoff)
-    wigner_minus = _wigner(projection_minus, xvec, xvec, circuit.cutoff)
+    wigner_zero = wigner(projection_zero, xvec, xvec, circuit.cutoff)
+    wigner_one = wigner(projection_one, xvec, xvec, circuit.cutoff)
+    wigner_plus = wigner(projection_plus, xvec, xvec, circuit.cutoff)
+    wigner_minus = wigner(projection_minus, xvec, xvec, circuit.cutoff)
 
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
@@ -281,7 +281,7 @@ def plot_wigner(
         state = state_vector
 
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    w_fock = _wigner(state, xvec, xvec, circuit.cutoff)
+    w_fock = wigner(state, xvec, xvec, circuit.cutoff)
 
     amax = np.amax(w_fock)
     amin = np.amin(w_fock)
@@ -412,11 +412,11 @@ def animate_wigner(
     if processes == 1:
         w_fock = []
         for circuit in circuits:
-            w_fock.append(_simulate_wigner(circuit, xvec, shots))
+            w_fock.append(simulate_wigner(circuit, xvec, shots))
     else:
         pool = multiprocessing.Pool(processes)
         w_fock = pool.starmap(
-            _simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
+            simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
         )
         pool.close()
 
@@ -475,17 +475,17 @@ def _animate(frame, *fargs):
         plt.savefig(f"{file}_frames/frame_{frame}.png")
 
 
-def _simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
+def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
     state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
     even_state = state["0x0"]
     # odd_state = state["0x1"]
 
     density_matrix = cv_partial_trace(circuit, even_state)
-    return _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+    return wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
-def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
+def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
     Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
     Starwberry Fields used the QuTiP "iterative" implementation.
