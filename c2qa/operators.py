@@ -115,15 +115,26 @@ class CVOperators:
         pQB = 2*(xQB + 1j * yQB)
         mQB = 2*(xQB - 1j * yQB)
 
-        term1 = (1/2)*(scipy.sparse.kron(self.a1_dag*self.a2, pQB)+scipy.sparse.kron(self.a1*self.a2_dag, mQB))
-        term2 = -(1/2)*scipy.sparse.kron(self.id,zQB)
+        term1 = (scipy.sparse.kron(pQB,self.a1_dag*self.a2)+scipy.sparse.kron(mQB, self.a1*self.a2_dag))
+        # term2 = -scipy.sparse.kron(self.id,zQB)
 
-        tl = (1 + (1 / np.sqrt(3))) * (self.sbSz * self.sbSz - self.sbSz)
-        br = (1 - (1 / np.sqrt(3))) * (self.sbSz * self.sbSz + self.sbSz)
+        # tl = (1 + (1 / np.sqrt(3))) * (self.sbSz * self.sbSz - self.sbSz)
+        # br = (1 - (1 / np.sqrt(3))) * (self.sbSz * self.sbSz + self.sbSz)
+        #
+        # ctilde = (1/2)*block_diag((tl, br))
+        theta=np.pi/(2*np.sqrt(3))
+        arg=(theta)*1j*(term1) # + ctilde
 
-        ctilde = (1/2)*block_diag((tl, br))
+        return scipy.sparse.linalg.expm(arg)
 
-        return term1 + term2 + ctilde
+    def snap(self):
+        xQB = (1 / 2) * np.array([[0, 1], [1, 0]])
+        yQB = (1 / 2) * np.array([[0, -1j], [1j, 0]])
+        zQB = (1 / 2) * np.array([[1, 0], [0, -1]])
+
+        arg=np.pi*1j*scipy.sparse.kron(self.N,zQB)
+
+        return scipy.sparse.linalg.expm(arg)
 
     def bs2m1q(self):
         eyeqb=scipy.sparse.eye(2)
