@@ -10,24 +10,25 @@ numberofmodes=2
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=1)
 circuit = c2qa.CVCircuit(qmr, qbr)
-upQB=np.array([0,1])
-downQB=np.array([1,0])
+oneQB=np.array([0,1]) #here: one (but usually zero) <- check
+zeroQB=np.array([1,0]) #here: zero (but usually one) <- check
 three=np.array([0,0,0,1])
 two=np.array([0,0,1,0])
 one=np.array([0,1,0,0])
 zero=np.array([1,0,0,0])
-modestates=[[zero,"0"],[one,"1"],[two,"2"],[three,"3"]]
+modestates=[[zero,0],[one,1],[two,2],[three,3]]
 # modestates=[[zero,"0"],[zero,"0"],[zero,"0"],[zero,"0"],[one,"1"],[one,"1"],[one,"1"],[one,"1"],[two,"2"],[two,"2"],[two,"2"],[two,"2"],[three,"3"],[three,"3"],[three,"3"],[three,"3"]]
 
 
 # Initialize qubit to superposition
 circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
+circuit.initialize(zeroQB, qbr[0])
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
 for i in range(qmr.num_qumodes):
     circuit.cv_initialize(1, qmr[i])
 # Check the input state is normalised
 state0, _ = c2qa.util.simulate(circuit)
-print("normalised initial state ", np.conj(state0.data).T.dot(state0))
+# print("normalised initial state ", np.conj(state0.data).T.dot(state0))
 
 # Apply circuit
 for i in range(numberofmodes-1):
@@ -37,16 +38,24 @@ for i in range(numberofmodes-1):
         # circuit.cv_snap(qmr[i+1], qbr[0])
 #simulate circuit and see if it's normalised
 state, _ = c2qa.util.simulate(circuit)
-print(state)
-print("normalised final state ",np.conj(state.data).T.dot(state))
+# print(state)
+# print("normalised final state ",np.conj(state.data).T.dot(state))
 
-# Create all possible permutations of 'numberofmodes' of mode states, called sbstates because it was going to be only Schwinger-Boson states
+# Create all Schwinger-Boson permutations of 'numberofmodes' of mode states
 sbstates=[]
 list=list(itertools.permutations(modestates, r=numberofmodes))
 for i in range(len(list)):
-    sbstates.append([scipy.sparse.kron(np.array(list[i][0][0]),np.array(list[i][1][0])),np.array(list[i][0][1]),np.array(list[i][1][1])])
+    if np.array(list[i][0][1])+np.array(list[i][1][1]) == 2:
+        sbstates.append([scipy.sparse.kron(np.array(list[i][0][0]),np.array(list[i][1][0])),np.array(list[i][0][1]),np.array(list[i][1][1])])
 for i in range(len(modestates)):
-    sbstates.append([scipy.sparse.kron(modestates[i][0], modestates[i][0]), modestates[i][1],modestates[i][1]])
+    if modestates[i][1] == 1:
+        sbstates.append([scipy.sparse.kron(modestates[i][0], modestates[i][0]), modestates[i][1],modestates[i][1]])
+
+# # Generates all possible permutations (not just SB ones)
+# for i in range(len(list)):
+#     sbstates.append([scipy.sparse.kron(np.array(list[i][0][0]),np.array(list[i][1][0])),np.array(list[i][0][1]),np.array(list[i][1][1])])
+# for i in range(len(modestates)):
+#     sbstates.append([scipy.sparse.kron(modestates[i][0], modestates[i][0]), modestates[i][1],modestates[i][1]])
 
 # list=list(itertools.permutations(modestates, r=4))
 # for i in range(len(list)):
@@ -55,8 +64,8 @@ for i in range(len(modestates)):
 # Create the final states which contain also the qubit values
 fstates=[]
 for i in range(len(sbstates)):
-    fstates.append([scipy.sparse.kron(upQB,sbstates[i][0]), sbstates[i][1], sbstates[i][2]])
-    fstates.append([scipy.sparse.kron(downQB, sbstates[i][0]), sbstates[i][1], sbstates[i][2]])
+    fstates.append([scipy.sparse.kron(oneQB,sbstates[i][0]),1, sbstates[i][1], sbstates[i][2]])
+    fstates.append([scipy.sparse.kron(zeroQB, sbstates[i][0]),0, sbstates[i][1], sbstates[i][2]])
 
 # fstates=[]
 # for i in range(len(sbstates)):
@@ -64,14 +73,17 @@ for i in range(len(sbstates)):
 #     fstates.append([scipy.sparse.kron(sbstates[i][0], downQB), sbstates[i][1], sbstates[i][2], sbstates[i][3], sbstates[i][4]])
 
 # Take the overlap and calculate probablility of final state occuring in prepared state
-amp=0
+probs=0
+amp=[]
 for i in range(len(fstates)):
-    val=np.abs(np.conj(fstates[i][0]).dot(state))**2
-    print("i ",i, " overlap with ",fstates[i][1],fstates[i][2]," up is: ", val)
-    # print("i ",i, " overlap with ",fstates[i][1],fstates[i][2],fstates[i][3],fstates[i][4]," up is: ", val)
-    amp+=val
+    res=np.conj(fstates[i][0]).dot(state)
+    prob=np.abs(res)**2
+    # print("Probability to get ",fstates[i][1],fstates[i][2],fstates[i][3]," is: ", prob)
+    print("Overlap with ", fstates[i][1], fstates[i][2], fstates[i][3], " is: ", res)
+    probs+=prob
+    amp.append(res)
+print("probs ",probs )
 
-print(amp)
 
 
 

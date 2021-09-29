@@ -115,15 +115,15 @@ class CVOperators:
         pQB = 2*(xQB + 1j * yQB)
         mQB = 2*(xQB - 1j * yQB)
 
-        term1 = (scipy.sparse.kron(pQB,self.a1_dag*self.a2)+scipy.sparse.kron(mQB, self.a1*self.a2_dag))
-        # term2 = -scipy.sparse.kron(self.id,zQB)
+        term1 = (scipy.sparse.kron(pQB,self.a1_dag*self.a2)+scipy.sparse.kron(mQB,self.a1*self.a2_dag ))
+        term2 = -scipy.sparse.kron(self.id,zQB)
 
         # tl = (1 + (1 / np.sqrt(3))) * (self.sbSz * self.sbSz - self.sbSz)
         # br = (1 - (1 / np.sqrt(3))) * (self.sbSz * self.sbSz + self.sbSz)
         #
         # ctilde = (1/2)*block_diag((tl, br))
         theta=np.pi/(2*np.sqrt(3))
-        arg=(theta)*1j*(term1) # + ctilde
+        arg=(theta)*1j*(term1+term2) # + ctilde
 
         return scipy.sparse.linalg.expm(arg)
 
