@@ -136,6 +136,10 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def snaptest(self):
+
+        return 1
+
     def bs2m1q(self):
         eyeqb=scipy.sparse.eye(2)
         # eyeQB = np.array([[1, 0], [0, 1]])
