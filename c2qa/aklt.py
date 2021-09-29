@@ -6,7 +6,7 @@ import itertools
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=4
+numberofmodes=2
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=1)
 circuit = c2qa.CVCircuit(qmr, qbr)
