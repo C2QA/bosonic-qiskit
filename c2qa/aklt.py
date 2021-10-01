@@ -48,10 +48,10 @@ for i in range(numberofmodes-1):
         circuit.cv_cpbs(np.pi/2, qmr[i], qmr[i+1], qbr[0])
         circuit.cv_bs(-np.pi/2, qmr[i], qmr[i+1])
         circuit.h(qbr[0])
-        # circuit.cv_snap2(qmr[i+1])
+        circuit.cv_snap2(qmr[i+1])
         circuit.cv_cpbs(np.pi/4, qmr[i], qmr[i+1], qbr[0])
         circuit.h(qbr[0])
-        # circuit.cv_snap2(qmr[i+1])
+        circuit.cv_snap2(qmr[i+1])
 
 
 #simulate circuit and see if it's normalised
