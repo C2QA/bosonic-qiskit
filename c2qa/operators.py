@@ -69,6 +69,18 @@ class CVOperators:
         #   phi as g(t)
         #   - as +, but QisKit validates that not being unitary
         arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        # arg = -1j *((g * a12dag) + (np.conjugate(g) * a1dag2))
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def cpbs(self, g):
+        zQB = (1 / 2) * np.array([[1, 0], [0, -1]])
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        argm = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        arg = scipy.sparse.kron(zQB,argm)
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -77,6 +89,13 @@ class CVOperators:
         arg = (alpha * self.a_dag) - (np.conjugate(alpha) * self.a)
 
         return scipy.sparse.linalg.expm(arg)
+
+    def dBCH(self, alpha):
+        """Displacement operator BCH formula"""
+        arg1 = (alpha * self.a_dag)
+        arg2 = (np.conjugate(alpha) * self.a)
+        arg3 = np.dot(self.a_dag,self.a) - np.dat(self.a,self.a_dag)
+        return np.dat(np.dot(scipy.sparse.linalg.expm(arg1),scipy.sparse.linalg.expm(arg2)),scipy.sparse.linalg.expm(arg3))
 
     def r(self, theta):
         """Phase space rotation operator"""
@@ -122,23 +141,23 @@ class CVOperators:
         # br = (1 - (1 / np.sqrt(3))) * (self.sbSz * self.sbSz + self.sbSz)
         #
         # ctilde = (1/2)*block_diag((tl, br))
-        theta=np.pi/(2*np.sqrt(3))
+        theta=(np.pi/2)*(1/np.sqrt(3))
+        # theta=0
         arg=(theta)*1j*(term1+term2) # + ctilde
 
         return scipy.sparse.linalg.expm(arg)
 
-    def snap(self):
-        xQB = (1 / 2) * np.array([[0, 1], [1, 0]])
-        yQB = (1 / 2) * np.array([[0, -1j], [1j, 0]])
-        zQB = (1 / 2) * np.array([[1, 0], [0, -1]])
-
-        arg=np.pi*1j*scipy.sparse.kron(self.N,zQB)
-
+    def snap2(self):
+        # be careful about adding an extra qubit in here which is in state 1 which will get the negative phase.
+        # you can do all the photon number states on one cavity on one ancilla, but each cavity needs an ancilla
+        two = np.array([0, 0, 1, 0])
+        arg=np.pi*1j*np.outer(two,two.T)
         return scipy.sparse.linalg.expm(arg)
 
-    def snaptest(self):
-
-        return 1
+    def qubitDependentCavityRotation(self):
+        zQB = (1 / 2) * np.array([[1, 0], [0, -1]])
+        arg=np.pi*1j*scipy.sparse.kron(zQB,self.N)
+        return scipy.sparse.linalg.expm(arg.tocsc())
 
     def bs2m1q(self):
         eyeqb=scipy.sparse.eye(2)

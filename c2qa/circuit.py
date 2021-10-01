@@ -105,22 +105,25 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.aklt)
         self.append(CVGate(data=operator, label="AKLT"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
-    def cv_snap(self, qumode_a, qubit_ancilla):
-        operator = ParameterizedOperator(self.ops.snap)
-        self.append(CVGate(data=operator, label="SNAP"), qargs=qumode_a + [qubit_ancilla])
+    def cv_snap2(self, qumode_a):
+        operator = ParameterizedOperator(self.ops.snap2)
+        self.append(CVGate(data=operator, label="SNAP2"), qargs=qumode_a)
 
-    def cv_snaptest(self, qumode_a):
-        operator = ParameterizedOperator(self.ops.snaptest)
-        self.append(CVGate(data=operator, label="SNAPtest"), qargs=qumode_a)
+    def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
+        self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])
 
     def cv_bs2m1q(self, qumode_a, qumode_b, qubit_ancilla):
         operator = ParameterizedOperator(self.ops.bs2m1q)
         self.append(CVGate(data=operator, label="bin_bs2m1q"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_bs(self, phi, qumode_a, qumode_b):
-        print('hello')
         operator = ParameterizedOperator(self.ops.bs, phi)
         self.append(CVGate(data=operator, label="BS"), qargs=qumode_a + qumode_b)
+
+    def cv_cpbs(self, phi, qumode_a, qumode_b, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.cpbs, phi)
+        self.append(CVGate(data=operator, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
         op_0 = ParameterizedOperator(self.ops.bs, phi)
@@ -135,6 +138,10 @@ class CVCircuit(QuantumCircuit):
     def cv_d(self, alpha, qumode):
         operator = ParameterizedOperator(self.ops.d, alpha)
         self.append(CVGate(data=operator, label="D"), qargs=qumode)
+
+    def cv_dBHC(self, alpha, qumode):
+        operator = ParameterizedOperator(self.ops.dBCH, alpha)
+        self.append(CVGate(data=operator, label="D-BCH"), qargs=qumode)
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode):
         op_0 = ParameterizedOperator(self.ops.d, alpha)
