@@ -150,8 +150,8 @@ class CVOperators:
     def snap2(self):
         # be careful about adding an extra qubit in here which is in state 1 which will get the negative phase.
         # you can do all the photon number states on one cavity on one ancilla, but each cavity needs an ancilla
-        two = csr_matrix([0, 0, 1, 0])
-        arg=np.pi*1j*np.outer(two,two.T)
+        twoOP = csr_matrix([[0, 0 ,0 ,0], [0, 0 ,0 ,0], [0 ,0 ,1 ,0], [0, 0 ,0 ,0]])
+        arg=np.pi*1j*twoOP
         return scipy.sparse.linalg.expm(arg)
 
     def qubitDependentCavityRotation(self):
