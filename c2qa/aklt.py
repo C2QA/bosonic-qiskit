@@ -19,15 +19,20 @@ one=np.array([0,1,0,0])
 zero=np.array([1,0,0,0])
 projtwo=np.outer(two,two.T)
 
-# Initialize qubit to superposition
-# circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
+# Choose initial state
 qbinist=1
+samestallmodes=1
+diffstallmodes=[1,1]
+
+# Initialize qubit
+# circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
 qubitinitialstate=[[zeroQB,"0"],[oneQB,"1"]]
 circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
-fockstate=2
 for i in range(qmr.num_qumodes):
-    circuit.cv_initialize(fockstate, qmr[i])
+    circuit.cv_initialize(samestallmodes, qmr[i])
+circuit.cv_initialize(diffstallmodes[0], qmr[0])
+circuit.cv_initialize(diffstallmodes[1], qmr[1])
 # Check the input state is normalised
 state0, _ = c2qa.util.simulate(circuit)
 # print("normalised initial state ", np.conj(state0.data).T.dot(state0))
@@ -54,13 +59,38 @@ state0, _ = c2qa.util.simulate(circuit)
 #         circuit.h(qbr[0])
 #         circuit.cv_snap2(qmr[i+1])
 
-circuit.cv_snap2(qmr[0])
-# circuit.cv_snap2(qmr[1])
-
-#simulate circuit and see if it's normalised
+diffstallmodes=[0,0]
+circuit.cv_initialize(diffstallmodes[0], qmr[0])
+circuit.cv_initialize(diffstallmodes[1], qmr[1])
+circuit.cv_bs(np.pi, qmr[0], qmr[1])
 state, _ = c2qa.util.simulate(circuit)
-# print(state)
-# print("normalised final state ",np.conj(state.data).T.dot(state))
+projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
 
-projectors.overlap(state, numberofmodes, qubitinitialstate, qbinist, fockstate, "all")
+diffstallmodes=[0,1]
+circuit.cv_initialize(diffstallmodes[0], qmr[0])
+circuit.cv_initialize(diffstallmodes[1], qmr[1])
+circuit.cv_bs(np.pi/2, qmr[0], qmr[1])
+state, _ = c2qa.util.simulate(circuit)
+projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
+
+diffstallmodes=[1,0]
+circuit.cv_initialize(diffstallmodes[0], qmr[0])
+circuit.cv_initialize(diffstallmodes[1], qmr[1])
+circuit.cv_bs(np.pi/4, qmr[0], qmr[1])
+state, _ = c2qa.util.simulate(circuit)
+projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
+
+diffstallmodes=[1,1]
+circuit.cv_initialize(diffstallmodes[0], qmr[0])
+circuit.cv_initialize(diffstallmodes[1], qmr[1])
+circuit.cv_bs(np.pi/8, qmr[0], qmr[1])
+state, _ = c2qa.util.simulate(circuit)
+projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
+
+# #simulate circuit and see if it's normalised
+# state, _ = c2qa.util.simulate(circuit)
+# # print(state)
+# # print("normalised final state ",np.conj(state.data).T.dot(state))
+#
+# projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
 

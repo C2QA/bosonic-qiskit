@@ -68,8 +68,9 @@ class CVOperators:
         # FIXME -- See Steve 5.4
         #   phi as g(t)
         #   - as +, but QisKit validates that not being unitary
-        arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
-        # arg = -1j *((g * a12dag) + (np.conjugate(g) * a1dag2))
+        # arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        #arg = 1j *((g * a12dag) - (g * a1dag2))
+        arg = g * (a12dag - a1dag2)
 
         return scipy.sparse.linalg.expm(arg)
 

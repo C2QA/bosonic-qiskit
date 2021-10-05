@@ -75,7 +75,7 @@ def sbkroneckermodestates(numberofmodes):
     return sbstates
 
 # Create all permutations of 'numberofmodes' of mode states
-def overlap(state, numberofmodes, qubitinitialstate, qbinist, fockstate, choice):
+def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modeinichoice, choice):
     if choice == "all":
         sbstates=allkroneckermodestates(numberofmodes)
     else:
@@ -87,19 +87,27 @@ def overlap(state, numberofmodes, qubitinitialstate, qbinist, fockstate, choice)
         fstates.append([scipy.sparse.kron(zeroQB, sbstates[i][-1]), 0, np.stack(sbstates[i][:-1])])
 
     # Take the overlap and calculate probablility of final state occuring in prepared state
-    print("Qubit starts in ", qubitinitialstate[qbinist][1])
     probs=0
     amp=[]
-    inim=[fockstate]*numberofmodes
-    modesini=str(qbinist)+" "
-    for i in range(len(inim)):
-        modesini=modesini+str(inim[i])
+    if modeinichoice=="samestallmodes":
+        inim=[samestallmodes]*numberofmodes
+        modesini=str(qbinist)+" "
+        for i in range(len(inim)):
+            modesini=modesini+str(inim[i])
+    else:
+        modesini = str(qbinist) + " "
+        for i in range(len(diffstallmodes)):
+            modesini = modesini + str(diffstallmodes[i])
+
+    print("\n \n\n\n\n\n")
     for i in range(len(fstates)):
         res=np.conj(fstates[i][0]).dot(state)
         prob=np.abs(res)**2
         # print("Probability to get ",fstates[i][1],fstates[i][2],fstates[i][3]," is: ", prob)
         sbstr=["".join(item) for item in fstates[i][2].astype(str)]
-        print(modesini, " overlap with ", fstates[i][1], ''.join(sbstr), " is: ", (np.real(res)*(np.abs(np.real(res))>1e-10)[0] + 1j*np.imag(res)*(np.abs(np.imag(res))>1e-10)[0])[0] )
+        finalres=(np.real(res)*(np.abs(np.real(res))>1e-10)[0] + 1j*np.imag(res)*(np.abs(np.imag(res))>1e-10)[0])[0]
+        if finalres != 0:
+            print(modesini, " overlap with ", fstates[i][1], ''.join(sbstr), " is: ", finalres )
         probs+=prob
         amp.append(res)
     print("probs ",probs )
