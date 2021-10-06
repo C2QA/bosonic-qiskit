@@ -493,9 +493,9 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
 
 
 def wigner_mle(states, circuit: CVCircuit, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
-    mlae_alg = MaximumLikelihoodAmplitudeEstimation(1)
+    mlae_alg = MaximumLikelihoodAmplitudeEstimation(6)
     estimation_problem = EstimationProblem(circuit, range(circuit.num_qubits))
-    mle = mlae_alg.compute_mle(states, estimation_problem, num_state_qubits=circuit.num_qubits)
+    mle = mlae_alg.compute_mle(states, estimation_problem, num_state_qubits=circuit.num_qubits, return_counts=True)
 
     xvec = np.linspace(axes_min, axes_max, axes_steps)
     return wigner(states[0], xvec, xvec, circuit.cutoff, hbar)
