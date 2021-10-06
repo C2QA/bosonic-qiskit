@@ -3,7 +3,7 @@ import qiskit
 import numpy as np
 import scipy
 import itertools
-import projectors
+import projectors, gatetesting
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
@@ -28,15 +28,15 @@ diffstallmodes=[1,1]
 # circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
 qubitinitialstate=[[zeroQB,"0"],[oneQB,"1"]]
 circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
-# Initialize both qumodes to a zero spin 1 state (Fock state 1)
-for i in range(qmr.num_qumodes):
-    circuit.cv_initialize(samestallmodes, qmr[i])
-circuit.cv_initialize(diffstallmodes[0], qmr[0])
-circuit.cv_initialize(diffstallmodes[1], qmr[1])
-# Check the input state is normalised
-state0, _ = c2qa.util.simulate(circuit)
-# print("normalised initial state ", np.conj(state0.data).T.dot(state0))
-# print(arg)
+# # Initialize both qumodes to a zero spin 1 state (Fock state 1)
+# for i in range(qmr.num_qumodes):
+#     circuit.cv_initialize(samestallmodes, qmr[i])
+# circuit.cv_initialize(diffstallmodes[0], qmr[0])
+# circuit.cv_initialize(diffstallmodes[1], qmr[1])
+# # Check the input state is normalised
+# state0, _ = c2qa.util.simulate(circuit)
+# # print("normalised initial state ", np.conj(state0.data).T.dot(state0))
+# # print(arg)
 
 # Apply circuit
 # for i in range(numberofmodes-1):
@@ -105,6 +105,9 @@ circuit.cv_initialize(diffstallmodes[1], qmr[1])
 circuit.cv_bs(np.pi/8, qmr[0], qmr[1])
 state, _ = c2qa.util.simulate(circuit)
 projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
+
+# diffstallmodes=[1,1]
+# gatetesting.differentThetaInitialisation(qmr, numberofmodes, qbinist, samestallmodes, diffstallmodes)
 
 # #simulate circuit and see if it's normalised
 # state, _ = c2qa.util.simulate(circuit)
