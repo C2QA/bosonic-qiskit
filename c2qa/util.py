@@ -75,6 +75,7 @@ def simulate(
     shots: int = 1024,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
+    per_shot_state_vector: bool = False
 ):
     """Convenience function to simulate using the given backend.
 
@@ -93,7 +94,7 @@ def simulate(
 
     # If this is false, the user must have already called save_statevector!
     if add_save_statevector:
-        circuit.save_statevector(conditional=conditional_state_vector)
+        circuit.save_statevector(conditional=conditional_state_vector, pershot=per_shot_state_vector)
 
     # Transpile for simulator
     simulator = qiskit.Aer.get_backend(backend_name)
@@ -104,7 +105,7 @@ def simulate(
 
     # The user may have added their own circuit.save_statevector
     try:
-        if conditional_state_vector:
+        if conditional_state_vector or per_shot_state_vector:
             # Will get a dictionary of state vectors, one for each classical register value
             state = result.data()["statevector"]
         else:
@@ -489,6 +490,11 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
     return wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
+def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
+    xvec = np.linspace(axes_min, axes_max, axes_steps)
+    return wigner(states[0], xvec, xvec, cutoff, hbar)
+
+
 def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
     Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
@@ -519,12 +525,10 @@ def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
         array: 2D array of size [len(xvec), len(pvec)], containing reduced Wigner function
         values for specified x and p values.
     """
-    if isinstance(state, Statevector):
-        rho = DensityMatrix(state).data
-    elif isinstance(state, DensityMatrix):
+    if isinstance(state, DensityMatrix):
         rho = state.data
     else:
-        rho = state
+        rho = DensityMatrix(state).data
     Q, P = np.meshgrid(xvec, pvec)
     A = (Q + P * 1.0j) / (2 * np.sqrt(hbar / 2))
 

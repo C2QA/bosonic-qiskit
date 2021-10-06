@@ -263,3 +263,30 @@ def test_cat_state_wigner_plot(capsys):
         # wigner_filename = "tests/repeat_projection_wigner.png"
         # c2qa.util.plot_wigner_projection(circuit, qr[0], file=wigner_filename)
         # assert Path(wigner_filename).is_file()
+
+
+def test_wigner_mle(capsys):
+    with capsys.disabled():
+        num_qubits_per_qumode = 4
+        dist = 2
+
+        qmr = c2qa.QumodeRegister(
+            num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode
+        )
+        qr = qiskit.QuantumRegister(size=1)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+        circuit.initialize([1, 0], qr[0])
+        circuit.cv_initialize(0, qmr[0])
+
+        circuit.h(qr[0])
+        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.h(qr[0])
+        circuit.measure(qr[0], cr[0])
+
+        # conditional_state_vector=True will return two state vectors, one for 0 and 1 classical register value
+        states, result = c2qa.util.simulate(circuit, per_shot_state_vector=True)
+        wigner = c2qa.util.wigner_mle(states, circuit.cutoff)
+        assert wigner is not None
+        print(wigner)
