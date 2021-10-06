@@ -38,6 +38,8 @@ state0, _ = c2qa.util.simulate(circuit)
 # print("normalised initial state ", np.conj(state0.data).T.dot(state0))
 # print(arg)
 
+circuit.cv_bs(np.pi, qmr[0], qmr[1])
+
 # Apply circuit from table with extra snap to correct for the phase
 # for i in range(numberofmodes-1):
 #     if (i % 2) == 0:
@@ -58,7 +60,6 @@ state0, _ = c2qa.util.simulate(circuit)
 #         circuit.cv_cpbs(np.pi/4, qmr[i], qmr[i+1], qbr[0])
 #         circuit.h(qbr[0])
 #         circuit.cv_snap2(qmr[i+1])
-
 
 diffstallmodes=[1,1]
 gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)

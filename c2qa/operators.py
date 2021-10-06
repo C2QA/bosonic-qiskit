@@ -70,7 +70,7 @@ class CVOperators:
         #   - as +, but QisKit validates that not being unitary
         # arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
         #arg = 1j *((g * a12dag) - (g * a1dag2))
-        arg = g * (a1dag2 - a12dag)
+        arg = (g/2) * (a1dag2 - a12dag)
         return scipy.sparse.linalg.expm(arg)
 
     def cpbs(self, g):
