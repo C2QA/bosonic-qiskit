@@ -99,7 +99,7 @@ def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modei
         for i in range(len(diffstallmodes)):
             modesini = modesini + str(diffstallmodes[i])
 
-    print("\n \n\n\n\n\n")
+    # print("\n")
     for i in range(len(fstates)):
         res=np.conj(fstates[i][0]).dot(state)
         prob=np.abs(res)**2
@@ -110,7 +110,7 @@ def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modei
             print(modesini, " overlap with ", fstates[i][1], ''.join(sbstr), " is: ", finalres )
         probs+=prob
         amp.append(res)
-    print("probs ",probs )
+    # print("probs ",probs )
 
 
 # print("sbstates ", sbstates)
