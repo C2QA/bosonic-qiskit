@@ -436,21 +436,25 @@ def animate_wigner(
 
     # Save to file using ffmpeg, Pillow (GIF), or display
     if file:
-        file_path = pathlib.Path(file)
-
-        if file_path.suffix == ".mp4":
-            writer = matplotlib.animation.FFMpegWriter(fps=24)
-        elif file_path.suffix == ".gif":
-            writer = matplotlib.animation.PillowWriter(fps=24)
-        else:
-            print(
-                f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF"
-            )
-            writer = matplotlib.animation.PillowWriter(fps=24)
-
-        anim.save(file, writer=writer)
+        save_animation(anim, file)
 
     return anim
+
+
+def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
+    file_path = pathlib.Path(file)
+
+    if file_path.suffix == ".mp4":
+        writer = matplotlib.animation.FFMpegWriter(fps=24)
+    elif file_path.suffix == ".gif":
+        writer = matplotlib.animation.PillowWriter(fps=24)
+    else:
+        print(
+            f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF"
+        )
+        writer = matplotlib.animation.PillowWriter(fps=24)
+
+    anim.save(file, writer=writer)
 
 
 def _animate(frame, *fargs):

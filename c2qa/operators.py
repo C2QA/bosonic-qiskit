@@ -8,18 +8,20 @@ import scipy.sparse.linalg
 class ParameterizedOperator(Operator):
     """Support parameterizing operators for circuit animations."""
 
-    def __init__(self, op_func, *params):
+    def __init__(self, op_func, *params, inverse: bool = False):
         """Initialize ParameterizedOperator.
 
         Args:
             op_func (function): function to call to generate operator matrix
             params (tuple): function parameters
+            inverse (bool): True to caclualte the inverse of the operator matrix
         """
 
         super().__init__(op_func(*params).toarray())
 
         self.op_func = op_func
         self.params = params
+        self.inverse = inverse
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
         """Calculate the operator matrix by executing the selected function. Increment the parameters based upon the current and total steps.
@@ -39,7 +41,12 @@ class ParameterizedOperator(Operator):
 
         values = tuple(values)
 
-        return self.op_func(*values).toarray()
+        if self.inverse:
+            result = scipy.sparse.linalg.inv(self.op_func(*values))
+        else:
+            result = self.op_func(*values)
+
+        return result.toarray()
 
 
 class CVGate(UnitaryGate):
@@ -78,11 +85,12 @@ class CVOperators:
         # self.N = scipy.sparse.matmul(self.a_dag, self.a)
         self.N = self.a_dag * self.a
 
+        self.eye = scipy.sparse.eye(cutoff)
+
         # 2-qumodes operators
         if num_qumodes > 1:
-            eye = scipy.sparse.eye(cutoff)
-            self.a1 = scipy.sparse.kron(self.a, eye)
-            self.a2 = scipy.sparse.kron(eye, self.a)
+            self.a1 = scipy.sparse.kron(self.a, self.eye)
+            self.a2 = scipy.sparse.kron(self.eye, self.a)
             self.a1_dag = self.a1.conjugate().transpose()
             self.a2_dag = self.a2.conjugate().transpose()
 
