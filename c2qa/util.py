@@ -8,6 +8,8 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
+from qiskit.algorithms.amplitude_estimators.mlae import MaximumLikelihoodAmplitudeEstimation
+from qiskit.algorithms.amplitude_estimators.estimation_problem import EstimationProblem
 from qiskit.providers.aer.library.save_instructions.save_statevector import (
     save_statevector,
 )
@@ -490,9 +492,13 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
     return wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
-def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
+def wigner_mle(states, circuit: CVCircuit, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
+    mlae_alg = MaximumLikelihoodAmplitudeEstimation(1)
+    estimation_problem = EstimationProblem(circuit, range(circuit.num_qubits))
+    mle = mlae_alg.compute_mle(states, estimation_problem, num_state_qubits=circuit.num_qubits)
+
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return wigner(states[0], xvec, xvec, cutoff, hbar)
+    return wigner(states[0], xvec, xvec, circuit.cutoff, hbar)
 
 
 def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
