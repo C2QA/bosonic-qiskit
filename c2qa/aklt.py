@@ -44,24 +44,24 @@ state0, _ = c2qa.util.simulate(circuit)
 #         circuit.cv_aklt(qmr[i], qmr[i+1], qbr[0])
 #         circuit.cv_snap2(qmr[i+1])
 
-# Native gates circuit
-for i in range(numberofmodes-1):
-    if (i % 2) == 0:
-        circuit.z(qbr[0])
-        circuit.h(qbr[0])
-        circuit.cv_cpbs(np.arctan(1/np.sqrt(2)), qmr[i], qmr[i+1], qbr[0])
-        circuit.h(qbr[0])
-        circuit.cv_cpbs(np.pi/2, qmr[i], qmr[i+1], qbr[0])
-        circuit.cv_bs(-np.pi/2, qmr[i], qmr[i+1])
-        circuit.h(qbr[0])
-        circuit.cv_snap2(qmr[i+1])
-        circuit.cv_cpbs(np.pi/4, qmr[i], qmr[i+1], qbr[0])
-        circuit.h(qbr[0])
-        circuit.cv_snap2(qmr[i+1])
+# # Native gates circuit
+# for i in range(numberofmodes-1):
+#     if (i % 2) == 0:
+#         circuit.z(qbr[0])
+#         circuit.h(qbr[0])
+#         circuit.cv_cpbs(np.arctan(1/np.sqrt(2)), qmr[i], qmr[i+1], qbr[0])
+#         circuit.h(qbr[0])
+#         circuit.cv_cpbs(np.pi/2, qmr[i], qmr[i+1], qbr[0])
+#         circuit.cv_bs(-np.pi/2, qmr[i], qmr[i+1])
+#         circuit.h(qbr[0])
+#         circuit.cv_snap2(qmr[i+1])
+#         circuit.cv_cpbs(np.pi/4, qmr[i], qmr[i+1], qbr[0])
+#         circuit.h(qbr[0])
+#         circuit.cv_snap2(qmr[i+1])
 
 
-# diffstallmodes=[1,1]
-# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
+diffstallmodes=[1,1]
+gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
 
 #simulate circuit and see if it's normalised
 state, _ = c2qa.util.simulate(circuit)

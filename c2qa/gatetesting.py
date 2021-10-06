@@ -2,8 +2,6 @@ import circuit, projectors
 import numpy as np
 import c2qa
 
-diffstallmodes=[0,0]
-
 def initi(qmr, circuit, diffstallmodes):
     circuit.cv_initialize(diffstallmodes[0], qmr[0])
     circuit.cv_initialize(diffstallmodes[1], qmr[1])
