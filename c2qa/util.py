@@ -285,13 +285,27 @@ def plot_wigner(
     xvec = np.linspace(axes_min, axes_max, axes_steps)
     w_fock = wigner(state, xvec, xvec, circuit.cutoff)
 
-    amax = np.amax(w_fock)
-    amin = np.amin(w_fock)
+    plot(data=w_fock, axes_min=axes_min, axes_max=axes_max, axes_steps=axes_steps, file=file, num_colors=num_colors)
+
+
+def plot(
+    data,    
+    axes_min: int = -5,
+    axes_max: int = 5,
+    axes_steps: int = 200,
+    file: str = None,
+    num_colors: int = 100,
+):
+    """Contour plot the given data array"""
+    xvec = np.linspace(axes_min, axes_max, axes_steps)
+
+    amax = np.amax(data)
+    amin = np.amin(data)
     abs_max = max(amax, abs(amin))
     color_levels = np.linspace(-abs_max, abs_max, num_colors)
 
     fig, ax = plt.subplots(constrained_layout=True)
-    cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
+    cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
     fig.colorbar(cont, ax=ax)
