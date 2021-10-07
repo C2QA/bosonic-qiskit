@@ -492,7 +492,20 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
 
 
 def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
-    """Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result."""
+    """
+    Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
+    
+    Args:
+        states (array-like of array-like): state vectors to calculate MLE and Wigner function
+        cutoff (int): cutoff used during simulation
+        axes_min (int, optional): Minimum axes plot value. Defaults to -5.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 5.
+        axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
+        hbar (int, optional): hbar value to use in Wigner function calculation. Defaults to 2.
+
+    Returns:
+        array-like: Results of Wigner function calculation
+    """
     mle_state = []
     for qubit_states in zip(*states):
         # TODO what distribution are the qubit states? (using normal)
