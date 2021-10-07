@@ -4,6 +4,12 @@ import numpy as np
 import scipy
 import itertools
 import projectors, gatetesting
+import numpy as np
+# Import Qiskit
+from qiskit import QuantumCircuit
+from qiskit import Aer, transpile
+from qiskit.tools.visualization import plot_histogram, plot_state_city
+import qiskit.quantum_info as qi
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
@@ -31,14 +37,12 @@ circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
 for i in range(qmr.num_qumodes):
     circuit.cv_initialize(samestallmodes, qmr[i])
-circuit.cv_initialize(diffstallmodes[0], qmr[0])
-circuit.cv_initialize(diffstallmodes[1], qmr[1])
+# circuit.cv_initialize(diffstallmodes[0], qmr[0])
+# circuit.cv_initialize(diffstallmodes[1], qmr[1])
 # Check the input state is normalised
 state0, _ = c2qa.util.simulate(circuit)
 # print("normalised initial state ", np.conj(state0.data).T.dot(state0))
 # print(arg)
-
-circuit.cv_bs(np.pi, qmr[0], qmr[1])
 
 # Apply circuit from table with extra snap to correct for the phase
 # for i in range(numberofmodes-1):
@@ -46,28 +50,40 @@ circuit.cv_bs(np.pi, qmr[0], qmr[1])
 #         circuit.cv_aklt(qmr[i], qmr[i+1], qbr[0])
 #         circuit.cv_snap2(qmr[i+1])
 
-# # Native gates circuit
-# for i in range(numberofmodes-1):
-#     if (i % 2) == 0:
-#         circuit.z(qbr[0])
-#         circuit.h(qbr[0])
-#         circuit.cv_cpbs(np.arctan(1/np.sqrt(2)), qmr[i], qmr[i+1], qbr[0])
-#         circuit.h(qbr[0])
-#         circuit.cv_cpbs(np.pi/2, qmr[i], qmr[i+1], qbr[0])
-#         circuit.cv_bs(-np.pi/2, qmr[i], qmr[i+1])
-#         circuit.h(qbr[0])
-#         circuit.cv_snap2(qmr[i+1])
-#         circuit.cv_cpbs(np.pi/4, qmr[i], qmr[i+1], qbr[0])
-#         circuit.h(qbr[0])
-#         circuit.cv_snap2(qmr[i+1])
+# Native gates circuit
+for i in range(numberofmodes-1):
+    if (i % 2) == 0:
+        circuit.z(qbr[0])
+        circuit.h(qbr[0])
+        circuit.cv_cpbs(np.arctan(1/np.sqrt(2)), qmr[i], qmr[i+1], qbr[0])
+        circuit.h(qbr[0])
+        circuit.cv_cpbs(np.pi/2, qmr[i], qmr[i+1], qbr[0])
+        circuit.cv_bs(-np.pi/2, qmr[i], qmr[i+1])
+        circuit.h(qbr[0])
+        circuit.cv_snap2(qmr[i+1])
+        circuit.cv_cpbs(np.pi/4, qmr[i], qmr[i+1], qbr[0])
+        circuit.h(qbr[0])
+        circuit.cv_snap2(qmr[i+1])
 
-diffstallmodes=[1,1]
-gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
+# diffstallmodes=[1,1]
+# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
 
 #simulate circuit and see if it's normalised
 state, _ = c2qa.util.simulate(circuit)
 # print(state)
 # print("normalised final state ",np.conj(state.data).T.dot(state))
 
-projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
+# projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
 
+# controlled swap
+
+circuit.measure_all()
+
+# Transpile for simulator
+simulator = Aer.get_backend('aer_simulator')
+circ = transpile(circuit, simulator)
+
+# Run and get counts
+result = simulator.run(circ).result()
+counts = result.get_counts(circ)
+print(plot_histogram(counts, title='AKLT').show())
