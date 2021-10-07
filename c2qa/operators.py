@@ -74,12 +74,13 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def cpbs(self, g):
-        zQB = (1 / 2) * np.array([[1, 0], [0, -1]])
+        zQB = np.array([[1, 0], [0, -1]])
 
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        # argm = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        argm = (g / 2) * (a1dag2 - a12dag)
         arg = scipy.sparse.kron(zQB,argm)
 
         return scipy.sparse.linalg.expm(arg)

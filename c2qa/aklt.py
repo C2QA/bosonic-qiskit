@@ -26,7 +26,7 @@ zero=np.array([1,0,0,0])
 projtwo=np.outer(two,two.T)
 
 # Choose initial state
-qbinist=1
+qbinist=0
 samestallmodes=1
 diffstallmodes=[1,1]
 
