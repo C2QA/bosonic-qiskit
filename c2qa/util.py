@@ -521,7 +521,7 @@ def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_
         array-like: Results of Wigner function calculation
     """
     mle_state = []
-    for qubit_states in zip(*states):
+    for qubit_states in zip(*states):  # TODO will zip() generate matrices one-by-one with yield, or is this done all in memory?
         # TODO what distribution are the qubit states? (using normal)
         # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
         mle = scipy.stats.norm.fit(qubit_states)
