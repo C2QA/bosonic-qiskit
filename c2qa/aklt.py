@@ -73,17 +73,5 @@ state, _ = c2qa.util.simulate(circuit)
 # print(state)
 # print("normalised final state ",np.conj(state.data).T.dot(state))
 
-# projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
+projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
 
-# controlled swap
-
-circuit.measure_all()
-
-# Transpile for simulator
-simulator = Aer.get_backend('aer_simulator')
-circ = transpile(circuit, simulator)
-
-# Run and get counts
-result = simulator.run(circ).result()
-counts = result.get_counts(circ)
-print(plot_histogram(counts, title='AKLT').show())
