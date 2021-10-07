@@ -495,8 +495,8 @@ def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_
     """Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result."""
     mle_state = []
     for qubit_states in zip(*states):
-        # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
         # TODO what distribution are the qubit states? (using normal)
+        # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
         mle = scipy.stats.norm.fit(qubit_states)
         mle_state.append(mle[0])
     
