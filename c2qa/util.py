@@ -8,12 +8,11 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
-from qiskit.algorithms.amplitude_estimators.mlae import MaximumLikelihoodAmplitudeEstimation
-from qiskit.algorithms.amplitude_estimators.estimation_problem import EstimationProblem
 from qiskit.providers.aer.library.save_instructions.save_statevector import (
     save_statevector,
 )
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
+import scipy.stats
 
 from c2qa import CVCircuit
 from c2qa.operators import CVGate
@@ -493,12 +492,17 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
 
 
 def wigner_mle(states, circuit: CVCircuit, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
-    mlae_alg = MaximumLikelihoodAmplitudeEstimation(6)
-    estimation_problem = EstimationProblem(circuit, range(circuit.num_qubits))
-    mle = mlae_alg.compute_mle(states, estimation_problem, num_state_qubits=circuit.num_qubits, return_counts=True)
+    mle_state = []
+    for qubit_states in zip(*states):
+        # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
+        # TODO what distribution are the qubit states? (using normal)
+        mle = scipy.stats.norm.fit(qubit_states)
+        mle_state.append(mle[0])
+    
+    mle_normalized = mle_state / np.linalg.norm(mle_state)
 
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return wigner(states[0], xvec, xvec, circuit.cutoff, hbar)
+    return wigner(mle_normalized, xvec, xvec, circuit.cutoff, hbar)
 
 
 def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
