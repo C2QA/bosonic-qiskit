@@ -287,6 +287,6 @@ def test_wigner_mle(capsys):
 
         # conditional_state_vector=True will return two state vectors, one for 0 and 1 classical register value
         states, result = c2qa.util.simulate(circuit, per_shot_state_vector=True)
-        wigner = c2qa.util.wigner_mle(states, circuit, circuit.cutoff)
+        wigner = c2qa.util.wigner_mle(states, circuit.cutoff)
         assert wigner is not None
         print(wigner)

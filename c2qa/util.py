@@ -491,7 +491,8 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
     return wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
-def wigner_mle(states, circuit: CVCircuit, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
+def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
+    """Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result."""
     mle_state = []
     for qubit_states in zip(*states):
         # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
@@ -502,7 +503,7 @@ def wigner_mle(states, circuit: CVCircuit, axes_min: int = -5, axes_max: int = 5
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return wigner(mle_normalized, xvec, xvec, circuit.cutoff, hbar)
+    return wigner(mle_normalized, xvec, xvec, cutoff, hbar)
 
 
 def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
