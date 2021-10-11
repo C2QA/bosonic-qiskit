@@ -80,7 +80,7 @@ class CVOperators:
         a1dag2 = self.a1_dag * self.a2
 
         # argm = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
-        argm = (g / 2) * (a1dag2 - a12dag)
+        argm = (g/2) * (a1dag2 - a12dag)
         arg = scipy.sparse.kron(zQB,argm)
 
         return scipy.sparse.linalg.expm(arg)

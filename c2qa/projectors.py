@@ -5,8 +5,8 @@ import scipy
 import itertools
 from scipy.sparse import csr_matrix
 
-zeroQB=np.array([0,1]) #here: Kevin says for physicists should be one but I have algorithms definition I think (but usually zero) <- check
-oneQB=np.array([1,0]) #here: zero (but usually one) <- check
+zeroQB=np.array([1,0])
+oneQB=np.array([0,1])
 three=np.array([0,0,0,1])
 two=np.array([0,0,1,0])
 one=np.array([0,1,0,0])
@@ -76,6 +76,9 @@ def sbkroneckermodestates(numberofmodes):
 
 # Create all permutations of 'numberofmodes' of mode states
 def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modeinichoice, choice):
+    zeroQB = np.array([1,0])
+    oneQB = np.array([0, 1])
+
     if choice == "all":
         sbstates=allkroneckermodestates(numberofmodes)
     else:
