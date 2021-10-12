@@ -17,8 +17,8 @@ numberofmodes=2
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=1)
 circuit = c2qa.CVCircuit(qmr, qbr)
-zeroQB=np.array([1,0])#np.array([0,1]) #here: Kevin says for physicists should be one but I have algorithms definition I think (but usually zero) <- check
-oneQB=np.array([0,1])#np.array([1,0]) #here: zero (but usually one) <- check
+zeroQB=np.array([1,0]) #211012 agrees with Kevin's notation
+oneQB=np.array([0,1]) #211012 agrees with Kevin's notation
 three=np.array([0,0,0,1])
 two=np.array([0,0,1,0])
 one=np.array([0,1,0,0])

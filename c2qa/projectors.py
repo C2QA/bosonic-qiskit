@@ -5,8 +5,8 @@ import scipy
 import itertools
 from scipy.sparse import csr_matrix
 
-zeroQB=np.array([1,0])
-oneQB=np.array([0,1])
+zeroQB=np.array([1,0]) #211012 agrees with Kevin's notation
+oneQB=np.array([0,1]) #211012 agrees with Kevin's notation
 three=np.array([0,0,0,1])
 two=np.array([0,0,1,0])
 one=np.array([0,1,0,0])

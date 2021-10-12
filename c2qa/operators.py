@@ -37,7 +37,6 @@ class CVOperators:
         # Annihilation operator
         data = np.sqrt(range(cutoff))
         self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data))
-        print(self.a)
         # Creation operator
         self.a_dag = self.a.conjugate().transpose()
 
