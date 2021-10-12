@@ -33,7 +33,7 @@ def allkroneckermodestates(numberofmodes):
         line.append(np.array(list1[i][0][1]))
         for j in range(1, len(list1[i])):
             # print(j)
-            inside = np.kron(inside, np.array(list1[i][j][0]))
+            inside = np.kron(np.array(list1[i][j][0]),inside)
             # print(inside)
             line.append(np.array(list1[i][j][1]))
             # print(line)
@@ -59,7 +59,7 @@ def sbkroneckermodestates(numberofmodes):
             line.append(np.array(list1[i][0][1]))
             for j in range(1, len(list1[i])):
                 # print(j)
-                inside = np.kron(inside, np.array(list1[i][j][0]))
+                inside = np.kron(np.array(list1[i][j][0]), inside)
                 # print(inside)
                 line.append(np.array(list1[i][j][1]))
                 # print(line)
