@@ -109,6 +109,10 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.snap2)
         self.append(CVGate(data=operator, label="SNAP2"), qargs=qumode_a)
 
+    def cv_controlledparity(self, qumode_a, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.controlledparity)
+        self.append(CVGate(data=operator, label="controlledparity"), qargs=qumode_a + [qubit_ancilla])
+
     def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
         operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
         self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])

@@ -84,6 +84,13 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def controlledparity(self):
+        zQB = np.array([[1, 0], [0, -1]])
+        idQB = np.array([[1, 0], [0, 1]])
+        # arg = e^(i pi/2 N (1+Z))
+        arg = 1j * np.pi/2 * scipy.sparse.kron(idQB+zQB,self.N)
+        return scipy.sparse.linalg.expm(arg)
+
     def d(self, alpha):
         """Displacement operator"""
         arg = (alpha * self.a_dag) - (np.conjugate(alpha) * self.a)
