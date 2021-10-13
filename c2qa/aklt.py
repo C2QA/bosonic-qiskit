@@ -28,7 +28,7 @@ projtwo=np.outer(two,two.T)
 # Choose initial state
 qbinist=1
 samestallmodes=1
-diffstallmodes=[0,1]
+diffstallmodes=[1,1]
 
 # Initialize qubit
 # circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
@@ -52,8 +52,6 @@ circuit.cv_initialize(diffstallmodes[1], qmr[1])
 #         circuit.cv_aklt(qmr[i], qmr[i+1], qbr[0])
 #         circuit.cv_snap2(qmr[i+1])
 
-# circuit.cv_cpbs(np.pi, qmr[1], qmr[0], qbr[0])
-
 # listofthetas=np.pi*np.array([1,0.5,0.25])
 # list=np.zeros([len(listofthetas)])
 # for theta in range(listofthetas):
@@ -64,20 +62,18 @@ circuit.cv_initialize(diffstallmodes[1], qmr[1])
 #     state, _ = c2qa.util.simulate(circuit)
 #     projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes", "all")
 
-circuit.cv_controlledparity(qmr[0],qbr[0])
-
-# # # Native gates circuit
-# for i in range(numberofmodes-1):
-#     if (i % 2) == 0
-#         circuit.h(qbr[0])
-#         circuit.cv_cpbs(np.arctan(1/np.sqrt(2)), qmr[i+1], qmr[i], qbr[0])
-#         circuit.h(qbr[0])
-#         circuit.cv_controlledparity(qmr[1],qbr[0])
-#         circuit.cv_snap2(qmr[i + 1])
-#         circuit.h(qbr[0])
-#         circuit.cv_cpbs(np.pi/4, qmr[i+1], qmr[i], qbr[0])
-#         circuit.h(qbr[0])
-#         circuit.cv_snap2(qmr[i+1])
+# # Native gates circuit
+for i in range(numberofmodes-1):
+    if (i % 2) == 0:
+        circuit.h(qbr[0])
+        circuit.cv_cpbs(np.arctan(1/np.sqrt(2)), qmr[i+1], qmr[i], qbr[0])
+        circuit.h(qbr[0])
+        circuit.cv_controlledparity(qmr[i],qbr[0])
+        circuit.cv_snap2(qmr[i + 1])
+        circuit.h(qbr[0])
+        circuit.cv_cpbs(np.pi/4, qmr[i+1], qmr[i], qbr[0])
+        circuit.h(qbr[0])
+        circuit.cv_snap2(qmr[i+1])
 
 # print(circuit)
 

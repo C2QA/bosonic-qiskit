@@ -87,15 +87,22 @@ class CVOperators:
     def controlledparity(self):
         zQB = np.array([[1, 0], [0, -1]])
         idQB = np.array([[1, 0], [0, 1]])
-        # arg = e^(i pi/2 N (1+Z))
-        arg = 1j * np.pi/2 * scipy.sparse.kron(idQB+zQB,self.N)
-        return scipy.sparse.linalg.expm(arg)
+        intermediary = zQB + idQB
+        arg1 = scipy.sparse.kron(zQB,self.N)
+        arg2 = scipy.sparse.kron(idQB, self.N)
+        arg = arg1 + arg2
+        return scipy.sparse.linalg.expm(1j*(np.pi/2)*arg)
 
     def d(self, alpha):
         """Displacement operator"""
         arg = (alpha * self.a_dag) - (np.conjugate(alpha) * self.a)
 
         return scipy.sparse.linalg.expm(arg)
+
+    def test2modes(self):
+        eye = scipy.sparse.eye(4)
+        arg=scipy.sparse.kron(self.N, eye)
+        return scipy.sparse.linalg.expm(1j*(-1)*arg)
 
     def dBCH(self, alpha):
         """Displacement operator BCH formula"""
