@@ -33,7 +33,7 @@ def allkroneckermodestates(numberofmodes):
         line.append(np.array(list1[i][0][1]))
         for j in range(1, len(list1[i])):
             # print(j)
-            inside = np.kron(np.array(list1[i][j][0]),inside)
+            inside = np.kron(np.array(list1[i][j][0]), inside)
             # print(inside)
             line.append(np.array(list1[i][j][1]))
             # print(line)
@@ -43,8 +43,19 @@ def allkroneckermodestates(numberofmodes):
         sbstates.append(line)
 
     for i in range(len(modestates)):
-        # if modestates[i][1] == 1:
-        sbstates.append([modestates[i][1],modestates[i][1], scipy.sparse.kron(modestates[i][0], modestates[i][0])])
+        inside=modestates[i][0]
+        line=[]
+        line.append(np.array(modestates[i][1]))
+        for j in range(numberofmodes-1):
+            line.append(np.array(modestates[i][1]))
+            inside = np.kron(modestates[i][0], inside)
+        line.append(inside)
+        # print(line)
+        sbstates.append(line)
+
+    # for i in range(len(modestates)):
+    #     # if modestates[i][1] == 1:
+    #     sbstates.append([modestates[i][1],modestates[i][1], scipy.sparse.kron(modestates[i][0], modestates[i][0])])
 
     return sbstates
 
@@ -69,16 +80,20 @@ def sbkroneckermodestates(numberofmodes):
             sbstates.append(line)
 
     for i in range(len(modestates)):
-        if modestates[i][1] == 1:
-            sbstates.append([modestates[i][1],modestates[i][1], scipy.sparse.kron(modestates[i][0], modestates[i][0])])
+        inside=modestates[i][0]
+        line=[]
+        line.append(np.array(modestates[i][1]))
+        for j in range(numberofmodes-1):
+            line.append(np.array(modestates[i][1]))
+            inside = np.kron(modestates[i][0], inside)
+        line.append(inside)
+        # print(line)
+        sbstates.append(line)
 
     return sbstates
 
 # Create all permutations of 'numberofmodes' of mode states
 def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modeinichoice, choice):
-    zeroQB = np.array([1,0])
-    oneQB = np.array([0, 1])
-
     if choice == "all":
         sbstates=allkroneckermodestates(numberofmodes)
     else:
@@ -104,6 +119,8 @@ def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modei
 
     # print("\n")
     for i in range(len(fstates)):
+        # print("fstates[i][0] i ",i," fstates[i] ", fstates[i], fstates[i][0].shape)
+        # print("state " ,np.array(state).shape)
         res=np.conj(fstates[i][0]).dot(state)
         prob=np.abs(res)**2
         # print("Probability to get ",fstates[i][1],fstates[i][2],fstates[i][3]," is: ", prob)
