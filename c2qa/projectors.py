@@ -1,9 +1,16 @@
+import copy
+
 import c2qa
 import qiskit
 import numpy as np
 import scipy
 import itertools
 from scipy.sparse import csr_matrix
+
+# a = "0123012301230123"
+# p = itertools.permutations(a,4)
+# for j in list(p):
+#     print(j)
 
 zeroQB=np.array([1,0]) #211012 agrees with Kevin's notation
 oneQB=np.array([0,1]) #211012 agrees with Kevin's notation
@@ -15,17 +22,53 @@ projtwo=np.outer(two,two.T)
 
 def singlemodestates(numberofmodes):
     modestates = []
-    for i in range(int(numberofmodes / 2)):
+    for i in range(int(numberofmodes)):
         modestates.append([zero, 0])
         modestates.append([one, 1])
         modestates.append([two, 2])
         modestates.append([three, 3])
     return modestates
 
+def singlemodestatevalues(numberofmodes):
+    modestates = []
+    for i in range(int(numberofmodes)):
+        modestates.append(0)
+        modestates.append(1)
+        modestates.append(2)
+        modestates.append(3)
+    return modestates
+
+def reduceduplicates(numberofmodes):
+    sbstates = []
+    modestates=singlemodestatevalues(numberofmodes)
+    list0 = list(itertools.permutations(modestates, r=numberofmodes))
+    # print(len(list0), " and ", len(set(list0)))
+    list1=[]
+    for i in set(list0):
+        # print(i)
+        inside=[]
+        for j in range(numberofmodes):
+            # print(i[j])
+            if i[j]==0:
+                inside.append([zero, 0])
+            elif i[j]==1:
+                inside.append([one, 1])
+            elif i[j]==2:
+                inside.append([two, 2])
+            elif i[j]==3:
+                inside.append([three, 3])
+            else:
+                print("Cutoff above 4?")
+        # print(inside)
+        list1.append(inside)
+    # print("list1 ", list1)
+    # print("len " ,len(list1))
+    return list1
+
 def allkroneckermodestates(numberofmodes):
     sbstates = []
-    modestates=singlemodestates(numberofmodes)
-    list1 = list(itertools.permutations(modestates, r=numberofmodes))
+    list1 = reduceduplicates(numberofmodes)
+    # print(list1)
     for i in range(len(list1)):
         # if sum(x[1] for x in list[i]) == numberofmodes:
         inside = np.array(list1[i][0][0])
@@ -42,27 +85,11 @@ def allkroneckermodestates(numberofmodes):
         # print("line ", line)
         sbstates.append(line)
 
-    for i in range(len(modestates)):
-        inside=modestates[i][0]
-        line=[]
-        line.append(np.array(modestates[i][1]))
-        for j in range(numberofmodes-1):
-            line.append(np.array(modestates[i][1]))
-            inside = np.kron(modestates[i][0], inside)
-        line.append(inside)
-        # print(line)
-        sbstates.append(line)
-
-    # for i in range(len(modestates)):
-    #     # if modestates[i][1] == 1:
-    #     sbstates.append([modestates[i][1],modestates[i][1], scipy.sparse.kron(modestates[i][0], modestates[i][0])])
-
     return sbstates
 
 def sbkroneckermodestates(numberofmodes):
     sbstates = []
-    modestates=singlemodestates(numberofmodes)
-    list1 = list(itertools.permutations(modestates, r=numberofmodes))
+    list1 = reduceduplicates(numberofmodes)
     for i in range(len(list1)):
         if sum(x[1] for x in list1[i]) == numberofmodes:
             inside = np.array(list1[i][0][0])
@@ -78,17 +105,17 @@ def sbkroneckermodestates(numberofmodes):
             line.append(inside)
             # print("line ", line)
             sbstates.append(line)
-
-    for i in range(len(modestates)):
-        inside=modestates[i][0]
-        line=[]
-        line.append(np.array(modestates[i][1]))
-        for j in range(numberofmodes-1):
-            line.append(np.array(modestates[i][1]))
-            inside = np.kron(modestates[i][0], inside)
-        line.append(inside)
-        # print(line)
-        sbstates.append(line)
+    #
+    # for i in range(len(modestates)):
+    #     inside=modestates[i][0]
+    #     line=[]
+    #     line.append(np.array(modestates[i][1]))
+    #     for j in range(numberofmodes-1):
+    #         line.append(np.array(modestates[i][1]))
+    #         inside = np.kron(modestates[i][0], inside)
+    #     line.append(inside)
+    #     # print(line)
+    #     sbstates.append(line)
 
     return sbstates
 
