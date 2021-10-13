@@ -87,3 +87,11 @@ state, _ = c2qa.util.simulate(circuit)
 
 projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
 
+# Construct an ideal simulator
+aersim = AerSimulator()
+result_ideal = qiskit.execute(circuit, aersim).result()
+counts_ideal = result_ideal.get_counts(0)
+print('Counts(ideal):', counts_ideal)
+print(plot_histogram(counts_ideal, title='AKLT').show())
+
+circuit.draw(output='mpl', filename='my_circuit.png')
