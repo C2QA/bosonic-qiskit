@@ -179,11 +179,11 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
     circuit.data.pop()
 
     # Calculate Wigner functions
-    xvec = np.linspace(-5, 5, 200)
-    wigner_zero = wigner(projection_zero, xvec, xvec, circuit.cutoff)
-    wigner_one = wigner(projection_one, xvec, xvec, circuit.cutoff)
-    wigner_plus = wigner(projection_plus, xvec, xvec, circuit.cutoff)
-    wigner_minus = wigner(projection_minus, xvec, xvec, circuit.cutoff)
+    xvec = np.linspace(-6, 6, 200)
+    wigner_zero = _wigner(projection_zero, xvec, xvec, circuit.cutoff)
+    wigner_one = _wigner(projection_one, xvec, xvec, circuit.cutoff)
+    wigner_plus = _wigner(projection_plus, xvec, xvec, circuit.cutoff)
+    wigner_minus = _wigner(projection_minus, xvec, xvec, circuit.cutoff)
 
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
@@ -258,8 +258,8 @@ def plot_wigner(
     state_vector: Statevector,
     trace: bool = True,
     file: str = None,
-    axes_min: int = -5,
-    axes_max: int = 5,
+    axes_min: int = -6,
+    axes_max: int = 6,
     axes_steps: int = 200,
     num_colors: int = 100,
 ):
@@ -272,8 +272,8 @@ def plot_wigner(
         state_vector (Statevector): simulation results to trace over and plot
         trace (bool, optional): True if qubits should be traced. Defaults to True.
         file (str, optional): File path to save plot. If none, return plot. Defaults to None.
-        axes_min (int, optional): Minimum axes plot value. Defaults to -5.
-        axes_max (int, optional): Maximum axes plot value. Defaults to 5.
+        axes_min (int, optional): Minimum axes plot value. Defaults to -6.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         num_colors (int, optional): Number of color gradients in legend. Defaults to 100.
     """
@@ -282,16 +282,15 @@ def plot_wigner(
     else:
         state = state_vector
 
-    xvec = np.linspace(axes_min, axes_max, axes_steps)
-    w_fock = wigner(state, xvec, xvec, circuit.cutoff)
+    w_fock = wigner(state, circuit.cutoff, axes_min, axes_max, axes_steps)
 
     plot(data=w_fock, axes_min=axes_min, axes_max=axes_max, axes_steps=axes_steps, file=file, num_colors=num_colors)
 
 
 def plot(
     data,    
-    axes_min: int = -5,
-    axes_max: int = 5,
+    axes_min: int = -6,
+    axes_max: int = 6,
     axes_steps: int = 200,
     file: str = None,
     num_colors: int = 100,
@@ -323,8 +322,8 @@ def animate_wigner(
     animation_segments: int = 10,
     shots: int = 1024,
     file: str = None,
-    axes_min: int = -5,
-    axes_max: int = 5,
+    axes_min: int = -6,
+    axes_max: int = 6,
     axes_steps: int = 200,
     processes: int = None,
 ):
@@ -343,8 +342,8 @@ def animate_wigner(
         animation_segments (int, optional): Number of segments to split each gate into for animation. Defaults to 10.
         shots (int, optional): Number of simulation shots per frame. Defaults to 1024.
         file (str, optional): File path to save. If None, return plot. Defaults to None.
-        axes_min (int, optional): Minimum axes plot value. Defaults to -5.
-        axes_max (int, optional): Maximum axes plot value. Defaults to 5.
+        axes_min (int, optional): Minimum axes plot value. Defaults to -6.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         processes (int, optional): Number of parallel Python processes to start. If None, perform serially in main process. Defaults to None.
 
@@ -502,18 +501,37 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
     # odd_state = state["0x1"]
 
     density_matrix = cv_partial_trace(circuit, even_state)
-    return wigner(density_matrix, xvec, xvec, circuit.cutoff)
+    return _wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
-def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_steps: int = 200, hbar: int = 2):
+def wigner(state, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_steps: int = 200, hbar: int = 2):
+    """
+    Calculate the Wigner function on the given state vector.
+        
+    Args:
+        state (array-like): state vector to calculate Wigner function
+        cutoff (int): cutoff used during simulation
+        axes_min (int, optional): Minimum axes plot value. Defaults to -6.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 6.
+        axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
+        hbar (int, optional): hbar value to use in Wigner function calculation. Defaults to 2.
+
+    Returns:
+        array-like: Results of Wigner function calculation
+    """
+    xvec = np.linspace(axes_min, axes_max, axes_steps)
+    return _wigner(state, xvec, xvec, cutoff, hbar)
+
+
+def wigner_mle(states, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_steps: int = 200, hbar: int = 2):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
     
     Args:
         states (array-like of array-like): state vectors to calculate MLE and Wigner function
         cutoff (int): cutoff used during simulation
-        axes_min (int, optional): Minimum axes plot value. Defaults to -5.
-        axes_max (int, optional): Maximum axes plot value. Defaults to 5.
+        axes_min (int, optional): Minimum axes plot value. Defaults to -6.
+        axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         hbar (int, optional): hbar value to use in Wigner function calculation. Defaults to 2.
 
@@ -530,10 +548,10 @@ def wigner_mle(states, cutoff: int, axes_min: int = -5, axes_max: int = 5, axes_
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return wigner(mle_normalized, xvec, xvec, cutoff, hbar)
+    return _wigner(mle_normalized, xvec, xvec, cutoff, hbar)
 
 
-def wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
+def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
     r"""
     Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
     Starwberry Fields used the QuTiP "iterative" implementation.
