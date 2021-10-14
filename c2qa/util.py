@@ -547,8 +547,7 @@ def wigner_mle(states, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_
     
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
-    xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return _wigner(mle_normalized, xvec, xvec, cutoff, hbar)
+    return wigner(mle_normalized, cutoff, axes_min, axes_max, axes_steps, hbar)
 
 
 def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
