@@ -10,6 +10,7 @@ from qiskit import QuantumCircuit
 from qiskit import Aer, transpile
 from qiskit.tools.visualization import plot_histogram, plot_state_city
 import qiskit.quantum_info as qi
+from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
@@ -26,7 +27,7 @@ zero=np.array([1,0,0,0])
 projtwo=np.outer(two,two.T)
 
 # Choose initial state
-qbinist=1
+qbinist=0
 samestallmodes=1
 diffstallmodes=[1,1]
 
@@ -87,11 +88,11 @@ state, _ = c2qa.util.simulate(circuit)
 
 projectors.overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, "diffstallmodes" ,"all")
 
-# Construct an ideal simulator
-aersim = AerSimulator()
-result_ideal = qiskit.execute(circuit, aersim).result()
-counts_ideal = result_ideal.get_counts(0)
-print('Counts(ideal):', counts_ideal)
-print(plot_histogram(counts_ideal, title='AKLT').show())
+# # Construct an ideal simulator
+# aersim = AerSimulator()
+# result_ideal = qiskit.execute(circuit, aersim).result()
+# counts_ideal = result_ideal.get_counts(0)
+# print('Counts(ideal):', counts_ideal)
+# print(plot_histogram(counts_ideal, title='AKLT').show())
 
 circuit.draw(output='mpl', filename='my_circuit.png')
