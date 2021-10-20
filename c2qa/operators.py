@@ -93,6 +93,14 @@ class CVOperators:
         arg = arg1 + arg2
         return scipy.sparse.linalg.expm(1j*(np.pi/2)*arg)
 
+    # def SzSB(self):
+    #     arg=self.sbSz
+    #     return scipy.sparse.linalg.expm(1j*arg)
+
+    def RSzSB(self):
+        arg=self.sbSz
+        return scipy.sparse.linalg.expm(1j*np.pi*arg)
+
     def d(self, alpha):
         """Displacement operator"""
         arg = (alpha * self.a_dag) - (np.conjugate(alpha) * self.a)
@@ -166,6 +174,20 @@ class CVOperators:
         # you can do all the photon number states on one cavity on one ancilla, but each cavity needs an ancilla
         twoOP = csr_matrix([[0, 0 ,0 ,0], [0, 0 ,0 ,0], [0 ,0 ,1 ,0], [0, 0 ,0 ,0]])
         arg=np.pi*1j*twoOP
+        return scipy.sparse.linalg.expm(arg)
+
+    def snap1(self):
+        # be careful about adding an extra qubit in here which is in state 1 which will get the negative phase.
+        # you can do all the photon number states on one cavity on one ancilla, but each cavity needs an ancilla
+        oneOP = csr_matrix([[0, 0, 0, 0],[0, 1, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]])
+        arg=np.pi*1j*oneOP
+        return scipy.sparse.linalg.expm(arg)
+
+    def snap1X(self):
+        yQB = np.array([[0, 1j], [-1j, 0]])
+        oneOP = csr_matrix([[0, 0, 0, 0],[0, 1, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]])
+        arg1=-1j*np.pi*oneOP/2
+        arg = scipy.sparse.kron(yQB, arg1)
         return scipy.sparse.linalg.expm(arg)
 
     def qubitDependentCavityRotation(self):

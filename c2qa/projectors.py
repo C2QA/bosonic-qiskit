@@ -18,7 +18,9 @@ three=np.array([0,0,0,1])
 two=np.array([0,0,1,0])
 one=np.array([0,1,0,0])
 zero=np.array([1,0,0,0])
+projone=np.outer(one,one.T)
 projtwo=np.outer(two,two.T)
+# print(projone)
 
 def singlemodestates(numberofmodes):
     modestates = []

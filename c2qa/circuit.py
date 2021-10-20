@@ -109,6 +109,14 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.snap2)
         self.append(CVGate(data=operator, label="SNAP2"), qargs=qumode_a)
 
+    def cv_snap1(self, qumode_a):
+        operator = ParameterizedOperator(self.ops.snap1)
+        self.append(CVGate(data=operator, label="SNAP1"), qargs=qumode_a)
+
+    def cv_snap1X(self, qumode_a, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.snap1X)
+        self.append(CVGate(data=operator, label="XSNAP1"), qargs=qumode_a + [qubit_ancilla])
+
     def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
         operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
         self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])
@@ -127,7 +135,11 @@ class CVCircuit(QuantumCircuit):
 
     def cv_controlledparity(self, qumode_a, qubit_ancilla):
         operator = ParameterizedOperator(self.ops.controlledparity)
-        self.append(CVGate(data=operator, label="controlledparity"), qargs=qumode_a + [qubit_ancilla])
+        self.append(CVGate(data=operator, label="cP"), qargs=qumode_a + [qubit_ancilla])
+
+    def cv_RSzSB(self, qumode_a, qumode_b):
+        operator = ParameterizedOperator(self.ops.RSzSB)
+        self.append(CVGate(data=operator, label="RSzSB"), qargs=qumode_a + qumode_b)
 
     def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
         op_0 = ParameterizedOperator(self.ops.bs, phi)
