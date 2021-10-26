@@ -3,7 +3,7 @@ import qiskit
 import numpy as np
 import scipy
 import itertools
-import projectors, gatetesting
+import projectors, gatetesting, stateReadout
 import numpy as np
 # Import Qiskit
 from qiskit import QuantumCircuit
@@ -14,7 +14,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=2
+numberofmodes=6
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=1)
 circuit = c2qa.CVCircuit(qmr, qbr)
@@ -29,7 +29,7 @@ projtwo=np.outer(two,two)
 # Choose initial state
 qbinist=1
 samestallmodes=1
-diffstallmodes=[2,0]
+diffstallmodes=[0,1,2,3,2,1]
 
 # Initialize qubit
 # circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
@@ -66,9 +66,13 @@ stateAKLT, _ = c2qa.util.simulate(circuit)
 
 #simulate circuit and see if it's normalised
 stateop, _ = c2qa.util.simulate(circuit)
-# print(state)
+# print(stateop)
 # print("normalised final state ",np.conj(state.data).T.dot(state))
 
+# stateop, _ = c2qa.util.simulate(circuit)
+print("Basis reading")
+stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes", 4)
+print("Projectors")
 projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
 
 # # Construct an ideal simulator

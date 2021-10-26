@@ -216,3 +216,4 @@ class CVCircuit(QuantumCircuit):
 
         self.h(qubit)
         return self.measure(qubit, cbit)
+
