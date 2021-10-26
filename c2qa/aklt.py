@@ -11,6 +11,10 @@ from qiskit import Aer, transpile
 from qiskit.tools.visualization import plot_histogram, plot_state_city
 import qiskit.quantum_info as qi
 from qiskit.providers.aer import AerSimulator
+from qiskit.opflow import CircuitOp, CircuitStateFn
+from qiskit import Aer
+from qiskit.aqua import QuantumInstance
+from qiskit.aqua.operators import MatrixExpectation, CircuitSampler, StateFn
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
@@ -57,7 +61,30 @@ for i in range(numberofmodes-1):
         circuit.z(qbr[0])
         circuit.x(qbr[0])
 
-stateAKLT, _ = c2qa.util.simulate(circuit)
+# # you can define your operator as circuit
+# operatorcirc = c2qa.CVCircuit(qmr, qbr)
+# operatorcirc.z(0)
+# op = CircuitOp(operatorcirc)  # and convert to an operator
+#
+# # convert to a state
+# psi = CircuitStateFn(circuit)
+#
+# # define your backend or quantum instance (where you can add settings)
+# backend = Aer.get_backend('qasm_simulator')
+# q_instance = QuantumInstance(backend, shots=1024)
+#
+# # define the state to sample
+# measurable_expression = StateFn(op, is_measurement=True).compose(psi)
+#
+# expectation = MatrixExpectation().convert(measurable_expression)
+# sampler = CircuitSampler(backend).convert(expectation)
+# print('Matrix:', sampler.eval().real)
+
+
+# print('Math:', psi.adjoint().compose(op).compose(psi).eval().real)
+
+
+# stateAKLT, _ = c2qa.util.simulate(circuit)
 # circuit.cv_RSzSB(qmr[1],qmr[0])
 # print(circuit)
 
@@ -68,12 +95,11 @@ stateAKLT, _ = c2qa.util.simulate(circuit)
 stateop, _ = c2qa.util.simulate(circuit)
 # print(stateop)
 # print("normalised final state ",np.conj(state.data).T.dot(state))
-
+print("Reading out")
 # stateop, _ = c2qa.util.simulate(circuit)
-print("Basis reading")
 stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes", 4)
-print("Projectors")
-projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
+# print("Projectors")
+# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
 
 # # Construct an ideal simulator
 # aersim = AerSimulator()
