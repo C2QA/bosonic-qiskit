@@ -35,18 +35,19 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
         if (np.abs(np.real(res)) > 1e-10):
             pos=i
             # print("position of non-zero real: ", pos, " res = ", res)
-            qbst=np.zeros([numberofqubits])
+            qbst=np.empty(numberofqubits, dtype='int')
             iqb=0
             sln=len(st)
             while(iqb<numberofqubits):
                 if pos<sln/2:
-                    qbst[iqb]="0"
+                    qbst[iqb]=int(0)
                 else:
-                    qbst[iqb]="1"
+                    qbst[iqb]=int(1)
                     pos=pos-(sln/2)
                     # print("pos (sln/2)", pos, "sln ",sln)
                 sln=sln/2
                 iqb=iqb+1
+            qbstr = ["".join(item) for item in qbst.astype(str)]
             # print("which half of the kronecker, ie. state of qubit: ", qbst)
             # print(modesini, " overlap with ",qbst[0], " is: ", np.real(res))
 
@@ -81,7 +82,7 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
 
             sbstr = ["".join(item) for item in qmst.astype(str)]
 
-            print(modesini, " overlap with ", int(qbst[0]), ''.join(sbstr), "  is: ", np.real(res))
+            print(modesini, " overlap with ", ''.join(qbstr), ''.join(sbstr), "  is: ", np.real(res))
 
     # print("end")
 
