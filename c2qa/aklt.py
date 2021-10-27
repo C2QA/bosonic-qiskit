@@ -11,12 +11,6 @@ from qiskit import Aer, transpile
 from qiskit.tools.visualization import plot_histogram, plot_state_city
 import qiskit.quantum_info as qi
 from qiskit.providers.aer import AerSimulator
-from qiskit.opflow import CircuitOp, CircuitStateFn
-from qiskit import Aer
-from qiskit.aqua import QuantumInstance
-from qiskit.aqua.operators import MatrixExpectation, CircuitSampler, StateFn
-from qiskit.tools.visualization import plot_histogram, plot_state_city
-from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
@@ -44,10 +38,6 @@ circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
 for i in range(qmr.num_qumodes):
     circuit.cv_initialize(samestallmodes, qmr[i])
-# Check the input state is normalised
-# state0, _ = c2qa.util.simulate(circuit)
-# print("normalised initial state ", np.conj(state0.data).T.dot(state0))
-# print(arg)
 
 
 circuit.x(qbr[0])
@@ -68,38 +58,12 @@ for i in range(numberofmodes-1):
         circuit.x(qbr[0])
         circuit.z(qbr[0])
         circuit.x(qbr[0])
-# circuit.barrier()
-# circuit.h(qbr[2])
-# circuit.cswap(qbr[2], qbr[0], qbr[1])
-# circuit.h(qbr[2])
-# circuit.barrier()
+circuit.barrier()
+circuit.h(qbr[2])
+circuit.cswap(qbr[2], qbr[0], qbr[1])
+circuit.h(qbr[2])
+circuit.barrier()
 
-# # you can define your operator as circuit
-# operatorcirc = c2qa.CVCircuit(qmr, qbr)
-# operatorcirc.z(0)
-# op = CircuitOp(operatorcirc)  # and convert to an operator
-#
-# # convert to a state
-# psi = CircuitStateFn(circuit)
-#
-# # define your backend or quantum instance (where you can add settings)
-# backend = Aer.get_backend('qasm_simulator')
-# q_instance = QuantumInstance(backend, shots=1024)
-#
-# # define the state to sample
-# measurable_expression = StateFn(op, is_measurement=True).compose(psi)
-#
-# expectation = MatrixExpectation().convert(measurable_expression)
-# sampler = CircuitSampler(backend).convert(expectation)
-# print('Matrix:', sampler.eval().real)
-
-
-# print('Math:', psi.adjoint().compose(op).compose(psi).eval().real)
-
-
-# stateAKLT, _ = c2qa.util.simulate(circuit)
-# circuit.cv_RSzSB(qmr[1],qmr[0])
-# print(circuit)
 
 # diffstallmodes=[1,1]
 # gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
@@ -107,11 +71,8 @@ for i in range(numberofmodes-1):
 #simulate circuit and see if it's normalised
 stateop, _ = c2qa.util.simulate(circuit)
 # print(stateop)
-# print("normalised final state ",np.conj(state.data).T.dot(state))
-print("Reading out")
-# stateop, _ = c2qa.util.simulate(circuit)
+print("Finished simulating")
 stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes", 4)
-# print("Projectors")
 # projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
 
 # # Construct an ideal simulator
@@ -125,7 +86,13 @@ circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circui
 
 
 # circuit.measure_all()
-circuit.measure(-1,0)
+circuit.measure(0,0)
+
+statemeas, _ = c2qa.util.simulate(circuit)
+# print(stateop)
+print("Finished simulating meas")
+stateReadout.stateread(statemeas, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes", 4)
+
 
 # Construct an ideal simulator
 aersim = AerSimulator()

@@ -4,6 +4,13 @@ from qiskit.quantum_info import Operator
 import scipy.sparse
 import scipy.sparse.linalg
 from scipy.sparse import csr_matrix, block_diag
+from qiskit.aqua.operators import MatrixExpectation, CircuitSampler, StateFn
+from qiskit.tools.visualization import plot_histogram, plot_state_city
+from qiskit.providers.aer import AerSimulator
+from qiskit.opflow import CircuitOp, CircuitStateFn
+from qiskit import Aer
+from qiskit.aqua import QuantumInstance
+import c2qa
 
 
 class ParameterizedOperator(Operator):
@@ -222,3 +229,28 @@ class CVOperators:
         # Sphere =self.a1_dag * self.a2
         # print("Spone ", Spone.toarray())
         # print("Sphere ", Sphere.toarray())
+
+
+def operatorInProgress(circuit, qmr, qbr):
+
+    # you can define your operator as circuit
+    operatorcirc = c2qa.CVCircuit(qmr, qbr)
+    operatorcirc.z(0)
+    op = CircuitOp(operatorcirc)  # and convert to an operator
+
+    # convert to a state
+    psi = CircuitStateFn(circuit)
+
+    # define your backend or quantum instance (where you can add settings)
+    backend = Aer.get_backend('qasm_simulator')
+    q_instance = QuantumInstance(backend, shots=1024)
+
+    # define the state to sample
+    measurable_expression = StateFn(op, is_measurement=True).compose(psi)
+
+    expectation = MatrixExpectation().convert(measurable_expression)
+    sampler = CircuitSampler(backend).convert(expectation)
+    print('Matrix:', sampler.eval().real)
+
+
+    print('Math:', psi.adjoint().compose(op).compose(psi).eval().real)
