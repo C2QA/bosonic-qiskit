@@ -17,7 +17,8 @@ from qiskit.providers.aer import AerSimulator
 numberofmodes=2
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
-circuit = c2qa.CVCircuit(qmr, qbr)
+cbr = qiskit.ClassicalRegister(size=1)
+circuit = c2qa.CVCircuit(qmr, qbr, cbr)
 zeroQB=np.array([1,0]) #211012 agrees with Kevin's notation
 oneQB=np.array([0,1]) #211012 agrees with Kevin's notation
 three=np.array([0,0,0,1])
@@ -34,7 +35,7 @@ diffstallmodes=[0,1,2,3,2,1]
 # Initialize qubit
 # circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
 qubitinitialstate=[[zeroQB,"0"],[oneQB,"1"]]
-circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
+# circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
 for i in range(qmr.num_qumodes):
     circuit.cv_initialize(samestallmodes, qmr[i])
@@ -58,11 +59,17 @@ for i in range(numberofmodes-1):
         circuit.x(qbr[0])
         circuit.z(qbr[0])
         circuit.x(qbr[0])
+# circuit.barrier()
+# circuit.h(qbr[2])
+# circuit.cswap(qbr[2], qbr[0], qbr[1])
+# circuit.h(qbr[2])
+# circuit.measure(-1,0)
+
 circuit.barrier()
-circuit.h(qbr[2])
-circuit.cswap(qbr[2], qbr[0], qbr[1])
-circuit.h(qbr[2])
-circuit.barrier()
+circuit.x(qbr[0])
+circuit.x(qbr[1])
+circuit.z(qbr[0])
+circuit.z(qbr[1])
 
 
 # diffstallmodes=[1,1]
@@ -84,9 +91,13 @@ stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes
 
 circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
 
-
-# circuit.measure_all()
-circuit.measure(0,0)
+circuit.barrier()
+circuit.measure_all()
+# circuit.measure(-1,0)
+# circuit.measure(-2,0)
+# circuit.measure(-3,0)
+# circuit.measure(-4,0)
+# circuit.measure(-5,0)
 
 statemeas, _ = c2qa.util.simulate(circuit)
 # print(stateop)
@@ -101,7 +112,7 @@ counts_ideal = result_ideal.get_counts(0)
 print('Counts(ideal):', counts_ideal)
 print(plot_histogram(counts_ideal, title='AKLT').show())
 
-circuit.draw(output='mpl', filename='my_circuit.png')
+circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
 
 # # Transpile for simulator
 # simulator = Aer.get_backend('aer_simulator')
