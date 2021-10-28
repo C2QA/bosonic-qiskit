@@ -87,6 +87,8 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
 
             print(modesini, " overlap with ", ''.join(qbstr), ''.join(sbstr), "  is: ", np.real(res))
 
+            # print("ella", qmst)
+
     # print("end")
 
     # if (np.abs(np.imag(res)) > 1e-10):

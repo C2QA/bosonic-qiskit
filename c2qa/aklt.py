@@ -30,16 +30,14 @@ projtwo=np.outer(two,two)
 # Choose initial state
 qbinist=0
 samestallmodes=1
-diffstallmodes=[0,1,2,3,2,1]
-
+diffstallmodes=[1,1,1]
 # Initialize qubit
-# circuit.initialize((1 / np.sqrt(2)) * np.array([1, 1]), qbr[0])
 qubitinitialstate=[[zeroQB,"0"],[oneQB,"1"]]
 # circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
 # Initialize both qumodes to a zero spin 1 state (Fock state 1)
 for i in range(qmr.num_qumodes):
-    circuit.cv_initialize(samestallmodes, qmr[i])
-
+    circuit.cv_initialize(samestallmodes, qmr[i]) #diffstallmodes[i] or samestallmodes
+word="samestallmodes" #should correspond to the above line
 
 circuit.x(qbr[0])
 circuit.x(qbr[1])
@@ -59,23 +57,21 @@ for i in range(numberofmodes-1):
         circuit.x(qbr[0])
         circuit.z(qbr[0])
         circuit.x(qbr[0])
-circuit.barrier()
-circuit.h(qbr[2])
-circuit.cswap(qbr[2], qbr[0], qbr[1])
-circuit.h(qbr[2])
-circuit.measure(-1,0)
-
+# circuit.barrier()
+# circuit.h(qbr[2])
+# circuit.cswap(qbr[2], qbr[0], qbr[1])
+# circuit.h(qbr[2])
+# circuit.measure(-1,0)
+#
 # Construct an ideal simulator
 aersim = AerSimulator()
 result_ideal = qiskit.execute(circuit, aersim).result()
 counts_ideal = result_ideal.get_counts(0)
-print('Mid-circuit measurement')
+print("Mid-circuit measurement")
 print('Counts 0:', counts_ideal['0'])
-# print('Counts 1:', counts_ideal['1'])
-# print(plot_histogram(counts_ideal, title='AKLT').show())
 
 if counts_ideal['0']>1000:
-    print('Was measured to be in triplet so am doing rectification')
+    print('Was measured to be in triplet so rectifying')
     circuit.barrier()
     circuit.x(qbr[0])
     circuit.x(qbr[1])
@@ -83,54 +79,36 @@ if counts_ideal['0']>1000:
     circuit.z(qbr[1])
 
 
-# diffstallmodes=[1,1]
-# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
-
-#simulate circuit and see if it's normalised
 stateop, _ = c2qa.util.simulate(circuit)
-# print(stateop)
-print("Finished simulating")
-stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes", 4)
-# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
-
-# # Construct an ideal simulator
-# aersim = AerSimulator()
-# result_ideal = qiskit.execute(circuit, aersim).result()
-# counts_ideal = result_ideal.get_counts(0)
-# print('Counts(ideal):', counts_ideal)
-# print(plot_histogram(counts_ideal, title='AKLT').show())
-
+print("Simulated the circuit with rectification")
+stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
 circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
 
 circuit.barrier()
 circuit.measure_all()
-# circuit.measure(-1,0)
-# circuit.measure(-2,0)
-# circuit.measure(-3,0)
-# circuit.measure(-4,0)
-# circuit.measure(-5,0)
-
-statemeas, _ = c2qa.util.simulate(circuit)
-# print(stateop)
-print("Finished simulating meas")
-stateReadout.stateread(statemeas, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes", 4)
-
+print("Measurement")
 
 # Construct an ideal simulator
 aersim = AerSimulator()
-result_ideal = qiskit.execute(circuit, aersim).result()
+result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
 counts_ideal = result_ideal.get_counts(0)
-print('Counts(ideal):', counts_ideal)
-print(plot_histogram(counts_ideal, title='AKLT').show())
-
-circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
+print('Counts(ideal):', result_ideal.get_counts())
+plt=plot_histogram(counts_ideal, title='AKLT')
+plt.tight_layout()
+print(plt.show())
 
 # # Transpile for simulator
 # simulator = Aer.get_backend('aer_simulator')
 # circ = transpile(circuit, simulator)
-#
-# # Run and get counts
+# # Run and get counts from simulator
 # result = simulator.run(circ).result()
 # counts = result.get_counts(circ)
 # print(counts)
 # print(plot_histogram(counts, title='AKLT').show())
+
+
+
+
+# diffstallmodes=[1,1]
+# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
+# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
