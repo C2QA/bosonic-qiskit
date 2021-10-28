@@ -19,13 +19,16 @@ projtwo = np.outer(two, two.T)
 def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, diffstallmodes, modeinichoice, cutoff):
     st = np.array(stateop)
     amp = []
+    iniq = [qbinist] * numberofqubits
+    modesini = ""
+    for i in range(len(iniq)):
+        modesini = modesini + str(iniq[i])
+    modesini = modesini + " "
     if modeinichoice == "samestallmodes":
         inim = [samestallmodes] * numberofmodes
-        modesini = str(qbinist) + " "
         for i in range(len(inim)):
             modesini = modesini + str(inim[i])
     else:
-        modesini = str(qbinist) + " "
         for i in range(len(diffstallmodes)):
             modesini = modesini + str(diffstallmodes[i])
 
