@@ -53,6 +53,17 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
             qbstr = ["".join(item) for item in qbst.astype(str)]
             # print("which half of the kronecker, ie. state of qubit: ", qbst)
             # print(modesini, " overlap with ",qbst[0], " is: ", np.real(res))
+            qbsitestr = "" #str(qbst[0])
+            if qbst[1]==0:
+                if qbst[2]==0:
+                    qbsitestr=qbsitestr.join("+")
+                else:
+                    qbsitestr = qbsitestr.join("0")
+            elif qbst[1]==1:
+                if qbst[2]==1:
+                    qbsitestr=qbsitestr.join("-")
+                else:
+                    qbsitestr="".join("0")
 
             # print("Qmode detector")
             qmst=np.empty(numberofmodes, dtype='int')
@@ -84,12 +95,87 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
             # print("qumode states at the end of one number's worth of searching: ", qmst)
 
             sbstr = ["".join(item) for item in qmst.astype(str)]
+            sitestr = ""
+            for site in range(numberofmodes):
+                if (site % 2 == 0):
+                    if qmst[site]==0 :
+                        sitestr=sitestr+"-"
+                    elif qmst[site]==2 :
+                        sitestr=sitestr+"+"
+                    elif qmst[site] == 1 & qmst[site + 1] == 1:
+                        sitestr=sitestr+"0"
 
-            print(modesini, " overlap with ", ''.join(qbstr), ''.join(sbstr), "  is: ", np.real(res))
 
-            # print("ella", qmst)
+            print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "  is: ", np.real(res))
+
+
 
     # print("end")
 
     # if (np.abs(np.imag(res)) > 1e-10):
     #     print(modesini, " overlap with ", " is: ", 1j * np.imag(res))
+
+def interpretmeasurementresult(list, numberofmodes):
+    finallist=[]
+    for i in range(len(list)):
+        qbsitestr = ""
+        if int(list[i][1]) == 0:
+            if int(list[i][2]) == 0:
+                qbsitestr = "".join("+")
+            else:
+                qbsitestr = "".join("0")
+        elif int(list[i][1]) == 1:
+            if int(list[i][2]) == 1:
+                qbsitestr = "".join("-")
+            else:
+                qbsitestr = "".join("0")
+
+        sitestr = ""
+        numberofsites=numberofmodes/2
+        site = 3
+        while site < (numberofsites*4+3):
+            # print(site, " ", int(list[i][site]))
+            if int(list[i][site]) == 1: #Qumode b comes before qumode a so if the 1st qubit of the 4 qubits showing qumodeBqumodeA is in 1 then qumodeB=10 which is fock=2 which is a=0,b=2 which is spin1=-1
+                sitestr = sitestr + "-"
+            elif int(list[i][site+1]) == 1:
+                sitestr = sitestr + "0"
+            else:
+                sitestr = sitestr + "+"
+            site = site + 4
+
+        # print(''.join(qbsitestr), ''.join(sitestr))
+        finallist.append(qbsitestr+sitestr)
+    return finallist
+
+
+def stringoperator(chain,weights):
+    fval=1
+    weights=np.array(weights)
+    weights=weights/np.sum(weights)
+    # print(np.sum(weights))
+    finalres=0
+    for i in range(len(chain)):
+        fval = 1
+
+        if chain[i][0] == "-":
+            fval = -1
+        elif chain[i][0] == "0":
+            fval = 0
+
+        if chain[i][-1] == "-":
+            fval = fval * (-1)
+        elif chain[i][-1] == "0":
+            fval = 0
+
+        for j in range(len(chain[i])):
+            if chain[i][j]=="-":
+                res=-1
+            elif chain[i][j]=="0":
+                res=0
+            else:
+                res=1
+            fval = fval*np.exp((1j) * np.pi * res)
+
+        finalres=finalres+(fval * weights[i])
+
+    print(finalres)

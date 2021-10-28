@@ -14,7 +14,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=2
+numberofmodes=4
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
 cbr = qiskit.ClassicalRegister(size=1)
@@ -57,26 +57,36 @@ for i in range(numberofmodes-1):
         circuit.x(qbr[0])
         circuit.z(qbr[0])
         circuit.x(qbr[0])
-# circuit.barrier()
-# circuit.h(qbr[2])
-# circuit.cswap(qbr[2], qbr[0], qbr[1])
-# circuit.h(qbr[2])
-# circuit.measure(-1,0)
+circuit.barrier()
+circuit.h(qbr[2])
+circuit.cswap(qbr[2], qbr[0], qbr[1])
+circuit.h(qbr[2])
+circuit.measure(-1,0)
+circuit.x(qbr[0]).c_if(cbr, 0)
+circuit.x(qbr[1]).c_if(cbr, 0)
+circuit.z(qbr[0]).c_if(cbr, 0)
+circuit.z(qbr[1]).c_if(cbr, 0)
+circuit.barrier()
+circuit.measure_all()
+print("Measurement")
 #
-# Construct an ideal simulator
-aersim = AerSimulator()
-result_ideal = qiskit.execute(circuit, aersim).result()
-counts_ideal = result_ideal.get_counts(0)
-print("Mid-circuit measurement")
-print('Counts 0:', counts_ideal['0'])
+# # Construct an ideal simulator
+# aersim = AerSimulator()
+# result_ideal = qiskit.execute(circuit, aersim).result()
+# counts_ideal = result_ideal.get_counts(0)
+# print("Mid-circuit measurement")
+# print(' Mid-circuit measurement Counts 0:', counts_ideal)
+# print(plot_histogram(counts_ideal, title='mid-circuit'))
 
-if counts_ideal['0']>1000:
-    print('Was measured to be in triplet so rectifying')
-    circuit.barrier()
-    circuit.x(qbr[0])
-    circuit.x(qbr[1])
-    circuit.z(qbr[0])
-    circuit.z(qbr[1])
+# if counts_ideal['0']>1000:
+#     print('Was measured to be in triplet so rectifying')
+#     circuit.barrier()
+#     circuit.x(qbr[0])
+#     circuit.x(qbr[1])
+#     circuit.z(qbr[0])
+#     circuit.z(qbr[1])
+# else:
+#     print("singlet")
 
 
 stateop, _ = c2qa.util.simulate(circuit)
@@ -84,18 +94,17 @@ print("Simulated the circuit with rectification")
 stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
 circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
 
-circuit.barrier()
-circuit.measure_all()
-print("Measurement")
-
 # Construct an ideal simulator
 aersim = AerSimulator()
 result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
 counts_ideal = result_ideal.get_counts(0)
-print('Counts(ideal):', result_ideal.get_counts())
-plt=plot_histogram(counts_ideal, title='AKLT')
-plt.tight_layout()
-print(plt.show())
+print('Counts(ideal):', counts_ideal)
+chain=stateReadout.interpretmeasurementresult(list(counts_ideal.keys()), numberofmodes)
+print(chain)
+stateReadout.stringoperator(chain, list(counts_ideal.values()))
+# plt=plot_histogram(counts_ideal, title='AKLT')
+# plt.tight_layout()
+# print(plt.show())
 
 # # Transpile for simulator
 # simulator = Aer.get_backend('aer_simulator')
