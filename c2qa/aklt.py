@@ -59,17 +59,28 @@ for i in range(numberofmodes-1):
         circuit.x(qbr[0])
         circuit.z(qbr[0])
         circuit.x(qbr[0])
-# circuit.barrier()
-# circuit.h(qbr[2])
-# circuit.cswap(qbr[2], qbr[0], qbr[1])
-# circuit.h(qbr[2])
-# circuit.measure(-1,0)
-
 circuit.barrier()
-circuit.x(qbr[0])
-circuit.x(qbr[1])
-circuit.z(qbr[0])
-circuit.z(qbr[1])
+circuit.h(qbr[2])
+circuit.cswap(qbr[2], qbr[0], qbr[1])
+circuit.h(qbr[2])
+circuit.measure(-1,0)
+
+# Construct an ideal simulator
+aersim = AerSimulator()
+result_ideal = qiskit.execute(circuit, aersim).result()
+counts_ideal = result_ideal.get_counts(0)
+print('Mid-circuit measurement')
+print('Counts 0:', counts_ideal['0'])
+# print('Counts 1:', counts_ideal['1'])
+# print(plot_histogram(counts_ideal, title='AKLT').show())
+
+if counts_ideal['0']>1000:
+    print('Was measured to be in triplet so am doing rectification')
+    circuit.barrier()
+    circuit.x(qbr[0])
+    circuit.x(qbr[1])
+    circuit.z(qbr[0])
+    circuit.z(qbr[1])
 
 
 # diffstallmodes=[1,1]
