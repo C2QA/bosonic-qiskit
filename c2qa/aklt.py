@@ -14,7 +14,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=2
+numberofmodes=4
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
 cbr = qiskit.ClassicalRegister(size=1)
@@ -61,14 +61,14 @@ circuit.barrier()
 circuit.h(qbr[2])
 circuit.cswap(qbr[2], qbr[0], qbr[1])
 circuit.h(qbr[2])
-circuit.measure(-1,0)
-circuit.x(qbr[0]).c_if(cbr, 0)
-circuit.x(qbr[1]).c_if(cbr, 0)
-circuit.z(qbr[0]).c_if(cbr, 0)
-circuit.z(qbr[1]).c_if(cbr, 0)
-circuit.barrier()
-circuit.measure_all()
-print("Measurement")
+# circuit.measure(-1,0)
+# circuit.x(qbr[0]).c_if(cbr, 0)
+# circuit.x(qbr[1]).c_if(cbr, 0)
+# circuit.z(qbr[0]).c_if(cbr, 0)
+# circuit.z(qbr[1]).c_if(cbr, 0)
+# circuit.barrier()
+# circuit.measure_all()
+# print("Measurement")
 #
 # # Construct an ideal simulator
 # aersim = AerSimulator()

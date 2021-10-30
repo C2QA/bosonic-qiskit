@@ -17,12 +17,14 @@ projone = np.outer(one, one.T)
 projtwo = np.outer(two, two.T)
 
 def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, diffstallmodes, modeinichoice, cutoff):
-    st = np.array(stateop)
+    st = np.array(stateop) #convert state to np.array
     amp = []
-    iniq = [qbinist] * numberofqubits
+
+    # What states the qubits and modes are initialised to - if they are initialised with an x-gate in the circuit it won't show up here, this is only what goes into circuit.cv_initialize()
+    iniq = [qbinist] * numberofqubits # list of length number of qubits initialised to qbinist
     modesini = ""
     for i in range(len(iniq)):
-        modesini = modesini + str(iniq[i])
+        modesini = modesini + str(iniq[i]) #create a string from it
     modesini = modesini + " "
     if modeinichoice == "samestallmodes":
         inim = [samestallmodes] * numberofmodes
@@ -53,17 +55,17 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
             qbstr = ["".join(item) for item in qbst.astype(str)]
             # print("which half of the kronecker, ie. state of qubit: ", qbst)
             # print(modesini, " overlap with ",qbst[0], " is: ", np.real(res))
-            qbsitestr = "" #str(qbst[0])
+            qbsitestr = "measurement qubit spin-1/2:    " + str(qbst[0]) + "   ancilla qubits spin-1 and modes spin-1 chain:    "
             if qbst[1]==0:
                 if qbst[2]==0:
-                    qbsitestr=qbsitestr.join("+")
+                    qbsitestr=qbsitestr + "+"
                 else:
-                    qbsitestr = qbsitestr.join("0")
+                    qbsitestr = qbsitestr + "0"
             elif qbst[1]==1:
                 if qbst[2]==1:
-                    qbsitestr=qbsitestr.join("-")
+                    qbsitestr=qbsitestr + "-"
                 else:
-                    qbsitestr="".join("0")
+                    qbsitestr=qbsitestr + "0"
 
             # print("Qmode detector")
             qmst=np.empty(numberofmodes, dtype='int')
@@ -105,8 +107,8 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
                     elif qmst[site] == 1 & qmst[site + 1] == 1:
                         sitestr=sitestr+"0"
 
-
-            print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "  is: ", np.real(res))
+            print(qbsitestr, sitestr, "     is: ", np.real(res))
+            # print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "     is: ", np.real(res))
 
 
 
