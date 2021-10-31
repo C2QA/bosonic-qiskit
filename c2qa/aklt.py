@@ -14,7 +14,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=4
+numberofmodes=6
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
 cbr = qiskit.ClassicalRegister(size=1)
@@ -43,7 +43,7 @@ circuit.x(qbr[0])
 circuit.x(qbr[1])
 circuit.h(qbr[0])
 circuit.cnot(qbr[0],qbr[1])
-circuit.barrier()
+# circuit.barrier()
 # Native gates circuit
 for i in range(numberofmodes-1):
     if (i % 2) == 0:
@@ -57,19 +57,85 @@ for i in range(numberofmodes-1):
         circuit.x(qbr[0])
         circuit.z(qbr[0])
         circuit.x(qbr[0])
-circuit.barrier()
+# circuit.barrier()
 circuit.h(qbr[2])
 circuit.cswap(qbr[2], qbr[0], qbr[1])
 circuit.h(qbr[2])
-# circuit.measure(-1,0)
-# circuit.x(qbr[0]).c_if(cbr, 0)
-# circuit.x(qbr[1]).c_if(cbr, 0)
-# circuit.z(qbr[0]).c_if(cbr, 0)
-# circuit.z(qbr[1]).c_if(cbr, 0)
+circuit.measure(-1,0)
+circuit.x(qbr[0]).c_if(cbr, 0)
+circuit.x(qbr[1]).c_if(cbr, 0)
+circuit.z(qbr[0]).c_if(cbr, 0)
+circuit.z(qbr[1]).c_if(cbr, 0)
 # circuit.barrier()
-# circuit.measure_all()
+circuit.measure_all()
 # print("Measurement")
+
+
+stateop, _ = c2qa.util.simulate(circuit)
+print("Simulated the circuit with rectification")
+stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
+circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
+
+# Construct an ideal simulator
+aersim = AerSimulator()
+result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
+counts_ideal = result_ideal.get_counts(0)
+print('Counts(ideal):', counts_ideal)
+chain=stateReadout.interpretmeasurementresult(list(counts_ideal.keys()), numberofmodes)
+dict=stateReadout.makedictionnary(chain, list(counts_ideal.values()))
+stateReadout.stringoperator(chain, list(counts_ideal.values()))
+plt=plot_histogram(dict, title='AKLT')
+plt.tight_layout()
+print(plt.show())
+
+# From IBM documentation
+from qiskit import IBMQ, transpile
+from qiskit.providers.ibmq.managed import IBMQJobManager
+from qiskit.circuit.random import random_circuit
+provider = IBMQ.load_account()
+backend = provider.get_backend('ibmq_qasm_simulator')
+# Build a thousand circuits.
+circs = []
+for _ in range(1000):
+    circs.append(random_circuit(num_qubits=5, depth=4, measure=True))
+# Need to transpile the circuits first.
+circs = transpile(circs, backend=backend)
+# Use Job Manager to break the circuits into multiple jobs.
+job_manager = IBMQJobManager()
+job_set_foo = job_manager.run(circs, backend=backend, name='foo')
+
+# simulator_statevector
+
+# # Stackoverflow
+# # Need to transpile the circuits first.
+# qclist = transpile(qclist, backend=backend)
+# # Use Job Manager to break the circuits into multiple jobs.
+# job_manager = IBMQJobManager()
+# job_set = job_manager.run(qclist, backend=backend, name='L_3_vqe_qc')
+# result_qc = job_set.results()
+# result_qc = [ result_qc.get_counts(ind) for ind in range(len(qclist)) ]
+# print( result_qc )
 #
+# # Previous code from internet following simulation
+# # Transpile for simulator
+# simulator = Aer.get_backend('aer_simulator')
+# circ = transpile(circuit, simulator)
+# # Run and get counts from simulator
+# result = simulator.run(circ).result()
+# counts = result.get_counts(circ)
+# print(counts)
+# print(plot_histogram(counts, title='AKLT').show())
+
+
+
+
+# diffstallmodes=[1,1]
+# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
+# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
+# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
+
+
+
 # # Construct an ideal simulator
 # aersim = AerSimulator()
 # result_ideal = qiskit.execute(circuit, aersim).result()
@@ -87,37 +153,3 @@ circuit.h(qbr[2])
 #     circuit.z(qbr[1])
 # else:
 #     print("singlet")
-
-
-stateop, _ = c2qa.util.simulate(circuit)
-print("Simulated the circuit with rectification")
-stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
-circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
-
-# Construct an ideal simulator
-aersim = AerSimulator()
-result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
-counts_ideal = result_ideal.get_counts(0)
-print('Counts(ideal):', counts_ideal)
-chain=stateReadout.interpretmeasurementresult(list(counts_ideal.keys()), numberofmodes)
-print(chain)
-stateReadout.stringoperator(chain, list(counts_ideal.values()))
-# plt=plot_histogram(counts_ideal, title='AKLT')
-# plt.tight_layout()
-# print(plt.show())
-
-# # Transpile for simulator
-# simulator = Aer.get_backend('aer_simulator')
-# circ = transpile(circuit, simulator)
-# # Run and get counts from simulator
-# result = simulator.run(circ).result()
-# counts = result.get_counts(circ)
-# print(counts)
-# print(plot_histogram(counts, title='AKLT').show())
-
-
-
-
-# diffstallmodes=[1,1]
-# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
-# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")

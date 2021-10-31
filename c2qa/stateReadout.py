@@ -107,7 +107,7 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
                     elif qmst[site] == 1 & qmst[site + 1] == 1:
                         sitestr=sitestr+"0"
 
-            print(qbsitestr, sitestr, "     is: ", np.real(res))
+            print(qbsitestr, sitestr, "     is: ", np.real(res))#, "\n",''.join(qbstr), ''.join(sbstr))
             # print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "     is: ", np.real(res))
 
 
@@ -181,3 +181,13 @@ def stringoperator(chain,weights):
         finalres=finalres+(fval * weights[i])
 
     print(finalres)
+
+def makedictionnary(test_keys, test_values):
+    res = {}
+    for key in test_keys:
+        for value in test_values:
+            res[key] = value
+            test_values.remove(value)
+            break
+
+    return res

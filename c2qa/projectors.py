@@ -130,8 +130,16 @@ def overlap(state, numberofmodes, qbinist, samestallmodes, diffstallmodes, modei
     # Create the final states which contain also the qubit values
     fstates=[]
     for i in range(len(sbstates)):
-        fstates.append([scipy.sparse.kron(oneQB,sbstates[i][-1]), 1, np.stack(sbstates[i][:-1])])
-        fstates.append([scipy.sparse.kron(zeroQB, sbstates[i][-1]), 0, np.stack(sbstates[i][:-1])])
+        # fstates.append([scipy.sparse.kron(oneQB,sbstates[i][-1]), 1, np.stack(sbstates[i][:-1])])
+        # fstates.append([scipy.sparse.kron(zeroQB, sbstates[i][-1]), 0, np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(oneQB,scipy.sparse.kron(oneQB,scipy.sparse.kron(oneQB,sbstates[i][-1]))), "111", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(oneQB,scipy.sparse.kron(oneQB,scipy.sparse.kron(zeroQB, sbstates[i][-1]))), "110", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(oneQB,scipy.sparse.kron(zeroQB, scipy.sparse.kron(oneQB,sbstates[i][-1]))), "101", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(oneQB,scipy.sparse.kron(zeroQB, scipy.sparse.kron(zeroQB, sbstates[i][-1]))), "100", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(zeroQB, scipy.sparse.kron(oneQB,scipy.sparse.kron(oneQB,sbstates[i][-1]))), "011", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(zeroQB, scipy.sparse.kron(oneQB,scipy.sparse.kron(zeroQB, sbstates[i][-1]))), "010", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(zeroQB, scipy.sparse.kron(zeroQB, scipy.sparse.kron(oneQB,sbstates[i][-1]))), "001", np.stack(sbstates[i][:-1])])
+        fstates.append([scipy.sparse.kron(zeroQB, scipy.sparse.kron(zeroQB, scipy.sparse.kron(zeroQB, sbstates[i][-1]))), "000", np.stack(sbstates[i][:-1])])
 
     # Take the overlap and calculate probablility of final state occuring in prepared state
     probs=0
