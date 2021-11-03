@@ -14,7 +14,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=3
+numberofmodes=4
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
 cbr = qiskit.ClassicalRegister(size=1)
@@ -67,103 +67,73 @@ circuit.x(qbr[1]).c_if(cbr, 0)
 circuit.z(qbr[0]).c_if(cbr, 0)
 circuit.z(qbr[1]).c_if(cbr, 0)
 # circuit.barrier()
-circuit.measure_all()
+# circuit.measure_all()
 # # print("Measurement")
 #
 #
 stateop, _ = c2qa.util.simulate(circuit)
 print("Simulated the circuit with rectification")
 stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
-circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
-#
-# Construct an ideal simulator
-aersim = AerSimulator()
-result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
-counts_ideal = result_ideal.get_counts(0)
-print('Counts(ideal):', counts_ideal)
-chain=stateReadout.interpretmeasurementresult(list(counts_ideal.keys()), numberofmodes)
-dict=stateReadout.makedictionnary(chain, list(counts_ideal.values()))
-print(list(counts_ideal.values()))
-stateReadout.stringoperator(chain, list(counts_ideal.values()))
+list=stateReadout.statelist(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
+chain=list[0]
+weights=list[1]
+print("Main ",chain, weights)
+stateReadout.stringoperator(chain, weights)
+dict=stateReadout.makedictionnary(chain, weights)
 plt=plot_histogram(dict, title='AKLT')
 plt.tight_layout()
 print(plt.show())
+# circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
+#
+# # Construct an ideal simulator
+# aersim = AerSimulator()
+# result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
+# counts = result_ideal.get_counts(0)
+# print('Counts(ideal):', counts)
+# print("here: ",list(counts.keys()))
+# chain=stateReadout.interpretmeasurementresult(list(counts.keys()), numberofmodes)
+# dict=stateReadout.makedictionnary(chain, list(counts.values()))
+# print(list(counts.values()))
+# stateReadout.stringoperator(chain, list(counts.values()))
+# plt=plot_histogram(dict, title='AKLT')
+# plt.tight_layout()
+# print(plt.show())
 
 
 # from qiskit import IBMQ
 # # IBMQ.save_account('74e12532dbce8c34a6e9c9a058822a5ef6a56142c323c9d964837b4ffee47408a560b45350eef82fb5dc061ba6dd818c2bbc6a884316a98947914b4161b08afb')
-# # print(IBMQ.load_account())
+# print(IBMQ.load_account())
 # provider = IBMQ.get_provider()
 # print(provider)
 # backend = provider.get_backend('simulator_statevector')
 # print(backend)
+# job = backend.retrieve_job('617ea4b09c7dc5cc4facab7d')
+# res = job.result()
+# counts = res.get_counts()
+#
+#
+# print('Counts :', counts)
+# chain=stateReadout.interpretmeasurementresult(list(counts.keys()), (len(list(counts.keys())[0])-5)/2)
+# print(chain)
+# print(list(counts.values()))
+# stateReadout.stringoperator(chain, list(counts.values()))
+# dict=stateReadout.makedictionnary(chain, list(counts.values()))
+# plt=plot_histogram(dict, title='AKLT')
+# plt.tight_layout()
+# print(plt.show())
 
 
-# # From IBM documentation
-# from qiskit import IBMQ, transpile
-# from qiskit.providers.ibmq.managed import IBMQJobManager
-# # from qiskit.circuit.random import random_circuit
-# provider = IBMQ.load_account()
-# backend = provider.get_backend('simulator_statevector')
-# # # Build a thousand circuits.
-# # circs = []
-# # for _ in range(1000):
-# #     circs.append(random_circuit(num_qubits=5, depth=4, measure=True))
-# # Need to transpile the circuits first.
-# circs = transpile([circuit], backend=backend)
-# # Use Job Manager to break the circuits into multiple jobs.
-# job_manager = IBMQJobManager()
-# shotnb=1024
-# job_8_1024 = job_manager.run(circs, backend=backend, shots=shotnb, ame='aklt'+str(numberofmodes)+str(shotnb)) #, shots=8190
-
-
-
-
-
-# diffstallmodes=[1,1]
-# gatetesting.differentThetaInitialisation(qmr, circuit, numberofmodes, qbinist, samestallmodes, diffstallmodes)
-# projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
 # projectors.overlap(stateop, numberofmodes, qbinist, samestallmodes, diffstallmodes, "samestallmodes" ,"all")
 
 
 
-# # Construct an ideal simulator
-# aersim = AerSimulator()
-# result_ideal = qiskit.execute(circuit, aersim).result()
-# counts_ideal = result_ideal.get_counts(0)
-# print("Mid-circuit measurement")
-# print(' Mid-circuit measurement Counts 0:', counts_ideal)
-# print(plot_histogram(counts_ideal, title='mid-circuit'))
 
-# if counts_ideal['0']>1000:
-#     print('Was measured to be in triplet so rectifying')
-#     circuit.barrier()
-#     circuit.x(qbr[0])
-#     circuit.x(qbr[1])
-#     circuit.z(qbr[0])
-#     circuit.z(qbr[1])
-# else:
-#     print("singlet")
-
-# mapped_circuit = transpile(circuit, backend=backend)
-# qobj = assemble(mapped_circuit, backend=backend, shots=1024)
-# job = backend.run(qobj)
-
-# # Stackoverflow
-# # Need to transpile the circuits first.
-# qclist = transpile(qclist, backend=backend)
-# # Use Job Manager to break the circuits into multiple jobs.
 # job_manager = IBMQJobManager()
 # job_set = job_manager.run(qclist, backend=backend, name='L_3_vqe_qc')
 # result_qc = job_set.results()
 # result_qc = [ result_qc.get_counts(ind) for ind in range(len(qclist)) ]
 # print( result_qc )
-#
-# # Previous code from internet following simulation
-# # Transpile for simulator
-# simulator = Aer.get_backend('aer_simulator')
-# circ = transpile(circuit, simulator)
-# # Run and get counts from simulator
+
 # result = simulator.run(circ).result()
 # counts = result.get_counts(circ)
 # print(counts)

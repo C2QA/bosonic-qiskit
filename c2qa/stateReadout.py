@@ -111,7 +111,6 @@ def stateread(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
             # print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "     is: ", np.real(res))
 
 
-
     # print("end")
 
     # if (np.abs(np.imag(res)) > 1e-10):
@@ -150,12 +149,13 @@ def interpretmeasurementresult(list, numberofmodes):
     return finallist
 
 
-def stringoperator(chain,weights):
-    fval=1
-    weights=np.array(weights)
-    weights=weights/np.sum(weights)
-    # print(np.sum(weights))
-    finalres=0
+def stringoperator(chain, weights):
+    fval = 1
+    print("str order param func ", chain, weights)
+    weights = np.array(weights)
+    #     weights=weights/np.sum(weights)
+    #     print(np.sum(weights))
+    finalres = 0
     for i in range(len(chain)):
         fval = 1
 
@@ -169,18 +169,22 @@ def stringoperator(chain,weights):
         elif chain[i][-1] == "0":
             fval = 0
 
-        for j in range(len(chain[i])):
-            if chain[i][j]=="-":
-                res=-1
-            elif chain[i][j]=="0":
-                res=0
-            else:
-                res=1
-            fval = fval*np.exp((1j) * np.pi * res)
+        if fval != 0:
+            for j in range(len(chain[i]) - 1):
+                if j != 0:
+                    if chain[i][j] == "-":
+                        res = -1
+                    elif chain[i][j] == "0":
+                        res = 0
+                    else:
+                        res = 1
+                    fval = fval * np.exp((1j) * np.pi * res)
 
-        finalres=finalres+(fval * weights[i])
+            finalres = finalres + (fval * weights[i] ** 2)
 
-    print(finalres)
+    print("str len: ",len(chain[0])," string order param: ", finalres)
+    return finalres
+
 
 def makedictionnary(test_keys, test_values):
     res = {}
@@ -189,5 +193,118 @@ def makedictionnary(test_keys, test_values):
             res[key] = value
             test_values.remove(value)
             break
-
     return res
+
+
+def statelist(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, diffstallmodes, modeinichoice, cutoff):
+    st = np.array(stateop) #convert state to np.array
+    amp = []
+
+    # What states the qubits and modes are initialised to - if they are initialised with an x-gate in the circuit it won't show up here, this is only what goes into circuit.cv_initialize()
+    iniq = [qbinist] * numberofqubits # list of length number of qubits initialised to qbinist
+    modesini = ""
+    for i in range(len(iniq)):
+        modesini = modesini + str(iniq[i]) #create a string from it
+    modesini = modesini + " "
+    if modeinichoice == "samestallmodes":
+        inim = [samestallmodes] * numberofmodes
+        for i in range(len(inim)):
+            modesini = modesini + str(inim[i])
+    else:
+        for i in range(len(diffstallmodes)):
+            modesini = modesini + str(diffstallmodes[i])
+
+    # print("beginning", numberofmodes)
+    chain=[]
+    weights=[]
+    for i in range(len(st)):
+        res = st[i]
+        if (np.abs(np.real(res)) > 1e-10):
+            pos=i
+            # print("position of non-zero real: ", pos, " res = ", res)
+            qbst=np.empty(numberofqubits, dtype='int')
+            iqb=0
+            sln=len(st)
+            while(iqb<numberofqubits):
+                if pos<sln/2:
+                    qbst[iqb]=int(0)
+                else:
+                    qbst[iqb]=int(1)
+                    pos=pos-(sln/2)
+                    # print("pos (sln/2)", pos, "sln ",sln)
+                sln=sln/2
+                iqb=iqb+1
+            qbstr = ["".join(item) for item in qbst.astype(str)]
+            # print("which half of the kronecker, ie. state of qubit: ", qbst)
+            # print(modesini, " overlap with ",qbst[0], " is: ", np.real(res))
+            qbsitestr = ""
+            if qbst[1]==0:
+                if qbst[2]==0:
+                    qbsitestr=qbsitestr + "+"
+                else:
+                    qbsitestr = qbsitestr + "0"
+            elif qbst[1]==1:
+                if qbst[2]==1:
+                    qbsitestr=qbsitestr + "-"
+                else:
+                    qbsitestr=qbsitestr + "0"
+
+            # print("Qmode detector")
+            qmst=np.empty(numberofmodes, dtype='int')
+            # print("qmst starting in ", qmst)
+            iqm=0
+            # print("position is now: ",pos)
+            while(iqm<numberofmodes):
+                # print("mode counter iqm ", iqm)
+                # print("cutoff ", cutoff)
+                # print("length of vector left to search: sln ", sln)
+                lendiv=sln/cutoff
+                # print("lendiv (sln/cutoff)", lendiv)
+                val=pos/lendiv
+                # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
+                fock = math.floor(val)
+                # print("Fock st/ resulting position in Kronecker product (math.floor(val)) ", fock)
+                qmst[-iqm-1]=int(fock)
+                # print("Storing that fock state: qmst ", qmst)
+                # if val==math.ceil(val):
+                #     print("value is val = ceil.val ",val)
+                #     rdval=val-1
+                # else:
+                # print("remove a number of divisions corresponding to fock")
+                pos=pos-(fock*lendiv)
+                # print("new position for next order of depth of Kronecker product/pos: (pos-(rdiv*lendiv)) ",pos)
+                sln=sln-((cutoff-1)*lendiv)
+                # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
+                iqm=iqm+1
+            # print("qumode states at the end of one number's worth of searching: ", qmst)
+
+            # sbstr = ["".join(item) for item in qmst.astype(str)]
+            sitestr = qbsitestr
+            for site in range(numberofmodes):
+                if (site % 2 == 0):
+                    if qmst[site]==0 :
+                        sitestr=sitestr+"-"
+                    elif qmst[site]==2 :
+                        sitestr=sitestr+"+"
+                    elif qmst[site] == 1 & qmst[site + 1] == 1:
+                        sitestr=sitestr+"0"
+
+            # print(qbsitestr, sitestr, "     is: ", np.real(res))#, "\n",''.join(qbstr), ''.join(sbstr))
+            chain.append(sitestr)
+            weights.append(np.real(res))
+
+    remember=[]
+    for i in range(len(chain)):
+        for j in range(i+1,len(chain)):
+            if chain[i]==chain[j]:
+                # print("i ",i,"j",j,chain[i], chain[j], weights[i], weights[j])
+                weights[i]=(1/np.sqrt(2))*(weights[i]+weights[j])
+                remember.append(j)
+
+    for j in range(len(remember)):
+        # print("j",j,"remember[j]",remember[j])
+        # print("remove",remember[j]-j)
+        weights.remove(weights[remember[j]-j])
+        chain.remove(chain[remember[j]-j])
+
+    return [chain,weights]
