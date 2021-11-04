@@ -226,7 +226,7 @@ def clean(chain, weights):
 
 def stringoperator(chain, weights,tripletcounts):
     fval = 1
-    print("str order param func ", chain, weights)
+    # print("str order param func ", chain, weights)
     weights = np.array(weights)/tripletcounts
     #     weights=weights/np.sum(weights)
     #     print(np.sum(weights))
@@ -245,19 +245,55 @@ def stringoperator(chain, weights,tripletcounts):
             fval = 0
 
         if fval != 0:
-            for j in range(len(chain[i]) - 1):
-                if j != 0:
-                    if chain[i][j] == "-":
-                        res = -1
-                    elif chain[i][j] == "0":
-                        res = 0
-                    else:
-                        res = 1
-                    fval = fval * np.exp((1j) * np.pi * res)
+            for j in range(1,len(chain[0]) - 1):
+                if chain[i][j] == "-":
+                    res = -1
+                elif chain[i][j] == "0":
+                    res = 0
+                else:
+                    res = 1
+                fval = fval * np.exp((1j) * np.pi * res)
 
             finalres = finalres + (fval * weights[i])# ** 2)
 
-    print("str len: ",len(chain[0])," string order param: ", finalres)
+    print("chain len: ",len(chain[0])," string order param: ", finalres)
+    return finalres
+
+
+def stringoperator_variable(chain, weights,tripletcounts,d=0):
+    if d == 0:
+        d = len(chain[0])-1
+
+    fval = 1
+    # print("str order param func ", chain, weights)
+    weights = np.array(weights)/tripletcounts
+    finalres = 0
+    for i in range(len(chain)):
+        fval = 1
+
+        if chain[i][0] == "-":
+            fval = -1
+        elif chain[i][0] == "0":
+            fval = 0
+
+        if chain[i][d] == "-":
+            fval = fval * (-1)
+        elif chain[i][d] == "0":
+            fval = 0
+
+        if fval != 0:
+            for j in range(1,d):
+                if chain[i][j] == "-":
+                    res = -1
+                elif chain[i][j] == "0":
+                    res = 0
+                else:
+                    res = 1
+                fval = fval * np.exp((1j) * np.pi * res)
+
+            finalres = finalres + (fval * weights[i])# ** 2)
+
+    print("ch. len: ",len(chain[0])," str. len: ",d+1," str. order param.: ", finalres)
     return finalres
 
 
@@ -383,46 +419,6 @@ def statelist(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
         chain.remove(chain[remember[j]-j])
 
     return [chain,weights]
-
-
-def kevin(exp_counts_top):
-    exp_counts = exp_counts_top
-    counts_reorganized = {}
-    Nsites = 4
-    strList = ['+','-','0','s']
-    encBasis = {'+':[[1],['0010']], '-':[[1],['1000']], '0':[[1],['0101']], 's':[[1],['0000']]}
-    natBasis = {'+':[[1],['00']], '-':[[1],['11']], '0':[[1/np.sqrt(2),1/np.sqrt(2)],['01','10']], 's':[[1/np.sqrt(2),-1/np.sqrt(2)],['01','10']]}
-    totStates = 4**Nsites
-    for i in np.arange(totStates):
-        spinlist = [int(p) for p in np.base_repr(i,base=4)]
-        while len(spinlist)<Nsites:
-            spinlist.insert(0,0)
-        coeff_str = [1]
-        bit_str = ['']
-        spin1_str = ''
-        for n in np.arange(Nsites):
-            if n == 0: # Use natBasis
-                state = strList[spinlist[n]]
-                spin1_str = spin1_str + state
-                coeff_str = ([i*j for i,j in itertools.product(coeff_str,natBasis[state][0])])
-                bit_str = ([i+j for i,j in itertools.product(bit_str,natBasis[state][1])])
-            else: # use encBasis
-                state = strList[spinlist[n]]
-                spin1_str = spin1_str + state
-                coeff_str = ([i*j for i,j in itertools.product(coeff_str,encBasis[state][0])])
-                bit_str = ([i+j for i,j in itertools.product(bit_str,encBasis[state][1])])
-        print(spin1_str)
-        print(coeff_str)
-        print(bit_str)
-        print('-----')
-        # Compute counts -- uses first bit for measurement of singlet or triplet.
-        if spin1_str[0] == 's':
-            counts_reorganized[spin1_str] = sum([exp_counts['1' + bits] for bits, c in zip(bit_str,coeff_str)])
-        else:
-            counts_reorganized[spin1_str] = sum([exp_counts['0' + bits] for bits, c in zip(bit_str,coeff_str)])
-        print(counts_reorganized)
-
-
 
 def changeBasis(exp_counts, Nsites, splitup=0):
     strList = ['+', '-', '0', 's']
