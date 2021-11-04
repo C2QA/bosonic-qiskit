@@ -6,6 +6,7 @@ import scipy.sparse
 import scipy.sparse.linalg
 from scipy.sparse import csr_matrix, block_diag
 import math
+import itertools
 
 zeroQB = np.array([1, 0])  # 211012 agrees with Kevin's notation
 oneQB = np.array([0, 1])  # 211012 agrees with Kevin's notation
@@ -148,6 +149,80 @@ def interpretmeasurementresult(list, numberofmodes):
         finallist.append(qbsitestr+sitestr)
     return finallist
 
+
+def getDuplicatesWithInfo(listOfElems):
+    ''' Get duplicate element in a list along with thier indices in list
+     and frequency count'''
+    dictOfElems = dict()
+    index = 0
+    # Iterate over each element in list and keep track of index
+    for elem in listOfElems:
+        # If element exists in dict then keep its index in lisr & increment its frequency
+        if elem in dictOfElems:
+            dictOfElems[elem][0] += 1
+            dictOfElems[elem][1].append(index)
+        else:
+            # Add a new entry in dictionary
+            dictOfElems[elem] = [1, [index]]
+        index += 1
+
+    dictOfElems = {key: value for key, value in dictOfElems.items() if value[0] > 1}
+    return dictOfElems
+
+def clean(chain, weights):
+    duplicateinfo=getDuplicatesWithInfo(chain)
+    remember = list(duplicateinfo.values())
+    print("new func ", remember)
+
+    # remember=[]
+    # for i in range(len(chain)):
+    #     for j in range(i+1,len(chain)):
+    #         if chain[i]==chain[j]:
+    #             print("i ",i,"j",j,chain[i], chain[j], weights[i], weights[j])
+    #             weights[i]=(1/np.sqrt(2))*(weights[i]+weights[j])
+    #             remember.append(j)
+
+    for i in range(len(remember)):
+        print("i: ", i," remember: ", remember[i])
+        ind=int(remember[i][1][0])
+        print("ind",ind)
+        j=1
+        indj=int(remember[i][1][j])
+        print("indj",indj)
+        print("weights[ind] is now: ",weights[ind])
+        print("weights at indices indj: ", weights[indj])
+        weights[indj] = weights[indj] + weights[ind]
+        print("weights[indj] is now: ",weights[indj])
+        weights.remove(weights[ind])
+        chain.remove(chain[ind])
+
+        print(chain, weights)
+
+        if len(remember[i][1])>2:
+            print("bigger longer")
+            ind=int(remember[i][1][2])
+            print("ind", ind)
+            j=3
+            indj=int(remember[i][1][j])
+            print("indj", indj)
+            print("weights[ind] is now: ", weights[ind])
+            print("weights at indices indj: ", weights[indj])
+            weights[indj] = weights[indj] + weights[ind]
+            print("weights[indj] is now: ", weights[indj])
+            weights.remove(weights[ind])
+            chain.remove(chain[ind])
+            print(chain, weights)
+
+    # for i in range(len(remember)):
+    #     print(i, " ", remember[i])
+    #     for j in range(1,len(remember[i])):
+    #         print(j, " ", remember[i][1][j])
+    #         print("j",j,"remember[j]",remember[i][1][j])
+    #         print("remove",remember[i][1][j]-j)
+    #         weights.remove(weights[remember[i][1][j]-j])
+    #         chain.remove(chain[remember[i][1][j]-j])
+
+    return [chain,weights]
 
 def stringoperator(chain, weights):
     fval = 1
@@ -308,3 +383,101 @@ def statelist(stateop, numberofqubits, numberofmodes, qbinist, samestallmodes, d
         chain.remove(chain[remember[j]-j])
 
     return [chain,weights]
+
+
+def kevin(exp_counts_top):
+    exp_counts = exp_counts_top
+    counts_reorganized = {}
+    Nsites = 4
+    strList = ['+','-','0','s']
+    encBasis = {'+':[[1],['0010']], '-':[[1],['1000']], '0':[[1],['0101']], 's':[[1],['0000']]}
+    natBasis = {'+':[[1],['00']], '-':[[1],['11']], '0':[[1/np.sqrt(2),1/np.sqrt(2)],['01','10']], 's':[[1/np.sqrt(2),-1/np.sqrt(2)],['01','10']]}
+    totStates = 4**Nsites
+    for i in np.arange(totStates):
+        spinlist = [int(p) for p in np.base_repr(i,base=4)]
+        while len(spinlist)<Nsites:
+            spinlist.insert(0,0)
+        coeff_str = [1]
+        bit_str = ['']
+        spin1_str = ''
+        for n in np.arange(Nsites):
+            if n == 0: # Use natBasis
+                state = strList[spinlist[n]]
+                spin1_str = spin1_str + state
+                coeff_str = ([i*j for i,j in itertools.product(coeff_str,natBasis[state][0])])
+                bit_str = ([i+j for i,j in itertools.product(bit_str,natBasis[state][1])])
+            else: # use encBasis
+                state = strList[spinlist[n]]
+                spin1_str = spin1_str + state
+                coeff_str = ([i*j for i,j in itertools.product(coeff_str,encBasis[state][0])])
+                bit_str = ([i+j for i,j in itertools.product(bit_str,encBasis[state][1])])
+        print(spin1_str)
+        print(coeff_str)
+        print(bit_str)
+        print('-----')
+        # Compute counts -- uses first bit for measurement of singlet or triplet.
+        if spin1_str[0] == 's':
+            counts_reorganized[spin1_str] = sum([exp_counts['1' + bits] for bits, c in zip(bit_str,coeff_str)])
+        else:
+            counts_reorganized[spin1_str] = sum([exp_counts['0' + bits] for bits, c in zip(bit_str,coeff_str)])
+        print(counts_reorganized)
+
+
+
+def changeBasis(exp_counts, Nsites, splitup=0):
+    strList = ['+', '-', '0', 's']
+    if splitup:
+        tripdict = {}
+        singdict = {}
+        measdict = {}
+    else:
+        fulldict = {}
+    encBasis = {'+': [[1], ['0010']], '-': [[1], ['1000']], '0': [[1], ['0101']], 's': [[1], ['0000']]}
+    natBasis = {'+': [[1], ['00']], '-': [[1], ['11']], '0': [[1 / np.sqrt(2), 1 / np.sqrt(2)], ['01', '10']],
+                's': [[1 / np.sqrt(2), -1 / np.sqrt(2)], ['01', '10']]}
+    totStates = 4 ** Nsites
+    for i in np.arange(totStates):
+        spinlist = [int(p) for p in np.base_repr(i, base=4)]
+        while len(spinlist) < Nsites:
+            spinlist.insert(0, 0)
+        coeff_str = [1]
+        bit_str = ['']
+        spin1_str = ''
+        for n in np.arange(Nsites):
+            if n == 0:  # Use natBasis
+                state = strList[spinlist[n]]
+                spin1_str = spin1_str + state
+                coeff_str = ([i * j for i, j in itertools.product(coeff_str, natBasis[state][0])])
+                bit_str = ([i + j for i, j in itertools.product(bit_str, natBasis[state][1])])
+            else:  # use encBasis
+                state = strList[spinlist[n]]
+                spin1_str = spin1_str + state
+                coeff_str = ([i * j for i, j in itertools.product(coeff_str, encBasis[state][0])])
+                bit_str = ([i + j for i, j in itertools.product(bit_str, encBasis[state][1])])
+        # Compute counts -- uses first bit for measurement of singlet or triplet.
+        # print(spin1_str)
+        # print(coeff_str)
+        # print(bit_str)
+        if spin1_str[0] == 's':
+            if np.all(['1' + bits + ' 1' in exp_counts.keys() for bits in bit_str]):
+                if splitup:
+                    singdict[spin1_str] = sum([exp_counts['1' + bits + ' 1'] for bits, c in zip(bit_str, coeff_str)])
+                else:
+                    fulldict[spin1_str] = sum([exp_counts['1' + bits + ' 1'] for bits, c in zip(bit_str, coeff_str)])
+            else:
+                print('key ' + str(['1' + bits + ' 1' in exp_counts.keys() for bits in bit_str]) + ' ' + str(['1' + bits for bits in bit_str]))
+        else:
+            if np.all(['0' + bits + ' 0' in exp_counts.keys() for bits in bit_str]):
+                if splitup:
+                    tripdict[spin1_str] = sum([exp_counts['0' + bits + ' 0'] for bits, c in zip(bit_str, coeff_str)])
+                else:
+                    fulldict[spin1_str] = sum([exp_counts['0' + bits + ' 0'] for bits, c in zip(bit_str, coeff_str)])
+            else:
+                print('key ' + str(['0' + bits + ' 0' in exp_counts.keys() for bits in bit_str]) + ' ' + str(['1' + bits + ' 1' for bits in bit_str]))
+        # print('-----')
+    if splitup:
+        measdict['singlet'] = sum(singdict.values())
+        measdict['triplet'] = sum(tripdict.values())
+        return [tripdict, singdict, measdict]
+    else:
+        return fulldict

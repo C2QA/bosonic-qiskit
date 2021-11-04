@@ -5,6 +5,7 @@ import scipy
 import itertools
 import projectors, gatetesting, stateReadout
 import numpy as np
+import matplotlib.pyplot as plt
 # Import Qiskit
 from qiskit import QuantumCircuit
 from qiskit import Aer, transpile
@@ -14,7 +15,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=4
+numberofmodes=14
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
 cbr = qiskit.ClassicalRegister(size=1)
@@ -67,22 +68,22 @@ circuit.x(qbr[1]).c_if(cbr, 0)
 circuit.z(qbr[0]).c_if(cbr, 0)
 circuit.z(qbr[1]).c_if(cbr, 0)
 # circuit.barrier()
-# circuit.measure_all()
+circuit.measure_all()
 # # print("Measurement")
 #
 #
-stateop, _ = c2qa.util.simulate(circuit)
-print("Simulated the circuit with rectification")
-stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
-list=stateReadout.statelist(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
-chain=list[0]
-weights=list[1]
-print("Main ",chain, weights)
-stateReadout.stringoperator(chain, weights)
-dict=stateReadout.makedictionnary(chain, weights)
-plt=plot_histogram(dict, title='AKLT')
-plt.tight_layout()
-print(plt.show())
+# stateop, _ = c2qa.util.simulate(circuit)
+# print("Simulated the circuit with rectification")
+# stateReadout.stateread(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
+# list=stateReadout.statelist(stateop, qbr.size, numberofmodes, qbinist, samestallmodes, diffstallmodes, word, 4)
+# chain=list[0]
+# weights=list[1]
+# print("Main ",chain, weights)
+# stateReadout.stringoperator(chain, weights)
+# dict=stateReadout.makedictionnary(chain, weights)
+# plt=plot_histogram(dict, title='AKLT')
+# plt.tight_layout()
+# print(plt.show())
 # circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
 #
 # # Construct an ideal simulator
@@ -90,22 +91,41 @@ print(plt.show())
 # result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
 # counts = result_ideal.get_counts(0)
 # print('Counts(ideal):', counts)
-# print("here: ",list(counts.keys()))
+# # stateReadout.kevin(counts)
+# print(counts)
+# dict0=stateReadout.changeBasis(counts, 3, splitup=1)
+# print(dict0[0])
+# print(dict0[1])
+# print(dict0[2])
+# print(dict0)
+# print(counts)
 # chain=stateReadout.interpretmeasurementresult(list(counts.keys()), numberofmodes)
-# dict=stateReadout.makedictionnary(chain, list(counts.values()))
+# weights = list(counts.values())
+# print("Main raw",chain, weights)
+# plt.bar(chain, weights, color='g')
+# plt.yticks(rotation='vertical')
+# # plt.tight_layout()
+# plt.show()
+# list=stateReadout.clean(chain, weights)
+# chain=list[0]
+# weights=list[1]
+# print("Main after cleaning ",chain, weights)
+
+# dict=stateReadout.makedictionnary(chain, weights)
 # print(list(counts.values()))
 # stateReadout.stringoperator(chain, list(counts.values()))
-# plt=plot_histogram(dict, title='AKLT')
-# plt.tight_layout()
-# print(plt.show())
 
 
-# from qiskit import IBMQ
-# # IBMQ.save_account('74e12532dbce8c34a6e9c9a058822a5ef6a56142c323c9d964837b4ffee47408a560b45350eef82fb5dc061ba6dd818c2bbc6a884316a98947914b4161b08afb')
-# print(IBMQ.load_account())
-# provider = IBMQ.get_provider()
-# print(provider)
+from qiskit import IBMQ
+# IBMQ.save_account('74e12532dbce8c34a6e9c9a058822a5ef6a56142c323c9d964837b4ffee47408a560b45350eef82fb5dc061ba6dd818c2bbc6a884316a98947914b4161b08afb')
+print(IBMQ.load_account())
+provider = IBMQ.get_provider()
+print(provider)
 # backend = provider.get_backend('simulator_statevector')
+backend = provider.get_backend('simulator_mps')
+circuit_sys = transpile(circuit, backend)
+shnb=8190
+job = backend.run(circuit_sys, shots=shnb, job_name="AKLT_MPS_"+str(numberofmodes)+"_"+str(shnb))
 # print(backend)
 # job = backend.retrieve_job('617ea4b09c7dc5cc4facab7d')
 # res = job.result()
