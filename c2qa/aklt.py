@@ -122,7 +122,7 @@ print(dict0[2])
 tripletcounts=list(dict0[2].values())[1]
 print(tripletcounts)
 # print(len(chain[0]))
-for d in range(3,8):
+for d in range(2,8):
     # stateReadout.stringoperator(chain,weights,tripletcounts)
     stateReadout.stringoperator_variable(chain,weights,tripletcounts,d)
 

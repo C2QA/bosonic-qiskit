@@ -460,16 +460,16 @@ def changeBasis(exp_counts, Nsites, splitup=0):
                     singdict[spin1_str] = sum([exp_counts['1' + bits + ' 1'] for bits, c in zip(bit_str, coeff_str)])
                 else:
                     fulldict[spin1_str] = sum([exp_counts['1' + bits + ' 1'] for bits, c in zip(bit_str, coeff_str)])
-            else:
-                print('key ' + str(['1' + bits + ' 1' in exp_counts.keys() for bits in bit_str]) + ' ' + str(['1' + bits for bits in bit_str]))
+            # else:
+                # print('key ' + str(['1' + bits + ' 1' in exp_counts.keys() for bits in bit_str]) + ' ' + str(['1' + bits for bits in bit_str]))
         else:
             if np.all(['0' + bits + ' 0' in exp_counts.keys() for bits in bit_str]):
                 if splitup:
                     tripdict[spin1_str] = sum([exp_counts['0' + bits + ' 0'] for bits, c in zip(bit_str, coeff_str)])
                 else:
                     fulldict[spin1_str] = sum([exp_counts['0' + bits + ' 0'] for bits, c in zip(bit_str, coeff_str)])
-            else:
-                print('key ' + str(['0' + bits + ' 0' in exp_counts.keys() for bits in bit_str]) + ' ' + str(['1' + bits + ' 1' for bits in bit_str]))
+            # else:
+                # print('key ' + str(['0' + bits + ' 0' in exp_counts.keys() for bits in bit_str]) + ' ' + str(['1' + bits + ' 1' for bits in bit_str]))
         # print('-----')
     if splitup:
         measdict['singlet'] = sum(singdict.values())
