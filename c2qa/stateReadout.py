@@ -224,10 +224,10 @@ def clean(chain, weights):
 
     return [chain,weights]
 
-def stringoperator(chain, weights):
+def stringoperator(chain, weights,tripletcounts):
     fval = 1
     print("str order param func ", chain, weights)
-    weights = np.array(weights)
+    weights = np.array(weights)/tripletcounts
     #     weights=weights/np.sum(weights)
     #     print(np.sum(weights))
     finalres = 0
@@ -255,7 +255,7 @@ def stringoperator(chain, weights):
                         res = 1
                     fval = fval * np.exp((1j) * np.pi * res)
 
-            finalres = finalres + (fval * weights[i] ** 2)
+            finalres = finalres + (fval * weights[i])# ** 2)
 
     print("str len: ",len(chain[0])," string order param: ", finalres)
     return finalres

@@ -15,7 +15,7 @@ from qiskit.providers.aer import AerSimulator
 
 ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # Two modes and 1 qubit
-numberofmodes=14
+numberofmodes=4
 qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 qbr = qiskit.QuantumRegister(size=3)
 cbr = qiskit.ClassicalRegister(size=1)
@@ -86,19 +86,26 @@ circuit.measure_all()
 # print(plt.show())
 # circuit.draw(output='mpl', filename='/Users/ecrane/Dropbox/Qiskit c2qa/my_circuit.png')
 #
-# # Construct an ideal simulator
-# aersim = AerSimulator()
-# result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
-# counts = result_ideal.get_counts(0)
-# print('Counts(ideal):', counts)
-# # stateReadout.kevin(counts)
-# print(counts)
-# dict0=stateReadout.changeBasis(counts, 3, splitup=1)
-# print(dict0[0])
-# print(dict0[1])
-# print(dict0[2])
+# Construct an ideal simulator
+aersim = AerSimulator()
+result_ideal = qiskit.execute(circuit, aersim, memory=True).result()
+counts = result_ideal.get_counts(0)
+print('Counts(ideal):', counts)
+# stateReadout.kevin(counts)
+print(counts)
+dict0=stateReadout.changeBasis(counts, 3, splitup=1)
+print(dict0[0])
+tripletdict=dict0[0]
+weights=list(tripletdict.values())
+chain=list(tripletdict.keys())
+print(chain,weights)
+print(dict0[2])
+tripletcounts=list(dict0[2].values())[1]
+print(tripletcounts)
+stateReadout.stringoperator(chain,weights,tripletcounts)
+
 # print(dict0)
-# print(counts)
+print(counts)
 # chain=stateReadout.interpretmeasurementresult(list(counts.keys()), numberofmodes)
 # weights = list(counts.values())
 # print("Main raw",chain, weights)
@@ -116,16 +123,18 @@ circuit.measure_all()
 # stateReadout.stringoperator(chain, list(counts.values()))
 
 
-from qiskit import IBMQ
-# IBMQ.save_account('74e12532dbce8c34a6e9c9a058822a5ef6a56142c323c9d964837b4ffee47408a560b45350eef82fb5dc061ba6dd818c2bbc6a884316a98947914b4161b08afb')
-print(IBMQ.load_account())
-provider = IBMQ.get_provider()
-print(provider)
-# backend = provider.get_backend('simulator_statevector')
-backend = provider.get_backend('simulator_mps')
-circuit_sys = transpile(circuit, backend)
-shnb=8190
-job = backend.run(circuit_sys, shots=shnb, job_name="AKLT_MPS_"+str(numberofmodes)+"_"+str(shnb))
+# from qiskit import IBMQ
+# # IBMQ.save_account('74e12532dbce8c34a6e9c9a058822a5ef6a56142c323c9d964837b4ffee47408a560b45350eef82fb5dc061ba6dd818c2bbc6a884316a98947914b4161b08afb')
+# print(IBMQ.load_account())
+# provider = IBMQ.get_provider()
+# print(provider)
+# # backend = provider.get_backend('simulator_statevector')
+# backend = provider.get_backend('simulator_mps')
+#
+# circuit_sys = transpile(circuit, backend)
+# shnb=8190
+# job = backend.run(circuit_sys, shots=shnb, job_name="AKLT_MPS_"+str(numberofmodes)+"_"+str(shnb))
+#
 # print(backend)
 # job = backend.retrieve_job('617ea4b09c7dc5cc4facab7d')
 # res = job.result()
