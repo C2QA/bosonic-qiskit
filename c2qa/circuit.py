@@ -1,3 +1,4 @@
+from operator import inv
 import warnings
 
 import numpy as np
@@ -178,7 +179,7 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.d, alpha)
         return self.append(CVGate(data=operator, label="D"), qargs=qumode)
 
-    def cv_cnd_d(self, alpha, beta, ctrl, qumode):
+    def cv_cnd_d(self, alpha, beta, ctrl, qumode, inverse: bool = False):
         """Condintional displacement gate.
 
         Args:
@@ -186,12 +187,13 @@ class CVCircuit(QuantumCircuit):
             beta (real): displacemet for 1 control
             ctrl (Qubit): QisKit control Qubit
             qumode (list): list of qubits representing qumode
+            inverse (bool): True to calculate the inverse of the operator matrices
 
         Returns:
             Instruction: QisKit instruction
         """
-        op_0 = ParameterizedOperator(self.ops.d, alpha)
-        op_1 = ParameterizedOperator(self.ops.d, beta)
+        op_0 = ParameterizedOperator(self.ops.d, alpha, inverse=inverse)
+        op_1 = ParameterizedOperator(self.ops.d, beta, inverse=inverse)
         return self.append(
             CVCircuit.cv_conditional("Dc", op_0, op_1, self.num_qubits_per_qumode),
             [ctrl] + qumode,
