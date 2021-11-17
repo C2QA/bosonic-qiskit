@@ -24,7 +24,7 @@ class ParameterizedOperator(Operator):
         self.inverse = inverse
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
-        """Calculate the operator matrix by executing the selected function. 
+        """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
 
         Args:

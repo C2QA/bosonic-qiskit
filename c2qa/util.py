@@ -83,9 +83,9 @@ def simulate(
         circuit (CVCircuit): circuit to simulate
         backend_name (str, optional): Simulator to use. Defaults to "aer_simulator".
         shots (int, optional): Number of simulation shots. Defaults to 1024.
-        add_save_statevector (bool, optional): Set to True if a state_vector instruction 
+        add_save_statevector (bool, optional): Set to True if a state_vector instruction
                                                should be added to the end of the circuit. Defaults to True.
-        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional 
+        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
                                                    (each state value gets its own state vector). Defaults to False.
 
     Returns:
@@ -353,7 +353,7 @@ def animate_wigner(
         axes_min (int, optional): Minimum axes plot value. Defaults to -6.
         axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
-        processes (int, optional): Number of parallel Python processes to start. 
+        processes (int, optional): Number of parallel Python processes to start.
                                    If None, perform serially in main process. Defaults to None.
 
     Returns:
