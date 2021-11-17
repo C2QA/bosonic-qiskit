@@ -8,9 +8,6 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
-from qiskit.providers.aer.library.save_instructions.save_statevector import (
-    save_statevector,
-)
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 import scipy.stats
 
@@ -76,7 +73,7 @@ def simulate(
     shots: int = 1024,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
-    per_shot_state_vector: bool = False
+    per_shot_state_vector: bool = False,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -86,8 +83,10 @@ def simulate(
         circuit (CVCircuit): circuit to simulate
         backend_name (str, optional): Simulator to use. Defaults to "aer_simulator".
         shots (int, optional): Number of simulation shots. Defaults to 1024.
-        add_save_statevector (bool, optional): Set to True if a state_vector instruction should be added to the end of the circuit. Defaults to True.
-        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional (each state value gets its own state vector). Defaults to False.
+        add_save_statevector (bool, optional): Set to True if a state_vector instruction
+                                               should be added to the end of the circuit. Defaults to True.
+        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
+                                                   (each state value gets its own state vector). Defaults to False.
 
     Returns:
         tuple: (state, result) tuple from simulation
@@ -95,7 +94,9 @@ def simulate(
 
     # If this is false, the user must have already called save_statevector!
     if add_save_statevector:
-        circuit.save_statevector(conditional=conditional_state_vector, pershot=per_shot_state_vector)
+        circuit.save_statevector(
+            conditional=conditional_state_vector, pershot=per_shot_state_vector
+        )
 
     # Transpile for simulator
     simulator = qiskit.Aer.get_backend(backend_name)
@@ -111,7 +112,7 @@ def simulate(
             state = result.data()["statevector"]
         else:
             state = Statevector(result.get_statevector(circuit_compiled))
-    except:
+    except Exception:
         state = (
             None  # result.get_statevector() will fail if add_save_statevector is false
         )
@@ -284,11 +285,18 @@ def plot_wigner(
 
     w_fock = wigner(state, circuit.cutoff, axes_min, axes_max, axes_steps)
 
-    plot(data=w_fock, axes_min=axes_min, axes_max=axes_max, axes_steps=axes_steps, file=file, num_colors=num_colors)
+    plot(
+        data=w_fock,
+        axes_min=axes_min,
+        axes_max=axes_max,
+        axes_steps=axes_steps,
+        file=file,
+        num_colors=num_colors,
+    )
 
 
 def plot(
-    data,    
+    data,
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
@@ -345,7 +353,8 @@ def animate_wigner(
         axes_min (int, optional): Minimum axes plot value. Defaults to -6.
         axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
-        processes (int, optional): Number of parallel Python processes to start. If None, perform serially in main process. Defaults to None.
+        processes (int, optional): Number of parallel Python processes to start.
+                                   If None, perform serially in main process. Defaults to None.
 
     Returns:
         [type]: [description]
@@ -504,10 +513,17 @@ def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
     return _wigner(density_matrix, xvec, xvec, circuit.cutoff)
 
 
-def wigner(state, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_steps: int = 200, hbar: int = 2):
+def wigner(
+    state,
+    cutoff: int,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    hbar: int = 2,
+):
     """
     Calculate the Wigner function on the given state vector.
-        
+
     Args:
         state (array-like): state vector to calculate Wigner function
         cutoff (int): cutoff used during simulation
@@ -523,10 +539,17 @@ def wigner(state, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_steps
     return _wigner(state, xvec, xvec, cutoff, hbar)
 
 
-def wigner_mle(states, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_steps: int = 200, hbar: int = 2):
+def wigner_mle(
+    states,
+    cutoff: int,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    hbar: int = 2,
+):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
-    
+
     Args:
         states (array-like of array-like): state vectors to calculate MLE and Wigner function
         cutoff (int): cutoff used during simulation
@@ -544,7 +567,7 @@ def wigner_mle(states, cutoff: int, axes_min: int = -6, axes_max: int = 6, axes_
         # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
         mle = scipy.stats.norm.fit(qubit_states)
         mle_state.append(mle[0])
-    
+
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
     return wigner(mle_normalized, cutoff, axes_min, axes_max, axes_steps, hbar)

@@ -8,7 +8,7 @@ setup(
     url="https://github.com/C2QA/c2qa-qiskit.git",
     author="Tim Stavenger",
     author_email="timothy.stavenger@pnnl.gov",
-    description="National Quantum Initiative Co-design Center for Quantum Advantage project to simulate hybrid bosonic-superconducting qubits within IBM QisKit",
+    description="National Quantum Initiative Co-design Center for Quantum Advantage simulator for hybrid qubits in QisKit",
     packages=find_packages(),
     install_requires=[
         "qiskit==0.25.0",
