@@ -1,4 +1,3 @@
-from operator import inv
 import warnings
 
 import numpy as np

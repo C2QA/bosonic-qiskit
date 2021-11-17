@@ -8,9 +8,6 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy as np
 import qiskit
-from qiskit.providers.aer.library.save_instructions.save_statevector import (
-    save_statevector,
-)
 from qiskit.quantum_info import DensityMatrix, Statevector, partial_trace
 import scipy.stats
 
@@ -86,8 +83,10 @@ def simulate(
         circuit (CVCircuit): circuit to simulate
         backend_name (str, optional): Simulator to use. Defaults to "aer_simulator".
         shots (int, optional): Number of simulation shots. Defaults to 1024.
-        add_save_statevector (bool, optional): Set to True if a state_vector instruction should be added to the end of the circuit. Defaults to True.
-        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional (each state value gets its own state vector). Defaults to False.
+        add_save_statevector (bool, optional): Set to True if a state_vector instruction 
+                                               should be added to the end of the circuit. Defaults to True.
+        conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional 
+                                                   (each state value gets its own state vector). Defaults to False.
 
     Returns:
         tuple: (state, result) tuple from simulation
@@ -113,7 +112,7 @@ def simulate(
             state = result.data()["statevector"]
         else:
             state = Statevector(result.get_statevector(circuit_compiled))
-    except:
+    except Exception:
         state = (
             None  # result.get_statevector() will fail if add_save_statevector is false
         )
@@ -354,7 +353,8 @@ def animate_wigner(
         axes_min (int, optional): Minimum axes plot value. Defaults to -6.
         axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
-        processes (int, optional): Number of parallel Python processes to start. If None, perform serially in main process. Defaults to None.
+        processes (int, optional): Number of parallel Python processes to start. 
+                                   If None, perform serially in main process. Defaults to None.
 
     Returns:
         [type]: [description]
