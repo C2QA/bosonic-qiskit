@@ -13,11 +13,13 @@ from qiskit.tools.visualization import plot_histogram, plot_state_city
 import qiskit.quantum_info as qi
 from qiskit.providers.aer import AerSimulator
 from qiskit import IBMQ
+from collections import Counter
+
 
 
 # ### Initialize the oscillators to zero (spin 1) and the qubit to a superposition
 # # Two modes and 1 qubit
-# numberofmodes=8
+# numberofmodes=12
 # qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
 # qbr = qiskit.QuantumRegister(size=3)
 # cbr = qiskit.ClassicalRegister(size=1)
@@ -38,8 +40,8 @@ from qiskit import IBMQ
 # qubitinitialstate=[[zeroQB,"0"],[oneQB,"1"]]
 # # circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
 # # Initialize both qumodes to a zero spin 1 state (Fock state 1)
-# # for i in range(qmr.num_qumodes):
-# #     circuit.cv_initialize(samestallmodes, qmr[i]) #diffstallmodes[i] or samestallmodes
+# for i in range(qmr.num_qumodes):
+#     circuit.cv_initialize(samestallmodes, qmr[i]) #diffstallmodes[i] or samestallmodes
 # word="samestallmodes" #should correspond to the above line
 #
 # circuit.x(qbr[0])
@@ -102,40 +104,90 @@ backend = provider.get_backend('simulator_mps')
 #
 # circuit_sys = transpile(circuit, backend)
 # shnb=8190
-# job = backend.run(circuit_sys, shots=shnb, job_name="AKLT_MPS_"+str(numberofmodes)+"_"+str(shnb))
+# job = backend.run(circuit_sys, shots=shnb, job_name="AKLT_4_MPS_"+str(numberofmodes)+"_"+str(shnb))
+
+# print(backend)
+# job = backend.retrieve_job('6194efef711007b0af0d0814')
+# res = job.result()
+# counts = res.get_counts()
+# #
+# print("counts ", counts)
+# dict0=stateReadout.changeBasis(counts, 7, splitup=1)
+# tripletdict=dict0[0]
+# weights=list(tripletdict.values())
+# chain=list(tripletdict.keys())
+# print("chain, weights ",chain, weights)
+# print("dict0[2]", dict0[2])
+# tripletcounts=list(dict0[2].values())[1]
+# print(tripletcounts)
+# stateReadout.stringoperator(chain,weights,tripletcounts)
+# for d in range(2,7):
+#     stateReadout.stringoperator_variable(chain,weights,tripletcounts,d)
+
 #
-print(backend)
-job = backend.retrieve_job('6182ac2507a4a353ad7c2416')
+#
+job = backend.retrieve_job('6194efef711007b0af0d0814')
 res = job.result()
-counts = res.get_counts()
+counts1 = res.get_counts()
 
+job = backend.retrieve_job('6194f0fdff5987fb3202015f')
+res = job.result()
+counts2 = res.get_counts()
 
+job = backend.retrieve_job('6194f107f1a0346dda2c5ea6')
+res = job.result()
+counts3 = res.get_counts()
 
-print(counts)
-dict0=stateReadout.changeBasis(counts, 8, splitup=1)
-print(dict0[0])
+job = backend.retrieve_job('6194f11371100751700d081d')
+res = job.result()
+counts4 = res.get_counts()
+
+job = backend.retrieve_job('6194f126986f756dc36f159e')
+res = job.result()
+counts5 = res.get_counts()
+
+Cdict = Counter(counts1) + Counter(counts2) + Counter(counts3) + Counter(counts4) + Counter(counts5)
+print(Cdict)
+newList = [x / 5 for x in list(Cdict.values())]
+newdict=stateReadout.makedictionnary(Cdict.keys(), newList)
+print("newdict ",newdict)
+
+dict0=stateReadout.changeBasis(newdict, 7, splitup=1)
 tripletdict=dict0[0]
 weights=list(tripletdict.values())
 chain=list(tripletdict.keys())
-print(chain,weights)
-print(dict0[2])
+print("chain, weights ",chain, weights)
+print("dict0[2]", dict0[2])
 tripletcounts=list(dict0[2].values())[1]
 print(tripletcounts)
-# print(len(chain[0]))
-for d in range(2,8):
-    # stateReadout.stringoperator(chain,weights,tripletcounts)
+stateReadout.stringoperator(chain,weights,tripletcounts)
+for d in range(2,7):
     stateReadout.stringoperator_variable(chain,weights,tripletcounts,d)
 
+#
+# #
+# print(backend)
+# job = backend.retrieve_job('6194f11371100751700d081d')
+# res = job.result()
+# counts = res.get_counts()
+# print("counts ", counts)
+# dict0=stateReadout.changeBasis(counts, 7, splitup=1)
+# tripletdict2=dict0[0]
+# weights=list(tripletdict.values())
+# chain=list(tripletdict.keys())
+# print("chain, weights ",chain, weights)
+#
+#
+#
+# Cdict = Counter(tripletdict) + Counter(tripletdict2)
+# print(Cdict)
+# newList = [x / 2 for x in list(Cdict.values())]
+# newdict=stateReadout.makedictionnary(Cdict.keys(), newList)
+# print("newdict ",newdict)
 
-
-
-
-
-
-
-
-
-
+# stateReadout.stringoperator(chain,weights,tripletcounts)
+# for d in range(2,7):
+#     stateReadout.stringoperator_variable(chain,weights,tripletcounts,d)
 
 
 

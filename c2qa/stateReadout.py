@@ -256,7 +256,7 @@ def stringoperator(chain, weights,tripletcounts):
 
             finalres = finalres + (fval * weights[i])# ** 2)
 
-    print("chain len: ",len(chain[0])," string order param: ", finalres)
+    print("ch. len: ",len(chain[0])," str. order param.: ", finalres)
     return finalres
 
 
