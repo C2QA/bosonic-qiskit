@@ -94,7 +94,6 @@ class CVOperators:
     def controlledparity(self):
         zQB = np.array([[1, 0], [0, -1]])
         idQB = np.array([[1, 0], [0, 1]])
-        intermediary = zQB + idQB
         arg1 = scipy.sparse.kron(zQB,self.N)
         arg2 = scipy.sparse.kron(idQB, self.N)
         arg = arg1 + arg2
