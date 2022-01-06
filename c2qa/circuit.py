@@ -313,3 +313,16 @@ class CVCircuit(QuantumCircuit):
 
         self.h(qubit)
         return self.measure(qubit, cbit)
+
+    def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
+        """Qubit dependent cavity rotation
+
+        Args:
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
+        self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])

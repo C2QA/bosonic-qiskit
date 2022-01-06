@@ -175,6 +175,11 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def qubitDependentCavityRotation(self):
+        """Qubit dependent cavity rotation
+
+        Returns:
+            ndarray: operator matrix
+        """
         zQB = (1 / 2) * numpy.array([[1, 0], [0, -1]])
         arg=numpy.pi*1j*scipy.sparse.kron(zQB,self.N)
         return scipy.sparse.linalg.expm(arg.tocsc())
