@@ -129,44 +129,8 @@ class CVCircuit(QuantumCircuit):
 
         return inst
 
-    def cv_bs(self, phi, qumode_a, qumode_b):
-        """Perform an unconditional beam splitter gate.
-
-        Args:
-            phi (real): real phase
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        operator = ParameterizedOperator(self.ops.bs, phi)
-        return self.append(CVGate(data=operator, label="BS"), qargs=qumode_a + qumode_b)
-
-    def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
-        """Perform a conditional beam splitter gate.
-
-        Args:
-            phi (real): real phase for 0 qubit state
-            chi (real): phase for 1 qubit state
-            ctrl (Qubit): QisKit control Qubit
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        op_0 = ParameterizedOperator(self.ops.bs, phi)
-        op_1 = ParameterizedOperator(self.ops.bs, chi)
-        return self.append(
-            CVCircuit.cv_conditional(
-                "BSc", op_0, op_1, self.num_qubits_per_qumode, num_qumodes=2
-            ),
-            [ctrl] + qumode_a + qumode_b,
-        )
-
     def cv_d(self, alpha, qumode):
-        """Uncondintional displacement gate.
+        """Displacement gate.
 
         Args:
             alpha (real): displacement
@@ -179,7 +143,7 @@ class CVCircuit(QuantumCircuit):
         return self.append(CVGate(data=operator, label="D"), qargs=qumode)
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode, inverse: bool = False):
-        """Condintional displacement gate.
+        """Conditional displacement gate.
 
         Args:
             alpha (real): displacement for 0 control
@@ -198,21 +162,8 @@ class CVCircuit(QuantumCircuit):
             [ctrl] + qumode,
         )
 
-    def cv_r(self, phi, qumode):
-        """Unconditional phase space rotation gate.
-
-        Args:
-            phi (real): rotation
-            qumode (list): list of qubits representing qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        operator = ParameterizedOperator(self.ops.r, phi)
-        return self.append(CVGate(data=operator, label="R"), qargs=qumode)
-
     def cv_s(self, z, qumode):
-        """Unconditional squeezing gate.
+        """Squeezing gate.
 
         Args:
             z (real): squeeze
@@ -244,7 +195,7 @@ class CVCircuit(QuantumCircuit):
         )
 
     def cv_s2(self, z, qumode_a, qumode_b):
-        """Unconditional two-mode squeezing gate
+        """Two-mode squeezing gate
 
         Args:
             z (real): squeeze
@@ -256,6 +207,55 @@ class CVCircuit(QuantumCircuit):
         """
         operator = ParameterizedOperator(self.ops.s2, z)
         return self.append(CVGate(data=operator, label="S2"), qargs=qumode_a + qumode_b)
+
+    def cv_bs(self, phi, qumode_a, qumode_b):
+        """Beam splitter gate.
+
+        Args:
+            phi (real): real phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.bs, phi)
+        return self.append(CVGate(data=operator, label="BS"), qargs=qumode_a + qumode_b)
+
+    def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
+        """Conditional beam splitter gate.
+
+        Args:
+            phi (real): real phase for 0 qubit state
+            chi (real): phase for 1 qubit state
+            ctrl (Qubit): QisKit control Qubit
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        op_0 = ParameterizedOperator(self.ops.bs, phi)
+        op_1 = ParameterizedOperator(self.ops.bs, chi)
+        return self.append(
+            CVCircuit.cv_conditional(
+                "BSc", op_0, op_1, self.num_qubits_per_qumode, num_qumodes=2
+            ),
+            [ctrl] + qumode_a + qumode_b,
+        )
+
+    def cv_r(self, phi, qumode):
+        """Phase space rotation gate.
+
+        Args:
+            phi (real): rotation
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.r, phi)
+        return self.append(CVGate(data=operator, label="R"), qargs=qumode)
 
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
@@ -315,7 +315,7 @@ class CVCircuit(QuantumCircuit):
         return self.measure(qubit, cbit)
 
     def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
-        """Qubit dependent cavity rotation
+        """Qubit dependent cavity rotation gate.
 
         Args:
             qumode_a (list): list of qubits representing qumode
