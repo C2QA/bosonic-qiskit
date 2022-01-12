@@ -71,6 +71,23 @@ class CVCircuit(QuantumCircuit):
         """Integer number of qubits to represent a qumode."""
         return self.qmregs[-1].num_qubits_per_qumode
 
+    @property
+    def qumode_qubits(self):
+        """All the qubits representing the qumode registers on the circuit"""
+        qubits = []
+        for reg in self.qmregs:
+            qubits += reg[::]
+        return qubits
+
+    @property
+    def cv_gate_names(self):
+        """All the CV gate names on the current circuit"""
+        cv_gates = []
+        for gate in self.data:
+            if isinstance(gate[0], CVGate):
+                cv_gates.append(gate[0].name)
+        return cv_gates
+
     def cv_initialize(self, fock_state, qumodes):
         """Initialize the qumode to a Fock state.
 

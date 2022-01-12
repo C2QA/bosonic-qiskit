@@ -1,8 +1,10 @@
 from copy import copy
+from logging import NOTSET
 import math
 import multiprocessing
 import os
 import pathlib
+from typing import List
 
 import matplotlib.animation
 import matplotlib.pyplot as plt
@@ -75,6 +77,8 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
+    kraus_operator = None,
+    error_gates: List[str] = None
 ):
     """Convenience function to simulate using the given backend.
 
@@ -88,6 +92,7 @@ def simulate(
                                                should be added to the end of the circuit. Defaults to True.
         conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
                                                    (each state value gets its own state vector). Defaults to False.
+        kraus_operator (list)
 
     Returns:
         tuple: (state, result) tuple from simulation
@@ -99,8 +104,16 @@ def simulate(
             conditional=conditional_state_vector, pershot=per_shot_state_vector
         )
 
-    # Transpile for simulator
-    simulator = qiskit.Aer.get_backend(backend_name)
+    # Transpile for simulator, with noise error if provided
+    if kraus_operator:
+        error = qiskit.providers.aer.noise.kraus_error(kraus_operator)
+        if not error_gates:
+            error_gates = circuit.cv_gate_names
+        noise_model = qiskit.providers.aer.noise.NoiseModel()
+        noise_model.add_quantum_error(error, error_gates, circuit.qumode_qubits)
+        simulator = qiskit.providers.aer.AerSimulator(backend_name, noise_model=noise_model)
+    else:
+        simulator = qiskit.Aer.get_backend(backend_name)
     circuit_compiled = qiskit.transpile(circuit, simulator)
 
     # Run and get statevector
