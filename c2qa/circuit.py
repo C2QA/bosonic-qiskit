@@ -128,7 +128,9 @@ class CVCircuit(QuantumCircuit):
         inst.num_qumodes = num_qumodes
 
         return inst
+
     def save_circuit(self,conditional, pershot,label="statevector"):
+        """Save the simulator statevector using a qiskit class"""
         return save.save_statevector(
             label=label,conditional=conditional, pershot=pershot
         )
@@ -261,6 +263,21 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.r, phi)
         return self.append(CVGate(data=operator, label="R"), qargs=qumode)
 
+
+    def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
+        """Qubit dependent cavity rotation gate.
+
+        Args:
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
+        self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])
+
+
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
 
@@ -317,16 +334,3 @@ class CVCircuit(QuantumCircuit):
 
         self.h(qubit)
         return self.measure(qubit, cbit)
-
-    def cv_qubitDependentCavityRotation(self, qumode_a, qubit_ancilla):
-        """Qubit dependent cavity rotation gate.
-
-        Args:
-            qumode_a (list): list of qubits representing qumode
-            qubit_ancilla (qubit): QisKit control qubit
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
-        self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])

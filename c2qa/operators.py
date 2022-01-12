@@ -181,7 +181,7 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        zQB = np.array([[1, 0], [0, -1]])
+        zQB = numpy.array([[1, 0], [0, -1]])
 
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
