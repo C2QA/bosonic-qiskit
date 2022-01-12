@@ -4,6 +4,8 @@ from qiskit.quantum_info import Operator
 import scipy.sparse
 import scipy.sparse.linalg
 
+zQB = numpy.array([[1, 0], [0, -1]])
+idQB = numpy.array([[1, 0], [0, 1]])
 
 class ParameterizedOperator(Operator):
     """Support parameterizing operators for circuit animations."""
@@ -204,12 +206,17 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def qubitDependentCavityRotation(self):
+    def qubitDependentCavityRotation(self,theta):
         """Qubit dependent cavity rotation
 
         Returns:
             ndarray: operator matrix
         """
-        zQB = (1 / 2) * numpy.array([[1, 0], [0, -1]])
-        arg=numpy.pi*1j*scipy.sparse.kron(zQB,self.N)
+        arg=theta*1j*scipy.sparse.kron(zQB,self.N)
         return scipy.sparse.linalg.expm(arg.tocsc())
+
+    def controlledparity(self,theta):
+        arg1 = scipy.sparse.kron(zQB,self.N)
+        arg2 = scipy.sparse.kron(idQB, self.N)
+        arg = arg1 + arg2
+        return scipy.sparse.linalg.expm(1j*(theta)*arg)
