@@ -307,6 +307,19 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.controlledparity, theta)
         self.append(CVGate(data=operator, label="CP"), qargs=qumode_a + [qubit_ancilla])
 
+    def cv_snap(self, theta, qumode_a):
+        """SNAP (Selective Number-dependent Arbitrary Phase) gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.snap, theta)
+        self.append(CVGate(data=operator, label="SNAP"), qargs=qumode_a)
+
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
 
