@@ -290,8 +290,20 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation)
-        self.append(CVGate(data=operator, label="qubitDependentCavityRotation"), qargs=qumode_a + [qubit_ancilla])
+        self.append(CVGate(data=operator, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
 
+    def cv_controlledparity(self, qumode_a, qubit_ancilla):
+        """Controlled parity gate.
+
+        Args:
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.controlledparity)
+        self.append(CVGate(data=operator, label="CP"), qargs=qumode_a + [qubit_ancilla])
 
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
