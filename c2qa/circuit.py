@@ -7,6 +7,7 @@ from c2qa.operators import CVGate, CVOperators, ParameterizedOperator
 from c2qa.qumoderegister import QumodeRegister
 import qiskit.providers.aer.library.save_instructions as save
 
+
 class CVCircuit(QuantumCircuit):
     """Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations."""
 
@@ -129,10 +130,10 @@ class CVCircuit(QuantumCircuit):
 
         return inst
 
-    def save_circuit(self,conditional, pershot,label="statevector"):
+    def save_circuit(self, conditional, pershot, label="statevector"):
         """Save the simulator statevector using a qiskit class"""
         return save.save_statevector(
-            label=label,conditional=conditional, pershot=pershot
+            label=label, conditional=conditional, pershot=pershot
         )
 
     def cv_d(self, alpha, qumode):
@@ -278,7 +279,6 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.r, phi)
         return self.append(CVGate(data=operator, label="R"), qargs=qumode)
 
-
     def cv_qubitDependentCavityRotation(self, theta, qumode_a, qubit_ancilla):
         """Qubit dependent cavity rotation gate.
 
@@ -307,17 +307,18 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.controlledparity, theta)
         self.append(CVGate(data=operator, label="CP"), qargs=qumode_a + [qubit_ancilla])
 
-    def cv_snap(self, theta, qumode_a):
+    def cv_snap(self, theta, n, qumode_a):
         """SNAP (Selective Number-dependent Arbitrary Phase) gate.
 
         Args:
             theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
             qumode_a (list): list of qubits representing qumode
 
         Returns:
             Instruction: QisKit instruction
         """
-        operator = ParameterizedOperator(self.ops.snap, theta)
+        operator = ParameterizedOperator(self.ops.snap, theta, n)
         self.append(CVGate(data=operator, label="SNAP"), qargs=qumode_a)
 
     def measure_z(self, qubit, cbit):

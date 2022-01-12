@@ -7,6 +7,7 @@ import scipy.sparse.linalg
 zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
 
+
 class ParameterizedOperator(Operator):
     """Support parameterizing operators for circuit animations."""
 
@@ -97,6 +98,9 @@ class CVOperators:
             self.a1_dag = self.a1.conjugate().transpose()
             self.a2_dag = self.a2.conjugate().transpose()
 
+        # For use with SNAP gate
+        ket_n = numpy.zeros(cutoff)
+
     def d(self, alpha):
         """Displacement operator
 
@@ -153,7 +157,7 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        arg = (g/2) * (a12dag - a1dag2)
+        arg = (g / 2) * (a12dag - a1dag2)
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -188,8 +192,8 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = (g/2) * (a1dag2 - a12dag)
-        arg = scipy.sparse.kron(zQB,argm)
+        argm = (g / 2) * (a1dag2 - a12dag)
+        arg = scipy.sparse.kron(zQB, argm)
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -206,17 +210,43 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def qubitDependentCavityRotation(self,theta):
+    def qubitDependentCavityRotation(self, theta):
         """Qubit dependent cavity rotation
+
+        Args:
+            theta (real): phase
 
         Returns:
             ndarray: operator matrix
         """
-        arg=theta*1j*scipy.sparse.kron(zQB,self.N)
+        arg = theta * 1j * scipy.sparse.kron(zQB, self.N)
         return scipy.sparse.linalg.expm(arg.tocsc())
 
-    def controlledparity(self,theta):
-        arg1 = scipy.sparse.kron(zQB,self.N)
+    def controlledparity(self, theta):
+        """Controlled parity operator
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg1 = scipy.sparse.kron(zQB, self.N)
         arg2 = scipy.sparse.kron(idQB, self.N)
         arg = arg1 + arg2
-        return scipy.sparse.linalg.expm(1j*(theta)*arg)
+        return scipy.sparse.linalg.expm(1j * (theta) * arg)
+
+    def snap(self, theta, n):
+        """SNAP (Selective Number-dependent Arbitrary Phase) operator
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        self.ket_n[n] = 1
+        projector = numpy.outer(self.ket_n, self.ket_n)
+        arg = theta * 1j * projector
+        return scipy.sparse.linalg.expm(arg)
