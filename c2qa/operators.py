@@ -222,11 +222,8 @@ class CVOperators:
         arg = theta * 1j * scipy.sparse.kron(zQB, self.N)
         return scipy.sparse.linalg.expm(arg.tocsc())
 
-    def controlledparity(self, theta):
+    def controlledparity(self):
         """Controlled parity operator
-
-        Args:
-            theta (real): phase
 
         Returns:
             ndarray: operator matrix
@@ -234,7 +231,7 @@ class CVOperators:
         arg1 = scipy.sparse.kron(zQB, self.N)
         arg2 = scipy.sparse.kron(idQB, self.N)
         arg = arg1 + arg2
-        return scipy.sparse.linalg.expm(1j * (theta) * arg)
+        return scipy.sparse.linalg.expm(1j * (numpy.pi/2) * arg)
 
     def snap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
