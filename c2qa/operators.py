@@ -4,6 +4,9 @@ from qiskit.quantum_info import Operator
 import scipy.sparse
 import scipy.sparse.linalg
 
+zQB = numpy.array([[1, 0], [0, -1]])
+idQB = numpy.array([[1, 0], [0, 1]])
+
 
 class ParameterizedOperator(Operator):
     """Support parameterizing operators for circuit animations."""
@@ -95,24 +98,8 @@ class CVOperators:
             self.a1_dag = self.a1.conjugate().transpose()
             self.a2_dag = self.a2.conjugate().transpose()
 
-    def bs(self, g):
-        """Two-mode beam splitter opertor
-
-        Args:
-            g (real): real phase
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        # FIXME -- See Steve 5.4
-        #   phi as g(t)
-        #   - as +, but QisKit validates that not being unitary
-        arg = (g * -1j * a12dag) - (numpy.conjugate(g * -1j) * a1dag2)
-
-        return scipy.sparse.linalg.expm(arg)
+        # For use with SNAP gate
+        ket_n = numpy.zeros(cutoff)
 
     def d(self, alpha):
         """Displacement operator
@@ -124,19 +111,6 @@ class CVOperators:
             ndarray: operator matrix
         """
         arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def r(self, theta):
-        """Phase space rotation operator
-
-        Args:
-            theta (real): rotation
-
-        Returns:
-            ndarray: operator matrix
-        """
-        arg = 1j * theta * self.N
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -159,7 +133,7 @@ class CVOperators:
         """Two-mode squeezing operator
 
         Args:
-            g (real): squeeze
+            g (real): mutliplied by 1j to yield imaginary phase
 
         Returns:
             ndarray: operator matrix
@@ -167,9 +141,109 @@ class CVOperators:
         a12_dag = self.a1_dag * self.a2_dag
         a12 = self.a1 * self.a2
 
-        # FIXME -- See Steve 5.7
-        #   zeta as g(t)
-        #   use of imaginary, but QisKit validates that is not unitary
-        arg = (numpy.conjugate(g) * a12_dag) - (g * a12)
+        arg = (numpy.conjugate(g * 1j) * a12_dag) - (g * 1j * a12)
 
+        return scipy.sparse.linalg.expm(arg)
+
+    def bs(self, g):
+        """Two-mode beam splitter
+
+        Args:
+            g (real): real phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        arg = (g / 2) * (a12dag - a1dag2)
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def bs_im(self, weight):
+        """Two-mode beam splitter
+
+        Args:
+            weight (real): mutliplied by 1j to yield imaginary alpha
+
+        Returns:
+            ndarray: operator matrix
+        """
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+        alpha = (weight * 1j)
+
+        arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def cpbs(self, g):
+        """Controlled phase two-mode beam splitter
+
+        Args:
+            g (real): real phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        zQB = numpy.array([[1, 0], [0, -1]])
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        argm = (g / 2) * (a1dag2 - a12dag)
+        arg = scipy.sparse.kron(zQB, argm)
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def r(self, theta):
+        """Phase space rotation operator
+
+        Args:
+            theta (real): rotation
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = 1j * theta * self.N
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def qubitDependentCavityRotation(self, theta):
+        """Qubit dependent cavity rotation
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = theta * 1j * scipy.sparse.kron(zQB, self.N)
+        return scipy.sparse.linalg.expm(arg.tocsc())
+
+    def controlledparity(self):
+        """Controlled parity operator
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg1 = scipy.sparse.kron(zQB, self.N)
+        arg2 = scipy.sparse.kron(idQB, self.N)
+        arg = arg1 + arg2
+        return scipy.sparse.linalg.expm(1j * (numpy.pi/2) * arg)
+
+    def snap(self, theta, n):
+        """SNAP (Selective Number-dependent Arbitrary Phase) operator
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        self.ket_n[n] = 1
+        projector = numpy.outer(self.ket_n, self.ket_n)
+        arg = theta * 1j * projector
         return scipy.sparse.linalg.expm(arg)
