@@ -5,10 +5,10 @@ from qiskit import QuantumCircuit, QuantumRegister
 
 from c2qa.operators import CVGate, CVOperators, ParameterizedOperator
 from c2qa.qumoderegister import QumodeRegister
-
+import qiskit.providers.aer.library.save_instructions as save
 
 class CVCircuit(QuantumCircuit):
-    """Extension of QisKit QuantumCircuit to add continuously variable (bosonic) gate support to simulations."""
+    """Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations."""
 
     def __init__(self, *regs, name: str = None, probe_measure: bool = False):
         """Initialize the registers (at least one must be QumodeRegister), set
@@ -128,6 +128,10 @@ class CVCircuit(QuantumCircuit):
         inst.num_qumodes = num_qumodes
 
         return inst
+    def save_circuit(self,conditional, pershot,label="statevector"):
+        return save.save_statevector(
+            label=label,conditional=conditional, pershot=pershot
+        )
 
     def cv_d(self, alpha, qumode):
         """Displacement gate.
