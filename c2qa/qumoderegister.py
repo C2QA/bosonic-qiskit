@@ -45,8 +45,10 @@ class QumodeRegister:
         step = None
 
         if isinstance(key, slice):
-            start = self.num_qubits_per_qumode * key.start
-            stop = (self.num_qubits_per_qumode * key.stop) + self.num_qubits_per_qumode
+            start_index = key.start if key.start else 0
+            stop_index = key.stop if key.stop else self.size
+            start = self.num_qubits_per_qumode * start_index
+            stop = (self.num_qubits_per_qumode * stop_index) + self.num_qubits_per_qumode
             step = (key.step * self.num_qubits_per_qumode) if key.step else None
         elif isinstance(key, int):
             start = self.num_qubits_per_qumode * key
