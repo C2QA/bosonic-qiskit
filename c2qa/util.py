@@ -216,6 +216,21 @@ def _add_contourf(ax, fig, title, x, y, z):
     fig.colorbar(cont, ax=ax)
 
 
+def _find_cavity_indices(circuit: CVCircuit):
+    """
+    Return the indices of the cavities from the circuit
+
+    I.e., the indices to the qubits representing the bosonic modes.
+    """
+
+    # Find indices of qubits representing qumodes
+    qmargs = []
+    for reg in circuit.qmregs:
+        qmargs.extend(reg.qreg)
+
+    return qmargs
+
+
 def _find_qubit_indices(circuit: CVCircuit):
     """
     Return the indices of the qubits from the circuit that are not in a QumodeRegister
