@@ -228,7 +228,15 @@ def _find_cavity_indices(circuit: CVCircuit):
     for reg in circuit.qmregs:
         qmargs.extend(reg.qreg)
 
-    return qmargs
+    # Trace over the qubits representing qumodes
+    index = 0
+    indices = []
+    for qubit in circuit.qubits:
+        if qubit in qmargs:
+            indices.append(index)
+        index += 1
+
+    return indices
 
 
 def _find_qubit_indices(circuit: CVCircuit):
