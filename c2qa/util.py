@@ -254,8 +254,24 @@ def _find_qubit_indices(circuit: CVCircuit):
     return indices
 
 
+def cv_qubits_reduced_density_matrix(circuit: CVCircuit, state_vector):
+    """Return reduced density matrix of the qubits by tracing out the cavities from the given Fock state vector.
+
+    Args:
+        circuit (CVCircuit): circuit yielding the results to trace over
+        state_vector (Statevector): simulation results to trace over
+
+    Returns:
+        DensityMatrix: density matrix of the qubits from a partial trace over the cavities
+    """
+
+    indices = _find_cavity_indices(circuit)
+
+    return partial_trace(state_vector, indices)
+
+
 def cv_partial_trace(circuit: CVCircuit, state_vector):
-    """Return reduced density matrix by tracing out the qubits from the given Fock state vector.
+    """Return reduced density matrix of the cavities by tracing out the qubits from the given Fock state vector.
 
     Args:
         circuit (CVCircuit): circuit with results to trace (to find Qubit index)
