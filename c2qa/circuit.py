@@ -320,6 +320,20 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.snap, theta, n)
         self.append(CVGate(data=operator, label="SNAP"), qargs=qumode_a)
 
+    def cv_eswap(self, theta, qumode_a, qumode_b):
+        """Exponential SWAP gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qumode_b (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.eswap)
+        self.append(CVGate(data=operator, label="eSWAP"), qargs=qumode_a + qumode_b)
+
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
 
