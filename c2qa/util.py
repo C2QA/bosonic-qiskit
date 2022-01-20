@@ -72,7 +72,6 @@ def get_probabilities(result: qiskit.result.Result):
 
 def simulate(
     circuit: CVCircuit,
-    backend_name: str = "aer_simulator",
     shots: int = 1024,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
@@ -105,15 +104,15 @@ def simulate(
         )
 
     # Transpile for simulator, with noise error if provided
-    if kraus_operator:
+    if kraus_operator is not None:
         error = qiskit.providers.aer.noise.kraus_error(kraus_operator)
         if not error_gates:
             error_gates = circuit.cv_gate_names
         noise_model = qiskit.providers.aer.noise.NoiseModel()
         noise_model.add_quantum_error(error, error_gates, circuit.qumode_qubits)
-        simulator = qiskit.providers.aer.AerSimulator(backend_name, noise_model=noise_model)
+        simulator = qiskit.providers.aer.AerSimulator(noise_model=noise_model)
     else:
-        simulator = qiskit.Aer.get_backend(backend_name)
+        simulator = qiskit.providers.aer.AerSimulator()
     circuit_compiled = qiskit.transpile(circuit, simulator)
 
     # Run and get statevector
