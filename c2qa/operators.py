@@ -100,14 +100,13 @@ class CVOperators:
 
         # For use with SNAP gate
         self.ket_n = numpy.zeros(cutoff)
-        # self.ket_n = scipy.sparse.csr_matrix(cutoff, dtype=numpy.complex128)
 
         # For use with eSWAP
         self.mat = numpy.zeros([cutoff * cutoff, cutoff * cutoff])
-        # self.mat = scipy.sparse.csr_matrix((cutoff * cutoff, cutoff * cutoff), dtype=numpy.complex128)
         for j in range(cutoff):
             for i in range(cutoff):
                 self.mat[i + (j * cutoff)][i * cutoff + j] = 1
+        self.sparse_mat = scipy.sparse.csr_matrix(self.mat)
 
     def d(self, alpha):
         """Displacement operator
@@ -253,7 +252,8 @@ class CVOperators:
         """
         self.ket_n[n] = 1
         projector = numpy.outer(self.ket_n, self.ket_n)
-        arg = theta * 1j * projector
+        sparse_projector = scipy.sparse.csr_matrix(projector)
+        arg = theta * 1j * sparse_projector
         return scipy.sparse.linalg.expm(arg)
 
     def eswap(self, theta):
@@ -265,6 +265,6 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        arg = 1j * (theta / 2) * self.mat
+        arg = 1j * (theta / 2) * self.sparse_mat
 
         return scipy.sparse.linalg.expm(arg)

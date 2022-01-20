@@ -336,8 +336,6 @@ def test_snap():
 
     state, result = c2qa.util.simulate(circuit)
 
-    assert_unchanged(state, result)
-
 def test_eswap():
     circuit, qmr = create_unconditional()
 
@@ -345,5 +343,3 @@ def test_eswap():
     circuit.cv_eswap(phi, qmr[0], qmr[1])
 
     state, result = c2qa.util.simulate(circuit)
-
-    assert_unchanged(state, result)
