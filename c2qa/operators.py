@@ -99,7 +99,13 @@ class CVOperators:
             self.a2_dag = self.a2.conjugate().transpose()
 
         # For use with SNAP gate
-        ket_n = numpy.zeros(cutoff)
+        self.ket_n = numpy.zeros(cutoff)
+
+        # For use with eSWAP
+        self.mat = numpy.zeros([cutoff * cutoff, cutoff * cutoff])
+        for j in range(cutoff):
+            for i in range(cutoff):
+                self.mat[i + (j * cutoff)][i * cutoff + j] = 1
 
     def d(self, alpha):
         """Displacement operator
@@ -231,7 +237,7 @@ class CVOperators:
         arg1 = scipy.sparse.kron(zQB, self.N)
         arg2 = scipy.sparse.kron(idQB, self.N)
         arg = arg1 + arg2
-        return scipy.sparse.linalg.expm(1j * (numpy.pi/2) * arg)
+        return scipy.sparse.linalg.expm(1j * (numpy.pi / 2) * arg)
 
     def snap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
@@ -246,4 +252,17 @@ class CVOperators:
         self.ket_n[n] = 1
         projector = numpy.outer(self.ket_n, self.ket_n)
         arg = theta * 1j * projector
+        return scipy.sparse.linalg.expm(arg)
+
+    def eSWAP(self, theta):
+        """Exponential SWAP
+
+        Args:
+            theta (real): rotation
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = 1j * (theta / 2) * self.mat
+
         return scipy.sparse.linalg.expm(arg)
