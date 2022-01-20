@@ -100,9 +100,11 @@ class CVOperators:
 
         # For use with SNAP gate
         self.ket_n = numpy.zeros(cutoff)
+        # self.ket_n = scipy.sparse.csr_matrix(cutoff, dtype=numpy.complex128)
 
         # For use with eSWAP
         self.mat = numpy.zeros([cutoff * cutoff, cutoff * cutoff])
+        # self.mat = scipy.sparse.csr_matrix((cutoff * cutoff, cutoff * cutoff), dtype=numpy.complex128)
         for j in range(cutoff):
             for i in range(cutoff):
                 self.mat[i + (j * cutoff)][i * cutoff + j] = 1
@@ -254,7 +256,7 @@ class CVOperators:
         arg = theta * 1j * projector
         return scipy.sparse.linalg.expm(arg)
 
-    def eSWAP(self, theta):
+    def eswap(self, theta):
         """Exponential SWAP
 
         Args:

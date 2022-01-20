@@ -326,3 +326,24 @@ def test_gates():
     state, result = c2qa.util.simulate(circuit)
 
     assert result.success
+
+def test_snap():
+    circuit, qmr = create_unconditional()
+
+    phi = random.random()
+    n = 1
+    circuit.    cv_snap(phi, n, qmr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+
+    assert_unchanged(state, result)
+
+def test_eswap():
+    circuit, qmr = create_unconditional()
+
+    phi = random.random()
+    circuit.cv_eswap(phi, qmr[0], qmr[1])
+
+    state, result = c2qa.util.simulate(circuit)
+
+    assert_unchanged(state, result)

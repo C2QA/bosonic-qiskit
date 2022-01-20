@@ -331,7 +331,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        operator = ParameterizedOperator(self.ops.eswap)
+        operator = ParameterizedOperator(self.ops.eswap, theta)
         self.append(CVGate(data=operator, label="eSWAP"), qargs=qumode_a + qumode_b)
 
     def measure_z(self, qubit, cbit):
