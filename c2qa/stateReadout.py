@@ -523,7 +523,7 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
 
 
             # print("Qmode detector")
-            qmst=np.empty(numberofmodes, dtype='int')
+            qmst=np.empty(numberofmodes, dtype='int') # will contain the fock state of each mode
             # print("qmst starting in ", qmst)
             iqm=0 # counts up the number of modes
             # print("position is now: ",pos)
@@ -537,13 +537,14 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
                 # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
                 fock = math.floor(val)
                 print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
-                qmst[-iqm-1]=int(fock)
-                print("Storing that fock state: qmst ", qmst)
-                # if val==math.ceil(val):
-                #     print("value is val = ceil.val ",val)
-                #     rdval=val-1
-                # else:
-                # print("remove a number of divisions corresponding to fock")
+                qmst[iqm]=fock
+                # qmst[-iqm-1]=int(fock)
+                # print("Storing that fock state: qmst ", qmst)
+                # # if val==math.ceil(val):
+                # #     print("value is val = ceil.val ",val)
+                # #     rdval=val-1
+                # # else:
+                # # print("remove a number of divisions corresponding to fock")
                 pos=pos-(fock*lendiv)
                 # print("new position for next order of depth of Kronecker product/pos: (pos-(rdiv*lendiv)) ",pos)
                 sln=sln-((cutoff-1)*lendiv)
@@ -551,19 +552,19 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
                 iqm=iqm+1
             print("qumode states at the end of one number's worth of searching: ", qmst)
 
-            sbstr = ["".join(item) for item in qmst.astype(str)]
-            sitestr = "\n modes: "
-            for site in range(numberofmodes):
-                if (site % 2 == 0):
-                    if qmst[site]==0 :
-                        sitestr=sitestr+"-"
-                    elif qmst[site]==2 :
-                        sitestr=sitestr+"+"
-                    elif qmst[site] == 1 & qmst[site + 1] == 1:
-                        sitestr=sitestr+"0"
-
-            print(qbsitestr, sitestr, "     is: ", np.real(res))#, "\n",''.join(qbstr), ''.join(sbstr))
-            # print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "     is: ", np.real(res))
+            # sbstr = ["".join(item) for item in qmst.astype(str)]
+            # sitestr = "\n modes: "
+            # for site in range(numberofmodes):
+            #     if (site % 2 == 0):
+            #         if qmst[site]==0 :
+            #             sitestr=sitestr+"-"
+            #         elif qmst[site]==2 :
+            #             sitestr=sitestr+"+"
+            #         elif qmst[site] == 1 & qmst[site + 1] == 1:
+            #             sitestr=sitestr+"0"
+            #
+            # print(qbsitestr, sitestr, "     is: ", np.real(res))#, "\n",''.join(qbstr), ''.join(sbstr))
+            # # print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "     is: ", np.real(res))
 
 
     # print("end")
