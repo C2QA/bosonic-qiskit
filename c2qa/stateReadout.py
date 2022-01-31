@@ -516,36 +516,22 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
                     qbst[iqb]=int(1) # if the amplitude is in the second half then it is in 1
                     pos=pos-(sln/2) # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
                     # print("pos (sln/2)", pos, "sln ",sln)
-                sln=sln/2
-                iqb=iqb+1
-            qbstr = ["".join(item) for item in qbst.astype(str)]
-            # print(modesini, " overlap with ",qbst[0], " is: ", np.real(res))
-            qbsitestr = "qubits " + str(qbst[0])
+                sln=sln/2 # only consider the part of the statevector corresponding to the qubit state which has just been discovered
+                iqb=iqb+1 # up the qubit counter to start finding out the state of the next qubit
+                print("iqb ",iqb)
+            print("qbstr ", qbst)
 
-            # Next two qubits are called site qubits
-            if qbst[1]==0:
-                qbsitestr = qbsitestr + "0"
-                if qbst[2]==0:
-                    qbsitestr=qbsitestr + "0"
-                else:
-                    qbsitestr = qbsitestr + "1"
-            elif qbst[1]==1:
-                qbsitestr = qbsitestr + "1"
-                if qbst[2]==1:
-                    qbsitestr=qbsitestr + "1"
-                else:
-                    qbsitestr=qbsitestr + "0"
 
             # print("Qmode detector")
             qmst=np.empty(numberofmodes, dtype='int')
             # print("qmst starting in ", qmst)
-            iqm=0
+            iqm=0 # counts up the number of modes
             # print("position is now: ",pos)
             while(iqm<numberofmodes):
                 # print("mode counter iqm ", iqm)
                 # print("cutoff ", cutoff)
                 # print("length of vector left to search: sln ", sln)
-                lendiv=sln/cutoff
+                lendiv=sln/cutoff # length of a division is the length of the statevector divided by the cutoff of the hilbert space (which corresponds to the number of fock states which a mode can have)
                 # print("lendiv (sln/cutoff)", lendiv)
                 val=pos/lendiv
                 # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
