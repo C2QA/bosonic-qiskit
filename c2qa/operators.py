@@ -4,6 +4,8 @@ from qiskit.quantum_info import Operator
 import scipy.sparse
 import scipy.sparse.linalg
 
+xQB = numpy.array([[0, 1], [1, 0]])
+yQB = numpy.array([[0, 1j], [-1j, 0]])
 zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
 
@@ -194,7 +196,6 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        zQB = numpy.array([[1, 0], [0, -1]])
 
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
@@ -227,6 +228,7 @@ class CVOperators:
             ndarray: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(zQB, self.N)
+
         return scipy.sparse.linalg.expm(arg.tocsc())
 
     def controlledparity(self):
@@ -266,5 +268,36 @@ class CVOperators:
             ndarray: operator matrix
         """
         arg = 1j * (theta / 2) * self.sparse_mat
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def photonNumberControlledQubitRotation(self, theta, n, qubit_rotation):
+        """Photon Number Controlled Qubit Rotation operator
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+            qubit_rotation (string): Pauli matrix for the qubit rotation
+
+        Returns:
+            ndarray: operator matrix
+        """
+
+        if qubit_rotation=="X":
+            rot=xQB
+        elif qubit_rotation=="Y":
+            rot=yQB
+        elif qubit_rotation=="Z":
+            rot=zQB
+        else:
+            print("Please choose pauli X, Y or Z (capitals, ie. 'Y') for the qubit rotation.")
+
+
+        self.ket_n[n] = 1
+        projector = numpy.outer(self.ket_n, self.ket_n)
+        sparse_projector = scipy.sparse.csr_matrix(projector)
+        argm = theta * 1j * sparse_projector
+
+        arg = scipy.sparse.kron(rot, argm)
 
         return scipy.sparse.linalg.expm(arg)

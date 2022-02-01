@@ -334,6 +334,20 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.eswap, theta)
         self.append(CVGate(data=operator, label="eSWAP"), qargs=qumode_a + qumode_b)
 
+    def cv_pncqr(self, theta, n, qumode_a, qubit_ancilla, qubit_rotation):
+        """Photon Number Controlled Qubit Rotation gate.
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+            qumode_a (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.photonNumberControlledQubitRotation, theta, n, qubit_rotation)
+        self.append(CVGate(data=operator, label="PNCQR"), qargs=qumode_a + [qubit_ancilla])
+
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
 
