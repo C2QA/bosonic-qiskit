@@ -503,11 +503,13 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
     for i in range(len(st)):
         res = st[i] # go through vector element by element and find the positions of the non-zero elements with next if clause
         if (np.abs(np.real(res)) > 1e-10):
-            pos=i #position of amplitude (non-zero real)
+            pos=i # position of amplitude (non-zero real)
             # print("position of non-zero real amplitude: ", pos, " res = ", res)
+            sln = len(st)  # length of the state vector
+
+            ## Find the qubit states
             qbst=np.empty(numberofqubits, dtype='int') # stores the qubit state
             iqb=0 # counts up until the total number of qubits is reached
-            sln=len(st) #length of the state vector
             # which half of the vector the amplitude is in is the state of the first qubit because of how the kronecker product is made
             while(iqb<numberofqubits):
                 if pos<sln/2: # if the amplitude is in the first half of the state vector or remaining statevector
@@ -518,12 +520,10 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
                     # print("pos (sln/2)", pos, "sln ",sln)
                 sln=sln/2 # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb=iqb+1 # up the qubit counter to start finding out the state of the next qubit
-                print("iqb ",iqb)
-            print("qbstr ", qbst)
+            qbstr = ["".join(item) for item in qbst.astype(str)]
 
-
-            # print("Qmode detector")
-            qmst=np.empty(numberofmodes, dtype='int') # will contain the fock state of each mode
+            ## Find the qumode states
+            qmst=np.empty(numberofmodes, dtype='int') # will contain the Fock state of each mode
             # print("qmst starting in ", qmst)
             iqm=0 # counts up the number of modes
             # print("position is now: ",pos)
@@ -536,38 +536,16 @@ def statereadbasic(stateop, numberofqubits, numberofmodes, qbinist, samestallmod
                 val=pos/lendiv
                 # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
                 fock = math.floor(val)
-                print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
+                # print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
                 qmst[iqm]=fock
-                # qmst[-iqm-1]=int(fock)
-                # print("Storing that fock state: qmst ", qmst)
-                # # if val==math.ceil(val):
-                # #     print("value is val = ceil.val ",val)
-                # #     rdval=val-1
-                # # else:
-                # # print("remove a number of divisions corresponding to fock")
-                pos=pos-(fock*lendiv)
-                # print("new position for next order of depth of Kronecker product/pos: (pos-(rdiv*lendiv)) ",pos)
-                sln=sln-((cutoff-1)*lendiv)
+                pos=pos-(fock*lendiv) #remove a number of divisions to then search a subsection of the Kronecker product
+                # print("new position for next order of depth of Kronecker product/pos: (pos-(fock*lendiv)) ",pos)
+                sln=sln-((cutoff-1)*lendiv) # New length of vector left to search
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
                 iqm=iqm+1
-            print("qumode states at the end of one number's worth of searching: ", qmst)
+            qmstr = ["".join(item) for item in qmst.astype(str)]
 
-            # sbstr = ["".join(item) for item in qmst.astype(str)]
-            # sitestr = "\n modes: "
-            # for site in range(numberofmodes):
-            #     if (site % 2 == 0):
-            #         if qmst[site]==0 :
-            #             sitestr=sitestr+"-"
-            #         elif qmst[site]==2 :
-            #             sitestr=sitestr+"+"
-            #         elif qmst[site] == 1 & qmst[site + 1] == 1:
-            #             sitestr=sitestr+"0"
-            #
-            # print(qbsitestr, sitestr, "     is: ", np.real(res))#, "\n",''.join(qbstr), ''.join(sbstr))
-            # # print(modesini, " overlap with ", ''.join(qbsitestr), ''.join(sitestr), "     is: ", np.real(res))
+            print("qubits: ",''.join(qbstr), " qumodes: ",''.join(qmstr), "    with amplitude: ", np.real(res))
 
-
-    # print("end")
-
-    # if (np.abs(np.imag(res)) > 1e-10):
-    #     print(modesini, " overlap with ", " is: ", 1j * np.imag(res))
+    if (np.abs(np.imag(res)) > 1e-10):
+        print("\n imaginary amplitude: ", 1j * np.imag(res))
