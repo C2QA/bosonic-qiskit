@@ -154,7 +154,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs(self, g):
+    def bs1(self, g):
         """Two-mode beam splitter
 
         Args:
@@ -231,7 +231,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg.tocsc())
 
-    def controlledparity(self):
+    def controlledparity1(self):
         """Controlled parity operator
 
         Returns:
@@ -242,7 +242,7 @@ class CVOperators:
         arg = arg1 + arg2
         return scipy.sparse.linalg.expm(1j * (numpy.pi / 2) * arg)
 
-    def snap(self, theta, n):
+    def snap1(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
 
         Args:
@@ -271,7 +271,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def photonNumberControlledQubitRotation(self, theta, n, qubit_rotation):
+    def photonNumberControlledQubitRotation1(self, theta, n, qubit_rotation):
         """Photon Number Controlled Qubit Rotation operator
 
         Args:
@@ -300,4 +300,42 @@ class CVOperators:
 
         arg = scipy.sparse.kron(rot, argm)
 
+        return scipy.sparse.linalg.expm(arg)
+
+
+    def snap(self, theta, n):
+        # be careful about adding an extra qubit in here which is in state 1 which will get the negative phase.
+        # you can do all the photon number states on one cavity on one ancilla, but each cavity needs an ancilla
+        twoOP = scipy.sparse.csr_matrix([[0, 0 ,0 ,0], [0, 0 ,0 ,0], [0 ,0 ,1 ,0], [0, 0 ,0 ,0]])
+        arg=numpy.pi*1j*twoOP
+        return scipy.sparse.linalg.expm(arg)
+
+    def photonNumberControlledQubitRotation(self, theta, n, qubit_rotation):
+        yQB = numpy.array([[0, 1j], [-1j, 0]])
+        oneOP = scipy.sparse.csr_matrix([[0, 0, 0, 0],[0, 1, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]])
+        arg1=-1j*numpy.pi*oneOP/2
+        arg = scipy.sparse.kron(yQB, arg1)
+        return scipy.sparse.linalg.expm(arg)
+
+    def controlledparity(self):
+        zQB = numpy.array([[1, 0], [0, -1]])
+        idQB = numpy.array([[1, 0], [0, 1]])
+        arg1 = scipy.sparse.kron(zQB,self.N)
+        arg2 = scipy.sparse.kron(idQB, self.N)
+        arg = arg1 + arg2
+        return scipy.sparse.linalg.expm(1j*(numpy.pi/2)*arg)
+
+    def bs(self, g):
+        """Two-mode beam splitter opertor"""
+        # a12dag = scipy.sparse.matmul(self.a1, self.a2_dag)
+        # a1dag2 = scipy.sparse.matmul(self.a1_dag, self.a2)
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        # FIXME -- See Steve 5.4
+        #   phi as g(t)
+        #   - as +, but QisKit validates that not being unitary
+        # arg = (g * -1j * a12dag) - (np.conjugate(g * -1j) * a1dag2)
+        # arg = 1j *((g * a12dag) - (g * a1dag2))
+        arg = (g / 2) * (a1dag2 - a12dag)
         return scipy.sparse.linalg.expm(arg)
