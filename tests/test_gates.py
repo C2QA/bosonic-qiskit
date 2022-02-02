@@ -1,5 +1,4 @@
 import random
-
 import c2qa
 import numpy
 import qiskit
@@ -343,3 +342,16 @@ def test_eswap():
     circuit.cv_eswap(phi, qmr[0], qmr[1])
 
     state, result = c2qa.util.simulate(circuit)
+
+def test_pncqr():
+    qmr = c2qa.QumodeRegister(num_qumodes=1)
+    qbr = qiskit.QuantumRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr)
+    zeroQB = numpy.array([1, 0])
+    oneQB = numpy.array([0, 1])
+    circuit.initialize(zeroQB, qbr[0])
+    circuit.cv_initialize(1, qmr[0])
+
+    circuit.cv_pncqr(-numpy.pi / 2, 1, qmr[0], qbr[0], "Y")
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, 1, 4)
