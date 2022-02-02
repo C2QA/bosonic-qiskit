@@ -70,7 +70,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
                 iqm=iqm+1
             qmstr = ["".join(item) for item in qmst.astype(str)]
 
-            print("qubits: ",''.join(qbstr), " qumodes: ",''.join(qmstr), "    with amplitude: ", np.real(res))
+            print("qumodes: ",''.join(qmstr), " qubits: ",''.join(qbstr),"    with amplitude: ", np.real(res))
 
     if (np.abs(np.imag(res)) > 1e-10):
         print("\n imaginary amplitude: ", 1j * np.imag(res))
