@@ -355,3 +355,23 @@ def test_pncqr():
     circuit.cv_pncqr(-numpy.pi / 2, 1, qmr[0], qbr[0], "Y")
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, 1, 4)
+
+def test_cnd_bs_res():
+    numberofmodes = 2
+    qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
+    qbr = qiskit.QuantumRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr)
+    zeroQB = numpy.array([1, 0])
+    oneQB = numpy.array([0, 1])
+    qbinist = 1
+    qubitinitialstate = [[zeroQB, "0"], [oneQB, "1"]]
+    circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
+    circuit.cv_initialize(1, qmr[0])
+
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
+
+    circuit.cv_cnd_bs(0, -numpy.pi, qbr[0], qmr[1], qmr[0])
+
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
