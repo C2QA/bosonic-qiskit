@@ -375,3 +375,27 @@ def test_cnd_bs_res():
 
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
+
+
+def test_cv_cpbs_res():
+    numberofmodes = 2
+    numberofqubitspermode = 1
+    cutoff = 2 ** numberofqubitspermode
+
+    qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes, num_qubits_per_qumode=numberofqubitspermode)
+    qbr = qiskit.QuantumRegister(size=1)
+    cbr = qiskit.ClassicalRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr, cbr)
+
+    diffstallmodes = [1, 0]
+    for i in range(qmr.num_qumodes):
+        circuit.cv_initialize(diffstallmodes[i], qmr[i])
+
+    circuit.h(qbr[0])  # Inititialises the qubit to a plus state (so that pauli Z flips it)
+    print("qubit in superposition")
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
+    circuit.cv_cpbs(numpy.pi, qmr[0], qmr[1], qbr[0])
+    print("qubit flipped and boson moved")
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
