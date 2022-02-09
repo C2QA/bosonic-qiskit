@@ -15,70 +15,6 @@ from c2qa import CVCircuit
 
 from c2qa.operators import CVGate
 
-
-def stateread1(stateop, numberofqubits, numberofmodes, cutoff):
-    """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
-
-    Returns the states of the qubits and the fock states of the qumodes with respective amplitudes.
-    """
-
-    st = np.array(stateop)  # convert state to np.array
-    amp = []
-
-    for i in range(len(st)):
-        res = st[
-            i]  # go through vector element by element and find the positions of the non-zero elements with next if clause
-        if (np.abs(np.real(res)) > 1e-10):
-            pos = i  # position of amplitude (non-zero real)
-            # print("position of non-zero real amplitude: ", pos, " res = ", res)
-            sln = len(st)  # length of the state vector
-
-            ## Find the qubit states
-            qbst = np.empty(numberofqubits, dtype='int')  # stores the qubit state
-            iqb = 0  # counts up until the total number of qubits is reached
-            # which half of the vector the amplitude is in is the state of the first qubit because of how the kronecker product is made
-            while (iqb < numberofqubits):
-                if pos < sln / 2:  # if the amplitude is in the first half of the state vector or remaining statevector
-                    qbst[iqb] = int(0)  # then the qubit is in 0
-                else:
-                    qbst[iqb] = int(1)  # if the amplitude is in the second half then it is in 1
-                    pos = pos - (
-                                sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
-                    # print("pos (sln/2)", pos, "sln ",sln)
-                sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
-                iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
-            qbstr = ["".join(item) for item in qbst.astype(str)]
-
-            ## Find the qumode states
-            qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
-            # print("qmst starting in ", qmst)
-            iqm = 0  # counts up the number of modes
-            # print("position is now: ",pos)
-            while (iqm < numberofmodes):
-                # print("mode counter iqm ", iqm)
-                # print("cutoff ", cutoff)
-                # print("length of vector left to search: sln ", sln)
-                lendiv = sln / cutoff  # length of a division is the length of the statevector divided by the cutoff of the hilbert space (which corresponds to the number of fock states which a mode can have)
-                # print("lendiv (sln/cutoff)", lendiv)
-                val = pos / lendiv
-                # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
-                fock = math.floor(val)
-                # print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
-                qmst[iqm] = fock
-                pos = pos - (
-                            fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
-                # print("new position for next order of depth of Kronecker product/pos: (pos-(fock*lendiv)) ",pos)
-                sln = sln - ((cutoff - 1) * lendiv)  # New length of vector left to search
-                # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
-                iqm = iqm + 1
-            qmstr = ["".join(item) for item in qmst.astype(str)]
-
-            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
-
-    if (np.abs(np.imag(res)) > 1e-10):
-        print("\n imaginary amplitude: ", 1j * np.imag(res))
-
-
 def stateread(stateop, numberofqubits, numberofmodes, cutoff):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
@@ -139,11 +75,13 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
 
             print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
 
-    occupation = map(sum, zip(*amp))
-    print("occupation ", list(occupation))
+    occupation = [sum(i) for i in zip(*amp)]
+    print("occupation hello ", list(occupation))
 
-    if (np.abs(np.imag(res)) > 1e-10):
-        print("\n imaginary amplitude: ", 1j * np.imag(res))
+    # if (np.abs(np.imag(res)) > 1e-10):
+    #     print("\n imaginary amplitude: ", 1j * np.imag(res))
+
+    return occupation
 
 
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
