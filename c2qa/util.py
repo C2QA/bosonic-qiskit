@@ -75,13 +75,13 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
             qmstr = ["".join(item) for item in qmst.astype(str)]
             amp.append((qmst*(np.real(res)**2)).tolist())
 
-            # print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
+            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
 
     occupation = [sum(i) for i in zip(*amp)]
-    # print("occupation hello ", list(occupation))
+    print("occupation modes ", list(occupation))
 
     occupationqb = [sum(i) for i in zip(*ampqb)]
-    print("occupation qb ", list(occupationqb))
+    print("occupation qubits ", list(occupationqb))
 
     # if (np.abs(np.imag(res)) > 1e-10):
     #     print("\n imaginary amplitude: ", 1j * np.imag(res))
