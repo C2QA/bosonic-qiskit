@@ -230,7 +230,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg.tocsc())
 
-    def controlledparity(self):
+    def controlledparity(self, theta):
         """Controlled parity operator
         Rotates the mode if the state of the qubit is such that zQB doesn't give a phase
 
@@ -240,7 +240,7 @@ class CVOperators:
         arg1 = scipy.sparse.kron(zQB, self.N)
         arg2 = scipy.sparse.kron(idQB, self.N)
         arg = arg1 + arg2
-        return scipy.sparse.linalg.expm(1j * (numpy.pi / 2) * arg)
+        return scipy.sparse.linalg.expm(1j * theta * arg)
 
     def snap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
