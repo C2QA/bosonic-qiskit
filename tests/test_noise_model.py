@@ -58,11 +58,16 @@ def test_kraus_operators(capsys):
         photon_loss_rate = 0.01
         time = 10.0
         kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
+        print()
+        print("Kraus Operators")
         print(kraus_operators)
 
         accum = 0j
         for op in kraus_operators:
             accum += np.dot(np.transpose(np.conj(op)), op)
+
+        print("Sum")
+        print(accum)
 
         is_identity = (accum.shape[0] == accum.shape[1]) and np.allclose(accum, np.eye(accum.shape[0]))
         assert is_identity, "Sum is not identity"
