@@ -76,7 +76,7 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    kraus_operator = None,
+    kraus_operators = None,
     error_gates: List[str] = None
 ):
     """Convenience function to simulate using the given backend.
@@ -104,8 +104,8 @@ def simulate(
         )
 
     # Transpile for simulator, with noise error if provided
-    if kraus_operator is not None:
-        error = qiskit.providers.aer.noise.kraus_error(kraus_operator)
+    if kraus_operators is not None:
+        error = qiskit.providers.aer.noise.kraus_error(kraus_operators)
         if not error_gates:
             error_gates = circuit.cv_gate_names
         noise_model = qiskit.providers.aer.noise.NoiseModel()
