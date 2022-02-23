@@ -58,15 +58,16 @@ def test_kraus_operators(capsys):
         photon_loss_rate = 0.01
         time = 10.0
         kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
+        print(kraus_operators)
 
-        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
-        print(kraus)
-        
-        print(f"Is completely positive {kraus.is_cp()}")
-        assert kraus.is_cp()
+        accum = 0j
+        for op in kraus_operators:
+            accum += np.dot(np.transpose(np.conj(op)), op)
 
-        print(f"Is trace preserving {kraus.is_tp()}")
-        assert kraus.is_tp()
+        is_identity = (accum.shape[0] == accum.shape[1]) and np.allclose(accum, np.eye(accum.shape[0]))
+        assert is_identity, "Sum is not identity"
 
-        print(f"Is CPTP {kraus.is_cptp()}")
-        assert kraus.is_cptp()
+        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)        
+        assert kraus.is_cp(), "Is not completely positive"
+        assert kraus.is_tp(), "Is not trace preserving"
+        assert kraus.is_cptp(), "Is not CPTP"
