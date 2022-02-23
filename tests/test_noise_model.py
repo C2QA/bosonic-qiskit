@@ -28,12 +28,17 @@ def test_noise_model(capsys):
         circuit.cv_cnd_d(alpha, -beta, qr[1], qmr[0])
         circuit.cv_cnd_d(-alpha, beta, qr[1], qmr[0])
 
-        prob = 0.01
-        kraus = circuit.ops.a * circuit.ops.a_dag
+        # prob = 0.01
+        # kraus = circuit.ops.a * circuit.ops.a_dag
         # kraus_operator = [circuit.ops.a.toarray().tolist(), circuit.ops.a_dag.toarray().tolist()]
 
-        theta = np.pi / 2
-        kraus_operator = [[[1, 0],[0, math.sin(theta)]], [[0, math.cos(theta)],[0, 0]]]
+        # theta = np.pi / 2
+        # kraus_operator = [[[1, 0],[0, math.sin(theta)]], [[0, math.cos(theta)],[0, 0]]]
+
+        num_photons = circuit.cutoff - 1
+        photon_loss_rate = 0.01
+        time = 10.0
+        kraus_operator = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
 
         print("a")
         print(circuit.ops.a.toarray())
