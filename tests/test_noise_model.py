@@ -60,7 +60,8 @@ def test_kraus_operators(capsys):
         kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
         print()
         print("Kraus Operators")
-        print(kraus_operators)
+        for op in kraus_operators:
+            print(op)
 
         accum = 0j
         for op in kraus_operators:
