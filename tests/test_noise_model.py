@@ -63,6 +63,9 @@ def test_kraus_operators(capsys):
         for op in kraus_operators:
             print(op)
 
+        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)        
+        assert kraus.is_cp(), "Is not completely positive"
+
         accum = 0j
         for op in kraus_operators:
             accum += np.dot(np.transpose(np.conj(op)), op)
@@ -73,7 +76,5 @@ def test_kraus_operators(capsys):
         is_identity = (accum.shape[0] == accum.shape[1]) and np.allclose(accum, np.eye(accum.shape[0]))
         assert is_identity, "Sum is not identity"
 
-        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)        
-        assert kraus.is_cp(), "Is not completely positive"
         assert kraus.is_tp(), "Is not trace preserving"
         assert kraus.is_cptp(), "Is not CPTP"
