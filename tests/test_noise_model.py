@@ -55,8 +55,8 @@ def test_kraus_operators(capsys):
         circuit = c2qa.CVCircuit(qmr, qr)
         
         num_photons = circuit.cutoff
-        photon_loss_rate = 0.01
-        time = 10.0
+        photon_loss_rate = 0.1
+        time = 1.0
         kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)        
@@ -68,16 +68,16 @@ def test_kraus_operators(capsys):
         # for op in kraus_operators:
         #     print(op)
         accum = 0j
-        for op in kraus_operators:
-            print("op")
+        for index, op in enumerate(kraus_operators):
+            print(f"op {index}")
             print(op)
            
             op_dag = np.transpose(np.conj(op))
-            print("op_dag")
+            print(f"op_dag {index}")
             print(op_dag)
 
             op_dot = np.dot(op_dag, op)
-            print("op_dot")
+            print(f"op_dot {index}")
             print(op_dot)
 
             accum += op_dot
