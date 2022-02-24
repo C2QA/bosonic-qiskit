@@ -77,16 +77,16 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
 
             print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
 
-    occupation = [sum(i) for i in zip(*amp)]
-    print("occupation modes ", list(occupation))
+    occupation_cv = [sum(i) for i in zip(*amp)]
+    print("occupation modes ", list(occupation_cv))
 
-    occupationqb = [sum(i) for i in zip(*ampqb)]
-    print("occupation qubits ", list(occupationqb))
+    occupation_qb = [sum(i) for i in zip(*ampqb)]
+    print("occupation qubits ", list(occupation_qb))
 
     # if (np.abs(np.imag(res)) > 1e-10):
     #     print("\n imaginary amplitude: ", 1j * np.imag(res))
 
-    return occupationqb
+    return [occupation_cv,occupation_qb]
 
 
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
