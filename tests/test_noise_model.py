@@ -38,7 +38,7 @@ def test_noise_model(capsys):
         num_photons = circuit.cutoff
         photon_loss_rate = 0.01
         time = 10.0
-        kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
+        kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops)
 
         print("kraus")
         print(kraus_operators)
@@ -57,7 +57,7 @@ def test_kraus_operators(capsys):
         num_photons = circuit.cutoff
         photon_loss_rate = 0.1
         time = 1.0
-        kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops.a, circuit.ops.a_dag)
+        kraus_operators = c2qa.kraus.calculate_kraus(num_photons, photon_loss_rate, time, circuit.ops)
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)        
         assert kraus.is_cp(), "Is not completely positive"
