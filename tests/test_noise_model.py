@@ -80,3 +80,33 @@ def test_kraus_operators(capsys):
 
         assert kraus.is_tp(), "Is not trace preserving"
         assert kraus.is_cptp(), "Is not CPTP"
+
+
+def test_animate_noise_model(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=5)
+        qr = qiskit.QuantumRegister(size=1)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+        circuit.cv_initialize(1, qmr[0])
+
+        dist = 3        
+        circuit.cv_d(dist, qmr[0])
+
+        photon_loss_rate = 0.1
+        time = 10.0
+        kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
+
+        wigner_filename = "tests/nose_model.gif"
+        c2qa.util.animate_wigner(
+            circuit,
+            qubit=qr[0],
+            cbit=cr[0],
+            file=wigner_filename,
+            axes_min=-9,
+            axes_max=9,
+            animation_segments=25,
+            processes=1,
+            kraus_operators=kraus_operators
+        )

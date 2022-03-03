@@ -347,6 +347,9 @@ def animate_wigner(
     axes_max: int = 6,
     axes_steps: int = 200,
     processes: int = None,
+    kraus_operators = None,
+    error_gates: List[str] = None
+
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -449,11 +452,11 @@ def animate_wigner(
     if processes == 1:
         w_fock = []
         for circuit in circuits:
-            w_fock.append(simulate_wigner(circuit, xvec, shots))
+            w_fock.append(simulate_wigner(circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates))
     else:
         pool = multiprocessing.Pool(processes)
         w_fock = pool.starmap(
-            simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
+            simulate_wigner, ((circuit, xvec, shots, kraus_operators, error_gates) for circuit in circuits)
         )
         pool.close()
 
@@ -516,9 +519,15 @@ def _animate(frame, *fargs):
         plt.savefig(f"{file}_frames/frame_{frame}.png")
 
 
-def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
+def simulate_wigner(
+    circuit: CVCircuit, 
+    xvec: np.ndarray, 
+    shots: int,
+    kraus_operators = None,
+    error_gates: List[str] = None
+):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
-    state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
+    state, _ = simulate(circuit, shots=shots, conditional_state_vector=True, kraus_operators=kraus_operators, error_gates=error_gates)
     even_state = state["0x0"]
     # odd_state = state["0x1"]
 
