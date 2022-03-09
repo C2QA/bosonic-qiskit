@@ -94,11 +94,11 @@ def test_animate_noise_model(capsys):
         dist = 3        
         circuit.cv_d(dist, qmr[0])
 
-        photon_loss_rate = 0.1
+        photon_loss_rate = 1
         time = 10.0
         kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
 
-        wigner_filename = "tests/nose_model.gif"
+        wigner_filename = "tests/noise_model.gif"
         c2qa.util.animate_wigner(
             circuit,
             qubit=qr[0],
