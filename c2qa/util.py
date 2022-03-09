@@ -22,8 +22,8 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
     """
 
     st = np.array(stateop)  # convert state to np.array
-    amp = []
-    ampqb = []
+    amp_cv = []
+    amp_qb = []
 
     for i in range(len(st)):
         res = st[
@@ -48,7 +48,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
                 sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
             qbstr = ["".join(item) for item in qbst.astype(str)]
-            ampqb.append((qbst * (np.real(res) ** 2)).tolist())
+            amp_qb.append((qbst * (np.real(res) ** 2)).tolist())
 
             ## Find the qumode states
             qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
@@ -73,14 +73,14 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
                 iqm = iqm + 1
             qmstr = ["".join(item) for item in qmst.astype(str)]
-            amp.append((qmst*(np.real(res)**2)).tolist())
+            amp_cv.append((qmst*(np.real(res)**2)).tolist())
 
             print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
 
-    occupation_cv = [sum(i) for i in zip(*amp)]
+    occupation_cv = [sum(i) for i in zip(*amp_cv)]
     print("occupation modes ", list(occupation_cv))
 
-    occupation_qb = [sum(i) for i in zip(*ampqb)]
+    occupation_qb = [sum(i) for i in zip(*amp_qb)]
     print("occupation qubits ", list(occupation_qb))
 
     # if (np.abs(np.imag(res)) > 1e-10):
