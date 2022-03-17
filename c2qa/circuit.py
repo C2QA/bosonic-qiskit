@@ -91,8 +91,8 @@ class CVCircuit(QuantumCircuit):
             raise ValueError("The given Fock state is greater than the cutoff.")
 
         for qumode in modes:
-            value = np.zeros((self.qmregs[-1].cutoff,))
-            value[fock_state] = 1
+            value = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+            value[fock_state] = 1 +0j
 
             super().initialize(value, qumode)
 
