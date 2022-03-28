@@ -107,9 +107,11 @@ def simulate(
     if kraus_operators is not None:
         error = qiskit.providers.aer.noise.kraus_error(kraus_operators)
         if not error_gates:
-            error_gates = circuit.cv_gate_names
+            error_gates = circuit.cv_gate_labels
         noise_model = qiskit.providers.aer.noise.NoiseModel()
         noise_model.add_quantum_error(error, error_gates, circuit.qumode_qubits)
+        noise_model.add_basis_gates("unitary")
+        # print(noise_model.basis_gates)
         simulator = qiskit.providers.aer.AerSimulator(noise_model=noise_model)
     else:
         simulator = qiskit.providers.aer.AerSimulator()

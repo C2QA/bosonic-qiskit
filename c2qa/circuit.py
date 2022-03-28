@@ -80,12 +80,12 @@ class CVCircuit(QuantumCircuit):
         return qubits
 
     @property
-    def cv_gate_names(self):
+    def cv_gate_labels(self):
         """All the CV gate names on the current circuit"""
         cv_gates = []
         for gate in self.data:
             if isinstance(gate[0], CVGate):
-                cv_gates.append(gate[0].name)
+                cv_gates.append(gate[0].label)
         return cv_gates
 
     def cv_initialize(self, fock_state, qumodes):
