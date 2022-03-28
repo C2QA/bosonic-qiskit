@@ -9,27 +9,19 @@ import qiskit
 
 def test_noise_model(capsys):
     with capsys.disabled():
-        num_qumodes = 1
-        num_qubits_per_qumode = 2
-        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
-        qr = qiskit.QuantumRegister(2)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=5)
+        qr = qiskit.QuantumRegister(size=1)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
 
-        for qumode in range(num_qumodes):
-            circuit.cv_initialize(0, qmr[qumode])
+        circuit.cv_initialize(1, qmr[0])
 
-        circuit.initialize([0, 1], qr[1])  # qr[0] will init to zero
-
-        alpha = random.random()
-        beta = random.random()
-        circuit.cv_cnd_d(alpha, -beta, qr[0], qmr[0])
-        circuit.cv_cnd_d(-alpha, beta, qr[0], qmr[0])
-
-        circuit.cv_cnd_d(alpha, -beta, qr[1], qmr[0])
-        circuit.cv_cnd_d(-alpha, beta, qr[1], qmr[0])
+        dist = 3        
+        circuit.cv_d(dist, qmr[0])
+        # circuit.delay(10)
 
         photon_loss_rate = 0.01
-        time = 10.0
+        time = 5.0
         kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
 
         print("kraus")
@@ -93,9 +85,10 @@ def test_animate_noise_model(capsys):
 
         dist = 3        
         circuit.cv_d(dist, qmr[0])
+        # circuit.delay(10)
 
-        photon_loss_rate = 1
-        time = 10.0
+        photon_loss_rate = 0.01
+        time = 5.0
         kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
 
         wigner_filename = "tests/noise_model.gif"
@@ -106,7 +99,7 @@ def test_animate_noise_model(capsys):
             file=wigner_filename,
             axes_min=-9,
             axes_max=9,
-            animation_segments=25,
+            animation_segments=50,
             processes=1,
             kraus_operators=kraus_operators
         )
