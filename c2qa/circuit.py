@@ -81,12 +81,14 @@ class CVCircuit(QuantumCircuit):
 
     @property
     def cv_gate_labels(self):
-        """All the CV gate names on the current circuit"""
-        cv_gates = []
-        for gate in self.data:
-            if isinstance(gate[0], CVGate):
-                cv_gates.append(gate[0].label)
-        return cv_gates
+        """All the CV gate names on the current circuit. These will either be instances of CVGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate."""
+        cv_gates = set()
+        for instruction, qargs, cargs in self.data:
+            if isinstance(instruction, CVGate):
+                cv_gates.add(instruction.label)
+            elif hasattr(instruction, "cv_conditional") and instruction.cv_conditional:
+                cv_gates.add(instruction.label)
+        return list(cv_gates)
 
     def cv_initialize(self, fock_state, qumodes):
         """Initialize the qumode to a Fock state.
@@ -140,7 +142,7 @@ class CVCircuit(QuantumCircuit):
         sub_circ.append(CVGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1), qargs)
 
         # Create a single instruction for the conditional gate, flag it for later processing
-        inst = sub_circ.to_instruction()
+        inst = sub_circ.to_instruction(label=name)
         inst.cv_conditional = True
         inst.num_qubits_per_qumode = num_qubits_per_qumode
         inst.num_qumodes = num_qumodes
