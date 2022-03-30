@@ -121,16 +121,16 @@ def simulate(
     result = simulator.run(circuit_compiled, shots=shots).result()
 
     # The user may have added their own circuit.save_statevector
-    try:
-        if conditional_state_vector or per_shot_state_vector:
-            # Will get a dictionary of state vectors, one for each classical register value
-            state = result.data()["statevector"]
-        else:
-            state = Statevector(result.get_statevector(circuit_compiled))
-    except Exception:
-        state = (
-            None  # result.get_statevector() will fail if add_save_statevector is false
-        )
+    state = None
+    if len(result.results):
+        try:
+            if conditional_state_vector or per_shot_state_vector:
+                # Will get a dictionary of state vectors, one for each classical register value
+                state = result.data()["statevector"]
+            else:
+                state = Statevector(result.get_statevector(circuit_compiled))
+        except Exception:
+            state = None  # result.get_statevector() will fail if add_save_statevector is false
 
     if add_save_statevector:
         circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
@@ -462,6 +462,9 @@ def animate_wigner(
         )
         pool.close()
 
+    # Remove None values in w_fock if simulation didn't produce results
+    w_fock = [i for i in w_fock if i is not None]
+
     # Animate w_fock Wigner function results
     # Create empty plot to animate
     fig, ax = plt.subplots(constrained_layout=True)
@@ -470,7 +473,7 @@ def animate_wigner(
     anim = matplotlib.animation.FuncAnimation(
         fig=fig,
         func=_animate,
-        frames=len(circuits),
+        frames=len(w_fock),
         fargs=(fig, ax, xvec, w_fock, file),
         interval=200,
         repeat=True,
@@ -530,11 +533,18 @@ def simulate_wigner(
 ):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
     state, _ = simulate(circuit, shots=shots, conditional_state_vector=True, kraus_operators=kraus_operators, error_gates=error_gates)
-    even_state = state["0x0"]
-    # odd_state = state["0x1"]
+    
+    if state:
+        even_state = state["0x0"]
+        # odd_state = state["0x1"]
 
-    density_matrix = cv_partial_trace(circuit, even_state)
-    return _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+        density_matrix = cv_partial_trace(circuit, even_state)
+        wigner_result = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+    else:
+        print("WARN: No state vector returned by simulation -- unable to calculate Wigner function!")
+        wigner_result = None
+    
+    return wigner_result
 
 
 def wigner(
