@@ -204,6 +204,26 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def cpbs_z2vqe(self, g):
+        """Controlled phase two-mode beam splitter
+
+        Args:
+            g (real): real phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+
+        # NOT CHANGED YET - this is a copy of the cpbs function.
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        argm = (g / 2) * (a1dag2 - a12dag)
+        arg = scipy.sparse.kron(zQB, argm)
+
+        return scipy.sparse.linalg.expm(arg)
+
     def r(self, theta):
         """Phase space rotation operator
 

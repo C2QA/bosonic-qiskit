@@ -266,6 +266,22 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.cpbs, phi)
         self.append(CVGate(data=operator, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
+    def cv_cpbs_z2vqe(self, phi, qumode_a, qumode_b, qubit_ancilla):
+        """Controlled phase two-mode beam splitter
+
+        Args:
+            phi (real): phase
+            qubit_ancilla (Qubit): QisKit control Qubit
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.cpbs_z2vqe, phi)
+        self.append(CVGate(data=operator, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+
     def cv_r(self, phi, qumode):
         """Phase space rotation gate.
 
