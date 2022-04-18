@@ -18,7 +18,7 @@ from c2qa.operators import CVGate
 def stateread(stateop, numberofqubits, numberofmodes, cutoff):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
-    Returns the states of the qubits and the fock states of the qumodes with respective amplitudes.
+    Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
 
     st = np.array(stateop)  # convert state to np.array
