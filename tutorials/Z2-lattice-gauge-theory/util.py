@@ -10,9 +10,10 @@ import matplotlib.pyplot as plt
 from quspin.tools.measurements import obs_vs_time  # t_dep measurements
 
 
-def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis):
-    hop = [[hopping_strength, i, i, i + 1] for i in range(L_modes - 1)]
-    # hop+=[[-1.0,L_modes-1,L_modes-1,0]]
+def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, periodicBC=True):
+    hop = [[hopping_strength, i, i, (i + 1)%L_modes] for i in range(L_modes)]
+    #if periodicBC==True:
+    #    hop+=[[hopping_strength,L_modes,L_modes,0]]
     field = [[field_strength, i] for i in range(L_spin)]
     static = [["z|+-", hop], ["z|-+", hop], ["x|", field]]
     ###### setting up operators
@@ -128,7 +129,7 @@ def pairing_length(hopping_strength, field_strength, Nsites, psi0_notgaugefixed,
     plt.show()
 
 
-def energy_gap(set, lab, min, max, L_modes, L_spin, P_sparse):
+def energy_gap(set, lab, min, max, L_modes, L_spin, P_sparse, basis, Nbosons):
     numberofvalues = 50
     vals=np.linspace(min,max,numberofvalues)
 
@@ -165,8 +166,9 @@ def energy_gap(set, lab, min, max, L_modes, L_spin, P_sparse):
         energy1[1][i]=E[1]
 
     set.append(deltas)
+    lab.append(str(L_modes) + " sites, " + str(Nbosons) + " bosons")
 
-    return [set, energy0, energy1]
+    return [set, energy0, energy1, lab]
 
 def build_state_manually(spins_index, bosons_index, basis_spin, basis_boson, ):
     ##### define initial state #####
@@ -245,6 +247,19 @@ def flip(s):
         return '+'
 
 
+def up(s):
+    sint = int(s)
+    return np.sqrt(sint + 1), str(sint + 1)
+
+
+def down(s):
+    sint = int(s)
+    if sint <= 0:
+        return 0, '0'
+    else:
+        return np.sqrt(sint), str(sint - 1)
+
+
 def isodd(n):
     return int(n) % 2 == True
 
@@ -253,14 +268,14 @@ def binom(n, k):
     return np.math.factorial(n) // np.math.factorial(k) // np.math.factorial(n - k)
 
 
-def gaugeFixedBasis(Nsites, Nbosons):
+def gaugeFixedBasis(Nsites, Nbosons, periodicBC):
+    import copy
     bosonStates = []
     gaugefixedStates = []
     # Let's first list out all possible boson occupations.
     # We can do this by looping through all numbers and putting it into base Nbosons
     for number in np.arange((Nbosons + 1) ** Nsites):
         bosonString = np.base_repr(number, base=Nbosons + 1)
-        # print(bosonString)
         bosonString = '0' * (Nsites - len(bosonString)) + bosonString
 
         # check total boson number
@@ -283,17 +298,29 @@ def gaugeFixedBasis(Nsites, Nbosons):
             gaugefixedstate += thislink
             lastlink = thislink
         gaugefixedstate += state[-1]
+        #         if periodicBC:
+        # add final link
+        thisn = state[-1]
+        if isodd(thisn):
+            thislink = flip(lastlink)
+        else:
+            thislink = lastlink
+        gaugefixedstate += thislink
         gaugefixedStates.append(gaugefixedstate)
-
-    print(gaugefixedStates)
+    # Above I made a choice. For OBC, this is fine, but for PBC there is a symmetry where you flip every single link. So we have to add those as well
+    if periodicBC:
+        subset_states = copy.deepcopy(gaugefixedStates)
+        for state in subset_states:
+            mirror = ''
+            for c, ind in zip(state, np.arange(len(state))):
+                if ind % 2:  # if odd
+                    mirror += flip(c)
+                else:
+                    mirror += c
+            gaugefixedStates.append(mirror)
     return gaugefixedStates
 
-
-# Now that we have the gauge fixed basis vectors, we could proceed in a few different ways. The harder
-# thing would be to build the Hamiltonian and all operators explicitly in this basis. While probably
-# more efficient for very large systems, we could also just build projectors that take us from
-# the full Hilbert space down to the gauge fixed Hilbert space. Let's do that here in Qutip:
-
+#         # START CHANGE ELLA
 def siteState(c, Nbosons):
     # print("site state ", basis(Nbosons + 1, int(c)))
     return basis(Nbosons + 1, np.abs(Nbosons-int(c)))
@@ -305,25 +332,25 @@ def linkState(c):
         return (basis(2, 0) + basis(2, 1)).unit()
     elif c == '-':
         return (basis(2, 0) - basis(2, 1)).unit()
+#         # END CHANGE ELLA
 
-
-def Projector_to_gauge_peserving_basis(Nsites, Nbosons):
-    basisStatesList = gaugeFixedBasis(Nsites, Nbosons)
-    # print(basisStatesList)
+def gaussProjector(Nsites, Nbosons):
+    basisStates = gaugeFixedBasis(Nsites, Nbosons, periodicBC=True)
     # Build basis vectors in full Hilbert space
     fullBasis = []
-    for state in basisStatesList:  # Loop through each basis state
+    for state in basisStates:  # Loop through each basis state
         basisVector = []
         for ind in np.arange(len(state)):  # Loop through each site/link from left to right
             c = state[ind]
             # print("c ",c)
             if isodd(ind):
                 basisVector.append(linkState(c))
+        # START CHANGE ELLA
         for ind in np.arange(len(state)):  # Loop through each site/link from left to right
             c = state[ind]
             if ind % 2 == 0:
                 basisVector.append(siteState(c, Nbosons))
-
+        # END CHANGE ELLA
         # Now take tensor product to get the full basisVector
         fullBasis.append(tensor(basisVector))
 
@@ -335,3 +362,103 @@ def Projector_to_gauge_peserving_basis(Nsites, Nbosons):
     P_sparse = P_gaugefixed.data
 
     return P_sparse
+
+# Kevin old code
+
+# def flip(s):
+#     if s == '+':
+#         return '-'
+#     elif s == '-':
+#         return '+'
+#
+#
+# def isodd(n):
+#     return int(n) % 2 == True
+#
+#
+# def binom(n, k):
+#     return np.math.factorial(n) // np.math.factorial(k) // np.math.factorial(n - k)
+#
+#
+# def gaugeFixedBasis(Nsites, Nbosons):
+#     bosonStates = []
+#     gaugefixedStates = []
+#     # Let's first list out all possible boson occupations.
+#     # We can do this by looping through all numbers and putting it into base Nbosons
+#     for number in np.arange((Nbosons + 1) ** Nsites):
+#         bosonString = np.base_repr(number, base=Nbosons + 1)
+#         # print(bosonString)
+#         bosonString = '0' * (Nsites - len(bosonString)) + bosonString
+#
+#         # check total boson number
+#         if sum([int(c) for c in bosonString]) == Nbosons:
+#             bosonStates.append(bosonString)
+#
+#     # Now loop through each state and insert appropriate qubit state which fixes the gauge condition to +1
+#     for state in bosonStates:
+#         gaugefixedstate = ''
+#         for site in np.arange(len(state) - 1):
+#             thisn = state[site]
+#             gaugefixedstate += thisn
+#             if site == 0:  # For the first site
+#                 thislink = '-' * (isodd(thisn)) + '+' * (not isodd(thisn))
+#             else:  # For all other sites
+#                 if isodd(thisn):
+#                     thislink = flip(lastlink)
+#                 else:
+#                     thislink = lastlink
+#             gaugefixedstate += thislink
+#             lastlink = thislink
+#         gaugefixedstate += state[-1]
+#         gaugefixedStates.append(gaugefixedstate)
+#
+#     print(gaugefixedStates)
+#     return gaugefixedStates
+#
+#
+# # Now that we have the gauge fixed basis vectors, we could proceed in a few different ways. The harder
+# # thing would be to build the Hamiltonian and all operators explicitly in this basis. While probably
+# # more efficient for very large systems, we could also just build projectors that take us from
+# # the full Hilbert space down to the gauge fixed Hilbert space. Let's do that here in Qutip:
+#
+# def siteState(c, Nbosons):
+#     # print("site state ", basis(Nbosons + 1, int(c)))
+#     return basis(Nbosons + 1, np.abs(Nbosons-int(c)))
+#
+#
+# def linkState(c):
+#     if c == '+':
+#         # print("link state ", (basis(2, 0) + basis(2, 1)).unit())
+#         return (basis(2, 0) + basis(2, 1)).unit()
+#     elif c == '-':
+#         return (basis(2, 0) - basis(2, 1)).unit()
+#
+#
+# def gaussProjector(Nsites, Nbosons):
+#     basisStatesList = gaugeFixedBasis(Nsites, Nbosons)
+#     # print(basisStatesList)
+#     # Build basis vectors in full Hilbert space
+#     fullBasis = []
+#     for state in basisStatesList:  # Loop through each basis state
+#         basisVector = []
+#         for ind in np.arange(len(state)):  # Loop through each site/link from left to right
+#             c = state[ind]
+#             # print("c ",c)
+#             if isodd(ind):
+#                 basisVector.append(linkState(c))
+#         for ind in np.arange(len(state)):  # Loop through each site/link from left to right
+#             c = state[ind]
+#             if ind % 2 == 0:
+#                 basisVector.append(siteState(c, Nbosons))
+#
+#         # Now take tensor product to get the full basisVector
+#         fullBasis.append(tensor(basisVector))
+#
+#     # Now build projectors onto the gauge fixed Hilbert space
+#     P_gaugefixed = 0
+#     for i in np.arange(len(fullBasis)):
+#         P_gaugefixed += basis(len(fullBasis), i) * fullBasis[i].dag()
+#
+#     P_sparse = P_gaugefixed.data
+#
+#     return P_sparse
