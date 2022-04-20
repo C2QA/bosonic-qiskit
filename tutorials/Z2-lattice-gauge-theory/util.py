@@ -8,7 +8,21 @@ from quspin.basis import tensor_basis, spinless_fermion_basis_1d  # Hilbert spac
 from quspin.basis import spin_basis_1d  # Hilbert space spin basis
 import matplotlib.pyplot as plt
 from quspin.tools.measurements import obs_vs_time  # t_dep measurements
+from quspin.tools.evolution import evolve  # ODE evolve tool
 
+
+
+def build_H_paired_hopping(hopping_strength, L_modes, basis_boson, periodicBC=True):
+    hop = [[hopping_strength, i, i, (i + 1)%L_modes, (i + 1)%L_modes] for i in range(L_modes)]
+    # if periodicBC==True:
+    #    hop+=[[hopping_strength,L_modes,L_modes,0]]
+    static = [["++--", hop], ["--++", hop]]
+    ###### setting up operators
+    # set up hamiltonian dictionary and observable (imbalance I)
+    no_checks = dict(check_pcon=False, check_symm=False, check_herm=False)
+    H = hamiltonian(static, [], basis=basis_boson, **no_checks)
+
+    return H
 
 def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, periodicBC=True):
     hop = [[hopping_strength, i, i, (i + 1)%L_modes] for i in range(L_modes)]
@@ -129,6 +143,84 @@ def pairing_length(hopping_strength, field_strength, Nsites, psi0_notgaugefixed,
     plt.show()
 
 
+def energy_scaling():
+    Nsites = 4
+    Nbosons = 4
+    ###### parameters
+    L_spin = Nsites
+    L_modes = Nsites  # system size
+    cutoff = Nbosons + 1  # sites+2
+    h = 1  # field strength
+    t = 1
+
+    P_sparse = gaussProjector(Nsites, Nbosons)
+    basis_spin = spin_basis_1d(L=L_spin)
+    basis_boson = boson_basis_1d(L=L_modes, sps=cutoff)
+    basis = tensor_basis(basis_spin, basis_boson)
+
+
+    set = []
+    lab = []
+    lab.append(str(L_modes) + " sites, " + str(Nbosons) + " bosons")
+
+    ###### parameters
+    min = -5
+    max = 0
+    numberofvalues = 100
+    vals = np.linspace(min, max, numberofvalues)
+    # vals=np.logspace(-2,2,numberofvalues)
+
+    # Different system sizes and number of bosons - choose number of bosons to be equal to the system size
+
+    deltas = np.zeros((2, len(vals)))
+    energy0 = np.zeros((2, len(vals)))
+    energy1 = np.zeros((2, len(vals)))
+    for i in range(len(vals)):
+        val = vals[i]
+        hopping_strength = val
+        field_strength = 1
+        Hgaugefixed = build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, True)
+        E, V = eigsh(Hgaugefixed, k=2, which='SA')
+        delta = np.abs(E[1] - E[0])
+        if val == 0:
+            print("E[0] ", E[0], " E[1] ", E[1], " delta ", delta)
+        deltas[0][i] = val
+        deltas[1][i] = delta
+
+        energy0[0][i] = val
+        energy0[1][i] = E[0]
+
+        energy1[0][i] = val
+        energy1[1][i] = E[1]
+
+    set.append(deltas)
+
+    xlabelplot = r"$|J/\lambda|$"
+    plt.title("Z2LGT Energy gaps")
+    for i in range(len(set)):
+        plt.plot(energy0[0], energy0[1], label="E0 " + lab[i])
+    for i in range(len(set)):
+        plt.plot(energy1[0], energy1[1], label="E1 " + lab[i])
+    plt.xlabel(xlabelplot)
+    plt.ylabel("Eigenvalue")
+    plt.legend()
+    plt.show()
+
+    plt.title("Z2LGT Energy gap")
+    for i in range(len(set)):
+        plt.plot(np.abs(set[i][0]), np.abs(set[i][1]), label=lab[i])
+        plt.plot(np.abs(set[i][0]), np.abs(set[i][0] ** (2)), label="$x^{2}$")
+        plt.plot(np.abs(set[i][0]), np.abs(set[i][0] ** (1)), label="$x$")
+    plt.xlabel(xlabelplot)
+    plt.ylabel("Energy gap")
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.ylim(10 ** (-3))
+    plt.xlim(0.05)
+    plt.legend()
+    plt.show()
+
+
 def energy_gap(set, lab, min, max, L_modes, L_spin, P_sparse, basis, Nbosons):
     numberofvalues = 50
     vals=np.linspace(min,max,numberofvalues)
@@ -239,6 +331,89 @@ def check_spin_value(psi, which_spin_to_check):
     return res
 
 
+def evolve_occupations(L_modes, L_spin, psi1):
+    res = []
+    N_timesteps = 20
+    t0s = np.logspace(-3, 1, N_timesteps)
+    for t0 in t0s:
+        hop = [[-1.0, i, i, i + 1] for i in range(L_modes - 1)]
+        field = [[-1, i] for i in range(L_spin)]
+        no_checks = dict(check_pcon=False, check_symm=False, check_herm=False)
+        static = [["x|", field], ["z|+-", hop], ["z|-+", hop]]
+        dynamic = []
+        H = hamiltonian(static, dynamic, basis=basis, **no_checks)
+        H = H.tocsr()
+
+        def adiabatic(time, phi):
+            phi_dot = -1j * H @ phi
+            return phi_dot
+
+        # psi_t=H.evolve(psi,0.0,[t0],iterate=False,rtol=1E-9,atol=1E-9)
+        psi_t = evolve(psi1, 0.0, [t0], adiabatic, iterate=False, rtol=1E-9, atol=1E-9)
+
+        obs_args = {"basis": basis, "check_herm": False, "check_symm": False}
+        n = hamiltonian([["|n", [[1.0, 1]]]], [], dtype=np.float64, **obs_args)
+        Obs_t = obs_vs_time(psi_t, t0s, {"n": n})
+        O_n = Obs_t["n"]
+        print(O_n)
+
+        ##### plot results #####
+        str_n = "$\\langle n\\rangle,$"
+        fig = plt.figure()
+        plt.plot(t0s, np.real(O_n), "k", linewidth=1, label=str_n)
+        plt.xlabel("$t/T$", fontsize=18)
+        # plt.ylim([-1.1,1.4])
+        plt.legend(loc="upper right", ncol=5, columnspacing=0.6, numpoints=4)
+        plt.tick_params(labelsize=16)
+        plt.grid(True)
+        plt.tight_layout()
+        # plt.savefig('example3.pdf', bbox_inches='tight')
+        plt.show()
+        # plt.close()
+
+    # plt.pcolormesh(np.arange(Nsites + 1) - Nsites // 2 - 0.5, np.arange(N_timesteps + 1) * dt, occupations[0],
+    #                cmap=matplotlib.cm.Blues, linewidth=0, rasterized=True)
+    # plt.title("Mode occupation: gauge field flipping dominates")
+    # plt.xlabel("Modes")
+    # plt.ylabel("Time")
+    # plt.colorbar()
+
+def testing_functions(Nsites):
+    for l in range(Nsites):
+        for i in range(Nsites-l):
+            hop=[1.0]
+            for add in range(i):
+                hop.append(l+add)
+            hop.append(l)
+            hop.append(l+i)
+            print(hop)
+
+    resli = np.zeros([Nsites, Nsites])
+    for l in range(Nsites):
+        for i in range(Nsites - l):
+            hop = [1.0]
+            for add in range(i):
+                hop.append(l + add)
+            hop.append(l)
+            hop.append(l + i)
+            resli[l][i] = i
+
+    resli = np.delete(resli, 0, 1)
+
+    resli = np.delete(resli, -1, 0)
+
+    plt.imshow(np.flip(resli, 0))
+    plt.colorbar()
+    plt.show()
+
+    for i in range(Nsites):
+        for j in range(Nsites):
+            pairing = [1.0]
+            pairing.append(i)
+            pairing.append(i)
+            pairing.append(j)
+            pairing.append(j)
+            print(pairing)
 
 def flip(s):
     if s == '+':
