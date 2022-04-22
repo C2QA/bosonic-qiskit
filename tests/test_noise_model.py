@@ -5,6 +5,7 @@ import random
 import c2qa
 import numpy as np
 import qiskit
+from qiskit.transpiler import PassManager
 
 
 def test_noise_model(capsys):
@@ -111,3 +112,21 @@ def test_animate_noise_model(capsys):
             processes=1,
             kraus_operators=kraus_operators
         )
+
+
+def test_photon_loss_pass(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        num_qubits_per_qumode = 2
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qr = qiskit.QuantumRegister(2)
+        circuit = c2qa.CVCircuit(qmr, qr)
+        
+        for _ in range(10):
+            circuit.delay(duration=10, unit="s", qarg=qmr[0])
+        
+        photon_loss_rate = 0.1
+        pm = PassManager(c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit))
+        circuit = pm.run(circuit)    
+        
+        state, result = c2qa.util.simulate(circuit)
