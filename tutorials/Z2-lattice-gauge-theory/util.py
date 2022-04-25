@@ -12,18 +12,6 @@ from quspin.tools.evolution import evolve  # ODE evolve tool
 
 
 
-def build_H_paired_hopping(hopping_strength, L_modes, basis_boson, periodicBC=True):
-    hop = [[hopping_strength, i, i, (i + 1)%L_modes, (i + 1)%L_modes] for i in range(L_modes)]
-    # if periodicBC==True:
-    #    hop+=[[hopping_strength,L_modes,L_modes,0]]
-    static = [["++--", hop], ["--++", hop]]
-    ###### setting up operators
-    # set up hamiltonian dictionary and observable (imbalance I)
-    no_checks = dict(check_pcon=False, check_symm=False, check_herm=False)
-    H = hamiltonian(static, [], basis=basis_boson, **no_checks)
-
-    return H
-
 def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, periodicBC=True):
     hop = [[hopping_strength, i, i, (i + 1)%L_modes] for i in range(L_modes)]
     #if periodicBC==True:
@@ -38,6 +26,96 @@ def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, 
     Hgaugefixed = P_sparse @ H_sparse @ P_sparse.T.conj()
 
     return Hgaugefixed
+
+def free_boson_limit(L_modes, L_spin, P_sparse, Nsites, basis):
+    # ED Z2 LGT
+    elist = []
+    hopping_strength = -1
+    field_strength = 0
+    Hgaugefixed = build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, True)
+    # E, psi0 = eigsh(Hgaugefixed, k=20, which='SA')
+    E, psi0 = np.linalg.eigh(Hgaugefixed.todense())
+    elist.append(E)
+
+    # Analytical free bosons
+    elist_freebosons = []
+    E_k = -2 * hopping_strength * np.cos(2 * np.pi * np.arange(0, L_modes, 1) / L_modes)
+    elist_freebosons.append(E_k)
+
+    # print(np.sort(E))
+    # print(np.sort(E_k))
+    # print(E[1]-E[0])
+    # print(psi0)
+    # psi0[:,6]
+
+    for i in range(len(elist)):
+        plt.plot(range(len(elist[i])), elist[i], ".", label="ED Z2LGT no field, 1 boson")
+        plt.plot(range(len(elist_freebosons[i])), np.flip(elist_freebosons[i]), "x", label="Analytical, 1 free boson")
+    # plt.xlabel("ED: Eigenenergy number/ Analytical: Momentum ($2\pi/L$)")
+    plt.ylabel("Eigenenergy")
+    plt.xlabel("ED: eigenenergy number/ analytical: momentum ($2\pi/L$)")
+    plt.title(r"$J \greater \lambda$, " + str(Nsites) + " sites")
+    plt.legend(loc="lower right")
+    plt.show()
+
+def paired_bosons(L_modes, cutoff, Nbosons):
+    basis_boson = boson_basis_1d(L=L_modes, sps=cutoff, Nb=Nbosons)
+    print(basis_boson)
+    hop = [[-1, i, i, (i + 1) % L_modes, (i + 1) % L_modes] for i in range(L_modes)]
+    static = [["++--", hop], ["--++", hop]]
+    H = hamiltonian(static, [], basis=basis_boson, dtype=np.float64)
+    print(H)
+    E, psi0 = H.eigh()
+    print("energy ", E)
+    _, psi0_s = H.eigsh(k=1, which='SA')
+    # same (there is global minus sign, but that doesn't matter)
+    print("compare ", psi0[:, 0], " with ", np.round(psi0_s, 10)[:, 0])
+    columns_states = np.round(psi0, 10)
+    print(columns_states)
+
+def paired_bosons_limit(L_modes, L_spin, P_sparse, Nsites, basis, cutoff, Nbosons, hopping_strength, field_strength, paired_hopping_only_strength):
+    # ED Z2 LGT
+    elist = []
+    Hgaugefixed = build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, True)
+    # E, psi0 = eigsh(Hgaugefixed, k=20, which='SA')
+    E, psi0 = np.linalg.eigh(Hgaugefixed.todense())
+    elist.append(E)
+
+    # Analytical free bosons
+    elist_freebosons = []
+    E_k = -2 * 1 * np.cos(2 * np.pi * np.arange(0, L_modes, 1) / (2 * L_modes))
+    elist_freebosons.append(E_k)
+
+    # ED paired bosons
+    elist_pairedbosons = []
+    basis_boson2 = boson_basis_1d(L=L_modes, sps=cutoff, Nb=Nbosons)
+    hop = [[paired_hopping_only_strength, i, i, (i + 1) % L_modes, (i + 1) % L_modes] for i in range(L_modes)]
+    static = [["++--", hop], ["--++", hop]]
+    hamiltonian_paired_hopping = hamiltonian(static, [], basis=basis_boson2, dtype=np.float64)
+    print(hamiltonian_paired_hopping)
+    E, psi0 = hamiltonian_paired_hopping.eigh()
+    elist_pairedbosons.append(E)
+
+    elist_pairedbosons = []
+    basis_boson2 = boson_basis_1d(L=L_modes, sps=cutoff, Nb=Nbosons)
+    print(basis_boson2)
+    hop = [[paired_hopping_only_strength, i, i, (i + 1) % L_modes, (i + 1) % L_modes] for i in range(L_modes)]
+    static = [["++--", hop], ["--++", hop]]
+    hamiltonian_paired_hopping = hamiltonian(static, [], basis=basis_boson2, dtype=np.float64)
+    E2, psi2 = hamiltonian_paired_hopping.eigh()
+    print(psi2)  # [:,0])#, hamiltonian_paired_hopping.eigsh(k=1,which='SA'))
+    elist_pairedbosons.append(E2)
+
+    for i in range(len(elist)):
+        plt.plot(range(len(elist[i])), elist[i], ".", label="ED Z2LGT, 2 bosons")
+        plt.plot(range(len(elist_pairedbosons[i])), elist_pairedbosons[i], ".", label="ED paired bosons, 2 bosons")
+        plt.plot(range(len(elist_freebosons[i])), np.flip(elist_freebosons[i]), "x", label="Analytical, 1 free boson")
+    # plt.xlabel("ED: Eigenenergy number/ Analytical: Momentum ($2\pi/L$)")
+    plt.ylabel("Eigenenergy")
+    plt.xlabel("ED: eigenenergy number/ analytical: momentum ($2\pi/L$)")
+    plt.title(r"$J \less \lambda$, " + str(Nsites) + " sites")
+    plt.legend()
+    plt.show()
 
 def state_checks(psi0, P_sparse):
     # Relative phases for a two site system
