@@ -91,8 +91,8 @@ class CVCircuit(QuantumCircuit):
             raise ValueError("The given Fock state is greater than the cutoff.")
 
         for qumode in modes:
-            value = np.zeros((self.qmregs[-1].cutoff,))
-            value[fock_state] = 1
+            value = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+            value[fock_state] = 1 +0j
 
             super().initialize(value, qumode)
 
@@ -420,3 +420,33 @@ class CVCircuit(QuantumCircuit):
 
         self.h(qubit)
         return self.measure(qubit, cbit)
+
+    def cv_measure(self, qregister_list, cregister_list):
+        """Measure QumodeRegisters, QuantumRegisters, and ClassicalRegisters in specified order
+
+                Args:
+                    qregister_list (List): List of individual QumodeRegister Qubits, QuantumRegister Qubits and ClassicalRegister Qubits
+                    cbit (ClassicalBit): List of classical bits to measure into
+
+                Returns:
+                    Instruction: QisKit measure instruction
+                """
+        if not self.probe_measure:
+            warnings.warn(
+                "Probe qubits not in use, set probe_measure to True for measure support.",
+                UserWarning,
+            )
+
+        # Flattens the list (if necessary)
+        flat_list = []
+        for el in qregister_list:
+            if isinstance(el, list):
+                flat_list += el
+            else:
+                flat_list += [el]
+        # Check to see if too many classical registers were passed in. If not, only use those needed (starting with least significant bit).
+        # This piece is useful so that the user doesn't need to think about how many bits are needed to read out a list of qumodes, qubits, etc.
+        if len(flat_list) < len(cregister_list):
+            self.measure(flat_list, cregister_list[0:len(flat_list)])
+        else:
+            self.measure(flat_list, cregister_list)
