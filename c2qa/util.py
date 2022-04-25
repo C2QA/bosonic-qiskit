@@ -75,7 +75,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
             qmstr = ["".join(item) for item in qmst.astype(str)]
             amp_cv.append((qmst*(np.real(res)**2)).tolist())
 
-            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", np.real(res))
+            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", res)
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
     print("occupation modes ", list(occupation_cv))

@@ -122,6 +122,20 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def ecd(self, alpha):
+        """Displacement operator
+
+        Args:
+            alpha (real): displacement
+
+        Returns:
+            ndarray: operator matrix
+        """
+        argm = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
+        arg = scipy.sparse.kron(zQB, argm)/2
+
+        return scipy.sparse.linalg.expm(arg)
+
     def s(self, zeta):
         """Single-mode squeezing operator
 
