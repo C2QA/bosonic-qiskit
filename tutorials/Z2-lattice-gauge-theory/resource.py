@@ -14,10 +14,12 @@ import c2qa.util as util
 
 def h1h2h3(circuit, qma, qmb, qb, theta_1, theta_2, theta_3):
     # Work out the hermitian version of the H1 and H2 beamsplitters
-    # H1 should have a plus but it has a minus
-    circuit.cv_cpbs(theta_1, qmb, qma, qb)
-    # H2 is a copy of cpbs for now. It needs an i.
-    circuit.cv_cpbs_z2vqe(theta_2, qmb, qma, qb)
+    # # H1 should have a plus but it has a minus
+    # # H2 is a copy of cpbs for now. It needs an i.
+    # circuit.cv_cpbs_z2vqe(theta_2, qmb, qma, qb)
+    # circuit.cv_cpbs(theta_1, qmb, qma, qb)
+    circuit.cv_rh1(theta_1, qmb, qma, qb)
+    circuit.cv_rh2(theta_1, qmb, qma, qb)
     circuit.rx(theta_3, qb)
     return circuit
 

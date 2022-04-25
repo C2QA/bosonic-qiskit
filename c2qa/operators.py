@@ -136,6 +136,24 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def rh1(self, alpha):
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        argm = 1j * (alpha**2) *(a1dag2 + a12dag)
+        arg = scipy.sparse.kron(zQB, argm)
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def rh2(self, alpha):
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        argm = (alpha**2) *(a1dag2 - a12dag)
+        arg = scipy.sparse.kron(zQB, argm)
+
+        return scipy.sparse.linalg.expm(arg)
+
     def s(self, zeta):
         """Single-mode squeezing operator
 

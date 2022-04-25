@@ -160,7 +160,15 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         operator = ParameterizedOperator(self.ops.ecd, alpha)
-        return self.append(CVGate(data=operator, label="D"), qargs=qumode + [qubit_ancilla])
+        return self.append(CVGate(data=operator, label="ECD"), qargs=qumode + [qubit_ancilla])
+
+    def cv_rh1(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.rh1, alpha)
+        self.append(CVGate(data=operator, label="rh1"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+    def cv_rh2(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.rh2, alpha)
+        self.append(CVGate(data=operator, label="rh2"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode, inverse: bool = False):
         """Conditional displacement gate.
