@@ -9,24 +9,8 @@ from quspin.basis import spin_basis_1d  # Hilbert space spin basis
 import matplotlib.pyplot as plt
 from quspin.tools.measurements import obs_vs_time  # t_dep measurements
 from quspin.tools.evolution import evolve  # ODE evolve tool
-<<<<<<< HEAD
-
-=======
->>>>>>> holoVQE
 
 
-
-def build_H_paired_hopping(hopping_strength, L_modes, basis_boson, periodicBC=True):
-    hop = [[hopping_strength, i, i, (i + 1)%L_modes, (i + 1)%L_modes] for i in range(L_modes)]
-    # if periodicBC==True:
-    #    hop+=[[hopping_strength,L_modes,L_modes,0]]
-    static = [["++--", hop], ["--++", hop]]
-    ###### setting up operators
-    # set up hamiltonian dictionary and observable (imbalance I)
-    no_checks = dict(check_pcon=False, check_symm=False, check_herm=False)
-    H = hamiltonian(static, [], basis=basis_boson, **no_checks)
-
-    return H
 
 def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, periodicBC=True):
     hop = [[hopping_strength, i, i, (i + 1)%L_modes] for i in range(L_modes)]
