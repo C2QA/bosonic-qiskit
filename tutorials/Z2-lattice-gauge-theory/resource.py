@@ -70,3 +70,4 @@ def measure_gauge_invariant_propagator(circuit: c2qa.CVCircuit, qumode_idx: int,
     #qubit_reg = None
     #qumode_reg = None
     #circuit.h(qubit_idx)
+    return None
