@@ -1,11 +1,13 @@
+import copy
 import warnings
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.circuit.parametertable import ParameterTable
+import qiskit.providers.aer.library.save_instructions as save
 
 from c2qa.operators import CVGate, CVOperators, ParameterizedOperator
 from c2qa.qumoderegister import QumodeRegister
-import qiskit.providers.aer.library.save_instructions as save
 
 
 class CVCircuit(QuantumCircuit):
@@ -60,6 +62,45 @@ class CVCircuit(QuantumCircuit):
         super().__init__(*registers, name=name)
 
         self.ops = CVOperators(self.cutoff, num_qumodes)
+
+    def merge(self, circuit: QuantumCircuit):
+        """
+        Merge in properties of QisKit QuantumCircuit into this instance.
+
+        Useful if QisKit returned a new instance of QuantumCircuit after passing in this instance. Calling merge() can merge the two, keeping this instance.
+
+        See https://qiskit.org/documentation/_modules/qiskit/circuit/quantumcircuit.html#QuantumCircuit.copy
+        """
+
+        self.qregs = circuit.qregs.copy()
+        self.cregs = circuit.cregs.copy()
+        self._qubits = circuit._qubits.copy()
+        self._ancillas = circuit._ancillas.copy()
+        self._clbits = circuit._clbits.copy()
+        self._qubit_indices = circuit._qubit_indices.copy()
+        self._clbit_indices = circuit._clbit_indices.copy()
+
+        instr_instances = {id(instr): instr for instr, _, __ in circuit._data}
+
+        instr_copies = {id_: instr.copy() for id_, instr in instr_instances.items()}
+
+        self._parameter_table = ParameterTable(
+            {
+                param: [
+                    (instr_copies[id(instr)], param_index)
+                    for instr, param_index in circuit._parameter_table[param]
+                ]
+                for param in circuit._parameter_table
+            }
+        )
+
+        self._data = [
+            (instr_copies[id(inst)], qargs.copy(), cargs.copy())
+            for inst, qargs, cargs in circuit._data
+        ]
+
+        self._calibrations = copy.deepcopy(circuit._calibrations)
+        self._metadata = copy.deepcopy(circuit._metadata)
 
     @property
     def cutoff(self):
