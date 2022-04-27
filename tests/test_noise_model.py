@@ -120,13 +120,30 @@ def test_photon_loss_pass(capsys):
         num_qubits_per_qumode = 2
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
         
+        circuit.cv_initialize(1, qmr[0])
+
         for _ in range(10):
-            circuit.delay(duration=10, unit="s", qarg=qmr[0])
+            # circuit.delay(duration=10, unit="s", qarg=qmr[0])  
+            circuit.cv_d(0, qmr[0])
         
         photon_loss_rate = 0.1
-        pm = PassManager(c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit))
-        circuit = pm.run(circuit)    
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
+        noise_circuit = noise_pass(circuit)
+        circuit.merge(noise_circuit)
         
-        state, result = c2qa.util.simulate(circuit)
+        # state, result = c2qa.util.simulate(circuit)
+
+        wigner_filename = "tests/noise_model.gif"
+        c2qa.util.animate_wigner(
+            circuit,
+            qubit=qr[0],
+            cbit=cr[0],
+            file=wigner_filename,
+            axes_min=-9,
+            axes_max=9,
+            animation_segments=50,
+            processes=1,
+        )
