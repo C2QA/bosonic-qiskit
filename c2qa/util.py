@@ -28,7 +28,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
     for i in range(len(st)):
         res = st[
             i]  # go through vector element by element and find the positions of the non-zero elements with next if clause
-        if (np.abs(np.real(res)) > 1e-10):
+        if (np.abs(res) > 1e-10):
             pos = i  # position of amplitude (non-zero real)
             # print("position of non-zero real amplitude: ", pos, " res = ", res)
             sln = len(st)  # length of the state vector
@@ -48,7 +48,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
                 sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
             qbstr = ["".join(item) for item in qbst.astype(str)]
-            amp_qb.append((qbst * (np.real(res) ** 2)).tolist())
+            amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
 
             ## Find the qumode states
             qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
@@ -73,9 +73,10 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
                 iqm = iqm + 1
             qmstr = ["".join(item) for item in qmst.astype(str)]
-            amp_cv.append((qmst*(np.real(res)**2)).tolist())
+            amp_cv.append((qmst*(np.abs(res)**2)).tolist())
 
-            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: ", res)
+            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
+
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
     print("occupation modes ", list(occupation_cv))
@@ -87,6 +88,46 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
     #     print("\n imaginary amplitude: ", 1j * np.imag(res))
 
     return [occupation_cv,occupation_qb]
+
+def cv_fockcounts(counts, QregisterList):
+    """Convert counts dictionary from binary representation into base-10 Fock basis. Takes in a list of Quantum register Qubits
+        (AncillaRegister, QumodeRegister, or AncillaRegister), and Qumodes from binary representation to Fock number.
+
+        Returns counts dict()
+
+        Args:
+            counts: dict() of counts, as returned by job.result().get_counts() for a circuit which used cv_measure()
+            QregisterList: List of register qubits which were measured, ordered from least to most significant bit.
+                           This list should be identical to that passed into cv_measure()
+
+        Returns:
+            x,y,z state & result tuples: (state, result) tuples for each x,y,z measurements
+        """
+
+    flat_list = []
+    for el in QregisterList:
+        if isinstance(el, list):
+            flat_list += el
+        else:
+            flat_list += [el]
+
+    newcounts = {}
+    for key in counts:
+        counter = len(key) - len(flat_list)
+        if counter > 0:
+            newkey = ('{0:0' + str(counter) + '}').format(0)
+        else:
+            newkey = ''
+        for registerType in QregisterList[::-1]:
+            if isinstance(registerType, list):
+                newkey += str(int(key[counter:counter + len(registerType)], base=2))
+                # newkey += str(key[counter:counter+len(registerType)])
+                counter += len(registerType)
+            else:
+                newkey += key[counter]
+                counter += 1
+        newcounts[newkey] = counts[key]
+    return newcounts
 
 
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
