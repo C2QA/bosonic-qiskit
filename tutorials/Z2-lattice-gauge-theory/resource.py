@@ -66,11 +66,11 @@ def measureE_hoppingterm(circuit, numberofmodes, numberofqubits, qmr, qbr, i):
     # return occs
 
 
-def measure_gauge_invariant_propagator(circuit: c2qa.CVCircuit, qumode_idx: int,
-                                       qubit_idx: int, alpha: float = 1.0,
-                                       verbose: int = 0, shots: int = 1000) -> float:
+#def measure_gauge_invariant_propagator(circuit: c2qa.CVCircuit, qumode_idx: int,
+#                                       qubit_idx: int, alpha: float = 1.0,
+#                                       verbose: int = 0, shots: int = 1000) -> float:
     # TODO implement this function after debugging it in Z2LGT_BQ_VQE.ipynb
     #qubit_reg = None
     #qumode_reg = None
     #circuit.h(qubit_idx)
-    return None
+#    return None
