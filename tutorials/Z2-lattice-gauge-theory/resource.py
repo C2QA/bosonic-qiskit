@@ -37,7 +37,10 @@ def vary_Z2LGT(circuit, numberofmodes, qmr, qbr, theta_1, theta_2, theta_3):
 def measureE_fieldterm(circuit, qbr, i):
     circuit.x(qbr[i])
     # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
-    # circuit.measure(-i, 0)
+    circuit.measure(-i, 0)
+    stateop, result = c2qa.util.simulate(circuit)
+    counts = result.get_counts()
+    util.cv_fockcounts(counts, (qmr[0], qbr[0]))
 
 def measureE_hoppingterm(circuit, numberofmodes, numberofqubits, qmr, qbr, i):
     occs=[np.zeros((numberofmodes,numberofqubits))]
@@ -52,7 +55,7 @@ def measureE_hoppingterm(circuit, numberofmodes, numberofqubits, qmr, qbr, i):
     circuit.cv_snap(1, 0, qmr[i])
     circuit.cv_snap(1, 0, qmr[i+1])
     # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
-    # circuit.measure(-i, 0)
+    circuit.measure(-i, 0)
 
 
     # stateop, result = c2qa.util.simulate(circuit)
