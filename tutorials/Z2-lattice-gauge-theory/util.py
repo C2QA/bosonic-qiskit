@@ -12,12 +12,13 @@ from quspin.tools.evolution import evolve  # ODE evolve tool
 
 
 
-def build_H(hopping_strength, field_strength, L_modes, L_spin, P_sparse, basis, periodicBC=True):
+def build_H(hopping_strength, field_strength, density_strength, L_modes, L_spin, P_sparse, basis, periodicBC=True):
     hop = [[hopping_strength, i, i, (i + 1)%L_modes] for i in range(L_modes)]
+    density = [[density_strength, i, i] for i in range(L_modes)]
     #if periodicBC==True:
     #    hop+=[[hopping_strength,L_modes,L_modes,0]]
     field = [[field_strength, i] for i in range(L_spin)]
-    static = [["z|+-", hop], ["z|-+", hop], ["x|", field]]
+    static = [["z|+-", hop], ["z|-+", hop], ["x|", field], ["|nn", density]]
     ###### setting up operators
     # set up hamiltonian dictionary and observable (imbalance I)
     no_checks = dict(check_pcon=False, check_symm=False, check_herm=False)
