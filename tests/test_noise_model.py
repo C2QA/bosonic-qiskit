@@ -14,7 +14,8 @@ def test_noise_model(capsys):
         num_qubits_per_qumode = 2
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
 
         for qumode in range(num_qumodes):
             circuit.cv_initialize(0, qmr[qumode])
@@ -36,7 +37,7 @@ def test_noise_model(capsys):
         print("kraus")
         print(kraus_operators)
 
-        state, result = c2qa.util.simulate(circuit, kraus_operators=kraus_operators)
+        state, result = c2qa.util.simulate(circuit)
 
 
 def test_kraus_operators(capsys):
@@ -92,15 +93,15 @@ def test_animate_noise_model(capsys):
 
         circuit.cv_initialize(1, qmr[0])
 
-        dist = 3        
-        circuit.cv_d(dist, qmr[0])
-        # circuit.delay(10)
+        for _ in range(10):
+            # circuit.delay(duration=10, unit="s", qarg=qmr[0])  
+            circuit.cv_d(0, qmr[0])
 
-        photon_loss_rate = 0.01
-        time = 5.0
+        photon_loss_rate = 0.1
+        time = 10.0
         kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
 
-        wigner_filename = "tests/noise_model.gif"
+        wigner_filename = "tests/noise_model_direct.mp4"
         c2qa.util.animate_wigner(
             circuit,
             qubit=qr[0],
@@ -123,20 +124,20 @@ def test_photon_loss_pass(capsys):
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
         
-        circuit.cv_initialize(1, qmr[0])
+        circuit.cv_initialize(2, qmr[0])
 
         for _ in range(10):
             # circuit.delay(duration=10, unit="s", qarg=qmr[0])  
             circuit.cv_d(0, qmr[0])
         
-        photon_loss_rate = 0.1
+        photon_loss_rate = 25
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
         noise_circuit = noise_pass(circuit)
         circuit.merge(noise_circuit)
         
         # state, result = c2qa.util.simulate(circuit)
 
-        wigner_filename = "tests/noise_model.gif"
+        wigner_filename = "tests/noise_model_pass.mp4"
         c2qa.util.animate_wigner(
             circuit,
             qubit=qr[0],
@@ -145,5 +146,5 @@ def test_photon_loss_pass(capsys):
             axes_min=-9,
             axes_max=9,
             animation_segments=50,
-            processes=1,
+            keep_state=True
         )

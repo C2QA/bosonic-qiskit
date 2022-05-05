@@ -350,8 +350,8 @@ def animate_wigner(
     axes_steps: int = 200,
     processes: int = None,
     kraus_operators = None,
-    error_gates: List[str] = None
-
+    error_gates: List[str] = None,
+    keep_state: bool = False
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -373,6 +373,9 @@ def animate_wigner(
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         processes (int, optional): Number of parallel Python processes to start.
                                    If None, perform serially in main process. Defaults to None.
+        keep_state (bool, optional): True if each frame builds on the previous frame's state vector. 
+                                     False if each frame starts over from the beginning of the circuit.
+                                     If True, it requires sequential simulation of each frame.
 
     Returns:
         [type]: [description]
@@ -451,16 +454,35 @@ def animate_wigner(
         processes = math.floor(multiprocessing.cpu_count() / 2)
         processes = max(processes, 1)  # prevent zero processes with 1 CPU
 
-    if processes == 1:
+    if keep_state:
+        w_fock = []
+        previous_state = None
+        for circuit in circuits:
+            if previous_state:
+                # Initialize circuit to simulate with the previous frame's state, then append the last instruction
+                sim_circuit = circuit.copy()
+                sim_circuit.data.clear()  # Is this safe -- could we copy without data?
+                sim_circuit.initialize(previous_state)
+                last_instructions = circuit.data[-3:]  # Get the last instruction, plus the Hadamard/measure
+                for inst in last_instructions:
+                    sim_circuit.append(*inst)
+            else:
+                # No previous simulation state, just run the current circuit
+                sim_circuit = circuit
+            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates)
+            w_fock.append(fock)
+    elif processes == 1:
         w_fock = []
         for circuit in circuits:
-            w_fock.append(simulate_wigner(circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates))
+            fock, _ = simulate_wigner(circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates)
+            w_fock.append(fock)
     else:
         pool = multiprocessing.Pool(processes)
-        w_fock = pool.starmap(
+        results = pool.starmap(
             simulate_wigner, ((circuit, xvec, shots, kraus_operators, error_gates) for circuit in circuits)
         )
         pool.close()
+        w_fock = [i[0] for i in results if i is not None]
 
     # Remove None values in w_fock if simulation didn't produce results
     w_fock = [i for i in w_fock if i is not None]
@@ -504,6 +526,7 @@ def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
 
 def _animate(frame, *fargs):
     """Generate individual matplotlib frame in animation."""
+    fig = fargs[0]
     ax = fargs[1]
     xvec = fargs[2]
     w_fock = fargs[3][frame]
@@ -515,9 +538,11 @@ def _animate(frame, *fargs):
     color_levels = np.linspace(-abs_max, abs_max, 100)
 
     ax.clear()
-    ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
+    cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
+    if frame == 0:
+        fig.colorbar(cont, ax=ax)
 
     if file:
         os.makedirs(f"{file}_frames", exist_ok=True)
@@ -543,8 +568,9 @@ def simulate_wigner(
     else:
         print("WARN: No state vector returned by simulation -- unable to calculate Wigner function!")
         wigner_result = None
+        even_state = None
     
-    return wigner_result
+    return wigner_result, even_state
 
 
 def wigner(
