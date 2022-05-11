@@ -149,6 +149,22 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.d, alpha)
         return self.append(CVGate(data=operator, label="D"), qargs=qumode)
 
+    def cv_cd(self, alpha, beta, qumode, qubit_ancilla):
+        """Conditional displacement gate.
+
+        Args:
+            alpha (real): displacement for 0 control
+            beta (real): displacemet for 1 control
+            ctrl (Qubit): QisKit control Qubit
+            qumode (list): list of qubits representing qumode
+            inverse (bool): True to calculate the inverse of the operator matrices
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.cd, alpha, beta)
+        return self.append(CVGate(data=operator, label="CD"), qargs=qumode + [qubit_ancilla])
+
     def cv_ecd(self, alpha, qumode, qubit_ancilla):
         """Echoed controlled displacement gate.
 
