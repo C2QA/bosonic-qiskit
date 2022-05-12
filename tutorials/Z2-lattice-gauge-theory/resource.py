@@ -59,7 +59,6 @@ def apply_h1h2h3(circuit: c2qa.CVCircuit, gate_angles: List[float]) -> None:
     for qubit in qubit_reg:
         circuit.rx(2 * theta_3, qubit)
 
-
 def construct_circuit(params: List[float], circuit: c2qa.CVCircuit) -> c2qa.CVCircuit:
     for j in range(len(params) // 3):
         apply_h1h2h3(circuit, params[3*j:3*j+3])
