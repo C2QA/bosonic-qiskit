@@ -122,6 +122,24 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def cd(self, alpha, beta=None):
+        """Displacement operator
+
+        Args:
+            alpha (real): displacement for qubit state 0
+            beta (real): displacement for qubit state 1. If None, use -alpha.
+
+        Returns:
+            ndarray: operator matrix
+        """
+        displace0 = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
+        if beta is None:
+            beta = -alpha
+        displace1 = (beta * self.a_dag) - (numpy.conjugate(beta) * self.a)
+
+
+        return scipy.sparse.kron((idQB+zQB)/2,scipy.sparse.linalg.expm(displace0)) + scipy.sparse.kron((idQB-zQB)/2,scipy.sparse.linalg.expm(displace1))
+
     def ecd(self, alpha):
         """Displacement operator
 
