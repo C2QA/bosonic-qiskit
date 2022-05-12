@@ -1,4 +1,4 @@
-import math
+import pytest
 import random
 
 
@@ -84,6 +84,7 @@ def test_kraus_operators(capsys):
         assert kraus.is_cptp(), "Is not CPTP"
 
 
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate_noise_model(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=5)
@@ -115,7 +116,8 @@ def test_animate_noise_model(capsys):
         )
 
 
-def test_photon_loss_pass(capsys):
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
+def test_photon_loss_pass_no_displacemnet(capsys):
     with capsys.disabled():
         num_qumodes = 1
         num_qubits_per_qumode = 2
@@ -137,7 +139,7 @@ def test_photon_loss_pass(capsys):
         
         # state, result = c2qa.util.simulate(circuit)
 
-        wigner_filename = "tests/noise_model_pass.mp4"
+        wigner_filename = "tests/noise_model_pass_no_displacement.mp4"
         c2qa.util.animate_wigner(
             circuit,
             qubit=qr[0],
@@ -146,5 +148,38 @@ def test_photon_loss_pass(capsys):
             axes_min=-9,
             axes_max=9,
             animation_segments=50,
+            keep_state=True
+        )
+
+
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
+def test_photon_loss_pass_slow_displacemnet(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        num_qubits_per_qumode = 6
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qr = qiskit.QuantumRegister(2)
+        cr = qiskit.ClassicalRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        
+        circuit.cv_initialize(2, qmr[0])
+        circuit.cv_d(0.1, qmr[0])
+        
+        photon_loss_rate = 25
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
+        noise_circuit = noise_pass(circuit)
+        circuit.merge(noise_circuit)
+        
+        # state, result = c2qa.util.simulate(circuit)
+
+        wigner_filename = "tests/noise_model_pass_slow_displacement.mp4"
+        c2qa.util.animate_wigner(
+            circuit,
+            qubit=qr[0],
+            cbit=cr[0],
+            file=wigner_filename,
+            axes_min=-9,
+            axes_max=9,
+            animation_segments=100,
             keep_state=True
         )
