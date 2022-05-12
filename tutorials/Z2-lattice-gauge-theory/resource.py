@@ -34,7 +34,7 @@ def vary_Z2LGT(circuit, numberofmodes, qmr, qbr, theta_1, theta_2, theta_3):
     for j in range(1,numberofmodes-1,2):
         h1h2h3(circuit, qmr[j+1], qmr[j], qbr[j], theta_1, theta_2, theta_3)
 
-def measureE_fieldterm(circuit, qbr, i):
+def measureE_fieldterm(circuit, qmr, qbr, i):
     circuit.x(qbr[i])
     # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
     circuit.measure(-i, 0)
