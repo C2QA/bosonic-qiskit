@@ -15,7 +15,7 @@ from c2qa import CVCircuit
 
 from c2qa.operators import CVGate
 
-def stateread(stateop, numberofqubits, numberofmodes, cutoff):
+def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
@@ -75,14 +75,17 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff):
             qmstr = ["".join(item) for item in qmst.astype(str)]
             amp_cv.append((qmst*(np.abs(res)**2)).tolist())
 
-            print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
+            if verbose:
+                print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
 
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
-    print("occupation modes ", list(occupation_cv))
+    if verbose:
+        print("occupation modes ", list(occupation_cv))
 
     occupation_qb = [sum(i) for i in zip(*amp_qb)]
-    print("occupation qubits ", list(occupation_qb))
+    if verbose:
+        print("occupation qubits ", list(occupation_qb))
 
     # if (np.abs(np.imag(res)) > 1e-10):
     #     print("\n imaginary amplitude: ", 1j * np.imag(res))
