@@ -55,7 +55,10 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
 
     qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
     qbr = qiskit.QuantumRegister(size=num_qubits)
-    init_circuit = c2qa.CVCircuit(qmr, qbr)
+    cbr_measure_field = qiskit.ClassicalRegister(size=num_qubits, name='measure_field')
+    cbr_measure_hopping = qiskit.ClassicalRegister(size=num_qubits, name='measure_hopping')
+
+    init_circuit = c2qa.CVCircuit(qmr, qbr, cbr_measure_field, cbr_measure_hopping)
 
     # initialize the qumodes
     for i in range(qmr.num_qumodes):
@@ -72,18 +75,7 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
         # Take the measurement outcomes and compute the expected energy
         energy = compute_z2_expected_energy(z2_ansatz)
 
-        # Finally, simulate its execution
-        stateop, result = c2qa.util.simulate(z2_ansatz)
-
-        # stateop, result = c2qa.util.simulate(circuit)
-        # counts = result.get_counts()
-        # c2qa.util.cv_fockcounts(counts, (qmr[0], qbr[0]))
-        # stateop, result = c2qa.util.simulate(circuit)
-        # occupation = util.stateread(stateop, qbr.size, numberofmodes, 4)
-        # occs[0][i]=np.array(list(occupation[0]))
-        # occs[1][i]=np.array(list(occupation[1]))
-
-        return 0
+        return energy
 
     init_params = np.random.uniform(low=0.0, high=2 * np.pi, size=3 * num_layers)
     out = scipy.optimize.minimize(f, x0=init_params, method="COBYLA")
@@ -98,25 +90,89 @@ def compute_z2_expected_energy(circuit):
 
     qumode_reg = circuit.qmregs[0]
     qubit_reg  = circuit._qubit_regs[0]
+    # TODO: write a check to grab the correct creg by name
+    cbit_field_reg   = circuit.cregs[0]
+    cbit_hopping_reg = circuit.cregs[1]
 
-    for i in range(len(qubit_reg)):
-        measureE_fieldterm(circuit, qubit_reg, i)
     circuit.barrier()
-    for i in range(len(qumode_reg)):
-        measureE_hoppingterm(circuit, qumode_reg, i)
-    circuit
 
-def measureE_fieldterm(circuit, qmr, qbr, i):
-    circuit.x(qbr[i])
-    # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
-    circuit.measure(-i, 0)
+    field_contribution = append_and_measure_field_term(copy.deepcopy(circuit), qubit_reg, cbit_field_reg)
 
-def measureE_hoppingterm(circuit, numberofmodes, numberofqubits, qmr, qbr, i):
-    occs=[np.zeros((numberofmodes,numberofqubits))]
-    circuit.cv_bs(np.pi/4, qmr[i], qmr[i+1])
-    # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
-    circuit.measure(-i, 0)
-    # return occs
+    hopping_contribution = append_and_measure_hopping_term(copy.deepcopy(circuit), qumode_reg, qubit_reg, cbit_hopping_reg)
+
+    return field_contribution + hopping_contribution
+
+def append_and_measure_hopping_term(circuit, qumode_reg, qubit_reg, cbit_hopping_reg):
+    for n in range(qumode_reg.num_qumodes - 1):
+        measureE_hoppingterm(circuit, qumode_reg[n], qumode_reg[n+1],
+                             qubit_reg[n], cbit_hopping_reg[n])
+
+    # Simulate and compute expected energy
+
+    # 1. Measure <Z>
+    stateop, result = c2qa.util.simulate(circuit)
+
+    # TODO: return to this and come up with a robust way to get the correct creg results
+    counts = result.get_counts()
+    hopping_counts = {bitstr.split()[0]: val for bitstr, val in counts.items()}
+    shots = sum(hopping_counts.values())
+
+    avg_Z = []
+    for n in range(qubit_reg.size):
+        avg_z_n = 0
+        for bitstr, count in hopping_counts.items():
+            bit = bitstr[::-1][n]
+            if bit == '0':
+                avg_z_n += count / shots
+            elif bit == '1':
+                avg_z_n += -1 * count / shots
+        avg_Z.append(avg_z_n)
+
+    # 2. Measure a, a_dag
+    circuit.measure_all()
+    stateop, result = c2qa.util.simulate(circuit)
+    # Fock counts for each qumode, occupation = [fock_count_qumode_0 , ..., fock_count_qumode_n]
+    occupation = c2qa.util.stateread(stateop, qubit_reg.size, qumode_reg.num_qumodes, qumode_reg.cutoff, verbose=False)[0][::-1]
+    diffs = []
+    for n in range(qumode_reg.num_qumodes - 1):
+        diffs.append(occupation[n+1] - occupation[n])
+
+    assert(len(diffs) == len(avg_Z))
+    return sum([diff_val * z_val for diff_val, z_val in zip(diffs, avg_Z)])
+
+
+def append_and_measure_field_term(circuit, qubit_reg, cbit_field_reg):
+    for qubit, cbit in zip(qubit_reg, cbit_field_reg):
+        measureE_fieldterm(circuit, qubit, cbit)
+
+    # Simulate and compute expected energy
+    stateop, result = c2qa.util.simulate(circuit)
+
+    # TODO: return to this and come up with a robust way to get the correct creg results
+    counts = result.get_counts()
+    field_counts = {bitstr.split()[-1]: val for bitstr, val in counts.items()}
+    shots = sum(field_counts.values())
+
+    avg_X = []
+    for n in range(qubit_reg.size):
+        avg_x_n = 0
+        for bitstr, count in field_counts.items():
+            bit = bitstr[::-1][n]
+            if bit == '0':
+                avg_x_n += count / shots
+            elif bit == '1':
+                avg_x_n += -1 * count / shots
+        avg_X.append(avg_x_n)
+
+    return sum(avg_X)
+
+def measureE_fieldterm(circuit, qubit, cbit):
+    circuit.h(qubit)
+    circuit.measure(qubit, cbit)
+
+def measureE_hoppingterm(circuit, qumode1, qumode2, qubit, cbit):
+    circuit.cv_bs(np.pi/4, qumode1, qumode2)
+    circuit.measure(qubit, cbit)
 
 
 #def measure_gauge_invariant_propagator(circuit: c2qa.CVCircuit, qumode_idx: int,
