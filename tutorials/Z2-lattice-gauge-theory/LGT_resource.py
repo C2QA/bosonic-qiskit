@@ -20,17 +20,6 @@ def h1h2h3(circuit, qma, qmb, qb, theta_1, theta_2, theta_3):
     circuit.rx(-2*theta_3, qb) # the factors in front of the theta_3 enable us to change the qiskit Rx gate to exp^{i theta}
     return circuit
 
-def vary_Z2LGT(circuit, numberofmodes, qmr, qbr, theta_1, theta_2, theta_3):
-    # print("initial state ")
-    # stateop, _ = c2qa.util.simulate(circuit)
-    # util.stateread(stateop, qbr.size, numberofmodes, cutoff)
-
-    # brickwork format
-    for j in range(0,numberofmodes-1,2):
-        h1h2h3(circuit, qmr[j+1], qmr[j], qbr[j], theta_1, theta_2, theta_3)
-    for j in range(1,numberofmodes-1,2):
-        h1h2h3(circuit, qmr[j+1], qmr[j], qbr[j], theta_1, theta_2, theta_3)
-
 def apply_h1h2h3(circuit: c2qa.CVCircuit, gate_angles: List[float]) -> None:
     if len(circuit.qmregs) != 1:
         raise ValueError('Only support a single qumode register right now!')
@@ -42,20 +31,11 @@ def apply_h1h2h3(circuit: c2qa.CVCircuit, gate_angles: List[float]) -> None:
     qumode_reg = circuit.qmregs[0]
     qubit_reg  = circuit._qubit_regs[0]
 
-    # Apply the H1 unitary
-    for n in range(qumode_reg.num_qumodes - 1, 2):
-        #circuit.cv_rh1(-1 * np.sqrt(theta_1), qumode_reg[n], qumode_reg[n+1], qubit_reg[n])
-        circuit.cv_rh1(theta_1, qumode_reg[n], qumode_reg[n+1], qubit_reg[n])
-
-    # Apply the H2 unitary
-    for n in range(qumode_reg.num_qumodes - 1, 2):
-        # circuit.cv_rh2(np.sqrt(theta_2), qumode_reg[n], qumode_reg[n+1], qubit_reg[n])
-        circuit.cv_rh2(theta_2, qumode_reg[n], qumode_reg[n+1], qubit_reg[n])
-
-    # Apply the H3 unitary
-    for qubit in qubit_reg:
-        # circuit.rx(2 * theta_3, qubit)
-        circuit.rx(2 * theta_3, qubit)
+    # brickwork format
+    for j in range(0,qumode_reg.num_qumodes - 1,2):
+        h1h2h3(circuit, qumode_reg[j+1], qumode_reg[j], qubit_reg[j], theta_1, theta_2, theta_3)
+    for j in range(1,qumode_reg.num_qumodes - 1,2):
+        h1h2h3(circuit, qumode_reg[j+1], qumode_reg[j], qubit_reg[j], theta_1, theta_2, theta_3)
 
 def construct_circuit(params: List[float], circuit: c2qa.CVCircuit) -> c2qa.CVCircuit:
     for j in range(len(params) // 3):
@@ -87,10 +67,10 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
     def f(params):
         """The objective function that scipy will minimize"""
         # First, construct the parameterized ansatz
-        z2_ansatz = construct_circuit(params, copy.deepcopy(init_circuit))
+        z2_ansatz = construct_circuit(params, copy.deepcopy(init_circuit)) # deepcopy allows us to reuse the circuit creation and initialization
 
         # Take the measurement outcomes and compute the expected energy
-        energy = compute_z2_expected_energy(copy.deepcopy(z2_ansatz))
+        energy = compute_z2_expected_energy(z2_ansatz)
 
         # Finally, simulate its execution
         stateop, result = c2qa.util.simulate(z2_ansatz)
@@ -110,8 +90,18 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
 
     return out['fun'], out['x']
 
-def compute_z2_expected_energy(result):
-    for i in range(numberofqubits):
+def compute_z2_expected_energy(z2_ansatz):
+    if len(circuit.qmregs) != 1:
+        raise ValueError('Only support a single qumode register right now!')
+    if len(circuit._qubit_regs) != 1:
+        raise ValueError('Only support a single qubit register right now!')
+
+    theta_1, theta_2, theta_3 = gate_angles
+
+    qumode_reg = circuit.qmregs[0]
+    qubit_reg  = circuit._qubit_regs[0]
+
+    for i in range(qubit_reg.):
         measureE_fieldterm(circuit, qmr, qbr, i)
     circuit.barrier()
     for i in range(numberofqubits):
