@@ -15,26 +15,10 @@ import c2qa
 
 
 def h1h2h3(circuit, qma, qmb, qb, theta_1, theta_2, theta_3):
-    # Work out the hermitian version of the H1 and H2 beamsplitters
-    # # H1 should have a plus but it has a minus
-    # # H2 is a copy of cpbs for now. It needs an i.
-    # circuit.cv_cpbs_z2vqe(theta_2, qmb, qma, qb)
-    # circuit.cv_cpbs(theta_1, qmb, qma, qb)
     circuit.cv_rh1(theta_1, qmb, qma, qb)
     circuit.cv_rh2(theta_1, qmb, qma, qb)
     circuit.rx(-2*theta_3, qb) # the factors in front of the theta_3 enable us to change the qiskit Rx gate to exp^{i theta}
     return circuit
-
-def vary_Z2LGT(circuit, numberofmodes, qmr, qbr, theta_1, theta_2, theta_3):
-    # print("initial state ")
-    # stateop, _ = c2qa.util.simulate(circuit)
-    # util.stateread(stateop, qbr.size, numberofmodes, cutoff)
-
-    # brickwork format
-    for j in range(0,numberofmodes-1,2):
-        h1h2h3(circuit, qmr[j+1], qmr[j], qbr[j], theta_1, theta_2, theta_3)
-    for j in range(1,numberofmodes-1,2):
-        h1h2h3(circuit, qmr[j+1], qmr[j], qbr[j], theta_1, theta_2, theta_3)
 
 def apply_h1h2h3(circuit: c2qa.CVCircuit, gate_angles: List[float]) -> None:
     if len(circuit.qmregs) != 1:
@@ -47,17 +31,11 @@ def apply_h1h2h3(circuit: c2qa.CVCircuit, gate_angles: List[float]) -> None:
     qumode_reg = circuit.qmregs[0]
     qubit_reg  = circuit._qubit_regs[0]
 
-    # Apply the H1 unitary
-    for n in range(qumode_reg.num_qumodes - 1):
-        circuit.cv_rh1(-1 * np.sqrt(theta_1), qumode_reg[n], qumode_reg[n+1], qubit_reg[n])
-
-    # Apply the H2 unitary
-    for n in range(qumode_reg.num_qumodes - 1):
-        circuit.cv_rh2(np.sqrt(theta_2), qumode_reg[n], qumode_reg[n+1], qubit_reg[n])
-
-    # Apply the H3 unitary
-    for qubit in qubit_reg:
-        circuit.rx(2 * theta_3, qubit)
+    # brickwork format
+    for j in range(0,qumode_reg.num_qumodes - 1,2):
+        h1h2h3(circuit, qumode_reg[j+1], qumode_reg[j], qubit_reg[j], theta_1, theta_2, theta_3)
+    for j in range(1,qumode_reg.num_qumodes - 1,2):
+        h1h2h3(circuit, qumode_reg[j+1], qumode_reg[j], qubit_reg[j], theta_1, theta_2, theta_3)
 
 def construct_circuit(params: List[float], circuit: c2qa.CVCircuit) -> c2qa.CVCircuit:
     for j in range(len(params) // 3):
@@ -89,13 +67,21 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
     def f(params):
         """The objective function that scipy will minimize"""
         # First, construct the parameterized ansatz
-        z2_ansatz = construct_circuit(params, copy.deepcopy(init_circuit))
+        z2_ansatz = construct_circuit(params, copy.deepcopy(init_circuit)) # deepcopy allows us to reuse the circuit creation and initialization
 
-        # Then, simulate its execution
+        # Take the measurement outcomes and compute the expected energy
+        energy = compute_z2_expected_energy(z2_ansatz)
+
+        # Finally, simulate its execution
         stateop, result = c2qa.util.simulate(z2_ansatz)
 
-        # Finally, take the measurement outcomes and compute the expected energy
-        # return compute_z2_expected_energy(result)
+        # stateop, result = c2qa.util.simulate(circuit)
+        # counts = result.get_counts()
+        # c2qa.util.cv_fockcounts(counts, (qmr[0], qbr[0]))
+        # stateop, result = c2qa.util.simulate(circuit)
+        # occupation = util.stateread(stateop, qbr.size, numberofmodes, 4)
+        # occs[0][i]=np.array(list(occupation[0]))
+        # occs[1][i]=np.array(list(occupation[1]))
 
         return 0
 
@@ -104,35 +90,32 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
 
     return out['fun'], out['x']
 
+def compute_z2_expected_energy(circuit):
+    if len(circuit.qmregs) != 1:
+        raise ValueError('Only support a single qumode register right now!')
+    if len(circuit._qubit_regs) != 1:
+        raise ValueError('Only support a single qubit register right now!')
+
+    qumode_reg = circuit.qmregs[0]
+    qubit_reg  = circuit._qubit_regs[0]
+
+    for i in range(len(qubit_reg)):
+        measureE_fieldterm(circuit, qubit_reg, i)
+    circuit.barrier()
+    for i in range(len(qumode_reg)):
+        measureE_hoppingterm(circuit, qumode_reg, i)
+    circuit
+
 def measureE_fieldterm(circuit, qmr, qbr, i):
     circuit.x(qbr[i])
     # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
     circuit.measure(-i, 0)
-    stateop, result = c2qa.util.simulate(circuit)
-    counts = result.get_counts()
-    c2qa.util.cv_fockcounts(counts, (qmr[0], qbr[0]))
 
 def measureE_hoppingterm(circuit, numberofmodes, numberofqubits, qmr, qbr, i):
     occs=[np.zeros((numberofmodes,numberofqubits))]
-
-    # print("initial state ")
-    # stateop, _ = c2qa.util.simulate(circuit)
-    # util.stateread(stateop, qbr.size, numberofmodes, cutoff)
-
     circuit.cv_bs(np.pi/4, qmr[i], qmr[i+1])
-    # what will be the best way to measure photon number parity?
-    # circuit.cv_cp(1, qmr[i],)
-    circuit.cv_snap(1, 0, qmr[i])
-    circuit.cv_snap(1, 0, qmr[i+1])
     # figure out which qubit corresponds to i in the small endian format etc. Or just make the measure function.
     circuit.measure(-i, 0)
-
-
-    # stateop, result = c2qa.util.simulate(circuit)
-    # occupation = util.stateread(stateop, qbr.size, numberofmodes, 4)
-    # occs[0][i]=np.array(list(occupation[0]))
-    # occs[1][i]=np.array(list(occupation[1]))
-
     # return occs
 
 
