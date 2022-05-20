@@ -90,22 +90,20 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
 
     return out['fun'], out['x']
 
-def compute_z2_expected_energy(z2_ansatz):
+def compute_z2_expected_energy(circuit):
     if len(circuit.qmregs) != 1:
         raise ValueError('Only support a single qumode register right now!')
     if len(circuit._qubit_regs) != 1:
         raise ValueError('Only support a single qubit register right now!')
 
-    theta_1, theta_2, theta_3 = gate_angles
-
     qumode_reg = circuit.qmregs[0]
     qubit_reg  = circuit._qubit_regs[0]
 
-    for i in range(qubit_reg.):
-        measureE_fieldterm(circuit, qmr, qbr, i)
+    for i in range(len(qubit_reg)):
+        measureE_fieldterm(circuit, qubit_reg, i)
     circuit.barrier()
-    for i in range(numberofqubits):
-        measureE_fieldterm(circuit, qmr, qbr, i)
+    for i in range(len(qumode_reg)):
+        measureE_hoppingterm(circuit, qumode_reg, i)
     circuit
 
 def measureE_fieldterm(circuit, qmr, qbr, i):
