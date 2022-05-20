@@ -22,7 +22,7 @@ def h1h2h3(circuit, qma, qmb, qb, theta_1, theta_2, theta_3):
     # circuit.cv_cpbs(theta_1, qmb, qma, qb)
     circuit.cv_rh1(theta_1, qmb, qma, qb)
     circuit.cv_rh2(theta_1, qmb, qma, qb)
-    circuit.rx(theta_3, qb)
+    circuit.rx(-2*theta_3, qb) # the factors in front of the theta_3 enable us to change the qiskit Rx gate to exp^{i theta}
     return circuit
 
 def vary_Z2LGT(circuit, numberofmodes, qmr, qbr, theta_1, theta_2, theta_3):

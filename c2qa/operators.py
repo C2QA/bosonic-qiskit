@@ -158,7 +158,7 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = 1j * (alpha**2) *(a1dag2 + a12dag)
+        argm = 1j * alpha *(a1dag2 + a12dag)
         arg = scipy.sparse.kron(zQB, argm)
 
         return scipy.sparse.linalg.expm(arg)
@@ -167,7 +167,7 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = (alpha**2) *(a1dag2 - a12dag)
+        argm = alpha *(a12dag - a1dag2)
         arg = scipy.sparse.kron(zQB, argm)
 
         return scipy.sparse.linalg.expm(arg)
