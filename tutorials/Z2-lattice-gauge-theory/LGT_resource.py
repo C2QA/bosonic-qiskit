@@ -51,7 +51,8 @@ def construct_circuit(params: List[float], circuit: c2qa.CVCircuit) -> c2qa.CVCi
     return circuit
 
 def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
-           initial_qumode_state: List[int], num_layers: int = 1) -> Tuple:
+           initial_qumode_state: List[int], num_layers: int = 1,
+           gauge_fluctuations=1, optimizer='COBYLA') -> Tuple:
     """Implements a VQE loop on a Z2 LGT
 
     The input parameters define the specific Z2 LGT for which the VQE will
@@ -75,22 +76,24 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
     for qubit in qbr:
         init_circuit.h(qubit)
 
+    trace = []
     def f(params):
         """The objective function that scipy will minimize"""
         # First, construct the parameterized ansatz
         z2_ansatz = construct_circuit(params, copy.deepcopy(init_circuit)) # deepcopy allows us to reuse the circuit creation and initialization
 
         # Take the measurement outcomes and compute the expected energy
-        energy = compute_z2_expected_energy(z2_ansatz)
+        energy = compute_z2_expected_energy(z2_ansatz, gauge_fluctuations=gauge_fluctuations)
+        trace.append(energy)
 
         return energy
 
     init_params = np.random.uniform(low=0.0, high=2 * np.pi, size=3 * num_layers)
-    out = scipy.optimize.minimize(f, x0=init_params, method="COBYLA")
+    out = scipy.optimize.minimize(f, x0=init_params, method=optimizer)
 
-    return out['fun'], out['x']
+    return out, trace
 
-def compute_z2_expected_energy(circuit: c2qa.CVCircuit) -> float:
+def compute_z2_expected_energy(circuit: c2qa.CVCircuit, gauge_fluctuations: float) -> float:
     if len(circuit.qmregs) != 1:
         raise ValueError('Only support a single qumode register right now!')
     if len(circuit._qubit_regs) != 1:
@@ -104,11 +107,10 @@ def compute_z2_expected_energy(circuit: c2qa.CVCircuit) -> float:
 
     circuit.barrier()
 
+    hopping_contribution = append_and_measure_hopping_term(copy.deepcopy(circuit), qumode_reg, qubit_reg, cbit_hopping_reg)
     field_contribution = append_and_measure_field_term(copy.deepcopy(circuit), qubit_reg, cbit_field_reg)
 
-    hopping_contribution = append_and_measure_hopping_term(copy.deepcopy(circuit), qumode_reg, qubit_reg, cbit_hopping_reg)
-
-    return field_contribution + hopping_contribution
+    return hopping_contribution + gauge_fluctuations * field_contribution
 
 def append_and_measure_hopping_term(
         circuit: c2qa.CVCircuit,
