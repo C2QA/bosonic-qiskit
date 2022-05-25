@@ -14,7 +14,15 @@ import scipy
 import c2qa
 
 
-def h1h2h3(circuit, qma, qmb, qb, theta_1, theta_2, theta_3):
+def h1h2h3(
+        circuit: c2qa.CVCircuit,
+        qma: List[qiskit.circuit.Qubit],
+        qmb: List[qiskit.circuit.Qubit],
+        qb: qiskit.circuit.Qubit,
+        theta_1: float,
+        theta_2: float,
+        theta_3: float
+        ) -> c2qa.CVCircuit:
     circuit.cv_rh1(theta_1, qmb, qma, qb)
     circuit.cv_rh2(theta_1, qmb, qma, qb)
     circuit.rx(-2*theta_3, qb) # the factors in front of the theta_3 enable us to change the qiskit Rx gate to exp^{i theta}
@@ -82,7 +90,7 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
 
     return out['fun'], out['x']
 
-def compute_z2_expected_energy(circuit):
+def compute_z2_expected_energy(circuit: c2qa.CVCircuit) -> float:
     if len(circuit.qmregs) != 1:
         raise ValueError('Only support a single qumode register right now!')
     if len(circuit._qubit_regs) != 1:
@@ -102,7 +110,12 @@ def compute_z2_expected_energy(circuit):
 
     return field_contribution + hopping_contribution
 
-def append_and_measure_hopping_term(circuit, qumode_reg, qubit_reg, cbit_hopping_reg):
+def append_and_measure_hopping_term(
+        circuit: c2qa.CVCircuit,
+        qumode_reg: c2qa.QumodeRegister,
+        qubit_reg: qiskit.QuantumRegister,
+        cbit_hopping_reg: qiskit.ClassicalRegister
+        ) -> float:
     for n in range(qumode_reg.num_qumodes - 1):
         measureE_hoppingterm(circuit, qumode_reg[n], qumode_reg[n+1],
                              qubit_reg[n], cbit_hopping_reg[n])
@@ -141,7 +154,11 @@ def append_and_measure_hopping_term(circuit, qumode_reg, qubit_reg, cbit_hopping
     return sum([diff_val * z_val for diff_val, z_val in zip(diffs, avg_Z)])
 
 
-def append_and_measure_field_term(circuit, qubit_reg, cbit_field_reg):
+def append_and_measure_field_term(
+        circuit: c2qa.CVCircuit,
+        qubit_reg: qiskit.QuantumRegister,
+        cbit_field_reg: qiskit.ClassicalRegister
+        ) -> float:
     for qubit, cbit in zip(qubit_reg, cbit_field_reg):
         measureE_fieldterm(circuit, qubit, cbit)
 
@@ -166,11 +183,21 @@ def append_and_measure_field_term(circuit, qubit_reg, cbit_field_reg):
 
     return sum(avg_X)
 
-def measureE_fieldterm(circuit, qubit, cbit):
+def measureE_fieldterm(
+        circuit: c2qa.CVCircuit,
+        qubit: qiskit.circuit.Qubit,
+        cbit: qiskit.circuit.Clbit
+        ) -> None:
     circuit.h(qubit)
     circuit.measure(qubit, cbit)
 
-def measureE_hoppingterm(circuit, qumode1, qumode2, qubit, cbit):
+def measureE_hoppingterm(
+        circuit: c2qa.CVCircuit,
+        qumode1: List[qiskit.circuit.Qubit],
+        qumode2: List[qiskit.circuit.Qubit],
+        qubit: qiskit.circuit.Qubit,
+        cbit: qiskit.circuit.Clbit
+        ) -> None:
     circuit.cv_bs(np.pi/4, qumode1, qumode2)
     circuit.measure(qubit, cbit)
 
