@@ -73,8 +73,8 @@ def z2_vqe(num_qubits: int, num_qumodes: int, qubits_per_mode: int,
     for i in range(qmr.num_qumodes):
         init_circuit.cv_initialize(initial_qumode_state[i], qmr[i])
     # initialize the qubits
-    for qubit in qbr:
-        init_circuit.h(qubit)
+    #for qubit in qbr:
+    #    init_circuit.h(qubit)
 
     trace = []
     occupation_history = []
@@ -154,7 +154,7 @@ def append_and_measure_hopping_term(
         avg_Z.append(avg_z_n)
 
     # 2. Measure a, a_dag
-    circuit.measure_all()
+    #circuit.measure_all()
     stateop, result = c2qa.util.simulate(circuit)
     # Fock counts for each qumode, occupation = [fock_count_qumode_0 , ..., fock_count_qumode_n]
     occupation = c2qa.util.stateread(stateop, qubit_reg.size, qumode_reg.num_qumodes, qumode_reg.cutoff, verbose=False)[0][::-1]
