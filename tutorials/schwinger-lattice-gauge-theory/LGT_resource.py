@@ -296,6 +296,25 @@ def compute_schwinger_expected_energy(circuit: c2qa.CVCircuit, g: float, theta: 
 
     return (1/g) * electric_contribution + (1/g) * magnetic_contribution - (J) * e_and_m_contribution
 
+def make_number_operator(matrix, index, num_modes, cutoff, num_qubits):
+    identity = scipy.sparse.eye(cutoff)
+    if index == 0:
+        op = matrix
+    else:
+        op = identity
+
+    for i in range(1, num_modes):
+        if i == index:
+            op = scipy.sparse.kron(op, matrix)
+        else:
+            op = scipy.sparse.kron(op, identity)
+
+    qubit_identity = scipy.sparse.eye(2)
+    for _ in range(num_qubits):
+        op = scipy.sparse.kron(op, qubit_identity)
+
+    return op
+
 def measure_electric_contribution(
         circuit: c2qa.CVCircuit,
         qumode_reg: c2qa.QumodeRegister,
@@ -304,12 +323,32 @@ def measure_electric_contribution(
         ) -> float:
     """Measure the energy of H_E = 1/g * SUM_n{(Na_n - Nb_n - theta / 2pi) ^ 2}"""
     stateop, result = c2qa.util.simulate(circuit)
+
     # Fock counts for each qumode, occupation = [fock_count_qumode_0 , ..., fock_count_qumode_n]
     occupation = c2qa.util.stateread(stateop, qubit_reg.size, qumode_reg.num_qumodes, qumode_reg.cutoff, verbose=False)[0][::-1]
     summation_terms = []
     for n in range(qumode_reg.num_qumodes - 1):
-        # TODO: check that this is a valid way to compute the expectation...
-        summation_terms.append((occupation[n] - occupation[n+1] - theta / 2*np.pi) ** 2)
+        summation_terms.append(-2 * occupation[n] * occupation[n+1] - theta * (occupation[n] + occupation[n+1]))
+
+    #qumode_statevector = c2qa.util.cv_partial_trace(circuit, stateop).to_statevector()
+    qumode_statevector = stateop
+
+    N_matrix = c2qa.operators.CVOperators(qumode_reg.cutoff, 1).N
+    N_squared = N_matrix @ N_matrix
+    for index in range(qumode_reg.num_qumodes):
+        number_operator = make_number_operator(N_squared, index,
+                                               qumode_reg.num_qumodes, qumode_reg.cutoff,
+                                               qubit_reg.size).toarray()
+
+        statevec_dag = qumode_statevector.data.conj().T
+        statevec     = qumode_statevector.data
+
+        expectation_val = np.dot(statevec_dag, np.dot(number_operator, statevec))
+        real_part = np.real(expectation_val)
+        imag_part = np.imag(expectation_val)
+        if abs(imag_part) > 1e-10:
+            raise Exception(f'Imaginary part of expectation value should be 0 not: {imag_part}')
+        summation_terms.append(real_part)
 
     return sum(summation_terms)
 
