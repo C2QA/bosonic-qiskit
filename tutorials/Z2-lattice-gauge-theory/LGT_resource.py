@@ -119,8 +119,7 @@ def compute_z2_expected_energy(circuit: c2qa.CVCircuit, gauge_fluctuations: floa
     hopping_contribution = append_and_measure_hopping_term(copy.deepcopy(circuit), qumode_reg, qubit_reg, cbit_hopping_reg)
     field_contribution = append_and_measure_field_term(copy.deepcopy(circuit), qubit_reg, cbit_field_reg)
 
-    #return hopping_contribution + gauge_fluctuations * field_contribution
-    return hopping_contribution
+    return hopping_contribution + gauge_fluctuations * field_contribution
 
 def append_and_measure_hopping_term(
         circuit: c2qa.CVCircuit,
