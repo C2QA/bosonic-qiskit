@@ -36,7 +36,6 @@ class ParameterizedUnitaryGate(UnitaryGate):
             operator = params
         else:
             operator = op_func(*params).toarray()
-        print(operator)
         super().__init__(operator, label)
 
         self.op_func = op_func
