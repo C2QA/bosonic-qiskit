@@ -32,28 +32,31 @@ class ParameterizedUnitaryGate(UnitaryGate):
         if self._parameterized:
             zeros = [0] * len(params)
             operator = op_func(*zeros).toarray()
+        elif isinstance(params, numpy.ndarray):
+            operator = params
         else:
             operator = op_func(*params).toarray()
+        print(operator)
         super().__init__(operator, label)
 
         self.op_func = op_func
 
-        if self._parameterized:
+        if self._parameterized and not isinstance(params, numpy.ndarray):
             self.params = params  # Override UnitaryGate params operator matrix
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
-        if self._parameterized:
+        if self._parameterized and not isinstance(self.params, numpy.ndarray):
             return self.op_func(*self.params).toarray()
         else:
             return super().__array__(dtype)
 
     def validate_parameter(self, parameter):
         """Override UnitaryGate validate_parameter to support more than just matrix operators."""
-        if self._parameterized:
-            Gate.validate_parameter(self, parameter)
+        if self._parameterized and not isinstance(self.params, numpy.ndarray):
+            return Gate.validate_parameter(self, parameter)
         else:
-            super().validate_parameter(parameter)
+            return super().validate_parameter(parameter)
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
         """Calculate the operator matrix by executing the selected function.
@@ -83,7 +86,10 @@ class ParameterizedUnitaryGate(UnitaryGate):
         #     result = self.op_func(*values)
         result = self.op_func(*values)
 
-        return result.toarray()
+        if hasattr(result, "toarray"):
+            result = result.toarray()
+
+        return result
 
 
 class CVOperators:

@@ -132,14 +132,16 @@ def test_conditonal_squeezing():
     assert_unchanged(state, result)
 
 
-def test_displacement_once():
-    circuit, qmr = create_unconditional()
+def test_displacement_once(capsys):
+    with capsys.disabled():
+        circuit, qmr = create_unconditional()
 
-    alpha = random.random()
-    circuit.cv_d(alpha, qmr[0])
+        # alpha = random.random()
+        alpha = 1
+        circuit.cv_d(alpha, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
-    assert_changed(state, result)
+        state, result = c2qa.util.simulate(circuit)
+        assert_changed(state, result)
 
 
 def test_displacement_twice():

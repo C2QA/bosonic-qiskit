@@ -239,7 +239,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        return self.append(ParameterizedUnitaryGate(self.ops.s3, [z], label="S2"), qargs=qumode_a + qumode_b)
+        return self.append(ParameterizedUnitaryGate(self.ops.s2, [z], label="S2"), qargs=qumode_a + qumode_b)
 
     def cv_bs(self, phi, qumode_a, qumode_b):
         """Beam splitter gate.

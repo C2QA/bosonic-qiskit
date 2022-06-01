@@ -536,7 +536,7 @@ def animate_wigner(
                 sim_circuit = base_circuit.copy()
 
                 sim_circuit.unitary(
-                    inst.op.calculate_matrix(index, animation_segments),
+                    inst.calculate_matrix(index, animation_segments),
                     qargs,
                     label=inst.name,
                 )
@@ -553,8 +553,8 @@ def animate_wigner(
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                op_0 = inst_0.base_gate.op.calculate_matrix(index, animation_segments)
-                op_1 = inst_1.base_gate.op.calculate_matrix(index, animation_segments)
+                op_0 = inst_0.base_gate.calculate_matrix(index, animation_segments)
+                op_1 = inst_1.base_gate.calculate_matrix(index, animation_segments)
 
                 sim_circuit.append(
                     CVCircuit.cv_conditional(
