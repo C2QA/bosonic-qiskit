@@ -13,7 +13,7 @@ import scipy.stats
 
 from c2qa import CVCircuit
 
-from c2qa.operators import CVGate
+from c2qa.operators import ParameterizedUnitaryGate
 
 def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
@@ -230,7 +230,8 @@ def simulate(
             state = result.data()["statevector"]
         else:
             state = Statevector(result.get_statevector(circuit_compiled))
-    except Exception:
+    except Exception as e:
+        print(f"WARN: Error getting statevector: {e}")
         state = (
             None  # result.get_statevector() will fail if add_save_statevector is false
         )
@@ -530,7 +531,7 @@ def animate_wigner(
         # qubit = xxx
         # cbit = yyy
 
-        if isinstance(inst, CVGate):
+        if isinstance(inst, ParameterizedUnitaryGate):
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 

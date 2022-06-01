@@ -1,6 +1,7 @@
 import numpy
+from qiskit.circuit import Gate
+from qiskit.circuit.parameter import ParameterExpression
 from qiskit.extensions.unitary import UnitaryGate
-from qiskit.quantum_info import Operator
 import scipy.sparse
 import scipy.sparse.linalg
 
@@ -10,23 +11,49 @@ zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
 
 
-class ParameterizedOperator(Operator):
-    """Support parameterizing operators for circuit animations."""
+class ParameterizedUnitaryGate(UnitaryGate):
+    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, *params, inverse: bool = False):
-        """Initialize ParameterizedOperator.
+    def __init__(self, op_func, params, label=None):
+        """Initialize ParameterizedUnitaryGate
+
+        FIXME - Use real duration & units
 
         Args:
-            op_func (function): function to call to generate operator matrix
-            params (tuple): function parameters
-            inverse (bool): True to caclualte the inverse of the operator matrix
+            data (ndarray): operator matrix
+            label (string, optional): Gate name. Defaults to None.
         """
+        
+        # Test if user supplied ParameterExpression to later short-circuit creation of opearator matrix
+        self._parameterized = any(
+            isinstance(param, ParameterExpression) and param.parameters for param in params
+        )
 
-        super().__init__(op_func(*params).toarray())
+        if self._parameterized:
+            zeros = [0] * len(params)
+            operator = op_func(*zeros).toarray()
+        else:
+            operator = op_func(*params).toarray()
+        super().__init__(operator, label)
 
         self.op_func = op_func
-        self.params = params
-        self.inverse = inverse
+
+        if self._parameterized:
+            self.params = params  # Override UnitaryGate params operator matrix
+
+    def __array__(self, dtype=None):
+        """Call the operator function to build the array using the bound parameter values."""
+        if self._parameterized:
+            return self.op_func(*self.params).toarray()
+        else:
+            return super().__array__(dtype)
+
+    def validate_parameter(self, parameter):
+        """Override UnitaryGate validate_parameter to support more than just matrix operators."""
+        if self._parameterized:
+            Gate.validate_parameter(self, parameter)
+        else:
+            super().validate_parameter(parameter)
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
         """Calculate the operator matrix by executing the selected function.
@@ -39,6 +66,9 @@ class ParameterizedOperator(Operator):
         Returns:
             ndarray: operator matrix
         """
+        if self.is_parameterized():
+            raise NotImplementedError("Unable to calculate incremental operator matrices for parameterized gate")
+
         param_fraction = current_step / total_steps
 
         values = []
@@ -47,27 +77,13 @@ class ParameterizedOperator(Operator):
 
         values = tuple(values)
 
-        if self.inverse:
-            result = scipy.sparse.linalg.inv(self.op_func(*values))
-        else:
-            result = self.op_func(*values)
+        # if self.inverse:
+        #     result = scipy.sparse.linalg.inv(self.op_func(*values))
+        # else:
+        #     result = self.op_func(*values)
+        result = self.op_func(*values)
 
         return result.toarray()
-
-
-class CVGate(UnitaryGate):
-    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
-
-    def __init__(self, data, label=None):
-        """Initialize CVGate
-
-        Args:
-            data (ndarray): operator matrix
-            label (string, optional): Gate name. Defaults to None.
-        """
-        super().__init__(data, label)
-
-        self.op = data
 
 
 class CVOperators:
