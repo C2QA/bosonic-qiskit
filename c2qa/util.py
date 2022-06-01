@@ -559,6 +559,7 @@ def animate_wigner(
                 sim_circuit.append(
                     CVCircuit.cv_conditional(
                         inst.name,
+                        inst_0.base_gate.op_func,
                         op_0,
                         op_1,
                         inst.num_qubits_per_qumode,

@@ -31,14 +31,19 @@ class ParameterizedUnitaryGate(UnitaryGate):
 
         if self._parameterized:
             zeros = [0] * len(params)
-            operator = op_func(*zeros).toarray()
+            operator = op_func(*zeros)
         elif isinstance(params, numpy.ndarray):
             operator = params
         else:
-            operator = op_func(*params).toarray()
+            operator = op_func(*params)
+
+        if hasattr(operator, "toarray"):
+            operator = operator.toarray()
+
         super().__init__(operator, label)
 
         self.op_func = op_func
+        self.op_params = params
 
         if self._parameterized and not isinstance(params, numpy.ndarray):
             self.params = params  # Override UnitaryGate params operator matrix
@@ -74,7 +79,7 @@ class ParameterizedUnitaryGate(UnitaryGate):
         param_fraction = current_step / total_steps
 
         values = []
-        for param in self.params:
+        for param in self.op_params:
             values.append(param * param_fraction)
 
         values = tuple(values)
