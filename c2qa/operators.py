@@ -45,19 +45,19 @@ class ParameterizedUnitaryGate(UnitaryGate):
         self.op_func = op_func
         self.op_params = params
 
-        if self._parameterized and not isinstance(params, numpy.ndarray):
+        if self._parameterized:
             self.params = params  # Override UnitaryGate params operator matrix
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
-        if self._parameterized and not isinstance(self.params, numpy.ndarray):
+        if self._parameterized:
             return self.op_func(*self.params).toarray()
         else:
             return super().__array__(dtype)
 
     def validate_parameter(self, parameter):
         """Override UnitaryGate validate_parameter to support more than just matrix operators."""
-        if self._parameterized and not isinstance(self.params, numpy.ndarray):
+        if self._parameterized:
             return Gate.validate_parameter(self, parameter)
         else:
             return super().validate_parameter(parameter)
