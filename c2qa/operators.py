@@ -51,7 +51,7 @@ class ParameterizedUnitaryGate(UnitaryGate):
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
         if self._parameterized:
-            return self.op_func(*self.params).toarray()
+            return self.op_func(*map(float, self.params)).toarray()
         else:
             return super().__array__(dtype)
 
