@@ -42,7 +42,7 @@ def test_parameterized_displacement(capsys):
         alpha = qiskit.circuit.Parameter("alpha")
         circuit.cv_d(alpha, qmr[0])
 
-        bc = circuit.bind_parameters({alpha: 3.14})
+        bound_circuit = circuit.bind_parameters({alpha: 3.14})
 
-        state, result = c2qa.util.simulate(bc)
+        state, result = c2qa.util.simulate(bound_circuit)
         assert_changed(state, result)
