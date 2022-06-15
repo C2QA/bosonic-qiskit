@@ -1,8 +1,10 @@
 from copy import copy
+from logging import NOTSET
 import math
 import multiprocessing
 import os
 import pathlib
+from typing import List
 
 import matplotlib.animation
 import matplotlib.pyplot as plt
@@ -186,12 +188,13 @@ def get_probabilities(result: qiskit.result.Result):
 
 
 def simulate(
-        circuit: CVCircuit,
-        backend_name: str = "aer_simulator",
-        shots: int = 1024,
-        add_save_statevector: bool = True,
-        conditional_state_vector: bool = False,
-        per_shot_state_vector: bool = False,
+    circuit: CVCircuit,
+    shots: int = 1024,
+    add_save_statevector: bool = True,
+    conditional_state_vector: bool = False,
+    per_shot_state_vector: bool = False,
+    kraus_operators = None,
+    error_gates: List[str] = None
 ):
     """Convenience function to simulate using the given backend.
 
@@ -199,12 +202,12 @@ def simulate(
 
     Args:
         circuit (CVCircuit): circuit to simulate
-        backend_name (str, optional): Simulator to use. Defaults to "aer_simulator".
         shots (int, optional): Number of simulation shots. Defaults to 1024.
         add_save_statevector (bool, optional): Set to True if a state_vector instruction
                                                should be added to the end of the circuit. Defaults to True.
         conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
                                                    (each state value gets its own state vector). Defaults to False.
+        kraus_operator (list)
 
     Returns:
         tuple: (state, result) tuple from simulation
@@ -216,24 +219,34 @@ def simulate(
             conditional=conditional_state_vector, pershot=per_shot_state_vector
         )
 
-    # Transpile for simulator
-    simulator = qiskit.Aer.get_backend(backend_name)
+    # Transpile for simulator, with noise error if provided
+    if kraus_operators is not None:
+        error = qiskit.providers.aer.noise.kraus_error(kraus_operators)
+        if not error_gates:
+            error_gates = circuit.cv_gate_labels
+        noise_model = qiskit.providers.aer.noise.NoiseModel()
+        noise_model.add_quantum_error(error, error_gates, circuit.qumode_qubits)
+        noise_model.add_basis_gates("unitary")
+        # print(noise_model.basis_gates)
+        simulator = qiskit.providers.aer.AerSimulator(noise_model=noise_model)
+    else:
+        simulator = qiskit.providers.aer.AerSimulator()
     circuit_compiled = qiskit.transpile(circuit, simulator)
 
     # Run and get statevector
     result = simulator.run(circuit_compiled, shots=shots).result()
 
     # The user may have added their own circuit.save_statevector
-    try:
-        if conditional_state_vector or per_shot_state_vector:
-            # Will get a dictionary of state vectors, one for each classical register value
-            state = result.data()["statevector"]
-        else:
-            state = Statevector(result.get_statevector(circuit_compiled))
-    except Exception:
-        state = (
-            None  # result.get_statevector() will fail if add_save_statevector is false
-        )
+    state = None
+    if len(result.results):
+        try:
+            if conditional_state_vector or per_shot_state_vector:
+                # Will get a dictionary of state vectors, one for each classical register value
+                state = result.data()["statevector"]
+            else:
+                state = Statevector(result.get_statevector(circuit_compiled))
+        except Exception:
+            state = None  # result.get_statevector() will fail if add_save_statevector is false
 
     if add_save_statevector:
         circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
@@ -481,16 +494,19 @@ def plot(
 
 
 def animate_wigner(
-        circuit: CVCircuit,
-        qubit,
-        cbit,
-        animation_segments: int = 10,
-        shots: int = 1024,
-        file: str = None,
-        axes_min: int = -6,
-        axes_max: int = 6,
-        axes_steps: int = 200,
-        processes: int = None,
+    circuit: CVCircuit,
+    qubit,
+    cbit,
+    animation_segments: int = 10,
+    shots: int = 1024,
+    file: str = None,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    processes: int = None,
+    kraus_operators = None,
+    error_gates: List[str] = None,
+    keep_state: bool = False
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -512,6 +528,9 @@ def animate_wigner(
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         processes (int, optional): Number of parallel Python processes to start.
                                    If None, perform serially in main process. Defaults to None.
+        keep_state (bool, optional): True if each frame builds on the previous frame's state vector. 
+                                     False if each frame starts over from the beginning of the circuit.
+                                     If True, it requires sequential simulation of each frame.
 
     Returns:
         [type]: [description]
@@ -590,16 +609,38 @@ def animate_wigner(
         processes = math.floor(multiprocessing.cpu_count() / 2)
         processes = max(processes, 1)  # prevent zero processes with 1 CPU
 
-    if processes == 1:
+    if keep_state:
+        w_fock = []
+        previous_state = None
+        for circuit in circuits:
+            if previous_state:
+                # Initialize circuit to simulate with the previous frame's state, then append the last instruction
+                sim_circuit = circuit.copy()
+                sim_circuit.data.clear()  # Is this safe -- could we copy without data?
+                sim_circuit.initialize(previous_state)
+                last_instructions = circuit.data[-3:]  # Get the last instruction, plus the Hadamard/measure
+                for inst in last_instructions:
+                    sim_circuit.append(*inst)
+            else:
+                # No previous simulation state, just run the current circuit
+                sim_circuit = circuit
+            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates)
+            w_fock.append(fock)
+    elif processes == 1:
         w_fock = []
         for circuit in circuits:
-            w_fock.append(simulate_wigner(circuit, xvec, shots))
+            fock, _ = simulate_wigner(circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates)
+            w_fock.append(fock)
     else:
         pool = multiprocessing.Pool(processes)
-        w_fock = pool.starmap(
-            simulate_wigner, ((circuit, xvec, shots) for circuit in circuits)
+        results = pool.starmap(
+            simulate_wigner, ((circuit, xvec, shots, kraus_operators, error_gates) for circuit in circuits)
         )
         pool.close()
+        w_fock = [i[0] for i in results if i is not None]
+
+    # Remove None values in w_fock if simulation didn't produce results
+    w_fock = [i for i in w_fock if i is not None]
 
     # Animate w_fock Wigner function results
     # Create empty plot to animate
@@ -609,7 +650,7 @@ def animate_wigner(
     anim = matplotlib.animation.FuncAnimation(
         fig=fig,
         func=_animate,
-        frames=len(circuits),
+        frames=len(w_fock),
         fargs=(fig, ax, xvec, w_fock, file),
         interval=200,
         repeat=True,
@@ -640,6 +681,7 @@ def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
 
 def _animate(frame, *fargs):
     """Generate individual matplotlib frame in animation."""
+    fig = fargs[0]
     ax = fargs[1]
     xvec = fargs[2]
     w_fock = fargs[3][frame]
@@ -651,23 +693,39 @@ def _animate(frame, *fargs):
     color_levels = np.linspace(-abs_max, abs_max, 100)
 
     ax.clear()
-    ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
+    cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
+    if frame == 0:
+        fig.colorbar(cont, ax=ax)
 
     if file:
         os.makedirs(f"{file}_frames", exist_ok=True)
         plt.savefig(f"{file}_frames/frame_{frame}.png")
 
 
-def simulate_wigner(circuit: CVCircuit, xvec: np.ndarray, shots: int):
+def simulate_wigner(
+    circuit: CVCircuit, 
+    xvec: np.ndarray, 
+    shots: int,
+    kraus_operators = None,
+    error_gates: List[str] = None
+):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
-    state, _ = simulate(circuit, shots=shots, conditional_state_vector=True)
-    even_state = state["0x0"]
-    # odd_state = state["0x1"]
+    state, _ = simulate(circuit, shots=shots, conditional_state_vector=True, kraus_operators=kraus_operators, error_gates=error_gates)
+    
+    if state:
+        even_state = state["0x0"]
+        # odd_state = state["0x1"]
 
-    density_matrix = cv_partial_trace(circuit, even_state)
-    return _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+        density_matrix = cv_partial_trace(circuit, even_state)
+        wigner_result = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+    else:
+        print("WARN: No state vector returned by simulation -- unable to calculate Wigner function!")
+        wigner_result = None
+        even_state = None
+    
+    return wigner_result, even_state
 
 
 def wigner(

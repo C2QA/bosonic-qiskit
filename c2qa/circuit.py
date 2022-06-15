@@ -1,11 +1,13 @@
+import copy
 import warnings
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.circuit.parametertable import ParameterTable
+import qiskit.providers.aer.library.save_instructions as save
 
 from c2qa.operators import CVGate, CVOperators, ParameterizedOperator
 from c2qa.qumoderegister import QumodeRegister
-import qiskit.providers.aer.library.save_instructions as save
 
 
 class CVCircuit(QuantumCircuit):
@@ -61,6 +63,45 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators(self.cutoff, num_qumodes)
 
+    def merge(self, circuit: QuantumCircuit):
+        """
+        Merge in properties of QisKit QuantumCircuit into this instance.
+
+        Useful if QisKit returned a new instance of QuantumCircuit after passing in this instance. Calling merge() can merge the two, keeping this instance.
+
+        See https://qiskit.org/documentation/_modules/qiskit/circuit/quantumcircuit.html#QuantumCircuit.copy
+        """
+
+        self.qregs = circuit.qregs.copy()
+        self.cregs = circuit.cregs.copy()
+        self._qubits = circuit._qubits.copy()
+        self._ancillas = circuit._ancillas.copy()
+        self._clbits = circuit._clbits.copy()
+        self._qubit_indices = circuit._qubit_indices.copy()
+        self._clbit_indices = circuit._clbit_indices.copy()
+
+        instr_instances = {id(instr): instr for instr, _, __ in circuit._data}
+
+        instr_copies = {id_: instr.copy() for id_, instr in instr_instances.items()}
+
+        self._parameter_table = ParameterTable(
+            {
+                param: [
+                    (instr_copies[id(instr)], param_index)
+                    for instr, param_index in circuit._parameter_table[param]
+                ]
+                for param in circuit._parameter_table
+            }
+        )
+
+        self._data = [
+            (instr_copies[id(inst)], qargs.copy(), cargs.copy())
+            for inst, qargs, cargs in circuit._data
+        ]
+
+        self._calibrations = copy.deepcopy(circuit._calibrations)
+        self._metadata = copy.deepcopy(circuit._metadata)
+
     @property
     def cutoff(self):
         """Integer cutoff size."""
@@ -70,6 +111,25 @@ class CVCircuit(QuantumCircuit):
     def num_qubits_per_qumode(self):
         """Integer number of qubits to represent a qumode."""
         return self.qmregs[-1].num_qubits_per_qumode
+
+    @property
+    def qumode_qubits(self):
+        """All the qubits representing the qumode registers on the circuit"""
+        qubits = []
+        for reg in self.qmregs:
+            qubits += reg[::]
+        return qubits
+
+    @property
+    def cv_gate_labels(self):
+        """All the CV gate names on the current circuit. These will either be instances of CVGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate."""
+        cv_gates = set()
+        for instruction, qargs, cargs in self.data:
+            if isinstance(instruction, CVGate):
+                cv_gates.add(instruction.label)
+            elif hasattr(instruction, "cv_conditional") and instruction.cv_conditional:
+                cv_gates.add(instruction.label)
+        return list(cv_gates)
 
     def cv_initialize(self, fock_state, qumodes):
         """Initialize the qumode to a Fock state.
@@ -123,7 +183,7 @@ class CVCircuit(QuantumCircuit):
         sub_circ.append(CVGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1), qargs)
 
         # Create a single instruction for the conditional gate, flag it for later processing
-        inst = sub_circ.to_instruction()
+        inst = sub_circ.to_instruction(label=name)
         inst.cv_conditional = True
         inst.num_qubits_per_qumode = num_qubits_per_qumode
         inst.num_qumodes = num_qumodes
