@@ -553,15 +553,15 @@ def animate_wigner(
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                op_0 = inst_0.base_gate.calculate_matrix(index, animation_segments)
-                op_1 = inst_1.base_gate.calculate_matrix(index, animation_segments)
+                params_0 = inst_0.base_gate.calculate_params(index, animation_segments)
+                params_1 = inst_1.base_gate.calculate_params(index, animation_segments)
 
                 sim_circuit.append(
                     CVCircuit.cv_conditional(
                         inst.name,
                         inst_0.base_gate.op_func,
-                        op_0,
-                        op_1,
+                        params_0,
+                        params_1,
                         inst.num_qubits_per_qumode,
                         inst.num_qumodes,
                     ),

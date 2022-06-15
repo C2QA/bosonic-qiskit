@@ -297,7 +297,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.cpbs, [phi], label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.cpbs, [phi], label="CPBS", num_qubits=len(qumode_a) + len(qumode_b) + 1), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_cpbs_z2vqe(self, phi, qumode_a, qumode_b, qubit_ancilla):
         """Controlled phase two-mode beam splitter
@@ -311,7 +311,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.cpbs_z2vqe, [phi], label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.cpbs_z2vqe, [phi], label="CPBS", num_qubits=len(qumode_a) + len(qumode_b) + 1), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
 
     def cv_r(self, phi, qumode):
@@ -337,7 +337,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotation, [theta], label="QDCR"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotation, [theta], label="QDCR", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
     def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
@@ -388,7 +388,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], label="PNCQR"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], label="PNCQR", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits

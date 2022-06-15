@@ -1,9 +1,15 @@
+import math
+from numbers import Complex
+
+
 import numpy
+from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
 from qiskit.circuit.parameter import ParameterExpression
 from qiskit.extensions.unitary import UnitaryGate
 import scipy.sparse
 import scipy.sparse.linalg
+
 
 xQB = numpy.array([[0, 1], [1, 0]])
 yQB = numpy.array([[0, 1j], [-1j, 0]])
@@ -11,10 +17,10 @@ zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
 
 
-class ParameterizedUnitaryGate(UnitaryGate):
+class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, params, label=None):
+    def __init__(self, op_func, params, label=None, num_qubits=None):
         """Initialize ParameterizedUnitaryGate
 
         FIXME - Use real duration & units
@@ -22,43 +28,44 @@ class ParameterizedUnitaryGate(UnitaryGate):
         Args:
             data (ndarray): operator matrix
             label (string, optional): Gate name. Defaults to None.
+            num_qubits (int, optional): Number of qubits in the operator. Defaults to None and will be calculated for the operator size.
         """
         
-        # Test if user supplied ParameterExpression to later short-circuit creation of opearator matrix
+        # Calculate the number of qubits by building the operator matrix with zero value parameters
+        if num_qubits is None:
+            zero_params = [0] * len(params)
+            zero_mat = op_func(*zero_params)
+            num_qubits = int(math.sqrt(zero_mat.shape[0]))
+
+        super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
+
+        self.op_func = op_func
+
         self._parameterized = any(
             isinstance(param, ParameterExpression) and param.parameters for param in params
         )
 
-        if self._parameterized:
-            zeros = [0] * len(params)
-            operator = op_func(*zeros)
-        elif isinstance(params, numpy.ndarray):
-            operator = params
-        else:
-            operator = op_func(*params)
-
-        if hasattr(operator, "toarray"):
-            operator = operator.toarray()
-
-        super().__init__(operator, label)
-
-        self.op_func = op_func
-        self.op_params = params
-
-        if self._parameterized:
-            self.params = params  # Override UnitaryGate params operator matrix
-
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
-        if self._parameterized:
-            return self.op_func(*map(float, self.params)).toarray()
-        else:
-            return super().__array__(dtype)
+        # return self.op_func(*map(complex, self.params)).toarray()
+        return self.op_func(*self.params).toarray()
+
+    def _define(self):
+        mat = self.to_matrix()
+        q = QuantumRegister(self.num_qubits)
+        qc = QuantumCircuit(q, name=self.name)
+        rules = [
+            (UnitaryGate(mat, self.label), [i for i in q], []),
+        ]
+        for instr, qargs, cargs in rules:
+            qc._append(instr, qargs, cargs)
+
+        self.definition = qc
 
     def validate_parameter(self, parameter):
-        """Override UnitaryGate validate_parameter to support more than just matrix operators."""
-        if self._parameterized:
-            return Gate.validate_parameter(self, parameter)
+        """Gate parameters should be int, float, or ParameterExpression"""
+        if isinstance(parameter, Complex):
+            return parameter
         else:
             return super().validate_parameter(parameter)
 
@@ -76,13 +83,7 @@ class ParameterizedUnitaryGate(UnitaryGate):
         if self.is_parameterized():
             raise NotImplementedError("Unable to calculate incremental operator matrices for parameterized gate")
 
-        param_fraction = current_step / total_steps
-
-        values = []
-        for param in self.op_params:
-            values.append(param * param_fraction)
-
-        values = tuple(values)
+        values = self.calculate_params(current_step, total_steps)
 
         # if self.inverse:
         #     result = scipy.sparse.linalg.inv(self.op_func(*values))
@@ -94,6 +95,15 @@ class ParameterizedUnitaryGate(UnitaryGate):
             result = result.toarray()
 
         return result
+
+    def calculate_params(self, current_step: int = 1, total_steps: int = 1):
+        param_fraction = current_step / total_steps
+
+        values = []
+        for param in self.params:
+            values.append(param * param_fraction)
+
+        return tuple(values)
 
 
 class CVOperators:
