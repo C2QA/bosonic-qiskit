@@ -48,7 +48,15 @@ class ParameterizedUnitaryGate(Gate):
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
         # return self.op_func(*map(complex, self.params)).toarray()
-        return self.op_func(*self.params).toarray()
+        values = []
+        for param in self.params:
+            if isinstance(param, ParameterExpression):
+                values.append(float(param))
+            else:
+                values.append(param)
+        values = tuple(values)
+
+        return self.op_func(*values).toarray()
 
     def _define(self):
         mat = self.to_matrix()
