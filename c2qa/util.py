@@ -494,7 +494,6 @@ def plot(
 
 
 def animate_wigner(
-<<<<<<< HEAD
     circuit: CVCircuit,
     qubit,
     cbit,
@@ -508,18 +507,6 @@ def animate_wigner(
     kraus_operators = None,
     error_gates: List[str] = None,
     keep_state: bool = False
-=======
-        circuit: CVCircuit,
-        qubit,
-        cbit,
-        animation_segments: int = 10,
-        shots: int = 1024,
-        file: str = None,
-        axes_min: int = -6,
-        axes_max: int = 6,
-        axes_steps: int = 200,
-        processes: int = None,
->>>>>>> 05d17a792b7b216b10072315c0d867668480a6a2
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
