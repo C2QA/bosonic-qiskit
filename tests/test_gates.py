@@ -1,5 +1,4 @@
 import random
-
 import c2qa
 import numpy
 import qiskit
@@ -326,3 +325,90 @@ def test_gates():
     state, result = c2qa.util.simulate(circuit)
 
     assert result.success
+
+def test_snap():
+    circuit, qmr = create_unconditional()
+
+    phi = random.random()
+    n = 1
+    circuit.    cv_snap(phi, n, qmr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+
+def test_eswap():
+    circuit, qmr = create_unconditional()
+
+    phi = random.random()
+    circuit.cv_eswap(phi, qmr[0], qmr[1])
+
+    state, result = c2qa.util.simulate(circuit)
+
+def test_pncqr():
+    qmr = c2qa.QumodeRegister(num_qumodes=1)
+    qbr = qiskit.QuantumRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr)
+    zeroQB = numpy.array([1, 0])
+    oneQB = numpy.array([0, 1])
+    circuit.initialize(zeroQB, qbr[0])
+    circuit.cv_initialize(1, qmr[0])
+
+    circuit.cv_pncqr(-numpy.pi / 2, 1, qmr[0], qbr[0], "Y")
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, 1, 4)
+
+def test_cnd_bs_res():
+    numberofmodes = 2
+    qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
+    qbr = qiskit.QuantumRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr)
+    zeroQB = numpy.array([1, 0])
+    oneQB = numpy.array([0, 1])
+    qbinist = 1
+    qubitinitialstate = [[zeroQB, "0"], [oneQB, "1"]]
+    circuit.initialize(qubitinitialstate[qbinist][0], qbr[0])
+    circuit.cv_initialize(1, qmr[0])
+
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
+
+    circuit.cv_cnd_bs(0, -numpy.pi, qbr[0], qmr[1], qmr[0])
+
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
+
+
+def test_cv_cpbs_res():
+    numberofmodes = 2
+    numberofqubitspermode = 1
+    cutoff = 2 ** numberofqubitspermode
+
+    qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes, num_qubits_per_qumode=numberofqubitspermode)
+    qbr = qiskit.QuantumRegister(size=1)
+    cbr = qiskit.ClassicalRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr, cbr)
+
+    diffstallmodes = [1, 0]
+    for i in range(qmr.num_qumodes):
+        circuit.cv_initialize(diffstallmodes[i], qmr[i])
+
+    circuit.h(qbr[0])  # Inititialises the qubit to a plus state (so that pauli Z flips it)
+    print("qubit in superposition")
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
+    circuit.cv_cpbs(numpy.pi, qmr[0], qmr[1], qbr[0])
+    print("qubit flipped and boson moved")
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
+
+def test_pncqr():
+    qmr = c2qa.QumodeRegister(num_qumodes=1)
+    qbr = qiskit.QuantumRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qbr)
+    zeroQB = numpy.array([1, 0])
+    oneQB = numpy.array([0, 1])
+    circuit.initialize(zeroQB, qbr[0])
+    circuit.cv_initialize(1, qmr[0])
+
+    circuit.cv_qdcr(numpy.pi, qmr[0], qbr[0])
+    stateop, _ = c2qa.util.simulate(circuit)
+    c2qa.util.stateread(stateop, qbr.size, 1, 4)

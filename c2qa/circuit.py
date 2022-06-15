@@ -151,8 +151,8 @@ class CVCircuit(QuantumCircuit):
             raise ValueError("The given Fock state is greater than the cutoff.")
 
         for qumode in modes:
-            value = np.zeros((self.qmregs[-1].cutoff,))
-            value[fock_state] = 1
+            value = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+            value[fock_state] = 1 +0j
 
             super().initialize(value, qumode)
 
@@ -208,6 +208,43 @@ class CVCircuit(QuantumCircuit):
         """
         operator = ParameterizedOperator(self.ops.d, alpha)
         return self.append(CVGate(data=operator, label="D"), qargs=qumode)
+
+    def cv_cd(self, alpha, beta, qumode, qubit_ancilla):
+        """Conditional displacement gate.
+
+        Args:
+            alpha (real): displacement for 0 control
+            beta (real): displacemet for 1 control
+            ctrl (Qubit): QisKit control Qubit
+            qumode (list): list of qubits representing qumode
+            inverse (bool): True to calculate the inverse of the operator matrices
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.cd, alpha, beta)
+        return self.append(CVGate(data=operator, label="CD"), qargs=qumode + [qubit_ancilla])
+
+    def cv_ecd(self, alpha, qumode, qubit_ancilla):
+        """Echoed controlled displacement gate.
+
+        Args:
+            alpha (real): displacement
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.ecd, alpha)
+        return self.append(CVGate(data=operator, label="ECD"), qargs=qumode + [qubit_ancilla])
+
+    def cv_rh1(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.rh1, alpha)
+        self.append(CVGate(data=operator, label="rh1"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+    def cv_rh2(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        operator = ParameterizedOperator(self.ops.rh2, alpha)
+        self.append(CVGate(data=operator, label="rh2"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode, inverse: bool = False):
         """Conditional displacement gate.
@@ -326,6 +363,22 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.cpbs, phi)
         self.append(CVGate(data=operator, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
+    def cv_cpbs_z2vqe(self, phi, qumode_a, qumode_b, qubit_ancilla):
+        """Controlled phase two-mode beam splitter
+
+        Args:
+            phi (real): phase
+            qubit_ancilla (Qubit): QisKit control Qubit
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.cpbs_z2vqe, phi)
+        self.append(CVGate(data=operator, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+
     def cv_r(self, phi, qumode):
         """Phase space rotation gate.
 
@@ -353,7 +406,7 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation, theta)
         self.append(CVGate(data=operator, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
 
-    def cv_cp(self, qumode_a, qubit_ancilla):
+    def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
 
         Args:
@@ -363,7 +416,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        operator = ParameterizedOperator(self.ops.controlledparity)
+        operator = ParameterizedOperator(self.ops.controlledparity, theta)
         self.append(CVGate(data=operator, label="CP"), qargs=qumode_a + [qubit_ancilla])
 
     def cv_snap(self, theta, n, qumode_a):
@@ -379,6 +432,34 @@ class CVCircuit(QuantumCircuit):
         """
         operator = ParameterizedOperator(self.ops.snap, theta, n)
         self.append(CVGate(data=operator, label="SNAP"), qargs=qumode_a)
+
+    def cv_eswap(self, theta, qumode_a, qumode_b):
+        """Exponential SWAP gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qumode_b (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.eswap, theta)
+        self.append(CVGate(data=operator, label="eSWAP"), qargs=qumode_a + qumode_b)
+
+    def cv_pncqr(self, theta, n, qumode_a, qubit_ancilla, qubit_rotation):
+        """Photon Number Controlled Qubit Rotation gate.
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+            qumode_a (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.photonNumberControlledQubitRotation, theta, n, qubit_rotation)
+        self.append(CVGate(data=operator, label="PNCQR"), qargs=qumode_a + [qubit_ancilla])
 
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
@@ -436,3 +517,33 @@ class CVCircuit(QuantumCircuit):
 
         self.h(qubit)
         return self.measure(qubit, cbit)
+
+    def cv_measure(self, qregister_list, cregister_list):
+        """Measure QumodeRegisters, QuantumRegisters, and ClassicalRegisters in specified order
+
+                Args:
+                    qregister_list (List): List of individual QumodeRegister Qubits, QuantumRegister Qubits and ClassicalRegister Qubits
+                    cbit (ClassicalBit): List of classical bits to measure into
+
+                Returns:
+                    Instruction: QisKit measure instruction
+                """
+        if not self.probe_measure:
+            warnings.warn(
+                "Probe qubits not in use, set probe_measure to True for measure support.",
+                UserWarning,
+            )
+
+        # Flattens the list (if necessary)
+        flat_list = []
+        for el in qregister_list:
+            if isinstance(el, list):
+                flat_list += el
+            else:
+                flat_list += [el]
+        # Check to see if too many classical registers were passed in. If not, only use those needed (starting with least significant bit).
+        # This piece is useful so that the user doesn't need to think about how many bits are needed to read out a list of qumodes, qubits, etc.
+        if len(flat_list) < len(cregister_list):
+            self.measure(flat_list, cregister_list[0:len(flat_list)])
+        else:
+            self.measure(flat_list, cregister_list)

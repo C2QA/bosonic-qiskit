@@ -17,6 +17,123 @@ from c2qa import CVCircuit
 
 from c2qa.operators import CVGate
 
+def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
+    """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
+
+    Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
+    """
+
+    st = np.array(stateop)  # convert state to np.array
+    amp_cv = []
+    amp_qb = []
+
+    for i in range(len(st)):
+        res = st[
+            i]  # go through vector element by element and find the positions of the non-zero elements with next if clause
+        if (np.abs(res) > 1e-10):
+            pos = i  # position of amplitude (non-zero real)
+            # print("position of non-zero real amplitude: ", pos, " res = ", res)
+            sln = len(st)  # length of the state vector
+
+            ## Find the qubit states
+            qbst = np.empty(numberofqubits, dtype='int')  # stores the qubit state
+            iqb = 0  # counts up until the total number of qubits is reached
+            # which half of the vector the amplitude is in is the state of the first qubit because of how the kronecker product is made
+            while (iqb < numberofqubits):
+                if pos < sln / 2:  # if the amplitude is in the first half of the state vector or remaining statevector
+                    qbst[iqb] = int(0)  # then the qubit is in 0
+                else:
+                    qbst[iqb] = int(1)  # if the amplitude is in the second half then it is in 1
+                    pos = pos - (
+                                sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
+                    # print("pos (sln/2)", pos, "sln ",sln)
+                sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
+                iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
+            qbstr = ["".join(item) for item in qbst.astype(str)]
+            amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
+
+            ## Find the qumode states
+            qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
+            # print("qmst starting in ", qmst)
+            iqm = 0  # counts up the number of modes
+            # print("position is now: ",pos)
+            while (iqm < numberofmodes):
+                # print("mode counter iqm ", iqm)
+                # print("cutoff ", cutoff)
+                # print("length of vector left to search: sln ", sln)
+                lendiv = sln / cutoff  # length of a division is the length of the statevector divided by the cutoff of the hilbert space (which corresponds to the number of fock states which a mode can have)
+                # print("lendiv (sln/cutoff)", lendiv)
+                val = pos / lendiv
+                # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
+                fock = math.floor(val)
+                # print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
+                qmst[iqm] = fock
+                pos = pos - (
+                            fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
+                # print("new position for next order of depth of Kronecker product/pos: (pos-(fock*lendiv)) ",pos)
+                sln = sln - ((cutoff - 1) * lendiv)  # New length of vector left to search
+                # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
+                iqm = iqm + 1
+            qmstr = ["".join(item) for item in qmst.astype(str)]
+            amp_cv.append((qmst*(np.abs(res)**2)).tolist())
+
+            if verbose:
+                print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
+
+
+    occupation_cv = [sum(i) for i in zip(*amp_cv)]
+    if verbose:
+        print("occupation modes ", list(occupation_cv))
+
+    occupation_qb = [sum(i) for i in zip(*amp_qb)]
+    if verbose:
+        print("occupation qubits ", list(occupation_qb))
+
+    # if (np.abs(np.imag(res)) > 1e-10):
+    #     print("\n imaginary amplitude: ", 1j * np.imag(res))
+
+    return [occupation_cv,occupation_qb]
+
+def cv_fockcounts(counts, QregisterList):
+    """Convert counts dictionary from binary representation into base-10 Fock basis. Takes in a list of Quantum register Qubits
+        (AncillaRegister, QumodeRegister, or AncillaRegister), and Qumodes from binary representation to Fock number.
+
+        Returns counts dict()
+
+        Args:
+            counts: dict() of counts, as returned by job.result().get_counts() for a circuit which used cv_measure()
+            QregisterList: List of register qubits which were measured, ordered from least to most significant bit.
+                           This list should be identical to that passed into cv_measure()
+
+        Returns:
+            x,y,z state & result tuples: (state, result) tuples for each x,y,z measurements
+        """
+
+    flat_list = []
+    for el in QregisterList:
+        if isinstance(el, list):
+            flat_list += el
+        else:
+            flat_list += [el]
+
+    newcounts = {}
+    for key in counts:
+        counter = len(key) - len(flat_list)
+        if counter > 0:
+            newkey = ('{0:0' + str(counter) + '}').format(0)
+        else:
+            newkey = ''
+        for registerType in QregisterList[::-1]:
+            if isinstance(registerType, list):
+                newkey += str(int(key[counter:counter + len(registerType)], base=2))
+                # newkey += str(key[counter:counter+len(registerType)])
+                counter += len(registerType)
+            else:
+                newkey += key[counter]
+                counter += 1
+        newcounts[newkey] = counts[key]
+    return newcounts
+
 
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     """Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
@@ -85,7 +202,6 @@ def simulate(
 
     Args:
         circuit (CVCircuit): circuit to simulate
-        backend_name (str, optional): Simulator to use. Defaults to "aer_simulator".
         shots (int, optional): Number of simulation shots. Defaults to 1024.
         add_save_statevector (bool, optional): Set to True if a state_vector instruction
                                                should be added to the end of the circuit. Defaults to True.
@@ -230,6 +346,29 @@ def _add_contourf(ax, fig, title, x, y, z):
     fig.colorbar(cont, ax=ax)
 
 
+def _find_cavity_indices(circuit: CVCircuit):
+    """
+    Return the indices of the cavities from the circuit
+
+    I.e., the indices to the qubits representing the bosonic modes.
+    """
+
+    # Find indices of qubits representing qumodes
+    qmargs = []
+    for reg in circuit.qmregs:
+        qmargs.extend(reg.qreg)
+
+    # Trace over the qubits representing qumodes
+    index = 0
+    indices = []
+    for qubit in circuit.qubits:
+        if qubit in qmargs:
+            indices.append(index)
+        index += 1
+
+    return indices
+
+
 def _find_qubit_indices(circuit: CVCircuit):
     """
     Return the indices of the qubits from the circuit that are not in a QumodeRegister
@@ -253,8 +392,24 @@ def _find_qubit_indices(circuit: CVCircuit):
     return indices
 
 
+def cv_qubits_reduced_density_matrix(circuit: CVCircuit, state_vector):
+    """Return reduced density matrix of the qubits by tracing out the cavities from the given Fock state vector.
+
+    Args:
+        circuit (CVCircuit): circuit yielding the results to trace over
+        state_vector (Statevector): simulation results to trace over
+
+    Returns:
+        DensityMatrix: density matrix of the qubits from a partial trace over the cavities
+    """
+
+    indices = _find_cavity_indices(circuit)
+
+    return partial_trace(state_vector, indices)
+
+
 def cv_partial_trace(circuit: CVCircuit, state_vector):
-    """Return reduced density matrix by tracing out the qubits from the given Fock state vector.
+    """Return reduced density matrix of the cavities by tracing out the qubits from the given Fock state vector.
 
     Args:
         circuit (CVCircuit): circuit with results to trace (to find Qubit index)
@@ -270,14 +425,14 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
 
 
 def plot_wigner(
-    circuit: CVCircuit,
-    state_vector: Statevector,
-    trace: bool = True,
-    file: str = None,
-    axes_min: int = -6,
-    axes_max: int = 6,
-    axes_steps: int = 200,
-    num_colors: int = 100,
+        circuit: CVCircuit,
+        state_vector: Statevector,
+        trace: bool = True,
+        file: str = None,
+        axes_min: int = -6,
+        axes_max: int = 6,
+        axes_steps: int = 200,
+        num_colors: int = 100,
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -311,12 +466,12 @@ def plot_wigner(
 
 
 def plot(
-    data,
-    axes_min: int = -6,
-    axes_max: int = 6,
-    axes_steps: int = 200,
-    file: str = None,
-    num_colors: int = 100,
+        data,
+        axes_min: int = -6,
+        axes_max: int = 6,
+        axes_steps: int = 200,
+        file: str = None,
+        num_colors: int = 100,
 ):
     """Contour plot the given data array"""
     xvec = np.linspace(axes_min, axes_max, axes_steps)
@@ -339,6 +494,7 @@ def plot(
 
 
 def animate_wigner(
+<<<<<<< HEAD
     circuit: CVCircuit,
     qubit,
     cbit,
@@ -352,6 +508,18 @@ def animate_wigner(
     kraus_operators = None,
     error_gates: List[str] = None,
     keep_state: bool = False
+=======
+        circuit: CVCircuit,
+        qubit,
+        cbit,
+        animation_segments: int = 10,
+        shots: int = 1024,
+        file: str = None,
+        axes_min: int = -6,
+        axes_max: int = 6,
+        axes_steps: int = 200,
+        processes: int = None,
+>>>>>>> 05d17a792b7b216b10072315c0d867668480a6a2
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -574,12 +742,12 @@ def simulate_wigner(
 
 
 def wigner(
-    state,
-    cutoff: int,
-    axes_min: int = -6,
-    axes_max: int = 6,
-    axes_steps: int = 200,
-    hbar: int = 2,
+        state,
+        cutoff: int,
+        axes_min: int = -6,
+        axes_max: int = 6,
+        axes_steps: int = 200,
+        hbar: int = 2,
 ):
     """
     Calculate the Wigner function on the given state vector.
@@ -600,12 +768,12 @@ def wigner(
 
 
 def wigner_mle(
-    states,
-    cutoff: int,
-    axes_min: int = -6,
-    axes_max: int = 6,
-    axes_steps: int = 200,
-    hbar: int = 2,
+        states,
+        cutoff: int,
+        axes_min: int = -6,
+        axes_max: int = 6,
+        axes_steps: int = 200,
+        hbar: int = 2,
 ):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
