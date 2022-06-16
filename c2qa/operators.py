@@ -300,6 +300,19 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg.tocsc())
 
+    def qubitDependentCavityRotationX(self, theta):
+        """Qubit dependent cavity rotation
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = theta * 1j * scipy.sparse.kron(xQB, self.N)
+
+        return scipy.sparse.linalg.expm(arg.tocsc())
+
     def controlledparity(self, theta):
         """Controlled parity operator
         Rotates the mode if the state of the qubit is such that zQB doesn't give a phase
