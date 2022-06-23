@@ -28,7 +28,7 @@ class ParameterizedOperator(Operator):
         self.params = params
         self.inverse = inverse
 
-    def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
+    def calculate_matrix(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
 
@@ -39,7 +39,13 @@ class ParameterizedOperator(Operator):
         Returns:
             ndarray: operator matrix
         """
-        param_fraction = current_step / total_steps
+
+        # If animating and the previous state is first initiallized, only increment by 1/total_steps.
+        # Otherwise increment by the fraction current_step/total_steps
+        if keep_state:
+            param_fraction = 1 / total_steps
+        else:
+            param_fraction = current_step / total_steps
 
         values = []
         for param in self.params:
