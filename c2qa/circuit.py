@@ -406,6 +406,20 @@ class CVCircuit(QuantumCircuit):
         operator = ParameterizedOperator(self.ops.qubitDependentCavityRotation, theta)
         self.append(CVGate(data=operator, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
 
+    def cv_qdcrX(self, theta, qumode_a, qubit_ancilla):
+        """Qubit dependent cavity rotation gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotationX, theta)
+        self.append(CVGate(data=operator, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
+
     def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
 
