@@ -94,23 +94,23 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
 
     return [occupation_cv,occupation_qb]
 
-def cv_fockcounts(counts, QregisterList):
-    """Convert counts dictionary from binary representation into base-10 Fock basis. Takes in a list of Quantum register Qubits
-        (AncillaRegister, QumodeRegister, or AncillaRegister), and Qumodes from binary representation to Fock number.
+def cv_fockcounts(counts, qubit_qumode_list):
+    """Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts()
+       along with qubit_qumode_list, a list of Qubits and Qumodes passed into cv_measure(...).
 
         Returns counts dict()
 
         Args:
             counts: dict() of counts, as returned by job.result().get_counts() for a circuit which used cv_measure()
-            QregisterList: List of register qubits which were measured, ordered from least to most significant bit.
-                           This list should be identical to that passed into cv_measure()
+            qubit_qumode_list: List of qubits and qumodes measured. This list should be identical to that passed into cv_measure()
 
         Returns:
-            x,y,z state & result tuples: (state, result) tuples for each x,y,z measurements
+            A new counts dict() which lists measurement results for the qubits and qumodes in qubit_qumode_list in little endian order, 
+            with Fock-basis qumode measurements reported as a base-10 integer.
         """
 
     flat_list = []
-    for el in QregisterList:
+    for el in qubit_qumode_list:
         if isinstance(el, list):
             flat_list += el
         else:
@@ -123,7 +123,7 @@ def cv_fockcounts(counts, QregisterList):
             newkey = ('{0:0' + str(counter) + '}').format(0)
         else:
             newkey = ''
-        for registerType in QregisterList[::-1]:
+        for registerType in qubit_qumode_list[::-1]:
             if isinstance(registerType, list):
                 newkey += str(int(key[counter:counter + len(registerType)], base=2))
                 # newkey += str(key[counter:counter+len(registerType)])

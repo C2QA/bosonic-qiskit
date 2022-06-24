@@ -532,12 +532,13 @@ class CVCircuit(QuantumCircuit):
         self.h(qubit)
         return self.measure(qubit, cbit)
 
-    def cv_measure(self, qregister_list, cregister_list):
-        """Measure QumodeRegisters, QuantumRegisters, and ClassicalRegisters in specified order
+    def cv_measure(self, qubit_qumode_list, cbit_list):
+        """Measure Qumodes and Qubits in qubit_qumode_list and map onto classical bits specified in cbit_list.
 
                 Args:
-                    qregister_list (List): List of individual QumodeRegister Qubits, QuantumRegister Qubits and ClassicalRegister Qubits
-                    cbit (ClassicalBit): List of classical bits to measure into
+                    qubit_qumode_list(List): List of individual Qubits and Qumodes (i.e., indexed elements of QubitRegisters and QumodeRegisters)
+                    cbit_list (List): List of classical bits to map measurements onto. Note: Measurement of qumodes requires log(c) classical bits, where c is the cutoff.
+                    				  If len(cbit_list) is greater than the required number of classical bits, excess will be ignored. If len(cbit_list) is insufficient, an error will be thrown.
 
                 Returns:
                     Instruction: QisKit measure instruction
@@ -550,14 +551,14 @@ class CVCircuit(QuantumCircuit):
 
         # Flattens the list (if necessary)
         flat_list = []
-        for el in qregister_list:
+        for el in qubit_qumode_list:
             if isinstance(el, list):
                 flat_list += el
             else:
                 flat_list += [el]
         # Check to see if too many classical registers were passed in. If not, only use those needed (starting with least significant bit).
         # This piece is useful so that the user doesn't need to think about how many bits are needed to read out a list of qumodes, qubits, etc.
-        if len(flat_list) < len(cregister_list):
-            self.measure(flat_list, cregister_list[0:len(flat_list)])
+        if len(flat_list) < len(cbit_list):
+            self.measure(flat_list, cbit_list[0:len(flat_list)])
         else:
-            self.measure(flat_list, cregister_list)
+            self.measure(flat_list, cbit_list)
