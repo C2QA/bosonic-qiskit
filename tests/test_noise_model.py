@@ -120,19 +120,19 @@ def test_animate_noise_model(capsys):
 def test_photon_loss_pass_no_displacemnet(capsys):
     with capsys.disabled():
         num_qumodes = 1
-        num_qubits_per_qumode = 2
+        num_qubits_per_qumode = 6
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
         
-        circuit.cv_initialize(2, qmr[0])
+        circuit.cv_initialize(3, qmr[0])
 
         for _ in range(10):
             # circuit.delay(duration=10, unit="s", qarg=qmr[0])  
             circuit.cv_d(0, qmr[0])
         
-        photon_loss_rate = 25
+        photon_loss_rate = 50
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
         noise_circuit = noise_pass(circuit)
         circuit.merge(noise_circuit)
@@ -162,10 +162,12 @@ def test_photon_loss_pass_slow_displacemnet(capsys):
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
         
-        circuit.cv_initialize(2, qmr[0])
-        circuit.cv_d(0.1, qmr[0])
+        circuit.cv_initialize(3, qmr[0])
+
+        for _ in range(10):
+            circuit.cv_d(3, qmr[0])
         
-        photon_loss_rate = 25
+        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
         noise_circuit = noise_pass(circuit)
         circuit.merge(noise_circuit)
@@ -178,8 +180,8 @@ def test_photon_loss_pass_slow_displacemnet(capsys):
             qubit=qr[0],
             cbit=cr[0],
             file=wigner_filename,
-            axes_min=-9,
-            axes_max=9,
-            animation_segments=100,
+            axes_min=-8,
+            axes_max=8,
+            animation_segments=50,
             keep_state=True
         )
