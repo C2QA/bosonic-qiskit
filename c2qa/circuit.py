@@ -71,17 +71,6 @@ class CVCircuit(QuantumCircuit):
         """Integer number of qubits to represent a qumode."""
         return self.qmregs[-1].num_qubits_per_qumode
 
-    # def bind_parameters(self, values):
-    #     bound_circuit = super().bind_parameters(values)   
-
-    #     # Force unitary params reset to operator matrix
-    #     for inst, qargs, cargs in bound_circuit.data:
-    #         if isinstance(inst, ParameterizedUnitaryGate):
-    #             operator = inst.__array__()
-    #             inst.params = operator
-
-    #     return bound_circuit
-
     def cv_initialize(self, fock_state, qumodes):
         """Initialize the qumode to a Fock state.
 
