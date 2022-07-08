@@ -1,4 +1,4 @@
-qiskit==0.25.0
+qiskit==0.34.2
 
 # For drawing circuits, state vectors, Wigner function plots (matplotlib 3.3.0+ is incompatible)
 matplotlib==3.2.2

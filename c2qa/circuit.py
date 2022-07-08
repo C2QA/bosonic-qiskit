@@ -1,11 +1,13 @@
+import copy
 import warnings
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.circuit.parametertable import ParameterTable
+import qiskit.providers.aer.library.save_instructions as save
 
 from c2qa.operators import CVOperators, ParameterizedUnitaryGate
 from c2qa.qumoderegister import QumodeRegister
-import qiskit.providers.aer.library.save_instructions as save
 
 
 class CVCircuit(QuantumCircuit):
@@ -61,6 +63,45 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators(self.cutoff, num_qumodes)
 
+    def merge(self, circuit: QuantumCircuit):
+        """
+        Merge in properties of QisKit QuantumCircuit into this instance.
+
+        Useful if QisKit returned a new instance of QuantumCircuit after passing in this instance. Calling merge() can merge the two, keeping this instance.
+
+        See https://qiskit.org/documentation/_modules/qiskit/circuit/quantumcircuit.html#QuantumCircuit.copy
+        """
+
+        self.qregs = circuit.qregs.copy()
+        self.cregs = circuit.cregs.copy()
+        self._qubits = circuit._qubits.copy()
+        self._ancillas = circuit._ancillas.copy()
+        self._clbits = circuit._clbits.copy()
+        self._qubit_indices = circuit._qubit_indices.copy()
+        self._clbit_indices = circuit._clbit_indices.copy()
+
+        instr_instances = {id(instr): instr for instr, _, __ in circuit._data}
+
+        instr_copies = {id_: instr.copy() for id_, instr in instr_instances.items()}
+
+        self._parameter_table = ParameterTable(
+            {
+                param: [
+                    (instr_copies[id(instr)], param_index)
+                    for instr, param_index in circuit._parameter_table[param]
+                ]
+                for param in circuit._parameter_table
+            }
+        )
+
+        self._data = [
+            (instr_copies[id(inst)], qargs.copy(), cargs.copy())
+            for inst, qargs, cargs in circuit._data
+        ]
+
+        self._calibrations = copy.deepcopy(circuit._calibrations)
+        self._metadata = copy.deepcopy(circuit._metadata)
+
     @property
     def cutoff(self):
         """Integer cutoff size."""
@@ -70,6 +111,25 @@ class CVCircuit(QuantumCircuit):
     def num_qubits_per_qumode(self):
         """Integer number of qubits to represent a qumode."""
         return self.qmregs[-1].num_qubits_per_qumode
+
+    @property
+    def qumode_qubits(self):
+        """All the qubits representing the qumode registers on the circuit"""
+        qubits = []
+        for reg in self.qmregs:
+            qubits += reg[::]
+        return qubits
+
+    @property
+    def cv_gate_labels(self):
+        """All the CV gate names on the current circuit. These will either be instances of CVGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate."""
+        cv_gates = set()
+        for instruction, qargs, cargs in self.data:
+            if isinstance(instruction, CVGate):
+                cv_gates.add(instruction.label)
+            elif hasattr(instruction, "cv_conditional") and instruction.cv_conditional:
+                cv_gates.add(instruction.label)
+        return list(cv_gates)
 
     def cv_initialize(self, fock_state, qumodes):
         """Initialize the qumode to a Fock state.
@@ -123,7 +183,7 @@ class CVCircuit(QuantumCircuit):
         sub_circ.append(ParameterizedUnitaryGate(op, params_1).control(num_ctrl_qubits=1, ctrl_state=1), qargs)
 
         # Create a single instruction for the conditional gate, flag it for later processing
-        inst = sub_circ.to_instruction()
+        inst = sub_circ.to_instruction(label=name)
         inst.cv_conditional = True
         inst.num_qubits_per_qumode = num_qubits_per_qumode
         inst.num_qumodes = num_qumodes
@@ -328,6 +388,20 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotation, [theta], label="QDCR", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
+    def cv_qdcrX(self, theta, qumode_a, qubit_ancilla):
+        """Qubit dependent cavity rotation gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotationX, theta)
+        self.append(CVGate(data=operator, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
+
     def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
 
@@ -436,12 +510,13 @@ class CVCircuit(QuantumCircuit):
         self.h(qubit)
         return self.measure(qubit, cbit)
 
-    def cv_measure(self, qregister_list, cregister_list):
-        """Measure QumodeRegisters, QuantumRegisters, and ClassicalRegisters in specified order
+    def cv_measure(self, qubit_qumode_list, cbit_list):
+        """Measure Qumodes and Qubits in qubit_qumode_list and map onto classical bits specified in cbit_list.
 
                 Args:
-                    qregister_list (List): List of individual QumodeRegister Qubits, QuantumRegister Qubits and ClassicalRegister Qubits
-                    cbit (ClassicalBit): List of classical bits to measure into
+                    qubit_qumode_list(List): List of individual Qubits and Qumodes (i.e., indexed elements of QubitRegisters and QumodeRegisters)
+                    cbit_list (List): List of classical bits to map measurements onto. Note: Measurement of qumodes requires log(c) classical bits, where c is the cutoff.
+                    				  If len(cbit_list) is greater than the required number of classical bits, excess will be ignored. If len(cbit_list) is insufficient, an error will be thrown.
 
                 Returns:
                     Instruction: QisKit measure instruction
@@ -454,14 +529,14 @@ class CVCircuit(QuantumCircuit):
 
         # Flattens the list (if necessary)
         flat_list = []
-        for el in qregister_list:
+        for el in qubit_qumode_list:
             if isinstance(el, list):
                 flat_list += el
             else:
                 flat_list += [el]
         # Check to see if too many classical registers were passed in. If not, only use those needed (starting with least significant bit).
         # This piece is useful so that the user doesn't need to think about how many bits are needed to read out a list of qumodes, qubits, etc.
-        if len(flat_list) < len(cregister_list):
-            self.measure(flat_list, cregister_list[0:len(flat_list)])
+        if len(flat_list) < len(cbit_list):
+            self.measure(flat_list, cbit_list[0:len(flat_list)])
         else:
-            self.measure(flat_list, cregister_list)
+            self.measure(flat_list, cbit_list)

@@ -77,21 +77,19 @@ class ParameterizedUnitaryGate(Gate):
         else:
             return super().validate_parameter(parameter)
 
-    def calculate_matrix(self, current_step: int = 1, total_steps: int = 1):
+    def calculate_matrix(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
-
         Args:
             current_step (int, optional): Current step within total_steps. Defaults to 1.
             total_steps (int, optional): Total steps to increment parameters. Defaults to 1.
-
         Returns:
             ndarray: operator matrix
         """
         if self.is_parameterized():
             raise NotImplementedError("Unable to calculate incremental operator matrices for parameterized gate")
 
-        values = self.calculate_params(current_step, total_steps)
+        values = self.calculate_params(current_step, total_steps, keep_state)
 
         # if self.inverse:
         #     result = scipy.sparse.linalg.inv(self.op_func(*values))
@@ -104,14 +102,36 @@ class ParameterizedUnitaryGate(Gate):
 
         return result
 
-    def calculate_params(self, current_step: int = 1, total_steps: int = 1):
-        param_fraction = current_step / total_steps
+    def calculate_params(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
+        if keep_state:
+            param_fraction = 1 / total_steps
+        else:
+            param_fraction = current_step / total_steps
 
         values = []
         for param in self.params:
             values.append(param * param_fraction)
 
         return tuple(values)
+
+
+class CVGate(UnitaryGate):
+    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
+
+    def __init__(self, data, label=None, duration=10, unit="ms"):
+        """Initialize CVGate
+
+        FIXME - Use real duration & units
+
+        Args:
+            data (ndarray): operator matrix
+            label (string, optional): Gate name. Defaults to None.
+        """
+        super().__init__(data, label)
+
+        self.op = data
+        self.duration = duration
+        self.unit = unit
 
 
 class CVOperators:
@@ -341,6 +361,19 @@ class CVOperators:
             ndarray: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(zQB, self.N)
+
+        return scipy.sparse.linalg.expm(arg.tocsc())
+
+    def qubitDependentCavityRotationX(self, theta):
+        """Qubit dependent cavity rotation
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = theta * 1j * scipy.sparse.kron(xQB, self.N)
 
         return scipy.sparse.linalg.expm(arg.tocsc())
 
