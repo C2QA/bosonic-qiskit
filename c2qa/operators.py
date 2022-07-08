@@ -20,7 +20,7 @@ idQB = numpy.array([[1, 0], [0, 1]])
 class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, params, label=None, num_qubits=None):
+    def __init__(self, op_func, params, label=None, num_qubits=None, duration=100, unit="ns"):
         """Initialize ParameterizedUnitaryGate
 
         FIXME - Use real duration & units
@@ -44,6 +44,9 @@ class ParameterizedUnitaryGate(Gate):
         self._parameterized = any(
             isinstance(param, ParameterExpression) and param.parameters for param in params
         )
+
+        self.duration = duration
+        self.unit = unit
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
@@ -113,25 +116,6 @@ class ParameterizedUnitaryGate(Gate):
             values.append(param * param_fraction)
 
         return tuple(values)
-
-
-class CVGate(UnitaryGate):
-    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
-
-    def __init__(self, data, label=None, duration=10, unit="ms"):
-        """Initialize CVGate
-
-        FIXME - Use real duration & units
-
-        Args:
-            data (ndarray): operator matrix
-            label (string, optional): Gate name. Defaults to None.
-        """
-        super().__init__(data, label)
-
-        self.op = data
-        self.duration = duration
-        self.unit = unit
 
 
 class CVOperators:

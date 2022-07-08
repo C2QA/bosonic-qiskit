@@ -122,10 +122,10 @@ class CVCircuit(QuantumCircuit):
 
     @property
     def cv_gate_labels(self):
-        """All the CV gate names on the current circuit. These will either be instances of CVGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate."""
+        """All the CV gate names on the current circuit. These will either be instances of ParameterizedUnitaryGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate."""
         cv_gates = set()
         for instruction, qargs, cargs in self.data:
-            if isinstance(instruction, CVGate):
+            if isinstance(instruction, ParameterizedUnitaryGate):
                 cv_gates.add(instruction.label)
             elif hasattr(instruction, "cv_conditional") and instruction.cv_conditional:
                 cv_gates.add(instruction.label)
@@ -399,8 +399,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        operator = ParameterizedOperator(self.ops.qubitDependentCavityRotationX, theta)
-        self.append(CVGate(data=operator, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationX, [theta], label="QDCR"), qargs=qumode_a + [qubit_ancilla])
 
     def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
