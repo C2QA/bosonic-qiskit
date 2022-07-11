@@ -15,7 +15,7 @@ import scipy.stats
 
 from c2qa import CVCircuit
 
-from c2qa.operators import CVGate
+from c2qa.operators import ParameterizedUnitaryGate
 
 def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
@@ -549,12 +549,12 @@ def animate_wigner(
         # qubit = xxx
         # cbit = yyy
 
-        if isinstance(inst, CVGate):
+        if isinstance(inst, ParameterizedUnitaryGate):
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
                 sim_circuit.unitary(
-                    inst.op.calculate_matrix(current_step=index, total_steps=animation_segments, keep_state=keep_state),
+                    inst.calculate_matrix(current_step=index, total_steps=animation_segments, keep_state=keep_state),
                     qargs,
                     label=inst.name,
                 )
@@ -571,14 +571,15 @@ def animate_wigner(
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                op_0 = inst_0.base_gate.op.calculate_matrix(current_step=index, total_steps=animation_segments, keep_state=keep_state)
-                op_1 = inst_1.base_gate.op.calculate_matrix(current_step=index, total_steps=animation_segments, keep_state=keep_state)
+                params_0 = inst_0.base_gate.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
+                params_1 = inst_1.base_gate.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
 
                 sim_circuit.append(
                     CVCircuit.cv_conditional(
                         inst.name,
-                        op_0,
-                        op_1,
+                        inst_0.base_gate.op_func,
+                        params_0,
+                        params_1,
                         inst.num_qubits_per_qumode,
                         inst.num_qumodes,
                     ),
