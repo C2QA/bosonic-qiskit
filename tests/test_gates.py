@@ -429,3 +429,13 @@ def test_pncqr():
     circuit.cv_qdcr(numpy.pi, qmr[0], qbr[0])
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, 1, 4)
+
+
+def test_cp():
+    circuit, qmr, qr = create_conditional()
+
+    theta = random.random()
+    circuit.cv_cp(theta, qmr[0], qr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert_unchanged(state, result)
