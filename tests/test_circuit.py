@@ -1,6 +1,7 @@
 import c2qa
 import pytest
 import qiskit
+import numpy
 
 
 def test_no_registers():
@@ -33,3 +34,13 @@ def test_with_classical():
         c2qa.QumodeRegister(1, 1),
         qiskit.ClassicalRegister(1),
     )
+
+def test_with_initialize():
+    qmr = c2qa.QumodeRegister(1, 1)
+    qbr = qiskit.QuantumRegister(1)
+    cbr = qiskit.ClassicalRegister(1)
+    circuit = c2qa.CVCircuit(qmr, qbr, cbr)
+    circuit.initialize(numpy.array([0,1]), qbr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert result.success
