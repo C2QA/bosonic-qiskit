@@ -439,3 +439,13 @@ def test_cp():
 
     state, result = c2qa.util.simulate(circuit)
     assert result.success
+
+
+def test_cpbs_z2vqe():
+    circuit, qmr, qr = create_conditional()
+
+    phi = random.random()
+    circuit.cv_cpbs_z2vqe(phi, qmr[0], qmr[1], qr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert result.success
