@@ -221,25 +221,8 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        return self.append(ParameterizedUnitaryGate(self.ops.cd, [alpha], label="CD"), qargs=qumode + [qubit_ancilla])
-
-    def cv_ecd(self, alpha, qumode, qubit_ancilla):
-        """Echoed controlled displacement gate.
-
-        Args:
-            alpha (real): displacement
-            qumode (list): list of qubits representing qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.ecd, [alpha], label="ECD"), qargs=qumode + [qubit_ancilla])
-
-    def cv_rh1(self, alpha, qumode_a, qumode_b, qubit_ancilla):
-        self.append(ParameterizedUnitaryGate(self.ops.rh1, [alpha], label="rh1"), qargs=qumode_a + qumode_b + [qubit_ancilla])
-
-    def cv_rh2(self, alpha, qumode_a, qumode_b, qubit_ancilla):
-        self.append(ParameterizedUnitaryGate(self.ops.rh2, [alpha], label="rh2"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+        num_qubits = self.num_qubits_per_qumode + 1
+        return self.append(ParameterizedUnitaryGate(self.ops.cd, [alpha, beta], label="CD", num_qubits=num_qubits), qargs=qumode + [qubit_ancilla])
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode):
         """Conditional displacement gate.
@@ -258,6 +241,24 @@ class CVCircuit(QuantumCircuit):
             CVCircuit.cv_conditional("Dc", self.ops.d, [alpha], [beta], self.num_qubits_per_qumode),
             [ctrl] + qumode,
         )
+
+    def cv_ecd(self, alpha, qumode, qubit_ancilla):
+        """Echoed controlled displacement gate.
+
+        Args:
+            alpha (real): displacement
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.ecd, [alpha], label="ECD"), qargs=qumode + [qubit_ancilla])
+
+    def cv_rh1(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        self.append(ParameterizedUnitaryGate(self.ops.rh1, [alpha], label="rh1"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+    def cv_rh2(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        self.append(ParameterizedUnitaryGate(self.ops.rh2, [alpha], label="rh2"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def cv_s(self, z, qumode):
         """Squeezing gate.

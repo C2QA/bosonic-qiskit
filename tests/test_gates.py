@@ -117,6 +117,21 @@ def test_conditonal_displacement():
     assert_unchanged(state, result)
 
 
+def test_conditonal_displacement_too():
+    circuit, qmr, qr = create_conditional()
+
+    alpha = random.random()
+    beta = random.random()
+    circuit.cv_cd(alpha, -beta, qmr[0], qr[0])
+    circuit.cv_cd(-alpha, beta, qmr[0], qr[0])
+
+    circuit.cv_cd(alpha, -beta, qmr[0], qr[1])
+    circuit.cv_cd(-alpha, beta, qmr[0], qr[1])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert_unchanged(state, result)
+
+
 def test_conditonal_squeezing():
     circuit, qmr, qr = create_conditional()
 
