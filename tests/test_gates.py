@@ -438,4 +438,4 @@ def test_cp():
     circuit.cv_cp(theta, qmr[0], qr[0])
 
     state, result = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
+    assert result.success
