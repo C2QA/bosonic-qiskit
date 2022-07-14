@@ -221,8 +221,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        num_qubits = self.num_qubits_per_qumode + 1
-        return self.append(ParameterizedUnitaryGate(self.ops.cd, [alpha, beta], label="CD", num_qubits=num_qubits), qargs=qumode + [qubit_ancilla])
+        return self.append(ParameterizedUnitaryGate(self.ops.cd, [alpha, beta], label="CD", num_qubits=len(qumode) + 1), qargs=qumode + [qubit_ancilla])
 
     def cv_cnd_d(self, alpha, beta, ctrl, qumode):
         """Conditional displacement gate.
@@ -412,7 +411,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.controlledparity, [theta], label="CP"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.controlledparity, [theta], label="CP", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
     def cv_snap(self, theta, n, qumode_a):
         """SNAP (Selective Number-dependent Arbitrary Phase) gate.
