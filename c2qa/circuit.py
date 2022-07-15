@@ -314,6 +314,19 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(ParameterizedUnitaryGate(self.ops.bs, [phi], label="BS"), qargs=qumode_a + qumode_b)
 
+    def cv_bs_VQE(self, qumode_a, qumode_b):
+        """Beam splitter gate.
+
+        Args:
+            phi (real): real phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.bs_VQE, label="BS_VQE"), qargs=qumode_a + qumode_b)
+
     def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
         """Conditional beam splitter gate.
 
