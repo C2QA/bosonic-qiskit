@@ -401,6 +401,20 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationX, [theta], label="QDCR_X", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
+    def cv_qdcrY(self, theta, qumode_a, qubit_ancilla):
+        """Qubit dependent cavity rotation gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationY, [theta], label="QDCR_Y", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
+
+
     def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
 
