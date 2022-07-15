@@ -358,7 +358,6 @@ class CVOperators:
             ndarray: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(xQB, self.N)
-
         return scipy.sparse.linalg.expm(arg.tocsc())
 
     def controlledparity(self, theta):
