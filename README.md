@@ -12,6 +12,10 @@ cd c2qa-qiskit
 ./install-dependencies.sh
 ```
 
+### Dependency Version Compatibility
+
+The c2qa-qiskit software has not been extensively tested with different versions of its [dependencies](requirements.txt); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoudError` at runtime.
+
 ## Activate Virtual Environment
 
 Before using c2qa-qiskit, first install the depencies (as above) and then activate the Python virtual environment.

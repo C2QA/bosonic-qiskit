@@ -117,6 +117,21 @@ def test_conditonal_displacement():
     assert_unchanged(state, result)
 
 
+def test_conditonal_displacement_too():
+    circuit, qmr, qr = create_conditional()
+
+    alpha = random.random()
+    beta = random.random()
+    circuit.cv_cd(alpha, -beta, qmr[0], qr[0])
+    circuit.cv_cd(-alpha, beta, qmr[0], qr[0])
+
+    circuit.cv_cd(alpha, -beta, qmr[0], qr[1])
+    circuit.cv_cd(-alpha, beta, qmr[0], qr[1])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert_unchanged(state, result)
+
+
 def test_conditonal_squeezing():
     circuit, qmr, qr = create_conditional()
 
@@ -414,3 +429,23 @@ def test_pncqr():
     circuit.cv_qdcr(numpy.pi, qmr[0], qbr[0])
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, 1, 4)
+
+
+def test_cp():
+    circuit, qmr, qr = create_conditional()
+
+    theta = random.random()
+    circuit.cv_cp(theta, qmr[0], qr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert result.success
+
+
+def test_cpbs_z2vqe():
+    circuit, qmr, qr = create_conditional()
+
+    phi = random.random()
+    circuit.cv_cpbs_z2vqe(phi, qmr[0], qmr[1], qr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+    assert result.success
