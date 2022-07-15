@@ -399,7 +399,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationX, [theta], label="QDCR"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationX, [theta], label="QDCR_X", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
     def cv_cp(self, theta, qumode_a, qubit_ancilla):
         """Controlled parity gate.
