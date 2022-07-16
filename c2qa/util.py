@@ -194,7 +194,8 @@ def simulate(
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
     kraus_operators = None,
-    error_gates: List[str] = None
+    error_gates: List[str] = None,
+    **kw_args,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -234,7 +235,12 @@ def simulate(
     circuit_compiled = qiskit.transpile(circuit, simulator)
 
     # Run and get statevector
-    result = simulator.run(circuit_compiled, shots=shots).result()
+    try:
+        max_parallel_threads = kw_args["max_parallel_threads"]
+    except KeyError:
+        max_parallel_threads=0
+
+    result = simulator.run(circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads).result()
 
     # The user may have added their own circuit.save_statevector
     state = None
