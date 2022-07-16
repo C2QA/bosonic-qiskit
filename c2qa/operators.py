@@ -251,11 +251,11 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs(self, g):
+    def bs(self, theta):
         """Two-mode beam splitter
 
         Args:
-            g (real): real phase
+            theta: phase
 
         Returns:
             ndarray: operator matrix
@@ -263,42 +263,42 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        arg = (g / 2) * (a1dag2 - a12dag)
+        arg =  (theta * a1dag2 - numpy.conj(theta) * a12dag)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs_im(self, weight):
-        """Two-mode beam splitter
+    # def bs(self, g):
+    #     """Two-mode beam splitter
+    #
+    #     Args:
+    #         g (real): real phase
+    #
+    #     Returns:
+    #         ndarray: operator matrix
+    #     """
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #
+    #     arg = (g / 2) * (a1dag2 - a12dag)
+    #
+    #     return scipy.sparse.linalg.expm(arg)
 
-        Args:
-            weight (real): mutliplied by 1j to yield imaginary alpha
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-        alpha = (weight * 1j)
-
-        arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def bs_VQE(self):
-        """Two-mode beam splitter
-
-        Args:
-            weight (real): mutliplied by 1j to yield imaginary alpha
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        arg = 1j * (numpy.pi/4) * (a12dag + a1dag2)
-
-        return scipy.sparse.linalg.expm(arg)
+    # def bs_im(self, weight):
+    #     """Two-mode beam splitter
+    #
+    #     Args:
+    #         weight (real): mutliplied by 1j to yield imaginary alpha
+    #
+    #     Returns:
+    #         ndarray: operator matrix
+    #     """
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #     alpha = (weight * 1j)
+    #
+    #     arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
+    #
+    #     return scipy.sparse.linalg.expm(arg)
 
     def cpbs(self, g):
         """Controlled phase two-mode beam splitter

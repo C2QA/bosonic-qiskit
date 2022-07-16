@@ -22,7 +22,7 @@ class CVCircuit(QuantumCircuit):
             probe_measure (bool, optional): automatically support measurement with probe qubits. Defaults to False.
 
         Raises:
-            ValueError: If no QumodeReigster are provided.
+            ValueError: If no QumodeRegister is provided.
         """
         self.qmregs = []
         self._qubit_regs = []  # This needs to be unique from qregs[] in the superclass
@@ -305,7 +305,7 @@ class CVCircuit(QuantumCircuit):
         """Beam splitter gate.
 
         Args:
-            phi (real): real phase
+            phi : phase
             qumode_a (list): list of qubits representing first qumode
             qumode_b (list): list of qubits representing second qumode
 
@@ -313,19 +313,6 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(ParameterizedUnitaryGate(self.ops.bs, [phi], label="BS"), qargs=qumode_a + qumode_b)
-
-    def cv_bs_VQE(self, qumode_a, qumode_b):
-        """Beam splitter gate.
-
-        Args:
-            phi (real): real phase
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.bs_VQE, label="BS_VQE"), qargs=qumode_a + qumode_b)
 
     def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
         """Conditional beam splitter gate.
