@@ -485,7 +485,8 @@ def plot(
     cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
-    fig.colorbar(cont, ax=ax)
+    cb=fig.colorbar(cont, ax=ax)
+    cb.set_label(r"$W(x,p)$")
 
     if file:
         plt.savefig(file)
