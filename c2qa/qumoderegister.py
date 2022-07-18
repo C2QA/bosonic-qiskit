@@ -63,7 +63,7 @@ class QumodeRegister:
         return self.qreg[start:stop:step]
     
     def __len__(self):
-        """The length of a QumodeRegister is the number of qumodes (not the number of qubits * number of qumodes)"""
+        """The length of a QumodeRegister is the number of qumodes (not the num_qumodes * num_qubits_per_qumode)"""
         return self.num_qumodes
 
 
