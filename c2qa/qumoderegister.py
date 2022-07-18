@@ -61,6 +61,10 @@ class QumodeRegister:
             raise ValueError("Must provide slice or int.")
 
         return self.qreg[start:stop:step]
+    
+    def __len__(self):
+        """The length of a QumodeRegister is the number of qumodes (not the number of qubits * number of qumodes)"""
+        return self.num_qumodes
 
 
 class QumodeIterator:
