@@ -20,7 +20,7 @@ idQB = numpy.array([[1, 0], [0, 1]])
 class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, params, label=None, num_qubits=None, duration=100, unit="ns"):
+    def __init__(self, op_func, params, num_qubits, label=None, duration=100, unit="ns"):
         """Initialize ParameterizedUnitaryGate
 
         FIXME - Use real duration & units
@@ -30,13 +30,6 @@ class ParameterizedUnitaryGate(Gate):
             label (string, optional): Gate name. Defaults to None.
             num_qubits (int, optional): Number of qubits in the operator. Defaults to None and will be calculated for the operator size.
         """
-        
-        # Calculate the number of qubits by building the operator matrix with zero value parameters
-        if num_qubits is None:
-            zero_params = [0] * len(params)
-            zero_mat = op_func(*zero_params)
-            num_qubits = int(math.sqrt(zero_mat.shape[0]))
-
         super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
 
         self.op_func = op_func
