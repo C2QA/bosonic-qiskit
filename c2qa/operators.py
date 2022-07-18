@@ -26,9 +26,12 @@ class ParameterizedUnitaryGate(Gate):
         FIXME - Use real duration & units
 
         Args:
-            data (ndarray): operator matrix
+            op_func (function): function to build operator matrix
+            params (List): List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
+            num_qubits (int): Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
             label (string, optional): Gate name. Defaults to None.
-            num_qubits (int, optional): Number of qubits in the operator. Defaults to None and will be calculated for the operator size.
+            duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
+            unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
         """
         super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
 
