@@ -20,23 +20,19 @@ idQB = numpy.array([[1, 0], [0, 1]])
 class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, params, label=None, num_qubits=None, duration=100, unit="ns"):
+    def __init__(self, op_func, params, num_qubits, label=None, duration=100, unit="ns"):
         """Initialize ParameterizedUnitaryGate
 
         FIXME - Use real duration & units
 
         Args:
-            data (ndarray): operator matrix
+            op_func (function): function to build operator matrix
+            params (List): List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
+            num_qubits (int): Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
             label (string, optional): Gate name. Defaults to None.
-            num_qubits (int, optional): Number of qubits in the operator. Defaults to None and will be calculated for the operator size.
+            duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
+            unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
         """
-        
-        # Calculate the number of qubits by building the operator matrix with zero value parameters
-        if num_qubits is None:
-            zero_params = [0] * len(params)
-            zero_mat = op_func(*zero_params)
-            num_qubits = int(math.sqrt(zero_mat.shape[0]))
-
         super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
 
         self.op_func = op_func
@@ -251,11 +247,11 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs(self, g):
+    def bs(self, theta):
         """Two-mode beam splitter
 
         Args:
-            g (real): real phase
+            theta: phase
 
         Returns:
             ndarray: operator matrix
@@ -263,42 +259,42 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        arg = (g / 2) * (a1dag2 - a12dag)
+        arg =  (theta * a1dag2 - numpy.conj(theta) * a12dag)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs_im(self, weight):
-        """Two-mode beam splitter
+    # def bs(self, g):
+    #     """Two-mode beam splitter
+    #
+    #     Args:
+    #         g (real): real phase
+    #
+    #     Returns:
+    #         ndarray: operator matrix
+    #     """
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #
+    #     arg = (g / 2) * (a1dag2 - a12dag)
+    #
+    #     return scipy.sparse.linalg.expm(arg)
 
-        Args:
-            weight (real): mutliplied by 1j to yield imaginary alpha
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-        alpha = (weight * 1j)
-
-        arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def bs_VQE(self):
-        """Two-mode beam splitter
-
-        Args:
-            weight (real): mutliplied by 1j to yield imaginary alpha
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        arg = 1j * (numpy.pi/4) * (a12dag + a1dag2)
-
-        return scipy.sparse.linalg.expm(arg)
+    # def bs_im(self, weight):
+    #     """Two-mode beam splitter
+    #
+    #     Args:
+    #         weight (real): mutliplied by 1j to yield imaginary alpha
+    #
+    #     Returns:
+    #         ndarray: operator matrix
+    #     """
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #     alpha = (weight * 1j)
+    #
+    #     arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
+    #
+    #     return scipy.sparse.linalg.expm(arg)
 
     def cpbs(self, g):
         """Controlled phase two-mode beam splitter

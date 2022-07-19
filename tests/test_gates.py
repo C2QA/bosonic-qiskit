@@ -27,7 +27,7 @@ def create_conditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 2):
     return circuit, qmr, qr
 
 
-def create_unconditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 2):
+def create_unconditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 3):
     qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
     circuit = c2qa.CVCircuit(qmr)
     for qumode in range(num_qumodes):
