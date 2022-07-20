@@ -157,7 +157,7 @@ class CVCircuit(QuantumCircuit):
             super().initialize(value, qumode)
 
     @staticmethod
-    def cv_conditional(name, op, params_0, params_1, num_qubits_per_qumode, num_qumodes=1):
+    def cv_conditional(name, op, params_0, params_1, num_qubits_per_qumode, num_qumodes=1, duration=100, unit="ns"):
         """Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)
 
         Args:
@@ -179,8 +179,11 @@ class CVCircuit(QuantumCircuit):
         for i in range(num_qumodes):
             qargs += sub_qmr[i]
 
-        sub_circ.append(ParameterizedUnitaryGate(op, params_0, num_qubits=num_qubits_per_qumode * num_qumodes).control(num_ctrl_qubits=1, ctrl_state=0), qargs)
-        sub_circ.append(ParameterizedUnitaryGate(op, params_1, num_qubits=num_qubits_per_qumode * num_qumodes).control(num_ctrl_qubits=1, ctrl_state=1), qargs)
+        gate_0 = ParameterizedUnitaryGate(op, params_0, num_qubits=num_qubits_per_qumode * num_qumodes, duration=duration, unit=unit)
+        gate_1 = ParameterizedUnitaryGate(op, params_1, num_qubits=num_qubits_per_qumode * num_qumodes, duration=duration, unit=unit)
+
+        sub_circ.append(gate_0.control(num_ctrl_qubits=1, ctrl_state=0), qargs)
+        sub_circ.append(gate_1.control(num_ctrl_qubits=1, ctrl_state=1), qargs)
 
         # Create a single instruction for the conditional gate, flag it for later processing
         inst = sub_circ.to_instruction(label=name)
