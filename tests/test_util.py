@@ -288,3 +288,18 @@ def test_wigner_mle(capsys):
         wigner = c2qa.util.wigner_mle(states, circuit.cutoff)
         assert wigner is not None
         print(wigner)
+
+
+def test_stateread(capsys):
+    with capsys.disabled():
+        num_qumodes=2
+        qubits_per_mode=3        
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode, name="qmr")
+
+        circuit = c2qa.CVCircuit(qmr)
+
+        circuit.cv_initialize(2, qmr[0])
+        circuit.cv_initialize(0, qmr[1])
+        state, result = c2qa.util.simulate(circuit)
+        occs = c2qa.util.stateread(state, numberofqubits=0, numberofmodes=num_qumodes, cutoff=circuit.cutoff, verbose=True)

@@ -1,8 +1,15 @@
+import math
+from numbers import Complex
+
+
 import numpy
+from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.circuit import Gate
+from qiskit.circuit.parameter import ParameterExpression
 from qiskit.extensions.unitary import UnitaryGate
-from qiskit.quantum_info import Operator
 import scipy.sparse
 import scipy.sparse.linalg
+
 
 xQB = numpy.array([[0, 1], [1, 0]])
 yQB = numpy.array([[0, 1j], [-1j, 0]])
@@ -10,38 +17,91 @@ zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
 
 
-class ParameterizedOperator(Operator):
-    """Support parameterizing operators for circuit animations."""
+class ParameterizedUnitaryGate(Gate):
+    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, *params, inverse: bool = False):
-        """Initialize ParameterizedOperator.
+    def __init__(self, op_func, params, num_qubits, label=None, duration=100, unit="ns"):
+        """Initialize ParameterizedUnitaryGate
+
+        FIXME - Use real duration & units
 
         Args:
-            op_func (function): function to call to generate operator matrix
-            params (tuple): function parameters
-            inverse (bool): True to caclualte the inverse of the operator matrix
+            op_func (function): function to build operator matrix
+            params (List): List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
+            num_qubits (int): Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
+            label (string, optional): Gate name. Defaults to None.
+            duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
+            unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
         """
-
-        super().__init__(op_func(*params).toarray())
+        super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
 
         self.op_func = op_func
-        self.params = params
-        self.inverse = inverse
+
+        self._parameterized = any(
+            isinstance(param, ParameterExpression) and param.parameters for param in params
+        )
+
+        self.duration = duration
+        self.unit = unit
+
+    def __array__(self, dtype=None):
+        """Call the operator function to build the array using the bound parameter values."""
+        # return self.op_func(*map(complex, self.params)).toarray()
+        values = []
+        for param in self.params:
+            if isinstance(param, ParameterExpression):
+                values.append(float(param))
+            else:
+                values.append(param)
+        values = tuple(values)
+
+        return self.op_func(*values).toarray()
+
+    def _define(self):
+        mat = self.to_matrix()
+        q = QuantumRegister(self.num_qubits)
+        qc = QuantumCircuit(q, name=self.name)
+        rules = [
+            (UnitaryGate(mat, self.label), [i for i in q], []),
+        ]
+        for instr, qargs, cargs in rules:
+            qc._append(instr, qargs, cargs)
+
+        self.definition = qc
+
+    def validate_parameter(self, parameter):
+        """Gate parameters should be int, float, or ParameterExpression"""
+        if isinstance(parameter, Complex):
+            return parameter
+        else:
+            return super().validate_parameter(parameter)
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
-
         Args:
             current_step (int, optional): Current step within total_steps. Defaults to 1.
             total_steps (int, optional): Total steps to increment parameters. Defaults to 1.
-
         Returns:
             ndarray: operator matrix
         """
+        if self.is_parameterized():
+            raise NotImplementedError("Unable to calculate incremental operator matrices for parameterized gate")
 
-        # If animating and the previous state is first initiallized, only increment by 1/total_steps.
-        # Otherwise increment by the fraction current_step/total_steps
+        values = self.calculate_params(current_step, total_steps, keep_state)
+
+        # if self.inverse:
+        #     result = scipy.sparse.linalg.inv(self.op_func(*values))
+        # else:
+        #     result = self.op_func(*values)
+        result = self.op_func(*values)
+
+        if hasattr(result, "toarray"):
+            result = result.toarray()
+
+        return result
+
+    def calculate_params(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         if keep_state:
             param_fraction = 1 / total_steps
         else:
@@ -51,34 +111,7 @@ class ParameterizedOperator(Operator):
         for param in self.params:
             values.append(param * param_fraction)
 
-        values = tuple(values)
-
-        if self.inverse:
-            result = scipy.sparse.linalg.inv(self.op_func(*values))
-        else:
-            result = self.op_func(*values)
-
-        return result.toarray()
-
-
-class CVGate(UnitaryGate):
-    """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
-
-    def __init__(self, data, label=None, duration=100, unit="ns"):
-        """Initialize CVGate
-
-        FIXME - Use real duration & units
-
-        Args:
-            data (ndarray): operator matrix
-            label (string, optional): Gate name. Defaults to None.
-        """
-        super().__init__(data, label)
-
-        self.op = data
-
-        self.duration = duration
-        self.unit = unit
+        return tuple(values)
 
 
 class CVOperators:
@@ -214,11 +247,11 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs(self, g):
+    def bs(self, theta):
         """Two-mode beam splitter
 
         Args:
-            g (real): real phase
+            theta: phase
 
         Returns:
             ndarray: operator matrix
@@ -226,26 +259,42 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        arg = (g / 2) * (a1dag2 - a12dag)
+        arg =  (theta * a1dag2 - numpy.conj(theta) * a12dag)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs_im(self, weight):
-        """Two-mode beam splitter
+    # def bs(self, g):
+    #     """Two-mode beam splitter
+    #
+    #     Args:
+    #         g (real): real phase
+    #
+    #     Returns:
+    #         ndarray: operator matrix
+    #     """
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #
+    #     arg = (g / 2) * (a1dag2 - a12dag)
+    #
+    #     return scipy.sparse.linalg.expm(arg)
 
-        Args:
-            weight (real): mutliplied by 1j to yield imaginary alpha
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-        alpha = (weight * 1j)
-
-        arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
-
-        return scipy.sparse.linalg.expm(arg)
+    # def bs_im(self, weight):
+    #     """Two-mode beam splitter
+    #
+    #     Args:
+    #         weight (real): mutliplied by 1j to yield imaginary alpha
+    #
+    #     Returns:
+    #         ndarray: operator matrix
+    #     """
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #     alpha = (weight * 1j)
+    #
+    #     arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
+    #
+    #     return scipy.sparse.linalg.expm(arg)
 
     def cpbs(self, g):
         """Controlled phase two-mode beam splitter
@@ -321,7 +370,18 @@ class CVOperators:
             ndarray: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(xQB, self.N)
+        return scipy.sparse.linalg.expm(arg.tocsc())
 
+    def qubitDependentCavityRotationY(self, theta):
+        """Qubit dependent cavity rotation
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = theta * 1j * scipy.sparse.kron(yQB, self.N)
         return scipy.sparse.linalg.expm(arg.tocsc())
 
     def controlledparity(self, theta):
@@ -400,3 +460,5 @@ class CVOperators:
         arg = scipy.sparse.kron(rot, argm)
 
         return scipy.sparse.linalg.expm(arg)
+
+

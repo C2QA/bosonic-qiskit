@@ -28,6 +28,10 @@ class QumodeRegister:
         # (i.e., qmr[0] is represented by multiple qubits).
         self.qreg = QuantumRegister(size=self.size, name=name)
 
+    def __iter__(self):
+        """Iterate over the list of lists representing the qubits for each qumode in the register"""
+        return QumodeIterator(self)
+
     def __getitem__(self, key):
         """Return a list of QisKit Qubit for each indexed qumode
 
@@ -57,3 +61,27 @@ class QumodeRegister:
             raise ValueError("Must provide slice or int.")
 
         return self.qreg[start:stop:step]
+    
+    def __len__(self):
+        """The length of a QumodeRegister is the number of qumodes (not the num_qumodes * num_qubits_per_qumode)"""
+        return self.num_qumodes
+
+
+class QumodeIterator:
+    """Iterate over the list of lists representing the qubits for each qumode in the register"""
+
+    def __init__(self, register: QumodeRegister):
+        self._index = 0
+        self._register = register
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._index < self._register.num_qumodes:
+            next = self._register[self._index]
+            self._index += 1
+
+            return next
+        else:
+            raise StopIteration
