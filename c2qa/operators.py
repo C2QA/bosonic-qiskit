@@ -465,4 +465,43 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def schwinger_U4(self, theta):
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        bs1 = 1j * theta * (a1dag2 + a12dag)
+        arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
+        arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
+
+        bs2 = theta * (a1dag2 - a12dag)
+        arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
+        arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
+
+        logU4 = arg1+arg2-arg3+arg4
+        # print(logU4)
+
+        return scipy.sparse.linalg.expm(logU4)
+
+
+    def schwinger_U5(self, theta):
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        bs1 = - theta * (a1dag2 - a12dag)
+
+        arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
+        arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
+
+        bs2 = - 1j * theta * (a1dag2 + a12dag)
+
+        arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
+        arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
+
+        logU5 = arg1+arg2+arg3-arg4
+        # print(logU5)
+
+        return scipy.sparse.linalg.expm(logU5)
+
 

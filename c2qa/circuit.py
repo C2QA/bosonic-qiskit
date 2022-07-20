@@ -466,6 +466,33 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], label="PNCQR", num_qubits=len(qumode_a) + 1), qargs=qumode_a + [qubit_ancilla])
 
+    def cv_schwinger_U4(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
+        """Schwinger model gate.
+
+        Args:
+            phi : phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U4, [phi], label="Schwinger_U4", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
+
+    def cv_schwinger_U5(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
+        """Schwinger model gate.
+
+        Args:
+            phi : phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U5, [phi], label="Schwinger_U5", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
+
+
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
 
