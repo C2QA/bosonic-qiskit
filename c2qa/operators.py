@@ -3,6 +3,7 @@ from numbers import Complex
 
 
 import numpy
+from pytest import param
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
 from qiskit.circuit.parameter import ParameterExpression
@@ -75,11 +76,10 @@ class ParameterizedUnitaryGate(Gate):
 
     def validate_parameter(self, parameter):
         """Gate parameters should be int, float, or ParameterExpression"""
-        # if isinstance(parameter, Complex):
-        #     return parameter
-        # else:
-        #     return super().validate_parameter(parameter)
-        return parameter
+        if isinstance(parameter, complex) or (isinstance(parameter, ParameterExpression) and not parameter.is_real()):
+            return parameter
+        else:
+            return super().validate_parameter(parameter)
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         """Calculate the operator matrix by executing the selected function.
