@@ -472,11 +472,11 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        bs1 = 1j * theta * (a1dag2 + a12dag)
+        bs1 = 1j * (theta/4) * (a1dag2 + a12dag)
         arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
         arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
 
-        bs2 = theta * (a1dag2 - a12dag)
+        bs2 = (theta/4) * (a1dag2 - a12dag)
         arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
         arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
 
