@@ -17,6 +17,14 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
     Calculate Kraus operator given number of photons and photon loss rate over specified time. 
 
     Following equation 44 from Bosonic Oprations and Measurements, Girvin
+
+    Args:
+        photon_loss_rakte (float): kappa, the rate of photon loss in Qiskit standard time units (seconds)
+        time (float): current duration of time (in Qiskit standard time units)
+        circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
+    
+    Returns:
+        List of Kraus operators for all qubits up to circuit.cutoff
     """
     operators = []
 
@@ -59,6 +67,7 @@ class PhotonLossNoisePass(LocalNoisePass):
                     " without a dt time set.")
             duration = op.duration * self._dt
         else:
+            # Convert duration into standard unit used by Qiskit
             duration = apply_prefix(op.duration, op.unit)
 
         kraus_operators = calculate_kraus(self._photon_loss_rate, duration, self._circuit)

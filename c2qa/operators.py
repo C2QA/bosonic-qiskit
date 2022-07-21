@@ -113,6 +113,12 @@ class ParameterizedUnitaryGate(Gate):
 
         return tuple(values)
 
+    def calculate_duration(self, current_step: int = 1, total_steps: int = 1):
+        """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
+        fraction = current_step / total_steps
+
+        return self.duration * fraction, self.unit
+
 
 class CVOperators:
     """Build operator matrices for continuously variable bosonic gates."""
