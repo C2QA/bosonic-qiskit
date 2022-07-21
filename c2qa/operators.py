@@ -3,7 +3,6 @@ from numbers import Complex
 
 
 import numpy
-from pytest import param
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
 from qiskit.circuit.parameter import ParameterExpression
