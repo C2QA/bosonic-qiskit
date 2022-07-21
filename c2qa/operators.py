@@ -50,12 +50,16 @@ class ParameterizedUnitaryGate(Gate):
         values = []
         for param in self.params:
             if isinstance(param, ParameterExpression):
-                values.append(float(param))
+                if param.is_real():
+                    values.append(float(param))
+                else:
+                    values.append(complex(param))
             else:
                 values.append(param)
         values = tuple(values)
 
         return self.op_func(*values).toarray()
+
 
     def _define(self):
         mat = self.to_matrix()
@@ -71,10 +75,11 @@ class ParameterizedUnitaryGate(Gate):
 
     def validate_parameter(self, parameter):
         """Gate parameters should be int, float, or ParameterExpression"""
-        if isinstance(parameter, Complex):
-            return parameter
-        else:
-            return super().validate_parameter(parameter)
+        # if isinstance(parameter, Complex):
+        #     return parameter
+        # else:
+        #     return super().validate_parameter(parameter)
+        return parameter
 
     def calculate_matrix(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         """Calculate the operator matrix by executing the selected function.
