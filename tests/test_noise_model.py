@@ -121,13 +121,13 @@ def test_photon_loss_pass_no_displacement(capsys):
 def test_photon_loss_pass_slow_displacement(capsys):
     with capsys.disabled():
         num_qumodes = 1
-        num_qubits_per_qumode = 5
+        num_qubits_per_qumode = 4
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
         
-        circuit.cv_initialize(1, qmr[0])
+        circuit.cv_initialize(3, qmr[0])
         
         circuit.cv_d(1, qmr[0])
         
