@@ -85,59 +85,23 @@ def test_kraus_operators(capsys):
 
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
-def test_animate_noise_model(capsys):
-    with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=5)
-        qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
-
-        circuit.cv_initialize(1, qmr[0])
-
-        for _ in range(10):
-            # circuit.delay(duration=10, unit="s", qarg=qmr[0])  
-            circuit.cv_d(0, qmr[0])
-
-        photon_loss_rate = 0.1
-        time = 10.0
-        kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
-
-        wigner_filename = "tests/noise_model_direct.mp4"
-        c2qa.util.animate_wigner(
-            circuit,
-            qubit=qr[0],
-            cbit=cr[0],
-            file=wigner_filename,
-            axes_min=-9,
-            axes_max=9,
-            animation_segments=50,
-            processes=1,
-            kraus_operators=kraus_operators
-        )
-
-
-@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
-def test_photon_loss_pass_no_displacemnet(capsys):
+def test_photon_loss_pass_no_displacement(capsys):
     with capsys.disabled():
         num_qumodes = 1
-        num_qubits_per_qumode = 2
+        num_qubits_per_qumode = 4
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
         
-        circuit.cv_initialize(2, qmr[0])
-
-        for _ in range(10):
-            # circuit.delay(duration=10, unit="s", qarg=qmr[0])  
-            circuit.cv_d(0, qmr[0])
+        circuit.cv_initialize(3, qmr[0])
         
-        photon_loss_rate = 25
+        circuit.cv_d(0, qmr[0])
+        
+        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
-        noise_circuit = noise_pass(circuit)
-        circuit.merge(noise_circuit)
         
-        # state, result = c2qa.util.simulate(circuit)
+        # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
 
         wigner_filename = "tests/noise_model_pass_no_displacement.mp4"
         c2qa.util.animate_wigner(
@@ -145,32 +109,32 @@ def test_photon_loss_pass_no_displacemnet(capsys):
             qubit=qr[0],
             cbit=cr[0],
             file=wigner_filename,
-            axes_min=-9,
-            axes_max=9,
-            animation_segments=50,
-            keep_state=True
+            axes_min=-6,
+            axes_max=6,
+            animation_segments=200,
+            keep_state=True,
+            noise_pass=noise_pass
         )
 
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
-def test_photon_loss_pass_slow_displacemnet(capsys):
+def test_photon_loss_pass_slow_displacement(capsys):
     with capsys.disabled():
         num_qumodes = 1
-        num_qubits_per_qumode = 6
+        num_qubits_per_qumode = 5
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
         
-        circuit.cv_initialize(2, qmr[0])
-        circuit.cv_d(0.1, qmr[0])
+        circuit.cv_initialize(1, qmr[0])
         
-        photon_loss_rate = 25
+        circuit.cv_d(1, qmr[0])
+        
+        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
-        noise_circuit = noise_pass(circuit)
-        circuit.merge(noise_circuit)
         
-        # state, result = c2qa.util.simulate(circuit)
+        # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
 
         wigner_filename = "tests/noise_model_pass_slow_displacement.mp4"
         c2qa.util.animate_wigner(
@@ -178,8 +142,9 @@ def test_photon_loss_pass_slow_displacemnet(capsys):
             qubit=qr[0],
             cbit=cr[0],
             file=wigner_filename,
-            axes_min=-9,
-            axes_max=9,
-            animation_segments=100,
-            keep_state=True
+            axes_min=-6,
+            axes_max=6,
+            animation_segments=200,
+            keep_state=True,
+            noise_pass=noise_pass
         )
