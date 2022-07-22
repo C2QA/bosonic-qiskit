@@ -193,8 +193,8 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    noise_pass = None
-    **kw_args,
+    noise_pass = None,
+    **kwargs,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -230,7 +230,7 @@ def simulate(
 
     # Run and get statevector
     try:
-        max_parallel_threads = kw_args["max_parallel_threads"]
+        max_parallel_threads = kwargs["max_parallel_threads"]
     except KeyError:
         max_parallel_threads=0
 
