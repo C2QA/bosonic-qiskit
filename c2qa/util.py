@@ -193,8 +193,7 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    kraus_operators = None,
-    error_gates: List[str] = None,
+    noise_pass = None
     **kw_args,
 ):
     """Convenience function to simulate using the given backend.
@@ -208,7 +207,6 @@ def simulate(
                                                should be added to the end of the circuit. Defaults to True.
         conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
                                                    (each state value gets its own state vector). Defaults to False.
-        kraus_operator (list)
 
     Returns:
         tuple: (state, result) tuple from simulation
@@ -220,19 +218,15 @@ def simulate(
             conditional=conditional_state_vector, pershot=per_shot_state_vector
         )
 
-    # Transpile for simulator, with noise error if provided
-    if kraus_operators is not None:
-        error = qiskit.providers.aer.noise.kraus_error(kraus_operators)
-        if not error_gates:
-            error_gates = circuit.cv_gate_labels
-        noise_model = qiskit.providers.aer.noise.NoiseModel()
-        noise_model.add_quantum_error(error, error_gates, circuit.qumode_qubits)
-        noise_model.add_basis_gates("unitary")
-        # print(noise_model.basis_gates)
-        simulator = qiskit.providers.aer.AerSimulator(noise_model=noise_model)
+    # Run noise pass, if provided
+    if noise_pass:
+        circuit_compiled = noise_pass(circuit)
     else:
-        simulator = qiskit.providers.aer.AerSimulator()
-    circuit_compiled = qiskit.transpile(circuit, simulator)
+        circuit_compiled = circuit
+
+    # Transpile for simulator
+    simulator = qiskit.providers.aer.AerSimulator()
+    circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
     # Run and get statevector
     try:
@@ -511,9 +505,8 @@ def animate_wigner(
     axes_max: int = 6,
     axes_steps: int = 200,
     processes: int = None,
-    kraus_operators = None,
-    error_gates: List[str] = None,
-    keep_state: bool = False
+    keep_state: bool = False,
+    noise_pass = None
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -538,6 +531,7 @@ def animate_wigner(
         keep_state (bool, optional): True if each frame builds on the previous frame's state vector. 
                                      False if each frame starts over from the beginning of the circuit.
                                      If True, it requires sequential simulation of each frame.
+        noise_pass (PhotonLossNoisePass, optional): noise pass to apply
 
     Returns:
         [type]: [description]
@@ -560,11 +554,11 @@ def animate_wigner(
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                sim_circuit.unitary(
-                    inst.calculate_matrix(current_step=index, total_steps=animation_segments, keep_state=keep_state),
-                    qargs,
-                    label=inst.name,
-                )
+                params = inst.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
+                duration, unit = inst.calculate_duration(current_step=index, total_steps=animation_segments)
+                gate = ParameterizedUnitaryGate(inst.op_func, params=params, num_qubits=inst.num_qubits, label=inst.label, duration=duration, unit=unit)
+
+                sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
 
                 # sim_circuit.barrier()
                 sim_circuit.h(qubit)
@@ -581,14 +575,18 @@ def animate_wigner(
                 params_0 = inst_0.base_gate.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
                 params_1 = inst_1.base_gate.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
 
+                duration, unit = inst_0.base_gate.calculate_duration(current_step=index, total_steps=animation_segments)
+
                 sim_circuit.append(
                     CVCircuit.cv_conditional(
-                        inst.name,
-                        inst_0.base_gate.op_func,
-                        params_0,
-                        params_1,
-                        inst.num_qubits_per_qumode,
-                        inst.num_qumodes,
+                        name=inst.name,
+                        op=inst_0.base_gate.op_func,
+                        params_0=params_0,
+                        params_1=params_1,
+                        num_qubits_per_qumode=inst.num_qubits_per_qumode,
+                        num_qumodes=inst.num_qumodes,
+                        duration=duration,
+                        unit=unit
                     ),
                     qargs,
                     cargs,
@@ -632,17 +630,17 @@ def animate_wigner(
             else:
                 # No previous simulation state, just run the current circuit
                 sim_circuit = circuit
-            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates)
+            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, noise_pass=noise_pass)
             w_fock.append(fock)
     elif processes == 1:
         w_fock = []
         for circuit in circuits:
-            fock, _ = simulate_wigner(circuit, xvec, shots, kraus_operators=kraus_operators, error_gates=error_gates)
+            fock, _ = simulate_wigner(circuit, xvec, shots, noise_pass=noise_pass)
             w_fock.append(fock)
     else:
         pool = multiprocessing.Pool(processes)
         results = pool.starmap(
-            simulate_wigner, ((circuit, xvec, shots, kraus_operators, error_gates) for circuit in circuits)
+            simulate_wigner, ((circuit, xvec, shots, noise_pass) for circuit in circuits)
         )
         pool.close()
         w_fock = [i[0] for i in results if i is not None]
@@ -716,11 +714,10 @@ def simulate_wigner(
     circuit: CVCircuit, 
     xvec: np.ndarray, 
     shots: int,
-    kraus_operators = None,
-    error_gates: List[str] = None
+    noise_pass = None
 ):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
-    state, _ = simulate(circuit, shots=shots, conditional_state_vector=True, kraus_operators=kraus_operators, error_gates=error_gates)
+    state, _ = simulate(circuit, shots=shots, noise_pass=noise_pass, conditional_state_vector=True)
     
     if state:
         even_state = state["0x0"]

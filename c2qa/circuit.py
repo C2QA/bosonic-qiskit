@@ -157,7 +157,7 @@ class CVCircuit(QuantumCircuit):
             super().initialize(value, qumode)
 
     @staticmethod
-    def cv_conditional(name, op, params_0, params_1, num_qubits_per_qumode, num_qumodes=1):
+    def cv_conditional(name, op, params_0, params_1, num_qubits_per_qumode, num_qumodes=1, duration=100, unit="ns"):
         """Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)
 
         Args:
@@ -179,8 +179,11 @@ class CVCircuit(QuantumCircuit):
         for i in range(num_qumodes):
             qargs += sub_qmr[i]
 
-        sub_circ.append(ParameterizedUnitaryGate(op, params_0, num_qubits=num_qubits_per_qumode * num_qumodes).control(num_ctrl_qubits=1, ctrl_state=0), qargs)
-        sub_circ.append(ParameterizedUnitaryGate(op, params_1, num_qubits=num_qubits_per_qumode * num_qumodes).control(num_ctrl_qubits=1, ctrl_state=1), qargs)
+        gate_0 = ParameterizedUnitaryGate(op, params_0, num_qubits=num_qubits_per_qumode * num_qumodes, duration=duration, unit=unit)
+        gate_1 = ParameterizedUnitaryGate(op, params_1, num_qubits=num_qubits_per_qumode * num_qumodes, duration=duration, unit=unit)
+
+        sub_circ.append(gate_0.control(num_ctrl_qubits=1, ctrl_state=0), qargs)
+        sub_circ.append(gate_1.control(num_ctrl_qubits=1, ctrl_state=1), qargs)
 
         # Create a single instruction for the conditional gate, flag it for later processing
         inst = sub_circ.to_instruction(label=name)
@@ -465,6 +468,33 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], num_qubits=len(qumode_a) + 1, label="PNCQR"), qargs=qumode_a + [qubit_ancilla])
+
+    def cv_schwinger_U4(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
+        """Schwinger model gate.
+
+        Args:
+            phi : phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U4, [phi], label="Schwinger_U4", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
+
+    def cv_schwinger_U5(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
+        """Schwinger model gate.
+
+        Args:
+            phi : phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U5, [phi], label="Schwinger_U5", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
+
 
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
