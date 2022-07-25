@@ -15,6 +15,8 @@ xQB = numpy.array([[0, 1], [1, 0]])
 yQB = numpy.array([[0, 1j], [-1j, 0]])
 zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
+sigma_plus = numpy.array([[0, 1], [0, 0]])
+sigma_minus = numpy.array([[0, 0], [1, 0]])
 
 
 class ParameterizedUnitaryGate(Gate):
@@ -467,41 +469,72 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    # def schwinger_U4(self, theta):
+    #
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #
+    #     bs1 = 1j * theta * (a1dag2 + a12dag) / 4
+    #     arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
+    #     arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
+    #
+    #     bs2 = theta * (a1dag2 - a12dag) / 4
+    #     # yQB acts on nth qubit, xQB acts on (n+1)th qubit
+    #     arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
+    #     # xQB acts on nth qubit, yQB acts on (n+1)th qubit
+    #     arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
+    #
+    #     logU4 = arg1+arg2-arg3+arg4
+    #     return scipy.sparse.linalg.expm(logU4)
+    #
+    # def schwinger_U5(self, theta):
+    #
+    #     a12dag = self.a1 * self.a2_dag
+    #     a1dag2 = self.a1_dag * self.a2
+    #
+    #     bs1 = (- theta) * (a1dag2 - a12dag) / 4
+    #     arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
+    #     arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
+    #
+    #     bs2 = 1j * (- theta) * (a1dag2 + a12dag) / 4
+    #     # yQB acts on nth qubit, xQB acts on (n+1)th qubit
+    #     arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
+    #     # xQB acts on nth qubit, yQB acts on (n+1)th qubit
+    #     arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
+    #
+    #     logU5 = arg1+arg2+arg3-arg4
+    #     return scipy.sparse.linalg.expm(logU5)
+
     def schwinger_U4(self, theta):
 
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        bs1 = 1j * theta * (a1dag2 + a12dag) / 4
-        arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
-        arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
+        # Qiskit kronecker product convention
+        arg1 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a12dag))
+        arg2 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a1dag2))
 
-        bs2 = theta * (a1dag2 - a12dag) / 4
-        # yQB acts on nth qubit, xQB acts on (n+1)th qubit
-        arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
-        # xQB acts on nth qubit, yQB acts on (n+1)th qubit
-        arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
+        # Qutip kronecker product convention
+        # arg1 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a12dag))
+        # arg2 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a1dag2))
 
-        logU4 = arg1+arg2-arg3+arg4
+        logU4 = 1j*theta*(arg1+arg2)
         return scipy.sparse.linalg.expm(logU4)
-
 
     def schwinger_U5(self, theta):
 
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        bs1 = (- theta) * (a1dag2 - a12dag) / 4
-        arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
-        arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
+        # Qiskit kronecker product convention
+        arg1 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a12dag))
+        arg2 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a1dag2))
 
-        bs2 = 1j * (- theta) * (a1dag2 + a12dag) / 4
-        # yQB acts on nth qubit, xQB acts on (n+1)th qubit
-        arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
-        # xQB acts on nth qubit, yQB acts on (n+1)th qubit
-        arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
+        # Qutip kronecker product convention
+        # arg1 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a12dag))
+        # arg2 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a1dag2))
 
-        logU5 = arg1+arg2+arg3-arg4
+        logU5 = -theta*(arg1-arg2)
         return scipy.sparse.linalg.expm(logU5)
 
     def testqubitorderf(self, phi):

@@ -482,6 +482,9 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U4, [phi], label="Schwinger_U4", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
 
+    def cv_testqubitorderf(self, phi, qubit_1, qubit_2):
+        return self.append(ParameterizedUnitaryGate(self.ops.testqubitorderf, [phi], label="testqubitorderf", num_qubits=2), qargs=[qubit_1] + [qubit_2])
+
     def cv_schwinger_U5(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
         """Schwinger model gate.
 
