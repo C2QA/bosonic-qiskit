@@ -649,6 +649,7 @@ def animate_wigner(
     # Animate
     anim = matplotlib.animation.FuncAnimation(
         fig=fig,
+        init_func=_animate_init,
         func=_animate,
         frames=len(w_fock),
         fargs=(fig, ax, xvec, w_fock, file),
@@ -678,6 +679,8 @@ def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
 
     anim.save(file, writer=writer)
 
+def _animate_init():
+    pass  # Prevent rendering frame 0 twice (once for init, once for animate)
 
 def _animate(frame, *fargs):
     """Generate individual matplotlib frame in animation."""
