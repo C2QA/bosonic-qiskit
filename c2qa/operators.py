@@ -50,10 +50,11 @@ class ParameterizedUnitaryGate(Gate):
         values = []
         for param in self.params:
             if isinstance(param, ParameterExpression):
-                if param.is_real():
-                    values.append(float(param))
-                else:
-                    values.append(complex(param))
+                # if param.is_real():
+                #     values.append(float(param))
+                # else:
+                #     values.append(complex(param))
+                values.append(complex(param))  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
             else:
                 values.append(param)
         values = tuple(values)
