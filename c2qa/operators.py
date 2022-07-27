@@ -52,12 +52,17 @@ class ParameterizedUnitaryGate(Gate):
         values = []
         for param in self.params:
             if isinstance(param, ParameterExpression):
-                values.append(float(param))
+                # if param.is_real():
+                #     values.append(float(param))
+                # else:
+                #     values.append(complex(param))
+                values.append(complex(param))  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
             else:
                 values.append(param)
         values = tuple(values)
 
         return self.op_func(*values).toarray()
+
 
     def _define(self):
         mat = self.to_matrix()
@@ -73,7 +78,7 @@ class ParameterizedUnitaryGate(Gate):
 
     def validate_parameter(self, parameter):
         """Gate parameters should be int, float, or ParameterExpression"""
-        if isinstance(parameter, Complex):
+        if isinstance(parameter, complex) or (isinstance(parameter, ParameterExpression) and not parameter.is_real()):
             return parameter
         else:
             return super().validate_parameter(parameter)
