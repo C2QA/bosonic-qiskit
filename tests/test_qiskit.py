@@ -17,3 +17,11 @@ def test_qiskit():
 
     assert result.success
     print(state)
+
+
+def test_initialize(capsys):
+    with capsys.disabled():
+        # Successful with Qiskit v0.34.2, raises error with v0.35+
+        qr = qiskit.QuantumRegister(1)
+        circuit = qiskit.circuit.QuantumCircuit(qr)
+        circuit.initialize([0, 1], qr[0])
