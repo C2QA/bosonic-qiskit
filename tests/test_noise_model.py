@@ -90,9 +90,7 @@ def test_photon_loss_pass_no_displacement(capsys):
         num_qumodes = 1
         num_qubits_per_qumode = 4
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
-        qr = qiskit.QuantumRegister(2)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = c2qa.CVCircuit(qmr)
         
         circuit.cv_initialize(3, qmr[0])
         
@@ -106,14 +104,13 @@ def test_photon_loss_pass_no_displacement(capsys):
         wigner_filename = "tests/noise_model_pass_no_displacement.mp4"
         c2qa.util.animate_wigner(
             circuit,
-            qubit=qr[0],
-            cbit=cr[0],
             file=wigner_filename,
             axes_min=-6,
             axes_max=6,
             animation_segments=200,
             keep_state=True,
-            noise_pass=noise_pass
+            noise_pass=noise_pass,
+            shots=1
         )
 
 
@@ -123,9 +120,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
         num_qumodes = 1
         num_qubits_per_qumode = 4
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
-        qr = qiskit.QuantumRegister(2)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = c2qa.CVCircuit(qmr)
         
         circuit.cv_initialize(3, qmr[0])
         
@@ -139,12 +134,11 @@ def test_photon_loss_pass_slow_displacement(capsys):
         wigner_filename = "tests/noise_model_pass_slow_displacement.mp4"
         c2qa.util.animate_wigner(
             circuit,
-            qubit=qr[0],
-            cbit=cr[0],
             file=wigner_filename,
             axes_min=-6,
             axes_max=6,
             animation_segments=200,
             keep_state=True,
-            noise_pass=noise_pass
+            noise_pass=noise_pass,
+            shots=1
         )

@@ -490,8 +490,8 @@ def plot(
 
 def animate_wigner(
     circuit: CVCircuit,
-    qubit,
-    cbit,
+    qubit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
+    cbit: qiskit.circuit.quantumcircuit.ClbitSpecifier = None,
     animation_segments: int = 10,
     shots: int = 1024,
     file: str = None,
@@ -512,8 +512,8 @@ def animate_wigner(
 
     Args:
         circuit (CVCircuit): circuit to simulate and plot
-        qubit ([type]): qubit to measure
-        cbit ([type]): classical bit to measure into
+        qubit ([type]): Qubit to measure, if performing Hadamard measure for use with cat states. Defaults to None.
+        cbit ([type]): Classical bit to measure into, if performing Hadamard measure for use with cat states. Defaults to None.
         animation_segments (int, optional): Number of segments to split each gate into for animation. Defaults to 10.
         shots (int, optional): Number of simulation shots per frame. Defaults to 1024.
         file (str, optional): File path to save. If None, return plot. Defaults to None.
@@ -552,11 +552,13 @@ def animate_wigner(
                 duration, unit = inst.calculate_duration(current_step=index, total_steps=animation_segments)
                 gate = ParameterizedUnitaryGate(inst.op_func, params=params, num_qubits=inst.num_qubits, label=inst.label, duration=duration, unit=unit)
 
+                # print(f"Gate {inst.label} with duration={duration} and params={params} at index={index} and animation_segments={animation_segments}")
                 sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
 
-                # sim_circuit.barrier()
-                sim_circuit.h(qubit)
-                sim_circuit.measure(qubit, cbit)
+                if qubit and cbit:
+                    # sim_circuit.barrier()
+                    sim_circuit.h(qubit)
+                    sim_circuit.measure(qubit, cbit)
 
                 circuits.append(sim_circuit)
         elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
@@ -586,18 +588,20 @@ def animate_wigner(
                     cargs,
                 )
 
-                # sim_circuit.barrier()
-                sim_circuit.h(qubit)
-                sim_circuit.measure(qubit, cbit)
+                if qubit and cbit:
+                    # sim_circuit.barrier()
+                    sim_circuit.h(qubit)
+                    sim_circuit.measure(qubit, cbit)
 
                 circuits.append(sim_circuit)
         else:
             sim_circuit = base_circuit.copy()
             sim_circuit.append(inst, qargs, cargs)
 
-            # sim_circuit.barrier()
-            sim_circuit.h(qubit)
-            sim_circuit.measure(qubit, cbit)
+            if qubit and cbit:
+                # sim_circuit.barrier()
+                sim_circuit.h(qubit)
+                sim_circuit.measure(qubit, cbit)
 
             circuits.append(sim_circuit)
 
@@ -618,23 +622,28 @@ def animate_wigner(
                 sim_circuit = circuit.copy()
                 sim_circuit.data.clear()  # Is this safe -- could we copy without data?
                 sim_circuit.initialize(previous_state)
-                last_instructions = circuit.data[-3:]  # Get the last instruction, plus the Hadamard/measure
+
+                if qubit and cbit:
+                    last_instructions = circuit.data[-3:]  # Get the last instruction, plus the Hadamard/measure
+                else:
+                    last_instructions = circuit.data[-1:]  # Get the last instruction
+
                 for inst in last_instructions:
                     sim_circuit.append(*inst)
             else:
                 # No previous simulation state, just run the current circuit
                 sim_circuit = circuit
-            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, noise_pass=noise_pass)
+            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, noise_pass=noise_pass, conditional=cbit is not None)
             w_fock.append(fock)
     elif processes == 1:
         w_fock = []
         for circuit in circuits:
-            fock, _ = simulate_wigner(circuit, xvec, shots, noise_pass=noise_pass)
+            fock, _ = simulate_wigner(circuit, xvec, shots, noise_pass=noise_pass, conditional=cbit is not None)
             w_fock.append(fock)
     else:
         pool = multiprocessing.Pool(processes)
         results = pool.starmap(
-            simulate_wigner, ((circuit, xvec, shots, noise_pass) for circuit in circuits)
+            simulate_wigner, ((circuit, xvec, shots, noise_pass, cbit is not None) for circuit in circuits)
         )
         pool.close()
         w_fock = [i[0] for i in results if i is not None]
@@ -711,23 +720,28 @@ def simulate_wigner(
     circuit: CVCircuit, 
     xvec: np.ndarray, 
     shots: int,
-    noise_pass = None
+    noise_pass = None,
+    conditional: bool = True
 ):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
-    state, _ = simulate(circuit, shots=shots, noise_pass=noise_pass, conditional_state_vector=True)
+    states, _ = simulate(circuit, shots=shots, noise_pass=noise_pass, conditional_state_vector=conditional)
     
-    if state:
-        even_state = state["0x0"]
-        # odd_state = state["0x1"]
+    if states:
+        if conditional:
+            state = states["0x0"]  # even state
+            # state = states["0x1"]  # odd state
+            density_matrix = cv_partial_trace(circuit, state)
+        else:
+            state = states
+            density_matrix = state
 
-        density_matrix = cv_partial_trace(circuit, even_state)
         wigner_result = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
     else:
         print("WARN: No state vector returned by simulation -- unable to calculate Wigner function!")
         wigner_result = None
-        even_state = None
+        state = None
     
-    return wigner_result, even_state
+    return wigner_result, state
 
 
 def wigner(
