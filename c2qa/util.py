@@ -493,13 +493,13 @@ def animate_wigner(
     qubit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
     cbit: qiskit.circuit.quantumcircuit.ClbitSpecifier = None,
     animation_segments: int = 10,
-    shots: int = 1024,
+    shots: int = 1,
     file: str = None,
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
     processes: int = None,
-    keep_state: bool = False,
+    keep_state: bool = True,
     noise_pass = None
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
@@ -515,7 +515,7 @@ def animate_wigner(
         qubit ([type]): Qubit to measure, if performing Hadamard measure for use with cat states. Defaults to None.
         cbit ([type]): Classical bit to measure into, if performing Hadamard measure for use with cat states. Defaults to None.
         animation_segments (int, optional): Number of segments to split each gate into for animation. Defaults to 10.
-        shots (int, optional): Number of simulation shots per frame. Defaults to 1024.
+        shots (int, optional): Number of simulation shots per frame. Defaults to 1.
         file (str, optional): File path to save. If None, return plot. Defaults to None.
         axes_min (int, optional): Minimum axes plot value. Defaults to -6.
         axes_max (int, optional): Maximum axes plot value. Defaults to 6.
@@ -549,7 +549,7 @@ def animate_wigner(
                 sim_circuit = base_circuit.copy()
 
                 params = inst.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
-                duration, unit = inst.calculate_duration(current_step=index, total_steps=animation_segments)
+                duration, unit = inst.calculate_duration(current_step=index, total_steps=animation_segments, keep_state=keep_state)
                 gate = ParameterizedUnitaryGate(inst.op_func, params=params, num_qubits=inst.num_qubits, label=inst.label, duration=duration, unit=unit)
 
                 # print(f"Gate {inst.label} with duration={duration} and params={params} at index={index} and animation_segments={animation_segments}")
