@@ -120,9 +120,12 @@ class ParameterizedUnitaryGate(Gate):
 
         return tuple(values)
 
-    def calculate_duration(self, current_step: int = 1, total_steps: int = 1):
+    def calculate_duration(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
         """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
-        fraction = current_step / total_steps
+        if keep_state:
+            fraction = 1 / total_steps
+        else:
+            fraction = current_step / total_steps
 
         return self.duration * fraction, self.unit
 
