@@ -111,6 +111,7 @@ def test_animate(capsys):
             axes_max=8,
             animation_segments=5,
             processes=1,
+            shots=25
         )
         assert Path(wigner_filename).is_file()
 
