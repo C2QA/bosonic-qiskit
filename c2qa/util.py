@@ -17,7 +17,7 @@ from c2qa import CVCircuit
 
 from c2qa.operators import ParameterizedUnitaryGate
 
-def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, endian="bigendian"):
+def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
@@ -50,8 +50,8 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, endi
                     # print("pos (sln/2)", pos, "sln ",sln)
                 sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
-            qbstr = ["".join(item) for item in qbst.astype(str)]
             amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
+
 
             ## Find the qumode states
             qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
@@ -75,38 +75,29 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, endi
                 sln = sln - ((cutoff - 1) * lendiv)  # New length of vector left to search
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
                 iqm = iqm + 1
-            qmstr = ["".join(item) for item in qmst.astype(str)]
             amp_cv.append((qmst*(np.abs(res)**2)).tolist())
 
             state.append([qmst.tolist(), qbst.tolist(), res])
 
             if verbose:
-                print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
+                if little_endian:
+                    qmstr = ["".join(item) for item in qmst.astype(str)]
+                    qbstr = ["".join(item) for item in qbst.astype(str)]
+                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)), "(little endian)")
+                else:
+                    qmstr = ["".join(item) for item in qmst[::-1].astype(str)]
+                    qbstr = ["".join(item) for item in qbst[::-1].astype(str)]
+                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)), "(big endian)")
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
-    if verbose:
-        print("occupation modes ", list(occupation_cv))
-
     occupation_qb = [sum(i) for i in zip(*amp_qb)]
-    if verbose:
-        print("occupation qubits ", list(occupation_qb))
 
-    # if (np.abs(np.imag(res)) > 1e-10):
-    #     print("\n imaginary amplitude: ", 1j * np.imag(res))
-
-    if endian == "bigendian":
+    if little_endian == False:
         for i in range(len(state)):
             state[i][0] = state[i][0][::-1]
             state[i][1] = state[i][1][::-1]
             occupation_cv = occupation_cv[::-1]
             occupation_qb = occupation_qb[::-1]
-        if verbose == True:
-            print("The output of util.stateread() is big endian, i.e. the first qubit and qumode entering the list is at the right \n To change to little endian add argument at end of stateread() to be endian=\"littleendian\"")
-    elif endian == "littleendian":
-        if verbose == True:
-            print("The output of util.stateread() is little endian, i.e. the first qubit and qumode entering the list is at the left \n To change to big endian add argument at end of stateread() to be endian=\"bigendian\"")
-    else:
-        print("The argument at the end of stateread() must be endian=\"bigendian\" or \"littleendian\"")
 
     return [occupation_cv,occupation_qb], state
 
