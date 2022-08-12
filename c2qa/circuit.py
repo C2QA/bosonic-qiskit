@@ -256,12 +256,6 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(ParameterizedUnitaryGate(self.ops.ecd, [alpha], num_qubits=len(qumode) + 1, label="ECD"), qargs=qumode + [qubit_ancilla])
 
-    def cv_rh1(self, alpha, qumode_a, qumode_b, qubit_ancilla):
-        self.append(ParameterizedUnitaryGate(self.ops.rh1, [alpha], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="rh1"), qargs=qumode_a + qumode_b + [qubit_ancilla])
-
-    def cv_rh2(self, alpha, qumode_a, qumode_b, qubit_ancilla):
-        self.append(ParameterizedUnitaryGate(self.ops.rh2, [alpha], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="rh2"), qargs=qumode_a + qumode_b + [qubit_ancilla])
-
     def cv_s(self, z, qumode):
         """Squeezing gate.
 
@@ -350,21 +344,6 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(ParameterizedUnitaryGate(self.ops.cpbs, [phi], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
-
-    def cv_cpbs_z2vqe(self, phi, qumode_a, qumode_b, qubit_ancilla):
-        """Controlled phase two-mode beam splitter
-
-        Args:
-            phi (real): phase
-            qubit_ancilla (Qubit): QisKit control Qubit
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        self.append(ParameterizedUnitaryGate(self.ops.cpbs_z2vqe, [phi], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
-
 
     def cv_r(self, phi, qumode):
         """Phase space rotation gate.
@@ -469,35 +448,43 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], num_qubits=len(qumode_a) + 1, label="PNCQR"), qargs=qumode_a + [qubit_ancilla])
 
-    def cv_schwinger_U4(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
-        """Schwinger model gate.
-
-        Args:
-            phi : phase
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U4, [phi], label="Schwinger_U4", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
 
     def cv_testqubitorderf(self, phi, qubit_1, qubit_2):
         return self.append(ParameterizedUnitaryGate(self.ops.testqubitorderf, [phi], label="testqubitorderf", num_qubits=2), qargs=[qubit_1] + [qubit_2])
 
+    def cv_schwinger_U4(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
+        """Schwinger model gate.
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U4, [phi], label="Schwinger_U4", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
+
     def cv_schwinger_U5(self, phi, qumode_a, qumode_b, qubit_1, qubit_2):
         """Schwinger model gate.
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U5, [phi], label="Schwinger_U5", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
+
+    def cv_rh1(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        """Z2 model gate.
+        """
+        self.append(ParameterizedUnitaryGate(self.ops.rh1, [alpha], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="Z2_rh1"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+    def cv_rh2(self, alpha, qumode_a, qumode_b, qubit_ancilla):
+        """Z2 model gate.
+        """
+        self.append(ParameterizedUnitaryGate(self.ops.rh2, [alpha], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="Z2_rh2"), qargs=qumode_a + qumode_b + [qubit_ancilla])
+
+    def cv_cpbs_z2vqe(self, phi, qumode_a, qumode_b, qubit_ancilla):
+        """Controlled phase two-mode beam splitter
 
         Args:
-            phi : phase
+            phi (real): phase
+            qubit_ancilla (Qubit): QisKit control Qubit
             qumode_a (list): list of qubits representing first qumode
             qumode_b (list): list of qubits representing second qumode
 
         Returns:
             Instruction: QisKit instruction
         """
-        return self.append(ParameterizedUnitaryGate(self.ops.schwinger_U5, [phi], label="Schwinger_U5", num_qubits=len(qumode_a) + len(qumode_b) + 2), qargs=qumode_a + qumode_b + [qubit_1] + [qubit_2])
-
+        self.append(ParameterizedUnitaryGate(self.ops.cpbs_z2vqe, [phi], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="Z2_CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
 
     def measure_z(self, qubit, cbit):
         """Measure qubit in z using probe qubits
