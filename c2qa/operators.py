@@ -155,8 +155,8 @@ class CVOperators:
 
         # 2-qumodes operators
         if num_qumodes > 1:
-            self.a1 = scipy.sparse.kron(self.a, self.eye)
-            self.a2 = scipy.sparse.kron(self.eye, self.a)
+            self.a1 = scipy.sparse.kron(self.eye, self.a)
+            self.a2 = scipy.sparse.kron(self.a, self.eye)
             self.a1_dag = self.a1.conjugate().transpose()
             self.a2_dag = self.a2.conjugate().transpose()
 
