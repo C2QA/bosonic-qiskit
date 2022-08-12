@@ -22,7 +22,6 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
-
     st = np.array(stateop)  # convert state to np.array
     amp_cv = []
     amp_qb = []
@@ -51,7 +50,6 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
                 sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
             amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
-
 
             ## Find the qumode states
             qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
@@ -101,7 +99,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
 
     return [occupation_cv,occupation_qb], state
 
-def cv_fockcounts(counts, qubit_qumode_list):
+def cv_fockcounts(counts, qubit_qumode_list, little_endian=False):
     """Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts()
        along with qubit_qumode_list, a list of Qubits and Qumodes passed into cv_measure(...).
 
@@ -139,6 +137,13 @@ def cv_fockcounts(counts, qubit_qumode_list):
                 newkey += key[counter]
                 counter += 1
         newcounts[newkey] = counts[key]
+
+    if little_endian == False:
+        little_endian_counts = newcounts.copy()
+        for key in little_endian_counts:
+            newcounts[key[::-1]] = little_endian_counts[key]
+            del newcounts[key]
+
     return newcounts
 
 
