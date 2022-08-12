@@ -95,15 +95,15 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, endi
     #     print("\n imaginary amplitude: ", 1j * np.imag(res))
 
     if endian == "bigendian":
-        for i in len(state):
-            state[i][0] = state[i][0].reverse()
-            state[i][1] = state[i][1].reverse()
-            occupation_cv = occupation_cv.reverse()
-            occupation_qb = occupation_qb.reverse()
-        if verbose == "True":
+        for i in range(len(state)):
+            state[i][0] = state[i][0][::-1]
+            state[i][1] = state[i][1][::-1]
+            occupation_cv = occupation_cv[::-1]
+            occupation_qb = occupation_qb[::-1]
+        if verbose == True:
             print("The output of util.stateread() is big endian, i.e. the first qubit and qumode entering the list is at the right \n To change to little endian add argument at end of stateread() to be endian=\"littleendian\"")
     elif endian == "littleendian":
-        if verbose == "True":
+        if verbose == True:
             print("The output of util.stateread() is little endian, i.e. the first qubit and qumode entering the list is at the left \n To change to big endian add argument at end of stateread() to be endian=\"bigendian\"")
     else:
         print("The argument at the end of stateread() must be endian=\"bigendian\" or \"littleendian\"")
