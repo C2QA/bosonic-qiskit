@@ -17,7 +17,7 @@ from c2qa import CVCircuit
 
 from c2qa.operators import ParameterizedUnitaryGate
 
-def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
+def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, endian="bigendian"):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
@@ -26,6 +26,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
     st = np.array(stateop)  # convert state to np.array
     amp_cv = []
     amp_qb = []
+    state = []
 
     for i in range(len(st)):
         res = st[
@@ -45,7 +46,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
                 else:
                     qbst[iqb] = int(1)  # if the amplitude is in the second half then it is in 1
                     pos = pos - (
-                                sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
+                            sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
                     # print("pos (sln/2)", pos, "sln ",sln)
                 sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
@@ -69,7 +70,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
                 # print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
                 qmst[iqm] = fock
                 pos = pos - (
-                            fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
+                        fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
                 # print("new position for next order of depth of Kronecker product/pos: (pos-(fock*lendiv)) ",pos)
                 sln = sln - ((cutoff - 1) * lendiv)  # New length of vector left to search
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
@@ -77,9 +78,10 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
             qmstr = ["".join(item) for item in qmst.astype(str)]
             amp_cv.append((qmst*(np.abs(res)**2)).tolist())
 
+            state.append([qmst.tolist(), qbst.tolist(), res])
+
             if verbose:
                 print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
-
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
     if verbose:
@@ -92,7 +94,21 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
     # if (np.abs(np.imag(res)) > 1e-10):
     #     print("\n imaginary amplitude: ", 1j * np.imag(res))
 
-    return [occupation_cv,occupation_qb]
+    if endian == "bigendian":
+        for i in len(state):
+            state[i][0] = state[i][0].reverse()
+            state[i][1] = state[i][1].reverse()
+            occupation_cv = occupation_cv.reverse()
+            occupation_qb = occupation_qb.reverse()
+        if verbose == "True":
+            print("The output of util.stateread() is big endian, i.e. the first qubit and qumode entering the list is at the right \n To change to little endian add argument at end of stateread() to be endian=\"littleendian\"")
+    elif endian == "littleendian":
+        if verbose == "True":
+            print("The output of util.stateread() is little endian, i.e. the first qubit and qumode entering the list is at the left \n To change to big endian add argument at end of stateread() to be endian=\"bigendian\"")
+    else:
+        print("The argument at the end of stateread() must be endian=\"bigendian\" or \"littleendian\"")
+
+    return [occupation_cv,occupation_qb], state
 
 def cv_fockcounts(counts, qubit_qumode_list):
     """Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts()
