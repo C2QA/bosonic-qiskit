@@ -162,7 +162,7 @@ class CVCircuit(QuantumCircuit):
                 super().initialize(value, qumode)
         else:
             if len(params) > self.qmregs[-1].cutoff:
-                raise ValueError("The given Fock state is greater than the cutoff.")
+                raise ValueError("len(params) exceeds the cutoff.")
 
             for qumode in modes:
                 params = np.array(params)/np.linalg.norm(np.array(params))
