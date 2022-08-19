@@ -131,12 +131,16 @@ class CVCircuit(QuantumCircuit):
                 cv_gates.add(instruction.label)
         return list(cv_gates)
 
-    def cv_initialize(self, fock_state, qumodes):
-        """Initialize the qumode to a Fock state.
+
+    def cv_initialize(self, params, qumodes):
+        """Initialize qumode (or qumodes) to a particular state specified by params
 
         Args:
-            fock_state (int): Fock state to initialize
-            qumodes (list): list of qubits representing qumode
+            params (list or int): If an int, all specified qumodes will be initialized to the Fock state with n=params.
+                                  If a list, all specified qumodes will be initialized to a superposition of Fock states,
+                                  with params[n] the complex amplitude of Fock state |n>. The length of params must be less
+                                  than or equal to the cutoff.
+            qumodes (list): list of qubits representing a single qumode, or list of multiple qumodes
 
         Raises:
             ValueError: If the Fock state is greater than the cutoff.
@@ -147,14 +151,27 @@ class CVCircuit(QuantumCircuit):
         if not isinstance(qumodes[0], list):
             modes = [qumodes]
 
-        if fock_state > self.qmregs[-1].cutoff:
-            raise ValueError("The given Fock state is greater than the cutoff.")
+        if isinstance(params, int):
+            if params >= self.qmregs[-1].cutoff:
+                raise ValueError("The given Fock state is greater than the cutoff.")
 
-        for qumode in modes:
-            value = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
-            value[fock_state] = 1 +0j
+            for qumode in modes:
+                value = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+                value[params] = 1 +0j
 
-            super().initialize(value, qumode)
+                super().initialize(value, qumode)
+        else:
+            if len(params) > self.qmregs[-1].cutoff:
+                raise ValueError("The given Fock state is greater than the cutoff.")
+
+            for qumode in modes:
+                params = np.array(params)/np.linalg.norm(np.array(params))
+                amplitudes = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+                for ind in range(len(params)):
+                    amplitudes[ind] = complex(params[ind])
+
+                super().initialize(amplitudes, qumode)
+
 
     @staticmethod
     def cv_conditional(name, op, params_0, params_1, num_qubits_per_qumode, num_qumodes=1, duration=100, unit="ns"):
