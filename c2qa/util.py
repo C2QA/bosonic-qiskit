@@ -205,7 +205,8 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    noise_pass = None
+    noise_pass = None,
+    **kwargs,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -240,7 +241,12 @@ def simulate(
     circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
     # Run and get statevector
-    result = simulator.run(circuit_compiled, shots=shots).result()
+    try:
+        max_parallel_threads = kwargs["max_parallel_threads"]
+    except KeyError:
+        max_parallel_threads=0
+
+    result = simulator.run(circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads).result()
 
     # The user may have added their own circuit.save_statevector
     state = None
