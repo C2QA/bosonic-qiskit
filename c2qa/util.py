@@ -17,15 +17,15 @@ from c2qa import CVCircuit
 
 from c2qa.operators import ParameterizedUnitaryGate
 
-def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
+def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False):
     """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
-
     st = np.array(stateop)  # convert state to np.array
     amp_cv = []
     amp_qb = []
+    state = []
 
     for i in range(len(st)):
         res = st[
@@ -45,11 +45,10 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
                 else:
                     qbst[iqb] = int(1)  # if the amplitude is in the second half then it is in 1
                     pos = pos - (
-                                sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
+                            sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
                     # print("pos (sln/2)", pos, "sln ",sln)
                 sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
                 iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
-            qbstr = ["".join(item) for item in qbst.astype(str)]
             amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
 
             ## Find the qumode states
@@ -69,32 +68,38 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True):
                 # print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
                 qmst[iqm] = fock
                 pos = pos - (
-                            fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
+                        fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
                 # print("new position for next order of depth of Kronecker product/pos: (pos-(fock*lendiv)) ",pos)
                 sln = sln - ((cutoff - 1) * lendiv)  # New length of vector left to search
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
                 iqm = iqm + 1
-            qmstr = ["".join(item) for item in qmst.astype(str)]
             amp_cv.append((qmst*(np.abs(res)**2)).tolist())
 
-            if verbose:
-                print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)))
+            state.append([qmst.tolist(), qbst.tolist(), res])
 
+            if verbose:
+                if little_endian:
+                    qmstr = ["".join(item) for item in qmst.astype(str)]
+                    qbstr = ["".join(item) for item in qbst.astype(str)]
+                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)), "(little endian)")
+                else:
+                    qmstr = ["".join(item) for item in qmst[::-1].astype(str)]
+                    qbstr = ["".join(item) for item in qbst[::-1].astype(str)]
+                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)), "(big endian)")
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
-    if verbose:
-        print("occupation modes ", list(occupation_cv))
-
     occupation_qb = [sum(i) for i in zip(*amp_qb)]
-    if verbose:
-        print("occupation qubits ", list(occupation_qb))
 
-    # if (np.abs(np.imag(res)) > 1e-10):
-    #     print("\n imaginary amplitude: ", 1j * np.imag(res))
+    if little_endian == False:
+        for i in range(len(state)):
+            state[i][0] = state[i][0][::-1]
+            state[i][1] = state[i][1][::-1]
+            occupation_cv = occupation_cv[::-1]
+            occupation_qb = occupation_qb[::-1]
 
-    return [occupation_cv,occupation_qb]
+    return [occupation_cv,occupation_qb], state
 
-def cv_fockcounts(counts, qubit_qumode_list):
+def cv_fockcounts(counts, qubit_qumode_list, little_endian=False):
     """Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts()
        along with qubit_qumode_list, a list of Qubits and Qumodes passed into cv_measure(...).
 
@@ -132,6 +137,13 @@ def cv_fockcounts(counts, qubit_qumode_list):
                 newkey += key[counter]
                 counter += 1
         newcounts[newkey] = counts[key]
+
+    if little_endian == False:
+        little_endian_counts = newcounts.copy()
+        for key in little_endian_counts:
+            newcounts[key[::-1]] = little_endian_counts[key]
+            del newcounts[key]
+
     return newcounts
 
 
@@ -193,7 +205,8 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    noise_pass = None
+    noise_pass = None,
+    max_parallel_threads: int = 0
 ):
     """Convenience function to simulate using the given backend.
 
@@ -228,7 +241,7 @@ def simulate(
     circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
     # Run and get statevector
-    result = simulator.run(circuit_compiled, shots=shots).result()
+    result = simulator.run(circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads).result()
 
     # The user may have added their own circuit.save_statevector
     state = None

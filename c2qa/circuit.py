@@ -131,6 +131,18 @@ class CVCircuit(QuantumCircuit):
                 cv_gates.add(instruction.label)
         return list(cv_gates)
 
+    def add_qubit_register(self, *regs):
+        """Add a qubit register to the circuit.
+
+        Args:
+            regs (list): List of Registers
+        """
+        for reg in regs:
+            if isinstance(reg, QuantumRegister):
+                self._qubit_regs.append(reg)
+            else:
+                raise ValueError("Only QuantumRegisters are allowed to be added for now")
+        super().add_register(*regs)
 
     def cv_initialize(self, params, qumodes):
         """Initialize qumode (or qumodes) to a particular state specified by params
@@ -590,5 +602,3 @@ class CVCircuit(QuantumCircuit):
             self.measure(flat_list, cbit_list[0:len(flat_list)])
         else:
             self.measure(flat_list, cbit_list)
-
-#%%
