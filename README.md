@@ -1,6 +1,6 @@
 # c2qa-qiskit
 
-NQI C2QA project to simulate hybrid qubits within QisKit.
+NQI C2QA project to simulate hybrid boson-qubit systems within QisKit.
 
 ## Install
 
