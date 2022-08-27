@@ -99,7 +99,7 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
 
     return [occupation_cv,occupation_qb], state
 
-def cv_fockcounts(counts, qubit_qumode_list, little_endian=False):
+def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     """Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts()
        along with qubit_qumode_list, a list of Qubits and Qumodes passed into cv_measure(...).
 
@@ -136,13 +136,10 @@ def cv_fockcounts(counts, qubit_qumode_list, little_endian=False):
             else:
                 newkey += key[counter]
                 counter += 1
-        newcounts[newkey] = counts[key]
-
-    if little_endian == False:
-        little_endian_counts = newcounts.copy()
-        for key in little_endian_counts:
-            newcounts[key[::-1]] = little_endian_counts[key]
-            del newcounts[key]
+        if reverse_endianness:
+            newcounts[newkey[::-1]] = counts[key]
+        else:
+            newcounts[newkey] = counts[key]
 
     return newcounts
 
