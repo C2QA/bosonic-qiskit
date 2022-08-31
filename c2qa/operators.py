@@ -142,10 +142,10 @@ class CVOperators:
         """
         # Annihilation operator
         data = numpy.sqrt(range(cutoff))
-        self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data))
+        self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data)).tocsc()
 
         # Creation operator
-        self.a_dag = self.a.conjugate().transpose()
+        self.a_dag = self.a.conjugate().transpose().tocsc()
 
         # Number operator for a single qumode. 
         # self.N = scipy.sparse.matmul(self.a_dag, self.a)
@@ -156,10 +156,10 @@ class CVOperators:
         # 2-qumodes operators -- convenience operators for a pair of qumodes,
         # where kronecker product has already been applied.
         if num_qumodes > 1:
-            self.a1 = scipy.sparse.kron(self.a, self.eye)
-            self.a2 = scipy.sparse.kron(self.eye, self.a)
-            self.a1_dag = self.a1.conjugate().transpose()
-            self.a2_dag = self.a2.conjugate().transpose()
+            self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
+            self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
+            self.a1_dag = self.a1.conjugate().transpose().tocsc()
+            self.a2_dag = self.a2.conjugate().transpose().tocsc()
 
         # For use with eSWAP
         self.mat = numpy.zeros([cutoff * cutoff, cutoff * cutoff])
