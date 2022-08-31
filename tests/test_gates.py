@@ -238,7 +238,7 @@ def test_displacement_calibration(capsys):
         state = result.get_statevector(circuit)
         counts = result.get_counts(circuit)
 
-        assert len(state) > 0
+        assert state.dim > 0
         assert counts
 
         # print()
