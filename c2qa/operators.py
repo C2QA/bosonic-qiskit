@@ -166,7 +166,7 @@ class CVOperators:
         for j in range(cutoff):
             for i in range(cutoff):
                 self.mat[i + (j * cutoff)][i * cutoff + j] = 1
-        self.sparse_mat = scipy.sparse.csr_matrix(self.mat)
+        self.sparse_mat = scipy.sparse.csr_matrix(self.mat).tocsc()
 
         self.cutoff_value = cutoff
 
@@ -327,7 +327,7 @@ class CVOperators:
         a1dag2 = self.a1_dag * self.a2
 
         argm = (g / 2) * (a1dag2 - a12dag)
-        arg = scipy.sparse.kron(zQB, argm)
+        arg = scipy.sparse.kron(zQB, argm).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -347,7 +347,7 @@ class CVOperators:
         a1dag2 = self.a1_dag * self.a2
 
         argm = (g / 2) * (a1dag2 - a12dag)
-        arg = scipy.sparse.kron(zQB, argm)
+        arg = scipy.sparse.kron(zQB, argm).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -373,9 +373,9 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(zQB, self.N)
+        arg = theta * 1j * scipy.sparse.kron(zQB, self.N).tocsc()
 
-        return scipy.sparse.linalg.expm(arg.tocsc())
+        return scipy.sparse.linalg.expm(arg)
 
     def qubitDependentCavityRotationX(self, theta):
         """Qubit dependent cavity rotation
@@ -386,8 +386,8 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(xQB, self.N)
-        return scipy.sparse.linalg.expm(arg.tocsc())
+        arg = theta * 1j * scipy.sparse.kron(xQB, self.N).tocsc()
+        return scipy.sparse.linalg.expm(arg)
 
     def qubitDependentCavityRotationY(self, theta):
         """Qubit dependent cavity rotation
@@ -398,8 +398,8 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(yQB, self.N)
-        return scipy.sparse.linalg.expm(arg.tocsc())
+        arg = theta * 1j * scipy.sparse.kron(yQB, self.N).tocsc()
+        return scipy.sparse.linalg.expm(arg)
 
     def controlledparity(self, theta):
         """Controlled parity operator
@@ -408,8 +408,8 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        arg1 = scipy.sparse.kron(zQB, self.N)
-        arg2 = scipy.sparse.kron(idQB, self.N)
+        arg1 = scipy.sparse.kron(zQB, self.N).tocsc()
+        arg2 = scipy.sparse.kron(idQB, self.N).tocsc()
         arg = arg1 + arg2
         return scipy.sparse.linalg.expm(1j * theta * arg)
 
@@ -428,7 +428,7 @@ class CVOperators:
         ket_n[n] = 1
         projector = numpy.outer(ket_n, ket_n)
         sparse_projector = scipy.sparse.csr_matrix(projector)
-        arg = theta * 1j * sparse_projector
+        arg = theta * 1j * sparse_projector.tocsc()
         return scipy.sparse.linalg.expm(arg)
 
     def eswap(self, theta):
