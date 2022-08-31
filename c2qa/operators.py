@@ -147,13 +147,14 @@ class CVOperators:
         # Creation operator
         self.a_dag = self.a.conjugate().transpose()
 
-        # Number operator
+        # Number operator for a single qumode. 
         # self.N = scipy.sparse.matmul(self.a_dag, self.a)
         self.N = self.a_dag * self.a
 
         self.eye = scipy.sparse.eye(cutoff)
 
-        # 2-qumodes operators
+        # 2-qumodes operators -- convenience operators for a pair of qumodes,
+        # where kronecker product has already been applied.
         if num_qumodes > 1:
             self.a1 = scipy.sparse.kron(self.a, self.eye)
             self.a2 = scipy.sparse.kron(self.eye, self.a)
