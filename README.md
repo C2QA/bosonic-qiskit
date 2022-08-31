@@ -1,4 +1,4 @@
-# c2qa-qiskit
+# Bosonic Qiskit
 
 NQI C2QA project to simulate hybrid boson-qubit systems within QisKit.
 
