@@ -803,7 +803,11 @@ def wigner_mle(
         array-like: Results of Wigner function calculation
     """
     mle_state = []
-    for qubit_states in zip(*states):
+
+    # Prevent DeprecationWarning from Qiskit returning Statevector instead of array
+    states_data = [state.data for state in states]
+    
+    for qubit_states in zip(*states_data):
         # TODO what distribution are the qubit states? (using normal)
         # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev
         mle = scipy.stats.norm.fit(qubit_states)
