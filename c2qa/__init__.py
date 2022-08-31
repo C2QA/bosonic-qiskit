@@ -1,4 +1,4 @@
-"""Top-level package for c2qa-qiskit."""
+"""Top-level package for bosonic-qiskit."""
 # flake8: noqa
 
 from c2qa.circuit import CVCircuit

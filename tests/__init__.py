@@ -1,1 +1,1 @@
-"""Unit test package for c2qa-qiskit."""
+"""Unit test package for bosonic-qiskit."""

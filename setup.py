@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="c2qa-qiskit",
+    name="bosonic-qiskit",
     version_config=True,
     setup_requires=["setuptools-git-versioning"],
-    url="https://github.com/C2QA/c2qa-qiskit.git",
+    url="https://github.com/C2QA/bosonic-qiskit.git",
     author="Tim Stavenger",
     author_email="timothy.stavenger@pnnl.gov",
     description="National Quantum Initiative Co-design Center for Quantum Advantage bosonic Qiskit simulator",

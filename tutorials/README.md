@@ -1,6 +1,6 @@
-The sub-folders within `tutorials` offer sample usage of the `c2qa-qiskit` Python package.
+The sub-folders within `tutorials` offer sample usage of the `bosonic-qiskit` Python package.
 
-Please note that until `c2qa-qiskit` is published to PyPI, the root of the repository must be added to the path instead of adding the `c2qa-qiskit` package to your Python environment. For example:
+Please note that until `bosonic-qiskit` is published to PyPI, the root of the repository must be added to the path instead of adding the `bosonic-qiskit` package to your Python environment. For example:
 ```
 import os
 import sys

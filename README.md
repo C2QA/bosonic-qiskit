@@ -7,21 +7,21 @@ NQI C2QA project to simulate hybrid boson-qubit systems within QisKit.
 Use a Python virtual environment to install compatible version of QisKit.
 
 ```bash
-git clone https://github.com/C2QA/c2qa-qiskit.git
-cd c2qa-qiskit
+git clone https://github.com/C2QA/bosonic-qiskit.git
+cd bosonic-qiskit
 ./install-dependencies.sh
 ```
 
 ### Dependency Version Compatibility
 
-The c2qa-qiskit software has not been extensively tested with different versions of its [dependencies](requirements.txt); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoudError` at runtime.
+The Bosonic Qiskit software has not been extensively tested with different versions of its [dependencies](requirements.txt); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoudError` at runtime.
 
 ## Activate Virtual Environment
 
-Before using c2qa-qiskit, first install the depencies (as above) and then activate the Python virtual environment.
+Before using Bosonic Qiskit, first install the depencies (as above) and then activate the Python virtual environment.
 
 ```bash
-cd <path/to/c2qa-qiskit>
+cd <path/to/bosonic-qiskit>
 source venv/bin/activate
 ```
 
