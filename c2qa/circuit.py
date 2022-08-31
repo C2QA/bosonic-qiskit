@@ -390,7 +390,7 @@ class CVCircuit(QuantumCircuit):
         if qubit == None:
             self.append(ParameterizedUnitaryGate(self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP"), qargs=qumode)
         else:
-            self.append(ParameterizedUnitaryGate(self.ops.snap_wqubit, [theta, n], num_qubits=len(qumode), label="SNAP"), qargs=qumode)
+            self.append(ParameterizedUnitaryGate(self.ops.csnap, [theta, n], num_qubits=len(qumode), label="SNAP"), qargs=qumode + [qubit])
 
     def cv_eswap(self, theta, qumode_a, qumode_b):
         """Exponential SWAP gate.
@@ -405,13 +405,12 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(ParameterizedUnitaryGate(self.ops.eswap, [theta], num_qubits=len(qumode_a) + len(qumode_b), label="eSWAP"), qargs=qumode_a + qumode_b)
 
-    def cv_c_s(self, z_a, z_b, qumode, qubit):
+    def cv_c_s(self, z, qumode, qubit):
         """Conditional squeezing gate. 
-        TODO: This needs to be converted to a non-cv_conditional version
+        TODO: This needs to be written
 
         Args:
-            z_a (real): squeeze for 0 control
-            z_b (real): squeeze for 1 control
+            z (real or complex): squeezing ampltiude
             qumode (list): list of qubits representing qumode
             qubit (Qubit): control Qubit
 
