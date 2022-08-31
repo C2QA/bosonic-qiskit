@@ -79,13 +79,13 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
 
             if verbose:
                 if little_endian:
-                    qmstr = ["".join(item) for item in qmst.astype(str)]
-                    qbstr = ["".join(item) for item in qbst.astype(str)]
-                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)), "(little endian)")
+                    qmstr = ["".join(str(item)) for item in qmst]
+                    qbstr = ["".join(str(item)) for item in qbst]
+                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, "-" if res.imag < 0 else "+", abs(res.imag)), "(little endian)")
                 else:
-                    qmstr = ["".join(item) for item in qmst[::-1].astype(str)]
-                    qbstr = ["".join(item) for item in qbst[::-1].astype(str)]
-                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, '+-'[res.imag < 0], abs(res.imag)), "(big endian)")
+                    qmstr = ["".join(str(item)) for item in qmst[::-1]]
+                    qbstr = ["".join(str(item)) for item in qbst[::-1]]
+                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, "-" if res.imag < 0 else "+", abs(res.imag)), "(big endian)")
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
     occupation_qb = [sum(i) for i in zip(*amp_qb)]
