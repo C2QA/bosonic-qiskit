@@ -228,152 +228,6 @@ class CVCircuit(QuantumCircuit):
             label=label, conditional=conditional, pershot=pershot
         )
 
-    def cv_d(self, alpha, qumode):
-        """Displacement gate.
-
-        Args:
-            alpha (real): displacement
-            qumode (list): list of qubits representing qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.d, [alpha], num_qubits=len(qumode), label="D"), qargs=qumode)
-
-    def cv_cd(self, alpha, beta, qumode, qubit_ancilla):
-        """Conditional displacement gate.
-
-        Args:
-            alpha (real): displacement for 0 control
-            beta (real): displacemet for 1 control
-            ctrl (Qubit): QisKit control Qubit
-            qumode (list): list of qubits representing qumode
-            inverse (bool): True to calculate the inverse of the operator matrices
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.cd, [alpha, beta], num_qubits=len(qumode) + 1, label="CD"), qargs=qumode + [qubit_ancilla])
-
-    def cv_cnd_d(self, alpha, beta, ctrl, qumode):
-        """Conditional displacement gate.
-
-        Args:
-            alpha (real): displacement for 0 control
-            beta (real): displacemet for 1 control
-            ctrl (Qubit): QisKit control Qubit
-            qumode (list): list of qubits representing qumode
-            inverse (bool): True to calculate the inverse of the operator matrices
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(
-            CVCircuit.cv_conditional("Dc", self.ops.d, [alpha], [beta], self.num_qubits_per_qumode),
-            [ctrl] + qumode,
-        )
-
-    def cv_ecd(self, alpha, qumode, qubit_ancilla):
-        """Echoed controlled displacement gate.
-
-        Args:
-            alpha (real): displacement
-            qumode (list): list of qubits representing qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.ecd, [alpha], num_qubits=len(qumode) + 1, label="ECD"), qargs=qumode + [qubit_ancilla])
-
-    def cv_s(self, z, qumode):
-        """Squeezing gate.
-
-        Args:
-            z (real): squeeze
-            qumode (list): list of qubits representing qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.s, [z], num_qubits=len(qumode), label="S"), qargs=qumode)
-
-    def cv_cnd_s(self, z_a, z_b, ctrl, qumode_a):
-        """Conditional squeezing gate
-
-        Args:
-            z_a (real): squeeze for 0 control
-            z_b (real): squeeze for 1 control
-            ctrl (Qubit): QisKit control Qubit
-            qumode_a (list): list of qubits representing qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(
-            CVCircuit.cv_conditional("Sc", self.ops.s, [z_a], [z_b], self.num_qubits_per_qumode),
-            [ctrl] + qumode_a,
-        )
-
-    def cv_s2(self, z, qumode_a, qumode_b):
-        """Two-mode squeezing gate
-
-        Args:
-            z (real): squeeze
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.s2, [z], num_qubits=len(qumode_a) + len(qumode_b), label="S2"), qargs=qumode_a + qumode_b)
-
-    def cv_bs(self, phi, qumode_a, qumode_b):
-        """Beam splitter gate.
-
-        Args:
-            phi : phase
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(ParameterizedUnitaryGate(self.ops.bs, [phi], num_qubits=len(qumode_a) + len(qumode_b), label="BS"), qargs=qumode_a + qumode_b)
-
-    def cv_cnd_bs(self, phi, chi, ctrl, qumode_a, qumode_b):
-        """Conditional beam splitter gate.
-
-        Args:
-            phi (real): real phase for 0 qubit state
-            chi (real): phase for 1 qubit state
-            ctrl (Qubit): QisKit control Qubit
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        return self.append(
-            CVCircuit.cv_conditional(
-                "BSc", self.ops.bs, [phi], [chi], self.num_qubits_per_qumode, num_qumodes=2
-            ),
-            [ctrl] + qumode_a + qumode_b,
-        )
-
-    def cv_cpbs(self, phi, qumode_a, qumode_b, qubit_ancilla):
-        """Controlled phase two-mode beam splitter
-
-        Args:
-            phi (real): phase
-            qubit_ancilla (Qubit): QisKit control Qubit
-            qumode_a (list): list of qubits representing first qumode
-            qumode_b (list): list of qubits representing second qumode
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        self.append(ParameterizedUnitaryGate(self.ops.cpbs, [phi], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="CPBS"), qargs=qumode_a + qumode_b + [qubit_ancilla])
-
     def cv_r(self, phi, qumode):
         """Phase space rotation gate.
 
@@ -386,8 +240,58 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(ParameterizedUnitaryGate(self.ops.r, [phi], num_qubits=len(qumode), label="R"), qargs=qumode)
 
-    def cv_qdcr(self, theta, qumode_a, qubit_ancilla):
-        """Qubit dependent cavity rotation gate.
+    def cv_d(self, alpha, qumode):
+        """Displacement gate.
+
+        Args:
+            alpha (real or complex): displacement
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.d, [alpha], num_qubits=len(qumode), label="D"), qargs=qumode)
+
+    def cv_sq(self, z, qumode):
+        """Squeezing gate.
+
+        Args:
+            z (real or complex): squeeze
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.s, [z], num_qubits=len(qumode), label="S"), qargs=qumode)
+
+    def cv_sq2(self, z, qumode_a, qumode_b):
+        """Two-mode squeezing gate
+
+        Args:
+            z (real or complex): squeeze
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.s2, [z], num_qubits=len(qumode_a) + len(qumode_b), label="S2"), qargs=qumode_a + qumode_b)
+
+    def cv_bs(self, theta, qumode_a, qumode_b):
+        """Beam splitter gate.
+
+        Args:
+            theta (real or complex): beamsplitter phase
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.bs, [theta], num_qubits=len(qumode_a) + len(qumode_b), label="BS"), qargs=qumode_a + qumode_b)
+
+    def cv_c_r(self, theta, qumode, qubit):
+        """Qubit dependent phase-space rotation gate.
 
         Args:
             theta (real): phase
@@ -397,59 +301,96 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotation, [theta], num_qubits=len(qumode_a) + 1, label="QDCR"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotation, [theta], num_qubits=len(qumode) + 1, label="cR"), qargs=qumode + [qubit])
 
-    def cv_qdcrX(self, theta, qumode_a, qubit_ancilla):
-        """Qubit dependent cavity rotation gate.
-
-        Args:
-            theta (real): phase
-            qumode_a (list): list of qubits representing qumode
-            qubit_ancilla (qubit): QisKit control qubit
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationX, [theta], num_qubits=len(qumode_a) + 1, label="QDCR_X"), qargs=qumode_a + [qubit_ancilla])
-
-    def cv_qdcrY(self, theta, qumode_a, qubit_ancilla):
-        """Qubit dependent cavity rotation gate.
+    def cv_cx_r(self, theta, qumode, qubit):
+        """Qubit dependent phase-space rotation gate.
 
         Args:
             theta (real): phase
-            qumode_a (list): list of qubits representing qumode
-            qubit_ancilla (qubit): QisKit control qubit
+            qumode (list): list of qubits representing qumode
+            qubit (qubit): QisKit control qubit
 
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationY, [theta], num_qubits=len(qumode_a) + 1, label="QDCR_Y"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationX, [theta], num_qubits=len(qumode) + 1, label="cxR"), qargs=qumode + [qubit])
 
-
-    def cv_cp(self, theta, qumode_a, qubit_ancilla):
-        """Controlled parity gate.
+    def cv_cy_r(self, theta, qumode, qubit):
+        """Qubit dependent phase-space rotation gate.
 
         Args:
-            qumode_a (list): list of qubits representing qumode
-            qubit_ancilla (qubit): QisKit control qubit
+            theta (real): phase
+            qumode (list): list of qubits representing qumode
+            qubit (qubit): QisKit control qubit
 
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.controlledparity, [theta], num_qubits=len(qumode_a) + 1, label="CP"), qargs=qumode_a + [qubit_ancilla])
+        self.append(ParameterizedUnitaryGate(self.ops.qubitDependentCavityRotationY, [theta], num_qubits=len(qumode) + 1, label="cyR"), qargs=qumode + [qubit])
 
-    def cv_snap(self, theta, n, qumode):
+    def cv_c_d(self, alpha, qumode, qubit, beta=None):
+        """Conditional displacement gate.
+
+        Args:
+            alpha (real): displacement
+            qumode (list): list of qubits representing qumode
+            qubit (Qubit): control qubit
+            beta (real): By default is None, and qumode will be displaced by alpha and -alpha for qubit
+            state 0 and 1, respectively. If specified, qumode will be displaced by alpha and beta for qubit state 0 and 1.
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        if beta == None:
+            beta = -alpha
+
+        return self.append(ParameterizedUnitaryGate(self.ops.cd, [alpha, beta], num_qubits=len(qumode) + 1, label="cD"), qargs=qumode + [qubit])
+
+
+    def cv_ecd(self, alpha, qumode, qubit):
+        """Echoed controlled displacement gate.
+
+        Args:
+            alpha (real): displacement
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(ParameterizedUnitaryGate(self.ops.ecd, [alpha], num_qubits=len(qumode) + 1, label="ECD"), qargs=qumode + [qubit])
+
+    def cv_c_bs(self, theta, qumode_a, qumode_b, qubit):
+        """Controlled phase two-mode beam splitter
+
+        Args:
+            theta (real or complex): phase
+            qubit_ancilla (Qubit): QisKit control Qubit
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(ParameterizedUnitaryGate(self.ops.cbs, [theta], num_qubits=len(qumode_a) + len(qumode_b) + 1, label="cBS"), qargs=qumode_a + qumode_b + [qubit])
+
+    def cv_snap(self, theta, n, qumode, qubit = None):
         """SNAP (Selective Number-dependent Arbitrary Phase) gate.
+        TODO: Add second snap implementation that includes sigma_z qubit
 
         Args:
             theta (real): phase
             n (integer): Fock state in which the mode should acquire the phase
-            qumode_a (list): list of qubits representing qumode
+            qumode (list): list of qubits representing qumode
+            qubit (Qubit): control qubit. If no qubit is passed, the gate will implement for sigma^z = +1.
 
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP"), qargs=qumode)
+        if qubit == None:
+            self.append(ParameterizedUnitaryGate(self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP"), qargs=qumode)
+        else:
+            self.append(ParameterizedUnitaryGate(self.ops.snap_wqubit, [theta, n], num_qubits=len(qumode), label="SNAP"), qargs=qumode)
 
     def cv_eswap(self, theta, qumode_a, qumode_b):
         """Exponential SWAP gate.
@@ -464,18 +405,47 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(ParameterizedUnitaryGate(self.ops.eswap, [theta], num_qubits=len(qumode_a) + len(qumode_b), label="eSWAP"), qargs=qumode_a + qumode_b)
 
-    def cv_pncqr(self, theta, n, qumode_a, qubit_ancilla, qubit_rotation):
-        """Photon Number Controlled Qubit Rotation gate.
+    def cv_c_s(self, z_a, z_b, qumode, qubit):
+        """Conditional squeezing gate. 
+        TODO: This needs to be converted to a non-cv_conditional version
 
         Args:
-            theta (real): phase
-            n (integer): Fock state in which the mode should acquire the phase
-            qumode_a (list): list of qubits representing qumode
+            z_a (real): squeeze for 0 control
+            z_b (real): squeeze for 1 control
+            qumode (list): list of qubits representing qumode
+            qubit (Qubit): control Qubit
 
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], num_qubits=len(qumode_a) + 1, label="PNCQR"), qargs=qumode_a + [qubit_ancilla])
+        return self.append(ParameterizedUnitaryGate(self.ops.csq, [alpha], num_qubits=len(qumode) + 1, label="cS"), qargs=qumode + [qubit])
+
+
+
+    def cv_c_p(self, theta, qumode, qubit):
+        """Controlled parity gate.
+
+        Args:
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(ParameterizedUnitaryGate(self.ops.controlledparity, [theta], num_qubits=len(qumode) + 1, label="cP"), qargs=qumode + [qubit])
+
+    def cv_pncqr(self, theta, n, qumode, qubit, qubit_rotation):
+        """Photon Number Controlled Qubit Rotation gate. TODO: What is qubit_rotation? Need to document.
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(ParameterizedUnitaryGate(self.ops.photonNumberControlledQubitRotation, [theta, n, qubit_rotation], num_qubits=len(qumode) + 1, label="PNCQR"), qargs=qumode + [qubit])
 
 
     def cv_testqubitorderf(self, phi, qubit_1, qubit_2):

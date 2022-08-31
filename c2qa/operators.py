@@ -313,7 +313,7 @@ class CVOperators:
     #
     #     return scipy.sparse.linalg.expm(arg)
 
-    def cpbs(self, g):
+    def cbs(self, g):
         """Controlled phase two-mode beam splitter
 
         Args:
