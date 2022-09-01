@@ -606,88 +606,22 @@ def animate_wigner(
         # cbit = yyy
 
         if isinstance(inst, ParameterizedUnitaryGate):
-            for index in range(1, animation_segments + 1):
-                sim_circuit = base_circuit.copy()
-
-                params = inst.calculate_params(
-                    current_step=index,
-                    total_steps=animation_segments,
-                    keep_state=keep_state,
-                )
-                duration, unit = inst.calculate_duration(
-                    current_step=index,
-                    total_steps=animation_segments,
-                    keep_state=keep_state,
-                )
-                gate = ParameterizedUnitaryGate(
-                    inst.op_func,
-                    params=params,
-                    num_qubits=inst.num_qubits,
-                    label=inst.label,
-                    duration=duration,
-                    unit=unit,
-                )
-
-                sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
-
-                if qubit and cbit:
-                    # sim_circuit.barrier()
-                    sim_circuit.h(qubit)
-                    sim_circuit.measure(qubit, cbit)
-
-                circuits.append(sim_circuit)
+            sim_circuits = __animate_parameterized(
+                base_circuit,
+                inst,
+                animation_segments,
+                keep_state,
+                qargs,
+                cargs,
+                qubit,
+                cbit
+            )
+            circuits.extend(sim_circuits)
         elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
-            inst_0, qargs_0, cargs_0 = inst.definition.data[0]
-            inst_1, qargs_1, cargs_1 = inst.definition.data[1]
-
-            for index in range(1, animation_segments + 1):
-                sim_circuit = base_circuit.copy()
-
-                params_0 = inst_0.base_gate.calculate_params(
-                    current_step=index,
-                    total_steps=animation_segments,
-                    keep_state=keep_state,
-                )
-                params_1 = inst_1.base_gate.calculate_params(
-                    current_step=index,
-                    total_steps=animation_segments,
-                    keep_state=keep_state,
-                )
-
-                duration, unit = inst_0.base_gate.calculate_duration(
-                    current_step=index, total_steps=animation_segments
-                )
-
-                sim_circuit.append(
-                    CVCircuit.cv_conditional(
-                        name=inst.name,
-                        op=inst_0.base_gate.op_func,
-                        params_0=params_0,
-                        params_1=params_1,
-                        num_qubits_per_qumode=inst.num_qubits_per_qumode,
-                        num_qumodes=inst.num_qumodes,
-                        duration=duration,
-                        unit=unit,
-                    ),
-                    qargs,
-                    cargs,
-                )
-
-                if qubit and cbit:
-                    # sim_circuit.barrier()
-                    sim_circuit.h(qubit)
-                    sim_circuit.measure(qubit, cbit)
-
-                circuits.append(sim_circuit)
+            sim_circuits = __animate_conditional(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
+            circuits.extend(sim_circuits)
         else:
-            sim_circuit = base_circuit.copy()
-            sim_circuit.append(inst, qargs, cargs)
-
-            if qubit and cbit:
-                # sim_circuit.barrier()
-                sim_circuit.h(qubit)
-                sim_circuit.measure(qubit, cbit)
-
+            sim_circuit = __animate_copy(base_circuit, inst, qargs, cargs, qubit, cbit)
             circuits.append(sim_circuit)
 
         # Append the full instruction for the next frame
@@ -699,35 +633,7 @@ def animate_wigner(
         processes = max(processes, 1)  # prevent zero processes with 1 CPU
 
     if keep_state:
-        w_fock = []
-        previous_state = None
-        for circuit in circuits:
-            if previous_state:
-                # Initialize circuit to simulate with the previous frame's state, then append the last instruction
-                sim_circuit = circuit.copy()
-                sim_circuit.data.clear()  # Is this safe -- could we copy without data?
-                sim_circuit.initialize(previous_state)
-
-                if qubit and cbit:
-                    last_instructions = circuit.data[
-                        -3:
-                    ]  # Get the last instruction, plus the Hadamard/measure
-                else:
-                    last_instructions = circuit.data[-1:]  # Get the last instruction
-
-                for inst in last_instructions:
-                    sim_circuit.append(*inst)
-            else:
-                # No previous simulation state, just run the current circuit
-                sim_circuit = circuit
-            fock, previous_state = simulate_wigner(
-                sim_circuit,
-                xvec,
-                shots,
-                noise_pass=noise_pass,
-                conditional=cbit is not None,
-            )
-            w_fock.append(fock)
+        w_fock = __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_pass)
     elif processes == 1:
         w_fock = []
         for circuit in circuits:
@@ -774,6 +680,140 @@ def animate_wigner(
         save_animation(anim, file)
 
     return anim
+
+
+def __animate_parameterized(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+    """Split ParameterizedUnitaryGate into multiple frames"""
+    sim_circuits = []
+    for index in range(1, animation_segments + 1):
+        sim_circuit = base_circuit.copy()
+
+        params = inst.calculate_params(
+            current_step=index,
+            total_steps=animation_segments,
+            keep_state=keep_state,
+        )
+        duration, unit = inst.calculate_duration(
+            current_step=index,
+            total_steps=animation_segments,
+            keep_state=keep_state,
+        )
+        gate = ParameterizedUnitaryGate(
+            inst.op_func,
+            params=params,
+            num_qubits=inst.num_qubits,
+            label=inst.label,
+            duration=duration,
+            unit=unit,
+        )
+
+        sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
+
+        if qubit and cbit:
+            # sim_circuit.barrier()
+            sim_circuit.h(qubit)
+            sim_circuit.measure(qubit, cbit)
+
+        sim_circuits.append(sim_circuit)
+
+    return sim_circuits
+
+
+def __animate_conditional(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+    """Split Qiskit conditional gates into multiple frames"""
+    sim_circuits = []
+    inst_0, qargs_0, cargs_0 = inst.definition.data[0]
+    inst_1, qargs_1, cargs_1 = inst.definition.data[1]
+
+    for index in range(1, animation_segments + 1):
+        sim_circuit = base_circuit.copy()
+
+        params_0 = inst_0.base_gate.calculate_params(
+            current_step=index,
+            total_steps=animation_segments,
+            keep_state=keep_state,
+        )
+        params_1 = inst_1.base_gate.calculate_params(
+            current_step=index,
+            total_steps=animation_segments,
+            keep_state=keep_state,
+        )
+
+        duration, unit = inst_0.base_gate.calculate_duration(
+            current_step=index, total_steps=animation_segments
+        )
+
+        sim_circuit.append(
+            CVCircuit.cv_conditional(
+                name=inst.name,
+                op=inst_0.base_gate.op_func,
+                params_0=params_0,
+                params_1=params_1,
+                num_qubits_per_qumode=inst.num_qubits_per_qumode,
+                num_qumodes=inst.num_qumodes,
+                duration=duration,
+                unit=unit,
+            ),
+            qargs,
+            cargs,
+        )
+
+        if qubit and cbit:
+            # sim_circuit.barrier()
+            sim_circuit.h(qubit)
+            sim_circuit.measure(qubit, cbit)
+
+        sim_circuits.append(sim_circuit)
+
+    return sim_circuits
+
+
+def __animate_copy(base_circuit, inst, qargs, cargs, qubit, cbit):
+    """Copy the instruction, apply Hadamard measure if needed, and return (i.e., no animation)"""
+    sim_circuit = base_circuit.copy()
+    sim_circuit.append(inst, qargs, cargs)
+
+    if qubit and cbit:
+        # sim_circuit.barrier()
+        sim_circuit.h(qubit)
+        sim_circuit.measure(qubit, cbit)
+
+    return sim_circuit
+
+
+def __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_pass):
+    """Simulate Wigner function, preserving state between iterations"""
+    w_fock = []
+    previous_state = None
+    for circuit in circuits:
+        if previous_state:
+            # Initialize circuit to simulate with the previous frame's state, then append the last instruction
+            sim_circuit = circuit.copy()
+            sim_circuit.data.clear()  # Is this safe -- could we copy without data?
+            sim_circuit.initialize(previous_state)
+
+            if qubit and cbit:
+                last_instructions = circuit.data[
+                    -3:
+                ]  # Get the last instruction, plus the Hadamard/measure
+            else:
+                last_instructions = circuit.data[-1:]  # Get the last instruction
+
+            for inst in last_instructions:
+                sim_circuit.append(*inst)
+        else:
+            # No previous simulation state, just run the current circuit
+            sim_circuit = circuit
+        fock, previous_state = simulate_wigner(
+            sim_circuit,
+            xvec,
+            shots,
+            noise_pass=noise_pass,
+            conditional=cbit is not None,
+        )
+        w_fock.append(fock)
+
+    return w_fock
 
 
 def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
