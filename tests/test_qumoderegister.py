@@ -6,7 +6,9 @@ def test_qumode_iterate(capsys):
         num_qubits_per_qumode = 2
         num_qumodes = 3
 
-        register = c2qa.QumodeRegister(num_qubits_per_qumode=num_qubits_per_qumode, num_qumodes=num_qumodes)
+        register = c2qa.QumodeRegister(
+            num_qubits_per_qumode=num_qubits_per_qumode, num_qumodes=num_qumodes
+        )
         index = 0
 
         for qumode in register:

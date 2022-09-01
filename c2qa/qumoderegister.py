@@ -20,7 +20,7 @@ class QumodeRegister:
         self.size = num_qumodes * num_qubits_per_qumode
         self.num_qumodes = num_qumodes
         self.num_qubits_per_qumode = num_qubits_per_qumode
-        self.cutoff = 2 ** self.num_qubits_per_qumode
+        self.cutoff = 2**self.num_qubits_per_qumode
 
         # Aggregate the QuantumRegister representing these qumodes as
         # extending the class confuses QisKit when overriding __getitem__().
@@ -52,7 +52,9 @@ class QumodeRegister:
             start_index = key.start if key.start else 0
             stop_index = key.stop if key.stop else self.size
             start = self.num_qubits_per_qumode * start_index
-            stop = (self.num_qubits_per_qumode * stop_index) + self.num_qubits_per_qumode
+            stop = (
+                self.num_qubits_per_qumode * stop_index
+            ) + self.num_qubits_per_qumode
             step = (key.step * self.num_qubits_per_qumode) if key.step else None
         elif isinstance(key, int):
             start = self.num_qubits_per_qumode * key
@@ -61,7 +63,7 @@ class QumodeRegister:
             raise ValueError("Must provide slice or int.")
 
         return self.qreg[start:stop:step]
-    
+
     def __len__(self):
         """The length of a QumodeRegister is the number of qumodes (not the num_qumodes * num_qubits_per_qumode)"""
         return self.num_qumodes

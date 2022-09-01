@@ -5,7 +5,6 @@ import random
 import c2qa
 import numpy as np
 import qiskit
-from qiskit.transpiler import PassManager
 
 
 def test_noise_model(capsys):
@@ -23,12 +22,11 @@ def test_noise_model(capsys):
         circuit.initialize([0, 1], qr[1])  # qr[0] will init to zero
 
         alpha = random.random()
-        beta = random.random()
-        circuit.cv_cnd_d(alpha, -beta, qr[0], qmr[0])
-        circuit.cv_cnd_d(-alpha, beta, qr[0], qmr[0])
+        circuit.cv_c_d(alpha, qmr[0], qr[0])
+        circuit.cv_c_d(-alpha, qmr[0], qr[0])
 
-        circuit.cv_cnd_d(alpha, -beta, qr[1], qmr[0])
-        circuit.cv_cnd_d(-alpha, beta, qr[1], qmr[0])
+        circuit.cv_c_d(-alpha, qmr[0], qr[1])
+        circuit.cv_c_d(alpha, qmr[0], qr[1])
 
         photon_loss_rate = 0.01
         time = 5.0
@@ -47,12 +45,12 @@ def test_kraus_operators(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
         circuit = c2qa.CVCircuit(qmr, qr)
-        
+
         photon_loss_rate = 0.1
         time = 1.0
         kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit)
 
-        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)        
+        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
         assert kraus.is_cp(), "Is not completely positive"
 
         print()
@@ -61,7 +59,7 @@ def test_kraus_operators(capsys):
         for index, op in enumerate(kraus_operators):
             print(f"op {index}")
             print(op)
-           
+
             op_dag = np.transpose(np.conj(op))
             print(f"op_dag {index}")
             print(op_dag)
@@ -76,7 +74,9 @@ def test_kraus_operators(capsys):
         print("Sum")
         print(accum)
 
-        is_identity = (accum.shape[0] == accum.shape[1]) and np.allclose(accum, np.eye(accum.shape[0]))
+        is_identity = (accum.shape[0] == accum.shape[1]) and np.allclose(
+            accum, np.eye(accum.shape[0])
+        )
         print(f"Sum is identity {is_identity}")
         assert is_identity, "Sum is not identity"
 
@@ -91,14 +91,14 @@ def test_photon_loss_pass_no_displacement(capsys):
         num_qubits_per_qumode = 4
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         circuit = c2qa.CVCircuit(qmr)
-        
+
         circuit.cv_initialize(3, qmr[0])
-        
+
         circuit.cv_d(0, qmr[0])
-        
+
         photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
-        
+
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
 
         wigner_filename = "tests/noise_model_pass_no_displacement.mp4"
@@ -117,14 +117,14 @@ def test_photon_loss_pass_slow_displacement(capsys):
         num_qubits_per_qumode = 4
         qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         circuit = c2qa.CVCircuit(qmr)
-        
+
         circuit.cv_initialize(3, qmr[0])
-        
+
         circuit.cv_d(1, qmr[0])
-        
+
         photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
-        
+
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
 
         wigner_filename = "tests/noise_model_pass_slow_displacement.mp4"

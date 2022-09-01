@@ -79,9 +79,8 @@ def test_beamsplitter_once():
 def test_conditional_beamsplitter():
     circuit, qmr, qr = create_conditional()
 
-    phi = random.random()
-    chi = random.random()
-    circuit.cv_cnd_bs(phi, chi, qr[0], qmr[0], qmr[1])
+    theta = random.random()
+    circuit.cv_c_bs(theta, qmr[0], qmr[1], qr[0])
 
     state, result = c2qa.util.simulate(circuit)
 
@@ -106,27 +105,11 @@ def test_conditonal_displacement():
     circuit, qmr, qr = create_conditional()
 
     alpha = random.random()
-    beta = random.random()
-    circuit.cv_cnd_d(alpha, -beta, qr[0], qmr[0])
-    circuit.cv_cnd_d(-alpha, beta, qr[0], qmr[0])
+    circuit.cv_c_d(alpha, qmr[0], qr[0])
+    circuit.cv_c_d(-alpha, qmr[0], qr[0])
 
-    circuit.cv_cnd_d(alpha, -beta, qr[1], qmr[0])
-    circuit.cv_cnd_d(-alpha, beta, qr[1], qmr[0])
-
-    state, result = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
-
-
-def test_conditonal_displacement_too():
-    circuit, qmr, qr = create_conditional()
-
-    alpha = random.random()
-    beta = random.random()
-    circuit.cv_cd(alpha, -beta, qmr[0], qr[0])
-    circuit.cv_cd(-alpha, beta, qmr[0], qr[0])
-
-    circuit.cv_cd(alpha, -beta, qmr[0], qr[1])
-    circuit.cv_cd(-alpha, beta, qmr[0], qr[1])
+    circuit.cv_c_d(-alpha, qmr[0], qr[1])
+    circuit.cv_c_d(alpha, qmr[0], qr[1])
 
     state, result = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -136,12 +119,11 @@ def test_conditonal_squeezing():
     circuit, qmr, qr = create_conditional()
 
     alpha = random.random()
-    beta = random.random()
-    circuit.cv_cnd_s(alpha, -beta, qr[0], qmr[0])
-    circuit.cv_cnd_s(-alpha, beta, qr[0], qmr[0])
+    circuit.cv_c_sq(alpha, qmr[0], qr[0])
+    circuit.cv_c_sq(-alpha, qmr[0], qr[0])
 
-    circuit.cv_cnd_s(alpha, -beta, qr[1], qmr[0])
-    circuit.cv_cnd_s(-alpha, beta, qr[1], qmr[0])
+    circuit.cv_c_sq(-alpha, qmr[0], qr[1])
+    circuit.cv_c_sq(alpha, qmr[0], qr[1])
 
     state, result = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -174,7 +156,6 @@ def test_cond_displacement_gate_vs_two_separate():
     from qiskit.extensions import UnitaryGate
 
     alpha = numpy.sqrt(numpy.pi)
-    beta = -alpha
 
     # Circuit using cnd_d
     qmr = c2qa.QumodeRegister(1, 2)
@@ -182,7 +163,7 @@ def test_cond_displacement_gate_vs_two_separate():
     cr = qiskit.ClassicalRegister(1)
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
-    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[0])
+    circuit.cv_c_d(alpha, qmr[0], qr[0])
     state, result = c2qa.util.simulate(circuit)
     assert result.success
     state_cnd = result.get_statevector(circuit)
@@ -200,7 +181,7 @@ def test_cond_displacement_gate_vs_two_separate():
         [qr[0]] + qmr[0],
     )
     circuit.append(
-        UnitaryGate(circuit.ops.d(beta).toarray()).control(
+        UnitaryGate(circuit.ops.d(-alpha).toarray()).control(
             num_ctrl_qubits=1, ctrl_state=1
         ),
         [qr[0]] + qmr[0],
@@ -225,9 +206,9 @@ def test_displacement_calibration(capsys):
         alpha = numpy.sqrt(numpy.pi)
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(alpha, -alpha, qr[0], qmr[0])
+        circuit.cv_c_d(alpha, qmr[0], qr[0])
         circuit.cv_d(1j * alpha, qmr[0])
-        circuit.cv_cnd_d(-alpha, alpha, qr[0], qmr[0])
+        circuit.cv_c_d(-alpha, qmr[0], qr[0])
         circuit.cv_d(-1j * alpha, qmr[0])
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
@@ -276,7 +257,7 @@ def test_squeezing_once():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_s(z, qmr[0])
+    circuit.cv_sq(z, qmr[0])
 
     state, result = c2qa.util.simulate(circuit)
     assert_changed(state, result)
@@ -286,8 +267,8 @@ def test_squeezing_twice():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_s(z, qmr[0])
-    circuit.cv_s(-z, qmr[0])
+    circuit.cv_sq(z, qmr[0])
+    circuit.cv_sq(-z, qmr[0])
 
     state, result = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -297,7 +278,7 @@ def test_two_mode_squeezing_once():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_s2(z, qmr[0], qmr[1])
+    circuit.cv_sq2(z, qmr[0], qmr[1])
 
     state, result = c2qa.util.simulate(circuit)
     assert_changed(state, result)
@@ -307,8 +288,8 @@ def test_two_mode_squeezing_twice():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_s2(z, qmr[0], qmr[1])
-    circuit.cv_s2(-z, qmr[0], qmr[1])
+    circuit.cv_sq2(z, qmr[0], qmr[1])
+    circuit.cv_sq2(-z, qmr[0], qmr[1])
 
     state, result = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -319,10 +300,8 @@ def test_gates():
 
     # ===== Constants =====
     alpha = 1
-    beta = -1
     phi = numpy.pi / 2
-    z_a = 1
-    z_b = -1
+    z = 1
 
     circuit, qmr, qr = create_conditional()
 
@@ -330,27 +309,29 @@ def test_gates():
     circuit.cv_bs(phi, qmr[0], qmr[1])
     circuit.cv_d(alpha, qmr[0])
     circuit.cv_r(phi, qmr[0])
-    circuit.cv_s(z_a, qmr[0])
-    circuit.cv_s2(z_a, qmr[0], qmr[1])
+    circuit.cv_sq(z, qmr[0])
+    circuit.cv_sq2(z, qmr[0], qmr[1])
 
     # Hybrid qubit-cavity gates
-    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[0])
-    circuit.cv_cnd_d(alpha, beta, qr[0], qmr[1])
-    circuit.cv_cnd_s(z_a, z_b, qr[0], qmr[0])
-    circuit.cv_cnd_s(z_a, z_b, qr[0], qmr[1])
+    circuit.cv_c_d(alpha, qmr[0], qr[0])
+    circuit.cv_c_d(alpha, qmr[1], qr[0])
+    circuit.cv_c_sq(z, qmr[0], qr[0])
+    circuit.cv_c_sq(z, qmr[1], qr[0])
 
     state, result = c2qa.util.simulate(circuit)
 
     assert result.success
+
 
 def test_snap():
     circuit, qmr = create_unconditional()
 
     phi = random.random()
     n = 1
-    circuit.    cv_snap(phi, n, qmr[0])
+    circuit.cv_snap(phi, n, qmr[0])
 
     state, result = c2qa.util.simulate(circuit)
+
 
 def test_eswap():
     circuit, qmr = create_unconditional()
@@ -360,12 +341,12 @@ def test_eswap():
 
     state, result = c2qa.util.simulate(circuit)
 
+
 def test_pncqr():
     qmr = c2qa.QumodeRegister(num_qumodes=1)
     qbr = qiskit.QuantumRegister(size=1)
     circuit = c2qa.CVCircuit(qmr, qbr)
     zeroQB = numpy.array([1, 0])
-    oneQB = numpy.array([0, 1])
     circuit.initialize(zeroQB, qbr[0])
     circuit.cv_initialize(1, qmr[0])
 
@@ -373,7 +354,8 @@ def test_pncqr():
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, 1, 4)
 
-def test_cnd_bs_res():
+
+def test_c_bs_res():
     numberofmodes = 2
     qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes)
     qbr = qiskit.QuantumRegister(size=1)
@@ -388,7 +370,7 @@ def test_cnd_bs_res():
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
 
-    circuit.cv_cnd_bs(0, -numpy.pi, qbr[0], qmr[1], qmr[0])
+    circuit.cv_c_bs(-numpy.pi, qmr[1], qmr[0], qbr[0])
 
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
@@ -397,9 +379,11 @@ def test_cnd_bs_res():
 def test_cv_cpbs_res():
     numberofmodes = 2
     numberofqubitspermode = 1
-    cutoff = 2 ** numberofqubitspermode
+    cutoff = 2**numberofqubitspermode
 
-    qmr = c2qa.QumodeRegister(num_qumodes=numberofmodes, num_qubits_per_qumode=numberofqubitspermode)
+    qmr = c2qa.QumodeRegister(
+        num_qumodes=numberofmodes, num_qubits_per_qumode=numberofqubitspermode
+    )
     qbr = qiskit.QuantumRegister(size=1)
     cbr = qiskit.ClassicalRegister(size=1)
     circuit = c2qa.CVCircuit(qmr, qbr, cbr)
@@ -408,21 +392,23 @@ def test_cv_cpbs_res():
     for i in range(qmr.num_qumodes):
         circuit.cv_initialize(diffstallmodes[i], qmr[i])
 
-    circuit.h(qbr[0])  # Inititialises the qubit to a plus state (so that pauli Z flips it)
+    circuit.h(
+        qbr[0]
+    )  # Inititialises the qubit to a plus state (so that pauli Z flips it)
     print("qubit in superposition")
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
-    circuit.cv_cpbs(numpy.pi, qmr[0], qmr[1], qbr[0])
+    circuit.cv_cpbs_z2vqe(numpy.pi, qmr[0], qmr[1], qbr[0])
     print("qubit flipped and boson moved")
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
 
-def test_pncqr():
+
+def test_qdcr():
     qmr = c2qa.QumodeRegister(num_qumodes=1)
     qbr = qiskit.QuantumRegister(size=1)
     circuit = c2qa.CVCircuit(qmr, qbr)
     zeroQB = numpy.array([1, 0])
-    oneQB = numpy.array([0, 1])
     circuit.initialize(zeroQB, qbr[0])
     circuit.cv_initialize(1, qmr[0])
 
@@ -431,11 +417,11 @@ def test_pncqr():
     c2qa.util.stateread(stateop, qbr.size, 1, 4)
 
 
-def test_cp():
+def test_c_p():
     circuit, qmr, qr = create_conditional()
 
     theta = random.random()
-    circuit.cv_cp(theta, qmr[0], qr[0])
+    circuit.cv_c_p(theta, qmr[0], qr[0])
 
     state, result = c2qa.util.simulate(circuit)
     assert result.success

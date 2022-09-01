@@ -2,6 +2,7 @@ import c2qa
 import numpy
 import qiskit
 
+
 def assert_changed(state, result):
     assert result.success
     # print()
@@ -47,6 +48,7 @@ def test_parameterized_displacement(capsys):
         state, result = c2qa.util.simulate(bound_circuit)
         assert_changed(state, result)
 
+
 def test_complex_literals(capsys):
     with capsys.disabled():
         # a = qiskit.circuit.Parameter('𝛼')
@@ -58,16 +60,16 @@ def test_complex_literals(capsys):
 
         minimal_circuit.h(qbr[0])
 
-        minimal_circuit.cv_cd(1j*1,-1j*1,qmr[0],qbr[0])
+        minimal_circuit.cv_c_d(1j * 1, qmr[0], qbr[0])
 
         # bound_circuit = minimal_circuit.bind_parameters({a: 1})
-        
+
         c2qa.util.simulate(minimal_circuit)
 
 
 def test_complex_parameters(capsys):
     with capsys.disabled():
-        a = qiskit.circuit.Parameter('𝛼')
+        a = qiskit.circuit.Parameter("𝛼")
 
         qmr = c2qa.QumodeRegister(1, num_qubits_per_qumode=4)
         qbr = qiskit.QuantumRegister(1)
@@ -76,7 +78,7 @@ def test_complex_parameters(capsys):
 
         minimal_circuit.h(qbr[0])
 
-        minimal_circuit.cv_cd(1j*a,-1j*a,qmr[0],qbr[0])
+        minimal_circuit.cv_c_d(1j * a, qmr[0], qbr[0])
 
         bound_circuit = minimal_circuit.bind_parameters({a: 1})
         c2qa.util.simulate(bound_circuit)
@@ -84,7 +86,7 @@ def test_complex_parameters(capsys):
 
 def test_complex_parameters_float(capsys):
     with capsys.disabled():
-        a = qiskit.circuit.Parameter('𝛼')
+        a = qiskit.circuit.Parameter("𝛼")
 
         qmr = c2qa.QumodeRegister(1, num_qubits_per_qumode=4)
         qbr = qiskit.QuantumRegister(1)
@@ -93,7 +95,7 @@ def test_complex_parameters_float(capsys):
 
         minimal_circuit.h(qbr[0])
 
-        minimal_circuit.cv_cd(1j*a,-1j*a,qmr[0],qbr[0])
+        minimal_circuit.cv_c_d(1j * a, qmr[0], qbr[0])
 
         bound_circuit = minimal_circuit.bind_parameters({a: 2})
         c2qa.util.simulate(bound_circuit)

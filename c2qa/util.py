@@ -1,10 +1,9 @@
 from copy import copy
-from logging import NOTSET
 import math
 import multiprocessing
 import os
 import pathlib
-from typing import List
+
 
 import matplotlib.animation
 import matplotlib.pyplot as plt
@@ -17,8 +16,12 @@ from c2qa import CVCircuit
 
 from c2qa.operators import ParameterizedUnitaryGate
 
-def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False):
-    """Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
+
+def stateread(
+    stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
+):
+    """Print values for states of qubits and qumodes using the result of a
+    simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
@@ -29,51 +32,73 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
 
     for i in range(len(st)):
         res = st[
-            i]  # go through vector element by element and find the positions of the non-zero elements with next if clause
-        if (np.abs(res) > 1e-10):
+            i
+        ]  # go through vector element by element and find the positions of the non-zero elements with next if clause
+        if np.abs(res) > 1e-10:
             pos = i  # position of amplitude (non-zero real)
             # print("position of non-zero real amplitude: ", pos, " res = ", res)
             sln = len(st)  # length of the state vector
 
-            ## Find the qubit states
-            qbst = np.empty(numberofqubits, dtype='int')  # stores the qubit state
+            # Find the qubit states
+            qbst = np.empty(numberofqubits, dtype="int")  # stores the qubit state
             iqb = 0  # counts up until the total number of qubits is reached
-            # which half of the vector the amplitude is in is the state of the first qubit because of how the kronecker product is made
-            while (iqb < numberofqubits):
-                if pos < sln / 2:  # if the amplitude is in the first half of the state vector or remaining statevector
+
+            # which half of the vector the amplitude is in is the state of the
+            # first qubit because of how the kronecker product is made
+            while iqb < numberofqubits:
+                # if the amplitude is in the first half of the state vector or remaining statevector
+                if (pos < sln / 2):
                     qbst[iqb] = int(0)  # then the qubit is in 0
                 else:
-                    qbst[iqb] = int(1)  # if the amplitude is in the second half then it is in 1
-                    pos = pos - (
-                            sln / 2)  # if the amplitude is in the second half of the statevector, then to find out the state of the other qubits and cavities then we remove the first half of the statevector for simplicity because it corresponds to the qubit being in 0 which isn't the case.
+                    # if the amplitude is in the second half then it is in 1
+                    qbst[iqb] = int(1)
+
+                    # if the amplitude is in the second half of the statevector,
+                    # then to find out the state of the other qubits and cavities
+                    # then we remove the first half of the statevector for simplicity
+                    # because it corresponds to the qubit being in 0 which isn't the case.
+                    pos = pos - (sln / 2)
                     # print("pos (sln/2)", pos, "sln ",sln)
-                sln = sln / 2  # only consider the part of the statevector corresponding to the qubit state which has just been discovered
-                iqb = iqb + 1  # up the qubit counter to start finding out the state of the next qubit
+
+                # only consider the part of the statevector corresponding to the qubit state which has just been discovered
+                sln = (sln / 2)
+
+                # up the qubit counter to start finding out the state of the next qubit
+                iqb = (iqb + 1)
             amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
 
-            ## Find the qumode states
-            qmst = np.empty(numberofmodes, dtype='int')  # will contain the Fock state of each mode
+            # Find the qumode states
+            qmst = np.empty(
+                numberofmodes, dtype="int"
+            )  # will contain the Fock state of each mode
             # print("qmst starting in ", qmst)
             iqm = 0  # counts up the number of modes
             # print("position is now: ",pos)
-            while (iqm < numberofmodes):
+            while iqm < numberofmodes:
                 # print("mode counter iqm ", iqm)
                 # print("cutoff ", cutoff)
                 # print("length of vector left to search: sln ", sln)
-                lendiv = sln / cutoff  # length of a division is the length of the statevector divided by the cutoff of the hilbert space (which corresponds to the number of fock states which a mode can have)
+
+                # length of a division is the length of the statevector divided
+                # by the cutoff of the hilbert space (which corresponds to the
+                # number of fock states which a mode can have)
+                lendiv = (sln / cutoff)
                 # print("lendiv (sln/cutoff)", lendiv)
                 val = pos / lendiv
                 # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
                 fock = math.floor(val)
                 # print("Fock st resulting position in Kronecker product (math.floor(val)) ", fock)
                 qmst[iqm] = fock
-                pos = pos - (
-                        fock * lendiv)  # remove a number of divisions to then search a subsection of the Kronecker product
+
+                # remove a number of divisions to then search a subsection of the Kronecker product
+                pos = pos - (fock * lendiv)
                 # print("new position for next order of depth of Kronecker product/pos: (pos-(fock*lendiv)) ",pos)
-                sln = sln - ((cutoff - 1) * lendiv)  # New length of vector left to search
+
+                # New length of vector left to search
+                sln = sln - ((cutoff - 1) * lendiv)
                 # print("New length of vector left to search: sln (sln-((cutoff-1)*lendiv))", sln)
                 iqm = iqm + 1
-            amp_cv.append((qmst*(np.abs(res)**2)).tolist())
+            amp_cv.append((qmst * (np.abs(res) ** 2)).tolist())
 
             state.append([qmst.tolist(), qbst.tolist(), res])
 
@@ -81,38 +106,62 @@ def stateread(stateop, numberofqubits, numberofmodes, cutoff, verbose=True, litt
                 if little_endian:
                     qmstr = ["".join(str(item)) for item in qmst]
                     qbstr = ["".join(str(item)) for item in qbst]
-                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, "-" if res.imag < 0 else "+", abs(res.imag)), "(little endian)")
+                    print(
+                        "qumodes: ",
+                        "".join(qmstr),
+                        " qubits: ",
+                        "".join(qbstr),
+                        "    with amplitude: {0:.3f} {1} i{2:.3f}".format(
+                            res.real, "-" if res.imag < 0 else "+", abs(res.imag)
+                        ),
+                        "(little endian)",
+                    )
                 else:
                     qmstr = ["".join(str(item)) for item in qmst[::-1]]
                     qbstr = ["".join(str(item)) for item in qbst[::-1]]
-                    print("qumodes: ", ''.join(qmstr), " qubits: ", ''.join(qbstr), "    with amplitude: {0:.3f} {1} i{2:.3f}".format(res.real, "-" if res.imag < 0 else "+", abs(res.imag)), "(big endian)")
+                    print(
+                        "qumodes: ",
+                        "".join(qmstr),
+                        " qubits: ",
+                        "".join(qbstr),
+                        "    with amplitude: {0:.3f} {1} i{2:.3f}".format(
+                            res.real, "-" if res.imag < 0 else "+", abs(res.imag)
+                        ),
+                        "(big endian)",
+                    )
 
     occupation_cv = [sum(i) for i in zip(*amp_cv)]
     occupation_qb = [sum(i) for i in zip(*amp_qb)]
 
-    if little_endian == False:
+    if not little_endian:
         for i in range(len(state)):
             state[i][0] = state[i][0][::-1]
             state[i][1] = state[i][1][::-1]
             occupation_cv = occupation_cv[::-1]
             occupation_qb = occupation_qb[::-1]
 
-    return [occupation_cv,occupation_qb], state
+    return [occupation_cv, occupation_qb], state
+
 
 def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
-    """Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts()
-       along with qubit_qumode_list, a list of Qubits and Qumodes passed into cv_measure(...).
+    """Convert counts dictionary from Fock-basis binary representation into
+    base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts
+    dict() as returned by job.result().get_counts() along with qubit_qumode_list,
+    a list of Qubits and Qumodes passed into cv_measure(...).
 
-        Returns counts dict()
+     Returns counts dict()
 
-        Args:
-            counts: dict() of counts, as returned by job.result().get_counts() for a circuit which used cv_measure()
-            qubit_qumode_list: List of qubits and qumodes measured. This list should be identical to that passed into cv_measure()
+     Args:
+         counts: dict() of counts, as returned by job.result().get_counts() for
+            a circuit which used cv_measure()
+         qubit_qumode_list: List of qubits and qumodes measured. This list should
+            be identical to that passed into cv_measure()
 
-        Returns:
-            A new counts dict() which lists measurement results for the qubits and qumodes in qubit_qumode_list in little endian order, 
-            with Fock-basis qumode measurements reported as a base-10 integer.
-        """
+     Returns:
+         A new counts dict() which lists measurement results for the qubits and
+         qumodes in qubit_qumode_list in little endian order, with Fock-basis
+         qumode measurements reported as a base-10 integer.
+    """
 
     flat_list = []
     for el in qubit_qumode_list:
@@ -125,9 +174,9 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     for key in counts:
         counter = len(key) - len(flat_list)
         if counter > 0:
-            newkey = ('{0:0' + str(counter) + '}').format(0)
+            newkey = ("{0:0" + str(counter) + "}").format(0)
         else:
-            newkey = ''
+            newkey = ""
         for registerType in qubit_qumode_list[::-1]:
             if isinstance(registerType, list):
                 newkey += str(int(key[counter:counter + len(registerType)], base=2))
@@ -202,8 +251,8 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    noise_pass = None,
-    max_parallel_threads: int = 0
+    noise_pass=None,
+    max_parallel_threads: int = 0,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -238,7 +287,9 @@ def simulate(
     circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
     # Run and get statevector
-    result = simulator.run(circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads).result()
+    result = simulator.run(
+        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads
+    ).result()
 
     # The user may have added their own circuit.save_statevector
     state = None
@@ -429,14 +480,14 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
 
 
 def plot_wigner(
-        circuit: CVCircuit,
-        state_vector: Statevector,
-        trace: bool = True,
-        file: str = None,
-        axes_min: int = -6,
-        axes_max: int = 6,
-        axes_steps: int = 200,
-        num_colors: int = 100,
+    circuit: CVCircuit,
+    state_vector: Statevector,
+    trace: bool = True,
+    file: str = None,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    num_colors: int = 100,
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -470,12 +521,12 @@ def plot_wigner(
 
 
 def plot(
-        data,
-        axes_min: int = -6,
-        axes_max: int = 6,
-        axes_steps: int = 200,
-        file: str = None,
-        num_colors: int = 100,
+    data,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    file: str = None,
+    num_colors: int = 100,
 ):
     """Contour plot the given data array"""
     xvec = np.linspace(axes_min, axes_max, axes_steps)
@@ -489,7 +540,7 @@ def plot(
     cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
     ax.set_ylabel("p")
-    cb=fig.colorbar(cont, ax=ax)
+    cb = fig.colorbar(cont, ax=ax)
     cb.set_label(r"$W(x,p)$")
 
     if file:
@@ -510,7 +561,7 @@ def animate_wigner(
     axes_steps: int = 200,
     processes: int = None,
     keep_state: bool = True,
-    noise_pass = None
+    noise_pass=None,
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -532,7 +583,7 @@ def animate_wigner(
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         processes (int, optional): Number of parallel Python processes to start.
                                    If None, perform serially in main process. Defaults to None.
-        keep_state (bool, optional): True if each frame builds on the previous frame's state vector. 
+        keep_state (bool, optional): True if each frame builds on the previous frame's state vector.
                                      False if each frame starts over from the beginning of the circuit.
                                      If True, it requires sequential simulation of each frame.
         noise_pass (PhotonLossNoisePass, optional): noise pass to apply
@@ -558,11 +609,25 @@ def animate_wigner(
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                params = inst.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
-                duration, unit = inst.calculate_duration(current_step=index, total_steps=animation_segments, keep_state=keep_state)
-                gate = ParameterizedUnitaryGate(inst.op_func, params=params, num_qubits=inst.num_qubits, label=inst.label, duration=duration, unit=unit)
+                params = inst.calculate_params(
+                    current_step=index,
+                    total_steps=animation_segments,
+                    keep_state=keep_state,
+                )
+                duration, unit = inst.calculate_duration(
+                    current_step=index,
+                    total_steps=animation_segments,
+                    keep_state=keep_state,
+                )
+                gate = ParameterizedUnitaryGate(
+                    inst.op_func,
+                    params=params,
+                    num_qubits=inst.num_qubits,
+                    label=inst.label,
+                    duration=duration,
+                    unit=unit,
+                )
 
-                # print(f"Gate {inst.label} with duration={duration} and params={params} at index={index} and animation_segments={animation_segments}")
                 sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
 
                 if qubit and cbit:
@@ -578,10 +643,20 @@ def animate_wigner(
             for index in range(1, animation_segments + 1):
                 sim_circuit = base_circuit.copy()
 
-                params_0 = inst_0.base_gate.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
-                params_1 = inst_1.base_gate.calculate_params(current_step=index, total_steps=animation_segments, keep_state=keep_state)
+                params_0 = inst_0.base_gate.calculate_params(
+                    current_step=index,
+                    total_steps=animation_segments,
+                    keep_state=keep_state,
+                )
+                params_1 = inst_1.base_gate.calculate_params(
+                    current_step=index,
+                    total_steps=animation_segments,
+                    keep_state=keep_state,
+                )
 
-                duration, unit = inst_0.base_gate.calculate_duration(current_step=index, total_steps=animation_segments)
+                duration, unit = inst_0.base_gate.calculate_duration(
+                    current_step=index, total_steps=animation_segments
+                )
 
                 sim_circuit.append(
                     CVCircuit.cv_conditional(
@@ -592,7 +667,7 @@ def animate_wigner(
                         num_qubits_per_qumode=inst.num_qubits_per_qumode,
                         num_qumodes=inst.num_qumodes,
                         duration=duration,
-                        unit=unit
+                        unit=unit,
                     ),
                     qargs,
                     cargs,
@@ -634,7 +709,9 @@ def animate_wigner(
                 sim_circuit.initialize(previous_state)
 
                 if qubit and cbit:
-                    last_instructions = circuit.data[-3:]  # Get the last instruction, plus the Hadamard/measure
+                    last_instructions = circuit.data[
+                        -3:
+                    ]  # Get the last instruction, plus the Hadamard/measure
                 else:
                     last_instructions = circuit.data[-1:]  # Get the last instruction
 
@@ -643,17 +720,33 @@ def animate_wigner(
             else:
                 # No previous simulation state, just run the current circuit
                 sim_circuit = circuit
-            fock, previous_state = simulate_wigner(sim_circuit, xvec, shots, noise_pass=noise_pass, conditional=cbit is not None)
+            fock, previous_state = simulate_wigner(
+                sim_circuit,
+                xvec,
+                shots,
+                noise_pass=noise_pass,
+                conditional=cbit is not None,
+            )
             w_fock.append(fock)
     elif processes == 1:
         w_fock = []
         for circuit in circuits:
-            fock, _ = simulate_wigner(circuit, xvec, shots, noise_pass=noise_pass, conditional=cbit is not None)
+            fock, _ = simulate_wigner(
+                circuit,
+                xvec,
+                shots,
+                noise_pass=noise_pass,
+                conditional=cbit is not None,
+            )
             w_fock.append(fock)
     else:
         pool = multiprocessing.Pool(processes)
         results = pool.starmap(
-            simulate_wigner, ((circuit, xvec, shots, noise_pass, cbit is not None) for circuit in circuits)
+            simulate_wigner,
+            (
+                (circuit, xvec, shots, noise_pass, cbit is not None)
+                for circuit in circuits
+            ),
         )
         pool.close()
         w_fock = [i[0] for i in results if i is not None]
@@ -698,8 +791,10 @@ def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
 
     anim.save(file, writer=writer)
 
+
 def _animate_init():
     pass  # Prevent rendering frame 0 twice (once for init, once for animate)
+
 
 def _animate(frame, *fargs):
     """Generate individual matplotlib frame in animation."""
@@ -727,15 +822,20 @@ def _animate(frame, *fargs):
 
 
 def simulate_wigner(
-    circuit: CVCircuit, 
-    xvec: np.ndarray, 
+    circuit: CVCircuit,
+    xvec: np.ndarray,
     shots: int,
-    noise_pass = None,
-    conditional: bool = True
+    noise_pass=None,
+    conditional: bool = True,
 ):
     """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
-    states, _ = simulate(circuit, shots=shots, noise_pass=noise_pass, conditional_state_vector=conditional)
-    
+    states, _ = simulate(
+        circuit,
+        shots=shots,
+        noise_pass=noise_pass,
+        conditional_state_vector=conditional,
+    )
+
     if states:
         if conditional:
             state = states["0x0"]  # even state
@@ -747,20 +847,22 @@ def simulate_wigner(
 
         wigner_result = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
     else:
-        print("WARN: No state vector returned by simulation -- unable to calculate Wigner function!")
+        print(
+            "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
+        )
         wigner_result = None
         state = None
-    
+
     return wigner_result, state
 
 
 def wigner(
-        state,
-        cutoff: int,
-        axes_min: int = -6,
-        axes_max: int = 6,
-        axes_steps: int = 200,
-        hbar: int = 2,
+    state,
+    cutoff: int,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    hbar: int = 2,
 ):
     """
     Calculate the Wigner function on the given state vector.
@@ -781,12 +883,12 @@ def wigner(
 
 
 def wigner_mle(
-        states,
-        cutoff: int,
-        axes_min: int = -6,
-        axes_max: int = 6,
-        axes_steps: int = 200,
-        hbar: int = 2,
+    states,
+    cutoff: int,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    hbar: int = 2,
 ):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
@@ -806,7 +908,7 @@ def wigner_mle(
 
     # Prevent DeprecationWarning from Qiskit returning Statevector instead of array
     states_data = [state.data for state in states]
-    
+
     for qubit_states in zip(*states_data):
         # TODO what distribution are the qubit states? (using normal)
         # scipy.stats normal distribution defaults to MLE fit, returns tuple[0] mean, tuple[1] std dev

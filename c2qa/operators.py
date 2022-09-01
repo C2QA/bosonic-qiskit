@@ -1,7 +1,3 @@
-import math
-from numbers import Complex
-
-
 import numpy
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
@@ -22,15 +18,20 @@ sigma_minus = numpy.array([[0, 0], [1, 0]])
 class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
-    def __init__(self, op_func, params, num_qubits, label=None, duration=100, unit="ns"):
+    def __init__(
+        self, op_func, params, num_qubits, label=None, duration=100, unit="ns"
+    ):
         """Initialize ParameterizedUnitaryGate
 
         FIXME - Use real duration & units
 
         Args:
             op_func (function): function to build operator matrix
-            params (List): List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
-            num_qubits (int): Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
+            params (List): List of parameters to pass to op_func to build
+                operator matrix (supports instances of Qiskit Parameter to be
+                bound later)
+            num_qubits (int): Number of qubits in the operator -- this would
+                likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
             label (string, optional): Gate name. Defaults to None.
             duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
@@ -40,7 +41,8 @@ class ParameterizedUnitaryGate(Gate):
         self.op_func = op_func
 
         self._parameterized = any(
-            isinstance(param, ParameterExpression) and param.parameters for param in params
+            isinstance(param, ParameterExpression) and param.parameters
+            for param in params
         )
 
         self.duration = duration
@@ -56,13 +58,14 @@ class ParameterizedUnitaryGate(Gate):
                 #     values.append(float(param))
                 # else:
                 #     values.append(complex(param))
-                values.append(complex(param))  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
+                values.append(
+                    complex(param)
+                )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
             else:
                 values.append(param)
         values = tuple(values)
 
         return self.op_func(*values).toarray()
-
 
     def _define(self):
         mat = self.to_matrix()
@@ -78,12 +81,16 @@ class ParameterizedUnitaryGate(Gate):
 
     def validate_parameter(self, parameter):
         """Gate parameters should be int, float, or ParameterExpression"""
-        if isinstance(parameter, complex) or (isinstance(parameter, ParameterExpression) and not parameter.is_real()):
+        if isinstance(parameter, complex) or (
+            isinstance(parameter, ParameterExpression) and not parameter.is_real()
+        ):
             return parameter
         else:
             return super().validate_parameter(parameter)
 
-    def calculate_matrix(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
+    def calculate_matrix(
+        self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
+    ):
         """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
         Args:
@@ -93,7 +100,9 @@ class ParameterizedUnitaryGate(Gate):
             ndarray: operator matrix
         """
         if self.is_parameterized():
-            raise NotImplementedError("Unable to calculate incremental operator matrices for parameterized gate")
+            raise NotImplementedError(
+                "Unable to calculate incremental operator matrices for parameterized gate"
+            )
 
         values = self.calculate_params(current_step, total_steps, keep_state)
 
@@ -108,7 +117,9 @@ class ParameterizedUnitaryGate(Gate):
 
         return result
 
-    def calculate_params(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
+    def calculate_params(
+        self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
+    ):
         if keep_state:
             param_fraction = 1 / total_steps
         else:
@@ -120,7 +131,9 @@ class ParameterizedUnitaryGate(Gate):
 
         return tuple(values)
 
-    def calculate_duration(self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False):
+    def calculate_duration(
+        self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
+    ):
         """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
         if keep_state:
             fraction = 1 / total_steps
@@ -142,12 +155,14 @@ class CVOperators:
         """
         # Annihilation operator
         data = numpy.sqrt(range(cutoff))
-        self.a = scipy.sparse.spdiags(data=data, diags=[1], m=len(data), n=len(data)).tocsc()
+        self.a = scipy.sparse.spdiags(
+            data=data, diags=[1], m=len(data), n=len(data)
+        ).tocsc()
 
         # Creation operator
         self.a_dag = self.a.conjugate().transpose().tocsc()
 
-        # Number operator for a single qumode. 
+        # Number operator for a single qumode.
         # self.N = scipy.sparse.matmul(self.a_dag, self.a)
         self.N = self.a_dag * self.a
 
@@ -198,8 +213,9 @@ class CVOperators:
             beta = -alpha
         displace1 = (beta * self.a_dag) - (numpy.conjugate(beta) * self.a)
 
-
-        return scipy.sparse.kron((idQB+zQB)/2,scipy.sparse.linalg.expm(displace0)) + scipy.sparse.kron((idQB-zQB)/2,scipy.sparse.linalg.expm(displace1))
+        return scipy.sparse.kron(
+            (idQB + zQB) / 2, scipy.sparse.linalg.expm(displace0)
+        ) + scipy.sparse.kron((idQB - zQB) / 2, scipy.sparse.linalg.expm(displace1))
 
     def ecd(self, alpha):
         """Displacement operator
@@ -211,7 +227,7 @@ class CVOperators:
             ndarray: operator matrix
         """
         argm = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
-        arg = scipy.sparse.kron(zQB, argm)/2
+        arg = scipy.sparse.kron(zQB, argm) / 2
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -219,7 +235,7 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = 1j * alpha *(a1dag2 + a12dag)
+        argm = 1j * alpha * (a1dag2 + a12dag)
         arg = scipy.sparse.kron(zQB, argm)
 
         return scipy.sparse.linalg.expm(arg)
@@ -228,7 +244,7 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = alpha *(a12dag - a1dag2)
+        argm = alpha * (a12dag - a1dag2)
         arg = scipy.sparse.kron(zQB, argm)
 
         return scipy.sparse.linalg.expm(arg)
@@ -276,7 +292,7 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        arg =  (theta * a1dag2 - numpy.conj(theta) * a12dag)
+        arg = theta * a1dag2 - numpy.conj(theta) * a12dag
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -457,16 +473,18 @@ class CVOperators:
             ndarray: operator matrix
         """
 
-        if qubit_rotation=="X":
-            rot=xQB
+        if qubit_rotation == "X":
+            rot = xQB
             print("Somehow the X rotation doesn't work")
-        elif qubit_rotation=="Y":
-            rot=yQB
-        elif qubit_rotation=="Z":
-            rot=zQB
+        elif qubit_rotation == "Y":
+            rot = yQB
+        elif qubit_rotation == "Z":
+            rot = zQB
             print("Somehow the X rotation doesn't work")
         else:
-            print("Please choose pauli X, Y or Z (capitals, ie. 'Y') for the qubit rotation.")
+            print(
+                "Please choose pauli X, Y or Z (capitals, ie. 'Y') for the qubit rotation."
+            )
 
         ket_n = numpy.zeros(self.cutoff_value)
         ket_n[n] = 1
@@ -527,7 +545,7 @@ class CVOperators:
         # arg1 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a12dag))
         # arg2 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a1dag2))
 
-        logU4 = 1j*theta*(arg1+arg2)
+        logU4 = 1j * theta * (arg1 + arg2)
         return scipy.sparse.linalg.expm(logU4)
 
     def schwinger_U5(self, theta):
@@ -543,12 +561,10 @@ class CVOperators:
         # arg1 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a12dag))
         # arg2 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a1dag2))
 
-        logU5 = -theta*(arg1-arg2)
+        logU5 = -theta * (arg1 - arg2)
         return scipy.sparse.linalg.expm(logU5)
 
     def testqubitorderf(self, phi):
 
-        arg = 1j*phi*scipy.sparse.kron(xQB, idQB)
+        arg = 1j * phi * scipy.sparse.kron(xQB, idQB)
         return scipy.sparse.linalg.expm(arg)
-
-

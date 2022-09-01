@@ -84,7 +84,7 @@ class TestMatrices:
     def test_d(self, capsys):
         with capsys.disabled():
             one = self.ops.d(1)
-            rand = self.ops.d(random.random())
+            # rand = self.ops.d(random.random())
 
             print()
             # print("a")

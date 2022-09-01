@@ -63,7 +63,7 @@ def test_plot_zero(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
 
         state, _ = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state)
@@ -99,7 +99,7 @@ def test_animate(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
 
         wigner_filename = "tests/displacement.gif"
         c2qa.util.animate_wigner(
@@ -111,7 +111,7 @@ def test_animate(capsys):
             axes_max=8,
             animation_segments=5,
             processes=1,
-            shots=25
+            shots=25,
         )
         assert Path(wigner_filename).is_file()
 
@@ -130,9 +130,9 @@ def test_calibration_animate(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
         circuit.cv_d(1j * dist, qmr[0])
-        circuit.cv_cnd_d(-dist, dist, qr[0], qmr[0])
+        circuit.cv_c_d(-dist, qmr[0], qr[0])
         circuit.cv_d(-1j * dist, qmr[0])
 
         c2qa.util.animate_wigner(
@@ -160,7 +160,7 @@ def test_plot_wigner_projection(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
         # circuit.cv_d(dist, qmr[0])
 
         c2qa.util.plot_wigner_projection(circuit, qr[0], file="tests/interference.png")
@@ -179,7 +179,7 @@ def test_measure_all_xyz(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
 
         (
             (state_x, result_x),
@@ -223,7 +223,7 @@ def test_cat_state_wigner_plot(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
@@ -282,7 +282,7 @@ def test_wigner_mle(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         circuit.h(qr[0])
-        circuit.cv_cnd_d(dist, -dist, qr[0], qmr[0])
+        circuit.cv_c_d(dist, qmr[0], qr[0])
         circuit.h(qr[0])
 
         states, result = c2qa.util.simulate(circuit, per_shot_state_vector=True)
@@ -293,14 +293,22 @@ def test_wigner_mle(capsys):
 
 def test_stateread(capsys):
     with capsys.disabled():
-        num_qumodes=2
-        qubits_per_mode=3        
+        num_qumodes = 2
+        qubits_per_mode = 3
 
-        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode, name="qmr")
+        qmr = c2qa.QumodeRegister(
+            num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode, name="qmr"
+        )
 
         circuit = c2qa.CVCircuit(qmr)
 
         circuit.cv_initialize(2, qmr[0])
         circuit.cv_initialize(0, qmr[1])
         state, result = c2qa.util.simulate(circuit)
-        occs = c2qa.util.stateread(state, numberofqubits=0, numberofmodes=num_qumodes, cutoff=circuit.cutoff, verbose=True)
+        c2qa.util.stateread(
+            state,
+            numberofqubits=0,
+            numberofmodes=num_qumodes,
+            cutoff=circuit.cutoff,
+            verbose=True,
+        )

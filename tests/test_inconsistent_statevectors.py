@@ -5,7 +5,7 @@ import scipy.linalg
 
 # Define parameters
 num_qubits_per_qumode = 2
-cutoff = 2 ** num_qubits_per_qumode
+cutoff = 2**num_qubits_per_qumode
 alpha = numpy.sqrt(numpy.pi)
 
 

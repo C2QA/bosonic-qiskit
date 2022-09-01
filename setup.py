@@ -12,8 +12,5 @@ setup(
     long_description="IBM Qiskit extension supporting simulation of bosonic qumodes reprsented as 2^n qubits within Qiskit",
     python_requires=">=3.7",
     packages=find_packages(),
-    install_requires=[
-        "qiskit==0.34.2",
-        "matplotlib==3.5.2"
-    ],
+    install_requires=["qiskit==0.34.2", "matplotlib==3.5.2"],
 )
