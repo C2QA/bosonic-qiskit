@@ -392,9 +392,9 @@ def test_cv_cpbs_res():
     for i in range(qmr.num_qumodes):
         circuit.cv_initialize(diffstallmodes[i], qmr[i])
 
-    circuit.h(
-        qbr[0]
-    )  # Inititialises the qubit to a plus state (so that pauli Z flips it)
+    # Inititialises the qubit to a plus state (so that pauli Z flips it)
+    circuit.h(qbr[0])
+    
     print("qubit in superposition")
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
