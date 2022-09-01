@@ -1,15 +1,5 @@
-import os
-import sys
-
-module_path = os.path.abspath(os.path.join("../.."))
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import numpy as np
 import c2qa
-import qiskit
 import numpy as np
-import c2qa.util as util
 
 
 def eiht(circuit, qma, qmb, J, U, dt):
@@ -35,13 +25,15 @@ def trotterise_Z2LGT(
     # Trotterise. i*dt corresponds to the timestep i of length from the previous timestep dt.
     for i in range(N):
         print("dt+1", i * dt)
-        # Trotterise according to the brickwork format to make depth of circuit 2 and not number of timesteps (because each site needs to be part of a gate with the site to the left and a gate with the site to the right.
+        # Trotterise according to the brickwork format to make depth of circuit
+        # 2 and not number of timesteps (because each site needs to be part of
+        # a gate with the site to the left and a gate with the site to the right.
         for j in range(0, numberofmodes - 1, 2):
             eiht(circuit, qmr[j + 1], qmr[j], qbr[j], m, g, dt)
         for j in range(1, numberofmodes - 1, 2):
             eiht(circuit, qmr[j + 1], qmr[j], qbr[j], m, g, dt)
         stateop, result = c2qa.util.simulate(circuit)
-        occupation = util.stateread(stateop, qbr.size, numberofmodes, 4)
+        occupation = c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
         occs[0][i] = np.array(list(occupation[0]))
         occs[1][i] = np.array(list(occupation[1]))
 
