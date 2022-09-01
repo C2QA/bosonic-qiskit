@@ -417,7 +417,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        return self.append(ParameterizedUnitaryGate(self.ops.csq, [alpha], num_qubits=len(qumode) + 1, label="cS"), qargs=qumode + [qubit])
+        return self.append(ParameterizedUnitaryGate(self.ops.csq, [z], num_qubits=len(qumode) + 1, label="cS"), qargs=qumode + [qubit])
 
 
 
