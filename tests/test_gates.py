@@ -404,7 +404,7 @@ def test_cv_cpbs_res():
     c2qa.util.stateread(stateop, qbr.size, numberofmodes, cutoff)
 
 
-def test_qdcr():
+def test_c_r():
     qmr = c2qa.QumodeRegister(num_qumodes=1)
     qbr = qiskit.QuantumRegister(size=1)
     circuit = c2qa.CVCircuit(qmr, qbr)
@@ -412,7 +412,7 @@ def test_qdcr():
     circuit.initialize(zeroQB, qbr[0])
     circuit.cv_initialize(1, qmr[0])
 
-    circuit.cv_qdcr(numpy.pi, qmr[0], qbr[0])
+    circuit.cv_c_r(numpy.pi, qmr[0], qbr[0])
     stateop, _ = c2qa.util.simulate(circuit)
     c2qa.util.stateread(stateop, qbr.size, 1, 4)
 

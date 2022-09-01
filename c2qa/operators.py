@@ -85,6 +85,8 @@ class ParameterizedUnitaryGate(Gate):
             isinstance(parameter, ParameterExpression) and not parameter.is_real()
         ):
             return parameter
+        elif isinstance(parameter, str):  # accept strings as-is
+            return parameter
         else:
             return super().validate_parameter(parameter)
 

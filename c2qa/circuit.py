@@ -532,7 +532,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            CVCircuit.cv_conditional("Sc", self.ops.s, [z], [-z], self.num_qubits_per_qumode),
+            CVCircuit.cv_conditional("cS", self.ops.s, [z], [-z], self.num_qubits_per_qumode),
             [qubit] + qumode,
         )
 
@@ -554,7 +554,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             ParameterizedUnitaryGate(
                 self.ops.controlledparity,
                 [theta],
@@ -575,7 +575,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             ParameterizedUnitaryGate(
                 self.ops.photonNumberControlledQubitRotation,
                 [theta, n, qubit_rotation],
