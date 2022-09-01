@@ -536,7 +536,7 @@ class CVCircuit(QuantumCircuit):
             [qubit] + qumode,
         )
 
-        # TODO: Opeartors.py csq needs to be written
+        # TODO: operators.py csq needs to be written
         # return self.append(
         #     ParameterizedUnitaryGate(
         #         self.ops.csq, [z], num_qubits=len(qumode) + 1, label="cS"
