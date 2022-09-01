@@ -522,7 +522,6 @@ class CVCircuit(QuantumCircuit):
 
     def cv_c_sq(self, z, qumode, qubit):
         """Conditional squeezing gate.
-        TODO: This needs to be written
 
         Args:
             z (real or complex): squeezing ampltiude
@@ -533,11 +532,17 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
-                self.ops.csq, [z], num_qubits=len(qumode) + 1, label="cS"
-            ),
-            qargs=qumode + [qubit],
+            CVCircuit.cv_conditional("Sc", self.ops.s, [z], [-z], self.num_qubits_per_qumode),
+            [qubit] + qumode,
         )
+
+        # TODO: Opeartors.py csq needs to be written
+        # return self.append(
+        #     ParameterizedUnitaryGate(
+        #         self.ops.csq, [z], num_qubits=len(qumode) + 1, label="cS"
+        #     ),
+        #     qargs=qumode + [qubit],
+        # )
 
     def cv_c_p(self, theta, qumode, qubit):
         """Controlled parity gate.
