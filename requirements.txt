@@ -3,3 +3,4 @@ qiskit==0.34.2
 
 # For drawing circuits, state vectors, Wigner function plots
 matplotlib==3.5.2
+pylatexenc==2.10
