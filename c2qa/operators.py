@@ -170,204 +170,7 @@ class CVOperators:
 
         self.eye = scipy.sparse.eye(cutoff)
 
-        # 2-qumodes operators -- convenience operators for a pair of qumodes,
-        # where kronecker product has already been applied.
-        if num_qumodes > 1:
-            self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-            self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-            self.a1_dag = self.a1.conjugate().transpose().tocsc()
-            self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
-        # For use with eSWAP
-        self.mat = numpy.zeros([cutoff * cutoff, cutoff * cutoff])
-        for j in range(cutoff):
-            for i in range(cutoff):
-                self.mat[i + (j * cutoff)][i * cutoff + j] = 1
-        self.sparse_mat = scipy.sparse.csr_matrix(self.mat).tocsc()
-
         self.cutoff_value = cutoff
-
-    def d(self, alpha):
-        """Displacement operator
-
-        Args:
-            alpha (real): displacement
-
-        Returns:
-            ndarray: operator matrix
-        """
-        arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def cd(self, alpha, beta=None):
-        """Displacement operator
-
-        Args:
-            alpha (real): displacement for qubit state 0
-            beta (real): displacement for qubit state 1. If None, use -alpha.
-
-        Returns:
-            ndarray: operator matrix
-        """
-        displace0 = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
-        if beta is None:
-            beta = -alpha
-        displace1 = (beta * self.a_dag) - (numpy.conjugate(beta) * self.a)
-
-        return scipy.sparse.kron(
-            (idQB + zQB) / 2, scipy.sparse.linalg.expm(displace0)
-        ) + scipy.sparse.kron((idQB - zQB) / 2, scipy.sparse.linalg.expm(displace1))
-
-    def ecd(self, alpha):
-        """Displacement operator
-
-        Args:
-            alpha (real): displacement
-
-        Returns:
-            ndarray: operator matrix
-        """
-        argm = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
-        arg = scipy.sparse.kron(zQB, argm) / 2
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def rh1(self, alpha):
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        argm = 1j * alpha * (a1dag2 + a12dag)
-        arg = scipy.sparse.kron(zQB, argm)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def rh2(self, alpha):
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        argm = alpha * (a12dag - a1dag2)
-        arg = scipy.sparse.kron(zQB, argm)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def s(self, zeta):
-        """Single-mode squeezing operator
-
-        Args:
-            zeta (real): squeeze
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a_sqr = self.a * self.a
-        a_dag_sqr = self.a_dag * self.a_dag
-        arg = 0.5 * ((numpy.conjugate(zeta) * a_sqr) - (zeta * a_dag_sqr))
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def s2(self, g):
-        """Two-mode squeezing operator
-
-        Args:
-            g (real): mutliplied by 1j to yield imaginary phase
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12_dag = self.a1_dag * self.a2_dag
-        a12 = self.a1 * self.a2
-
-        arg = (numpy.conjugate(g * 1j) * a12_dag) - (g * 1j * a12)
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def bs(self, theta):
-        """Two-mode beam splitter
-
-        Args:
-            theta: phase
-
-        Returns:
-            ndarray: operator matrix
-        """
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        arg = theta * a1dag2 - numpy.conj(theta) * a12dag
-
-        return scipy.sparse.linalg.expm(arg)
-
-    # def bs(self, g):
-    #     """Two-mode beam splitter
-    #
-    #     Args:
-    #         g (real): real phase
-    #
-    #     Returns:
-    #         ndarray: operator matrix
-    #     """
-    #     a12dag = self.a1 * self.a2_dag
-    #     a1dag2 = self.a1_dag * self.a2
-    #
-    #     arg = (g / 2) * (a1dag2 - a12dag)
-    #
-    #     return scipy.sparse.linalg.expm(arg)
-
-    # def bs_im(self, weight):
-    #     """Two-mode beam splitter
-    #
-    #     Args:
-    #         weight (real): mutliplied by 1j to yield imaginary alpha
-    #
-    #     Returns:
-    #         ndarray: operator matrix
-    #     """
-    #     a12dag = self.a1 * self.a2_dag
-    #     a1dag2 = self.a1_dag * self.a2
-    #     alpha = (weight * 1j)
-    #
-    #     arg = 1j * (alpha * a12dag) - (numpy.conjugate(alpha) * a1dag2)
-    #
-    #     return scipy.sparse.linalg.expm(arg)
-
-    def cbs(self, g):
-        """Controlled phase two-mode beam splitter
-
-        Args:
-            g (real): real phase
-
-        Returns:
-            ndarray: operator matrix
-        """
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        argm = (g / 2) * (a1dag2 - a12dag)
-        arg = scipy.sparse.kron(zQB, argm).tocsc()
-
-        return scipy.sparse.linalg.expm(arg)
-
-    def cpbs_z2vqe(self, g):
-        """Controlled phase two-mode beam splitter
-
-        Args:
-            g (real): real phase
-
-        Returns:
-            ndarray: operator matrix
-        """
-
-        # NOT CHANGED YET - this is a copy of the cpbs function.
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        argm = (g / 2) * (a1dag2 - a12dag)
-        arg = scipy.sparse.kron(zQB, argm).tocsc()
-
-        return scipy.sparse.linalg.expm(arg)
 
     def r(self, theta):
         """Phase space rotation operator
@@ -382,8 +185,80 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def qubitDependentCavityRotation(self, theta):
-        """Qubit dependent cavity rotation
+    def d(self, theta):
+        """Displacement operator
+
+        Args:
+            theta (real): displacement
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def s(self, theta):
+        """Single-mode squeezing operator
+
+        Args:
+            theta (real): squeeze
+
+        Returns:
+            ndarray: operator matrix
+        """
+        a_sqr = self.a * self.a
+        a_dag_sqr = self.a_dag * self.a_dag
+        arg = 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def s2(self, theta):
+        """Two-mode squeezing operator
+
+        Args:
+            g (real): multiplied by 1j to yield imaginary phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+
+        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
+        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
+        self.a1_dag = self.a1.conjugate().transpose().tocsc()
+        self.a2_dag = self.a2.conjugate().transpose().tocsc()
+
+        a12_dag = self.a1_dag * self.a2_dag
+        a12 = self.a1 * self.a2
+
+        arg = (numpy.conjugate(theta * 1j) * a12_dag) - (theta * 1j * a12)
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def bs(self, theta):
+        """Two-mode beam splitter operator
+
+        Args:
+            theta: phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+
+        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
+        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
+        self.a1_dag = self.a1.conjugate().transpose().tocsc()
+        self.a2_dag = self.a2.conjugate().transpose().tocsc()
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        arg = theta * a1dag2 - numpy.conj(theta) * a12dag
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def cr(self, theta):
+        """Controlled phase space rotation operator
 
         Args:
             theta (real): phase
@@ -395,41 +270,60 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def qubitDependentCavityRotationX(self, theta):
-        """Qubit dependent cavity rotation
+    def cd(self, theta, beta=None):
+        """Controlled displacement operator
 
         Args:
-            theta (real): phase
+            theta (real): displacement for qubit state 0
+            beta (real): displacement for qubit state 1. If None, use -alpha.
 
         Returns:
             ndarray: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(xQB, self.N).tocsc()
-        return scipy.sparse.linalg.expm(arg)
+        displace0 = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
+        if beta is None:
+            beta = -theta
+        displace1 = (beta * self.a_dag) - (numpy.conjugate(beta) * self.a)
 
-    def qubitDependentCavityRotationY(self, theta):
-        """Qubit dependent cavity rotation
+        return scipy.sparse.kron(
+            (idQB + zQB) / 2, scipy.sparse.linalg.expm(displace0)
+        ) + scipy.sparse.kron((idQB - zQB) / 2, scipy.sparse.linalg.expm(displace1))
+
+    def ecd(self, theta):
+        """Echoed controlled displacement operator
 
         Args:
-            theta (real): phase
+            theta (real): displacement
 
         Returns:
             ndarray: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(yQB, self.N).tocsc()
+        argm = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
+        arg = scipy.sparse.kron(zQB, argm)
+
         return scipy.sparse.linalg.expm(arg)
 
-    def controlledparity(self, theta):
-        """Controlled parity operator
-        Rotates the mode if the state of the qubit is such that zQB doesn't give a phase
+    def cbs(self, theta):
+        """Controlled phase two-mode beam splitter operator
+
+        Args:
+            theta (real): real phase
 
         Returns:
             ndarray: operator matrix
         """
-        arg1 = scipy.sparse.kron(zQB, self.N).tocsc()
-        arg2 = scipy.sparse.kron(idQB, self.N).tocsc()
-        arg = arg1 + arg2
-        return scipy.sparse.linalg.expm(1j * theta * arg)
+        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
+        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
+        self.a1_dag = self.a1.conjugate().transpose().tocsc()
+        self.a2_dag = self.a2.conjugate().transpose().tocsc()
+
+        a12dag = self.a1 * self.a2_dag
+        a1dag2 = self.a1_dag * self.a2
+
+        argm = theta * (a1dag2 - a12dag)
+        arg = scipy.sparse.kron(zQB, argm).tocsc()
+
+        return scipy.sparse.linalg.expm(arg)
 
     def snap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
@@ -450,7 +344,7 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def eswap(self, theta):
-        """Exponential SWAP
+        """Exponential SWAP operator
 
         Args:
             theta (real): rotation
@@ -458,113 +352,33 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        arg = 1j * (theta / 2) * self.sparse_mat
+
+        self.mat = numpy.zeros([self.cutoff_value * self.cutoff_value, self.cutoff_value * self.cutoff_value])
+        for j in range(self.cutoff_value):
+            for i in range(self.cutoff_value):
+                self.mat[i + (j * self.cutoff_value)][i * self.cutoff_value + j] = 1
+        self.sparse_mat = scipy.sparse.csr_matrix(self.mat).tocsc()
+
+        arg = 1j * theta * self.sparse_mat
 
         return scipy.sparse.linalg.expm(arg)
 
-    def photonNumberControlledQubitRotation(self, theta, n, qubit_rotation):
-        """Photon Number Controlled Qubit Rotation operator
-        Rotates the qubit if the mode has a set fock state.
+
+    def csq(self, theta):
+        """Single-mode squeezing operator
 
         Args:
-            theta (real): phase
-            n (integer): Fock state in which the mode should acquire the phase
-            qubit_rotation (string): Pauli matrix for the qubit rotation
+            theta (real): squeeze
 
         Returns:
             ndarray: operator matrix
         """
-
-        if qubit_rotation == "X":
-            rot = xQB
-            print("Somehow the X rotation doesn't work")
-        elif qubit_rotation == "Y":
-            rot = yQB
-        elif qubit_rotation == "Z":
-            rot = zQB
-            print("Somehow the X rotation doesn't work")
-        else:
-            print(
-                "Please choose pauli X, Y or Z (capitals, ie. 'Y') for the qubit rotation."
-            )
-
-        ket_n = numpy.zeros(self.cutoff_value)
-        ket_n[n] = 1
-        projector = numpy.outer(ket_n, ket_n)
-        sparse_projector = scipy.sparse.csr_matrix(projector)
-        argm = theta * 1j * sparse_projector
-
-        arg = scipy.sparse.kron(rot, argm)
+        a_sqr = self.a * self.a
+        a_dag_sqr = self.a_dag * self.a_dag
+        arg = scipy.sparse.kron(zQB, 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
-    # def schwinger_U4(self, theta):
-    #
-    #     a12dag = self.a1 * self.a2_dag
-    #     a1dag2 = self.a1_dag * self.a2
-    #
-    #     bs1 = 1j * theta * (a1dag2 + a12dag) / 4
-    #     arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
-    #     arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
-    #
-    #     bs2 = theta * (a1dag2 - a12dag) / 4
-    #     # yQB acts on nth qubit, xQB acts on (n+1)th qubit
-    #     arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
-    #     # xQB acts on nth qubit, yQB acts on (n+1)th qubit
-    #     arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
-    #
-    #     logU4 = arg1+arg2-arg3+arg4
-    #     return scipy.sparse.linalg.expm(logU4)
-    #
-    # def schwinger_U5(self, theta):
-    #
-    #     a12dag = self.a1 * self.a2_dag
-    #     a1dag2 = self.a1_dag * self.a2
-    #
-    #     bs1 = (- theta) * (a1dag2 - a12dag) / 4
-    #     arg1 = scipy.sparse.kron(xQB, scipy.sparse.kron(xQB, bs1))
-    #     arg2 = scipy.sparse.kron(yQB, scipy.sparse.kron(yQB, bs1))
-    #
-    #     bs2 = 1j * (- theta) * (a1dag2 + a12dag) / 4
-    #     # yQB acts on nth qubit, xQB acts on (n+1)th qubit
-    #     arg3 = scipy.sparse.kron(xQB, scipy.sparse.kron(yQB, bs2))
-    #     # xQB acts on nth qubit, yQB acts on (n+1)th qubit
-    #     arg4 = scipy.sparse.kron(yQB, scipy.sparse.kron(xQB, bs2))
-    #
-    #     logU5 = arg1+arg2+arg3-arg4
-    #     return scipy.sparse.linalg.expm(logU5)
-
-    def schwinger_U4(self, theta):
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        # Qiskit kronecker product convention
-        arg1 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a12dag))
-        arg2 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a1dag2))
-
-        # Qutip kronecker product convention
-        # arg1 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a12dag))
-        # arg2 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a1dag2))
-
-        logU4 = 1j * theta * (arg1 + arg2)
-        return scipy.sparse.linalg.expm(logU4)
-
-    def schwinger_U5(self, theta):
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        # Qiskit kronecker product convention
-        arg1 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a12dag))
-        arg2 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a1dag2))
-
-        # Qutip kronecker product convention
-        # arg1 = scipy.sparse.kron(sigma_minus, scipy.sparse.kron(sigma_plus, a12dag))
-        # arg2 = scipy.sparse.kron(sigma_plus, scipy.sparse.kron(sigma_minus, a1dag2))
-
-        logU5 = -theta * (arg1 - arg2)
-        return scipy.sparse.linalg.expm(logU5)
 
     def testqubitorderf(self, phi):
 
