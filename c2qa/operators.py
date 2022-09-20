@@ -270,6 +270,32 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def crx(self, theta):
+        """Controlled phase space rotation operator around sigma^x
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = theta * 1j * scipy.sparse.kron(xQB, self.N).tocsc()
+
+        return scipy.sparse.linalg.expm(arg)
+
+    def cry(self, theta):
+        """Controlled phase space rotation operator around sigma^x
+
+        Args:
+            theta (real): phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+        arg = theta * 1j * scipy.sparse.kron(yQB, self.N).tocsc()
+
+        return scipy.sparse.linalg.expm(arg)
+
     def cd(self, theta, beta=None):
         """Controlled displacement operator
 

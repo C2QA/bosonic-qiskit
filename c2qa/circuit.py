@@ -367,6 +367,42 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
+    def cv_c_rx(self, theta, qumode, qubit):
+        """Qubit dependent phase-space rotation around sigma^x gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.crx, [theta], num_qubits=len(qumode) + 1, label="cRX"
+            ),
+            qargs=qumode + [qubit],
+        )
+
+    def cv_c_ry(self, theta, qumode, qubit):
+        """Qubit dependent phase-space rotation around sigma^y gate.
+
+        Args:
+            theta (real): phase
+            qumode_a (list): list of qubits representing qumode
+            qubit_ancilla (qubit): QisKit control qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.cry, [theta], num_qubits=len(qumode) + 1, label="cRY"
+            ),
+            qargs=qumode + [qubit],
+        )
+
     def cv_c_d(self, theta, qumode, qubit, beta=None):
         """Conditional displacement gate.
 
@@ -482,7 +518,7 @@ class CVCircuit(QuantumCircuit):
         """Conditional squeezing gate.
 
         Args:
-            z (real or complex): squeezing ampltiude
+            theta (real or complex): squeezing ampltiude
             qumode (list): list of qubits representing qumode
             qubit (Qubit): control Qubit
 
