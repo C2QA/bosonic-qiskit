@@ -147,3 +147,5 @@ tests/**/*.mp4
 tutorials/**/*.mp4
 tests/**/*.gif
 tutorials/**/*.gif
+tests/**/*.apng
+tutorials/**/*.apng

@@ -577,7 +577,8 @@ def animate_wigner(
         cbit ([type]): Classical bit to measure into, if performing Hadamard measure for use with cat states. Defaults to None.
         animation_segments (int, optional): Number of segments to split each gate into for animation. Defaults to 10.
         shots (int, optional): Number of simulation shots per frame. Defaults to 1.
-        file (str, optional): File path to save. If None, return plot. Defaults to None.
+        file (str, optional): File path to save (supported formats include MP4 with ffmpeg installed, animated GIF, and APNG). 
+                              If None, return plot. Defaults to None.
         axes_min (int, optional): Minimum axes plot value. Defaults to -6.
         axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
@@ -675,7 +676,7 @@ def animate_wigner(
         repeat=True,
     )
 
-    # Save to file using ffmpeg, Pillow (GIF), or display
+    # Save to file using ffmpeg, Pillow (GIF, APNG), or display
     if file:
         save_animation(anim, file)
 
@@ -821,11 +822,11 @@ def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
 
     if file_path.suffix == ".mp4":
         writer = matplotlib.animation.FFMpegWriter(fps=24)
-    elif file_path.suffix == ".gif":
+    elif file_path.suffix == ".gif" or file_path.suffix == ".apng":
         writer = matplotlib.animation.PillowWriter(fps=24)
     else:
         print(
-            f"Unknown animation file type {file_path.suffix}, defaulting to animated GIF"
+            f"Unknown animation file type {file_path.suffix}, defaulting to using PillowWriter"
         )
         writer = matplotlib.animation.PillowWriter(fps=24)
 

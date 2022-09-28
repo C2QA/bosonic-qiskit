@@ -120,7 +120,7 @@ def test_animate_parameterized(capsys):
 
         bound_circuit = minimal_circuit.bind_parameters({a: 2})
         
-        wigner_filename = "tests/animate_parameterized.gif"
+        wigner_filename = "tests/animate_parameterized.apng"
         c2qa.util.animate_wigner(
             bound_circuit,
             qubit=qbr[0],
