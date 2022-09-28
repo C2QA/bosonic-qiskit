@@ -1,4 +1,5 @@
 import numpy
+import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
 from qiskit.circuit.parameter import ParameterExpression
@@ -106,7 +107,7 @@ class ParameterizedUnitaryGate(Gate):
                 "Unable to calculate incremental operator matrices for parameterized gate"
             )
 
-        values = self.calculate_params(current_step, total_steps, keep_state)
+        values = self.calculate_frame_params(current_step, total_steps, keep_state)
 
         # if self.inverse:
         #     result = scipy.sparse.linalg.inv(self.op_func(*values))
@@ -119,30 +120,38 @@ class ParameterizedUnitaryGate(Gate):
 
         return result
 
-    def calculate_params(
-        self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
-    ):
-        if keep_state:
-            param_fraction = 1 / total_steps
-        else:
-            param_fraction = current_step / total_steps
 
-        values = []
-        for param in self.params:
-            values.append(param * param_fraction)
+def __calculate_frame_params(
+    self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
+):
+    """Calculate the parameters at the current step. Return a tuples of the values."""
+    if keep_state:
+        param_fraction = 1 / total_steps
+    else:
+        param_fraction = current_step / total_steps
 
-        return tuple(values)
+    values = []
+    for param in self.params:
+        values.append(param * param_fraction)
 
-    def calculate_duration(
-        self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
-    ):
-        """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
-        if keep_state:
-            fraction = 1 / total_steps
-        else:
-            fraction = current_step / total_steps
+    return tuple(values)
 
-        return self.duration * fraction, self.unit
+
+def __calculate_frame_duration(
+    self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
+):
+    """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
+    if keep_state:
+        fraction = 1 / total_steps
+    else:
+        fraction = current_step / total_steps
+
+    return self.duration * fraction, self.unit
+
+
+# Monkey patch Qiskit Instruction to support animating base Qiskit Instruction
+qiskit.circuit.instruction.Instruction.calculate_frame_params = __calculate_frame_params
+qiskit.circuit.instruction.Instruction.calculate_frame_duration = __calculate_frame_duration
 
 
 class CVOperators:

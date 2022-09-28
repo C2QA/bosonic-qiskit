@@ -689,12 +689,12 @@ def __animate_parameterized(base_circuit, inst, animation_segments, keep_state, 
     for index in range(1, animation_segments + 1):
         sim_circuit = base_circuit.copy()
 
-        params = inst.calculate_params(
+        params = inst.calculate_frame_params(
             current_step=index,
             total_steps=animation_segments,
             keep_state=keep_state,
         )
-        duration, unit = inst.calculate_duration(
+        duration, unit = inst.calculate_frame_duration(
             current_step=index,
             total_steps=animation_segments,
             keep_state=keep_state,
@@ -729,18 +729,18 @@ def __animate_conditional(base_circuit, inst, animation_segments, keep_state, qa
     for index in range(1, animation_segments + 1):
         sim_circuit = base_circuit.copy()
 
-        params_0 = inst_0.base_gate.calculate_params(
+        params_0 = inst_0.base_gate.calculate_frame_params(
             current_step=index,
             total_steps=animation_segments,
             keep_state=keep_state,
         )
-        params_1 = inst_1.base_gate.calculate_params(
+        params_1 = inst_1.base_gate.calculate_frame_params(
             current_step=index,
             total_steps=animation_segments,
             keep_state=keep_state,
         )
 
-        duration, unit = inst_0.base_gate.calculate_duration(
+        duration, unit = inst_0.base_gate.calculate_frame_duration(
             current_step=index, total_steps=animation_segments
         )
 
