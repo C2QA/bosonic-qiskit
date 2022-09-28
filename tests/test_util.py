@@ -86,38 +86,46 @@ def test_plot_one(capsys):
         c2qa.util.plot_wigner(circuit, state, file="tests/one.png")
 
 
-def test_animate(capsys):
+def test_animate_gif(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
-        qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        __animate("tests/displacement.gif")
 
-        dist = 3
 
-        circuit.initialize([1, 0], qr[0])
-        circuit.cv_initialize(0, qmr[0])
+def test_animate_apng(capsys):
+    with capsys.disabled():
+        __animate("tests/displacement.apng")
 
-        circuit.h(qr[0])
-        circuit.cv_c_d(dist, qmr[0], qr[0])
 
-        wigner_filename = "tests/displacement.gif"
-        c2qa.util.animate_wigner(
-            circuit,
-            qubit=qr[0],
-            cbit=cr[0],
-            file=wigner_filename,
-            axes_min=-8,
-            axes_max=8,
-            animation_segments=5,
-            processes=1,
-            shots=25,
-        )
-        assert Path(wigner_filename).is_file()
+def __animate(filename: str):
+    qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+    qr = qiskit.QuantumRegister(size=1)
+    cr = qiskit.ClassicalRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+    dist = 3
+
+    circuit.initialize([1, 0], qr[0])
+    circuit.cv_initialize(0, qmr[0])
+
+    circuit.h(qr[0])
+    circuit.cv_c_d(dist, qmr[0], qr[0])
+
+    c2qa.util.animate_wigner(
+        circuit,
+        qubit=qr[0],
+        cbit=cr[0],
+        file=filename,
+        axes_min=-8,
+        axes_max=8,
+        animation_segments=5,
+        processes=1,
+        shots=25,
+    )
+    assert Path(filename).is_file()
 
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
-def test_calibration_animate(capsys):
+def test_calibration_animate_mp4(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
         qr = qiskit.QuantumRegister(size=1)
