@@ -621,6 +621,12 @@ def animate_wigner(
         elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
             sim_circuits = __animate_conditional(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
             circuits.extend(sim_circuits)
+        elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize":  # Don't animate subcircuits initializing system state
+            sim_circuits = __animate_subcircuit(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
+            circuits.extend(sim_circuits)    
+        elif isinstance(inst, qiskit.circuit.instruction.Instruction):
+            sim_circuits = __animate_instruction(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
+            circuits.extend(sim_circuits)
         else:
             sim_circuit = __animate_copy(base_circuit, inst, qargs, cargs, qubit, cbit)
             circuits.append(sim_circuit)
@@ -758,6 +764,87 @@ def __animate_conditional(base_circuit, inst, animation_segments, keep_state, qa
             qargs,
             cargs,
         )
+
+        if qubit and cbit:
+            # sim_circuit.barrier()
+            sim_circuit.h(qubit)
+            sim_circuit.measure(qubit, cbit)
+
+        sim_circuits.append(sim_circuit)
+
+    return sim_circuits
+
+
+def __animate_subcircuit(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+    """Create a list of circuits where the entire subcircuit is converted into frames (vs a single instruction)."""
+    sim_circuits = []
+    for index in range(1, animation_segments + 1):
+        sim_circuit = base_circuit.copy()
+        sub_circuit = inst.definition.copy()
+        sub_circuit.data.clear()
+
+        for sub_inst, sub_qargs, sub_cargs in inst.definition.data:
+            params = sub_inst.calculate_frame_params(
+                current_step=index,
+                total_steps=animation_segments,
+                keep_state=keep_state,
+            )
+            duration, unit = sub_inst.calculate_frame_duration(
+                current_step=index,
+                total_steps=animation_segments,
+                keep_state=keep_state,
+            )
+            gate = qiskit.circuit.instruction.Instruction(
+                name=sub_inst.name,
+                num_qubits=sub_inst.num_qubits,
+                num_clbits = sub_inst.num_clbits,
+                params=params,
+                duration=duration,
+                unit=unit,
+                label=sub_inst.label,
+            )
+
+            sub_circuit.append(instruction=gate, qargs=sub_qargs, cargs=sub_cargs)
+
+        sim_circuit.append(instruction=sub_circuit, qargs=qargs, cargs=cargs)
+
+        if qubit and cbit:
+            # sim_circuit.barrier()
+            sim_circuit.h(qubit)
+            sim_circuit.measure(qubit, cbit)
+
+        sim_circuits.append(sim_circuit)
+
+    return sim_circuits    
+
+
+def __animate_instruction(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+    """Split Qiskit Instruction into multiple frames"""
+    sim_circuits = []
+    for index in range(1, animation_segments + 1):
+        sim_circuit = base_circuit.copy()
+
+        params = inst.calculate_frame_params(
+            current_step=index,
+            total_steps=animation_segments,
+            keep_state=keep_state,
+        )
+        duration, unit = inst.calculate_frame_duration(
+            current_step=index,
+            total_steps=animation_segments,
+            keep_state=keep_state,
+        )
+        gate = qiskit.circuit.instruction.Instruction(
+            name=inst.name,
+            num_qubits=inst.num_qubits,
+            num_clbits = inst.num_clbits,
+            params=params,
+            duration=duration,
+            unit=unit,
+            label=inst.label,
+        )
+
+        sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
 
         if qubit and cbit:
             # sim_circuit.barrier()

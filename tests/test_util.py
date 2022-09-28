@@ -105,14 +105,11 @@ def test_animate_composite_gate(capsys):
         # Choose total animation time
         total_time = 1*2*numpy.pi/omega_R
 
-        # First construct circuit_qubit0
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
-        qbr = qiskit.QuantumRegister(1)
-
         # Create new circuit
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
         qbr = qiskit.QuantumRegister(1)
         U_JC = c2qa.CVCircuit(qmr,qbr)
+
         # Append U_R
         U_JC.cv_r(-omega_R*total_time,qmr[0])
         # Append U_Q
@@ -127,9 +124,9 @@ def test_animate_composite_gate(capsys):
         circuit_0.initialize([1,0], qbr)
 
         # Now initialize the qumode in a coherent state
-        cutoff = 2**num_qubits_per_qumode
-        coeffs = [numpy.exp(-numpy.abs(alpha)**2/2)*alpha**n/(numpy.sqrt(numpy.math.factorial(n))) for n in range(0,cutoff)]
-        circuit_0.cv_initialize(coeffs,qmr[0])
+        # cutoff = 2**num_qubits_per_qumode
+        # coeffs = [numpy.exp(-numpy.abs(alpha)**2/2)*alpha**n/(numpy.sqrt(numpy.math.factorial(n))) for n in range(0,cutoff)]
+        # circuit_0.cv_initialize(coeffs,qmr[0])
 
 
         # Append time evolution unitary
