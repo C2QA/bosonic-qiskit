@@ -102,7 +102,7 @@ def test_photon_loss_pass_no_displacement(capsys):
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
 
         wigner_filename = "tests/noise_model_pass_no_displacement.mp4"
-        c2qa.util.animate_wigner(
+        c2qa.animate.animate_wigner(
             circuit,
             animation_segments=200,
             file=wigner_filename,
@@ -128,7 +128,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
 
         wigner_filename = "tests/noise_model_pass_slow_displacement.mp4"
-        c2qa.util.animate_wigner(
+        c2qa.animate.animate_wigner(
             circuit,
             animation_segments=200,
             file=wigner_filename,

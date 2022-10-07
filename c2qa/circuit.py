@@ -14,8 +14,7 @@ class CVCircuit(QuantumCircuit):
     """Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations."""
 
     def __init__(self, *regs, name: str = None, probe_measure: bool = False):
-        """Initialize the registers (at least one must be QumodeRegister), set
-        the circuit name, and the number of steps to animate (default is to not animate).
+        """Initialize the registers (at least one must be QumodeRegister) and set the circuit name.
 
         Args:
             name (str, optional): circuit name. Defaults to None.
