@@ -143,15 +143,20 @@ def __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit):
                 cbit
             )
             circuits.extend(sim_circuits)
+    
         elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
             sim_circuits = __animate_conditional(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
             circuits.extend(sim_circuits)
+
+        # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
         elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
             sim_circuits = __animate_subcircuit(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
             circuits.extend(sim_circuits)    
+
         elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize":  # Don't animate instructions initializing system state
             sim_circuits = __animate_instruction(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
             circuits.extend(sim_circuits)
+
         else:
             sim_circuit = __animate_copy(base_circuit, inst, qargs, cargs, qubit, cbit)
             circuits.append(sim_circuit)
