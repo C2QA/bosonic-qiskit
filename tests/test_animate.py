@@ -46,6 +46,9 @@ def test_animate_composite_gate(capsys):
         circuit_0 = c2qa.CVCircuit(qmr,qbr)
         circuit_0.initialize([1,0], qbr)
 
+        # Squeeze so we can visually see rotation
+        circuit_0.cv_sq(0.5, qmr[0])
+
         # Now initialize the qumode in a coherent state
         # cutoff = 2**num_qubits_per_qumode
         # coeffs = [numpy.exp(-numpy.abs(alpha)**2/2)*alpha**n/(numpy.sqrt(numpy.math.factorial(n))) for n in range(0,cutoff)]
@@ -78,7 +81,7 @@ def test_animate_composite_gate(capsys):
         # circuit_1 = circuit_1.bind_parameters({dt : total_time})
 
         # Animate wigner function of each circuit
-        c2qa.animate.animate_wigner(circuit_0,file="tests/composite_gate.gif", animation_segments = 1000)
+        c2qa.animate.animate_wigner(circuit_0,file="tests/composite_gate.gif", animation_segments = 20)
 
 
 def test_animate_parameterized(capsys):
