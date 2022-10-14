@@ -121,57 +121,63 @@ def animate_wigner(
 
 
 def __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit):
-    circuits = []  # Each frame will have its own circuit to simulate
+    sim_circuits = []  # Each frame will have its own circuit to simulate
 
     # base_circuit is copied each gate iteration to build circuit frames to simulate
     base_circuit = circuit.copy()
     base_circuit.data.clear()  # Is this safe -- could we copy without data?
+
     for inst, qargs, cargs in circuit.data:
         # TODO - get qubit & cbit for measure instead of using parameters
         # qubit = xxx
         # cbit = yyy
 
-        if isinstance(inst, ParameterizedUnitaryGate):
-            sim_circuits = __animate_parameterized(
-                base_circuit,
-                inst,
-                animation_segments,
-                keep_state,
-                qargs,
-                cargs,
-                qubit,
-                cbit
-            )
-            circuits.extend(sim_circuits)
-    
-        elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
-            sim_circuits = __animate_conditional(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
-            circuits.extend(sim_circuits)
+        frames = __to_frames(inst, animation_segments, keep_state)
 
-        # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
-        elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
-            sim_circuits = __animate_subcircuit(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
-            circuits.extend(sim_circuits)    
+        for frame in frames:
+            sim_circuit = base_circuit.copy()
 
-        elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize":  # Don't animate instructions initializing system state
-            sim_circuits = __animate_instruction(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit)
-            circuits.extend(sim_circuits)
+            sim_circuit.append(instruction=frame, qargs=qargs, cargs=cargs)
 
-        else:
-            sim_circuit = __animate_copy(base_circuit, inst, qargs, cargs, qubit, cbit)
-            circuits.append(sim_circuit)
+            if qubit and cbit:
+                # sim_circuit.barrier()
+                sim_circuit.h(qubit)
+                sim_circuit.measure(qubit, cbit)
+
+            sim_circuits.append(sim_circuit)
 
         # Append the full instruction for the next frame
         base_circuit.append(inst, qargs, cargs)
     
-    return circuits
+    return sim_circuits
 
-def __animate_parameterized(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+
+def __to_frames(inst, animation_segments, keep_state):
+    """Split the instruction into animation_semgments frames"""
+
+    if isinstance(inst, ParameterizedUnitaryGate):
+        frames = __animate_parameterized(inst, animation_segments, keep_state)
+
+    elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
+        frames = __animate_conditional(inst, animation_segments, keep_state)
+
+    # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
+    elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
+        frames = __animate_subcircuit(inst.definition, animation_segments, keep_state)
+
+    elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize":  # Don't animate instructions initializing system state
+        frames = __animate_instruction(inst, animation_segments, keep_state)
+
+    else:
+        frames = __animate_copy(inst, animation_segments)
+    
+    return frames
+
+
+def __animate_parameterized(inst, animation_segments, keep_state):
     """Split ParameterizedUnitaryGate into multiple frames"""
-    sim_circuits = []
+    frames = []
     for index in range(1, animation_segments + 1):
-        sim_circuit = base_circuit.copy()
-
         params = inst.calculate_frame_params(
             current_step=index,
             total_steps=animation_segments,
@@ -182,36 +188,28 @@ def __animate_parameterized(base_circuit, inst, animation_segments, keep_state, 
             total_steps=animation_segments,
             keep_state=keep_state,
         )
-        gate = ParameterizedUnitaryGate(
-            inst.op_func,
-            params=params,
-            num_qubits=inst.num_qubits,
-            label=inst.label,
-            duration=duration,
-            unit=unit,
+
+        frames.append(
+            ParameterizedUnitaryGate(
+                inst.op_func,
+                params=params,
+                num_qubits=inst.num_qubits,
+                label=inst.label,
+                duration=duration,
+                unit=unit,
+            )
         )
 
-        sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
-
-        if qubit and cbit:
-            # sim_circuit.barrier()
-            sim_circuit.h(qubit)
-            sim_circuit.measure(qubit, cbit)
-
-        sim_circuits.append(sim_circuit)
-
-    return sim_circuits
+    return frames
 
 
-def __animate_conditional(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+def __animate_conditional(inst, animation_segments, keep_state):
     """Split Qiskit conditional gates into multiple frames"""
-    sim_circuits = []
+    frames = []
     inst_0, qargs_0, cargs_0 = inst.definition.data[0]
     inst_1, qargs_1, cargs_1 = inst.definition.data[1]
 
     for index in range(1, animation_segments + 1):
-        sim_circuit = base_circuit.copy()
-
         params_0 = inst_0.base_gate.calculate_frame_params(
             current_step=index,
             total_steps=animation_segments,
@@ -227,7 +225,7 @@ def __animate_conditional(base_circuit, inst, animation_segments, keep_state, qa
             current_step=index, total_steps=animation_segments
         )
 
-        sim_circuit.append(
+        frames.append(
             CVCircuit.cv_conditional(
                 name=inst.name,
                 op=inst_0.base_gate.op_func,
@@ -237,46 +235,39 @@ def __animate_conditional(base_circuit, inst, animation_segments, keep_state, qa
                 num_qumodes=inst.num_qumodes,
                 duration=duration,
                 unit=unit,
-            ),
-            qargs,
-            cargs,
+            )
         )
 
-        if qubit and cbit:
-            # sim_circuit.barrier()
-            sim_circuit.h(qubit)
-            sim_circuit.measure(qubit, cbit)
-
-        sim_circuits.append(sim_circuit)
-
-    return sim_circuits
+    return frames
 
 
-def __animate_subcircuit(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+def __animate_subcircuit(subcircuit, animation_segments, keep_state):
     """Create a list of circuits where the entire subcircuit is converted into frames (vs a single instruction)."""
-    sim_circuits = []
 
-    sub_circuits = __animate_circuit(inst.definition, animation_segments, keep_state, qubit, cbit)
-    for sub_circuit in sub_circuits:
-        sim_circuit = base_circuit.copy()
-        sim_circuit.append(instruction=sub_circuit, qargs=qargs, cargs=cargs)
+    frames = []
+    sub_frames = []
 
-        if qubit and cbit:
-            # sim_circuit.barrier()
-            sim_circuit.h(qubit)
-            sim_circuit.measure(qubit, cbit)
+    for inst, qargs, cargs in subcircuit.data:
+        sub_frames.append((__to_frames(inst, animation_segments, keep_state), qargs, cargs))
 
-        sim_circuits.append(sim_circuit)
+    for frame in range(animation_segments):
+        # base_circuit is copied each gate iteration to build circuit frames to simulate
+        subcircuit_copy = subcircuit.copy()
+        subcircuit_copy.data.clear()  # Is this safe -- could we copy without data?
 
-    return sim_circuits    
+        for sub_frame,  qargs, cargs in sub_frames:
+            subcircuit_copy.append(sub_frame[frame], qargs, cargs)
+        
+        frames.append(subcircuit_copy)
+
+    return frames    
 
 
-def __animate_instruction(base_circuit, inst, animation_segments, keep_state, qargs, cargs, qubit, cbit):
+def __animate_instruction(inst, animation_segments, keep_state):
     """Split Qiskit Instruction into multiple frames"""
-    sim_circuits = []
-    for index in range(1, animation_segments + 1):
-        sim_circuit = base_circuit.copy()
+    frames = []
 
+    for index in range(1, animation_segments + 1):
         params = inst.calculate_frame_params(
             current_step=index,
             total_steps=animation_segments,
@@ -287,39 +278,30 @@ def __animate_instruction(base_circuit, inst, animation_segments, keep_state, qa
             total_steps=animation_segments,
             keep_state=keep_state,
         )
-        gate = qiskit.circuit.instruction.Instruction(
-            name=inst.name,
-            num_qubits=inst.num_qubits,
-            num_clbits = inst.num_clbits,
-            params=params,
-            duration=duration,
-            unit=unit,
-            label=inst.label,
+        
+        frames.append(
+            qiskit.circuit.instruction.Instruction(
+                name=inst.name,
+                num_qubits=inst.num_qubits,
+                num_clbits = inst.num_clbits,
+                params=params,
+                duration=duration,
+                unit=unit,
+                label=inst.label,
+            )
         )
 
-        sim_circuit.append(instruction=gate, qargs=qargs, cargs=cargs)
-
-        if qubit and cbit:
-            # sim_circuit.barrier()
-            sim_circuit.h(qubit)
-            sim_circuit.measure(qubit, cbit)
-
-        sim_circuits.append(sim_circuit)
-
-    return sim_circuits
+    return frames
 
 
-def __animate_copy(base_circuit, inst, qargs, cargs, qubit, cbit):
-    """Copy the instruction, apply Hadamard measure if needed, and return (i.e., no animation)"""
-    sim_circuit = base_circuit.copy()
-    sim_circuit.append(inst, qargs, cargs)
+def __animate_copy(inst, animation_segments):
+    """Return a list of inst of length animation segments"""
+    frames = []
 
-    if qubit and cbit:
-        # sim_circuit.barrier()
-        sim_circuit.h(qubit)
-        sim_circuit.measure(qubit, cbit)
+    for _ in range(animation_segments):
+        frames.append(inst)
 
-    return sim_circuit
+    return frames
 
 
 def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
