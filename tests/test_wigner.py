@@ -173,4 +173,4 @@ def test_plot_wigner_snapshot(capsys):
 
         state, result = c2qa.util.simulate(circuit)
 
-        c2qa.wigner.plot_wigner_snapshot(circuit, result)
+        c2qa.wigner.plot_wigner_snapshot(circuit, result, "tests")

@@ -1,4 +1,5 @@
 from copy import copy
+from pathlib import Path
 
 
 from c2qa.circuit import CVCircuit
@@ -8,6 +9,7 @@ from c2qa.util import cv_partial_trace, simulate
 import matplotlib.pyplot as plt
 import numpy as np
 from qiskit.quantum_info import DensityMatrix, Statevector
+from qiskit.result import Result
 import scipy.stats
 
 
@@ -329,7 +331,8 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
 
 def plot_wigner_snapshot(
     circuit: CVCircuit,
-    result, 
+    result: Result, 
+    folder: Path = None,
     trace: bool = True,
     axes_min: int = -6,
     axes_max: int = 6,
@@ -340,8 +343,19 @@ def plot_wigner_snapshot(
 
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
         label = f"cv_snapshot_{cv_snapshot_id}"
-        file = f"{label}.png"
-        plot_wigner(circuit, snapshots[label], trace, file, axes_min, axes_max, axes_steps, num_colors)
+
+        if folder:
+            file = Path(folder, f"{label}.png")
+        else:
+            file = f"{label}.png"
+        
+        snapshot = snapshots[label]
+        index = 0
+        if len(snapshot) > 1:
+            print(f"Simulation had {len(snapshot)} shots, plotting last one")
+            index = len(snapshot) - 1
+
+        plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors)
 
 
 def _add_contourf(ax, fig, title, x, y, z):
