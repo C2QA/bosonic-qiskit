@@ -29,6 +29,7 @@ def animate_wigner(
     processes: int = None,
     keep_state: bool = True,
     noise_pass=None,
+    sequential_subcircuit: bool = False,
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -55,12 +56,14 @@ def animate_wigner(
                                      False if each frame starts over from the beginning of the circuit.
                                      If True, it requires sequential simulation of each frame.
         noise_pass (PhotonLossNoisePass, optional): noise pass to apply
+        sequential_subcircuit (bool, optional): boolean flag to animate subcircuits as one gate (False) or as sequential 
+                                                gates (True). Defautls to False.
 
     Returns:
         [type]: [description]
     """
 
-    circuits = __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit)
+    circuits = __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit, sequential_subcircuit)
 
     # Calculate the Wigner functions for each frame
     if not processes or processes < 1:
@@ -120,7 +123,7 @@ def animate_wigner(
     return anim
 
 
-def __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit):
+def __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit, sequential_subcircuit):
     sim_circuits = []  # Each frame will have its own circuit to simulate
 
     # base_circuit is copied each gate iteration to build circuit frames to simulate
@@ -132,7 +135,7 @@ def __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit):
         # qubit = xxx
         # cbit = yyy
 
-        frames = __to_frames(inst, animation_segments, keep_state)
+        frames = __to_frames(inst, animation_segments, keep_state, sequential_subcircuit)
 
         for frame in frames:
             sim_circuit = base_circuit.copy()
@@ -152,7 +155,7 @@ def __animate_circuit(circuit, animation_segments, keep_state, qubit, cbit):
     return sim_circuits
 
 
-def __to_frames(inst, animation_segments, keep_state):
+def __to_frames(inst, animation_segments, keep_state, sequential_subcircuit):
     """Split the instruction into animation_semgments frames"""
 
     if isinstance(inst, ParameterizedUnitaryGate):
@@ -163,7 +166,7 @@ def __to_frames(inst, animation_segments, keep_state):
 
     # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
     elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
-        frames = __animate_subcircuit(inst.definition, animation_segments, keep_state)
+        frames = __animate_subcircuit(inst.definition, animation_segments, keep_state, sequential_subcircuit)
 
     elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize":  # Don't animate instructions initializing system state
         frames = __animate_instruction(inst, animation_segments, keep_state)
@@ -241,24 +244,36 @@ def __animate_conditional(inst, animation_segments, keep_state):
     return frames
 
 
-def __animate_subcircuit(subcircuit, animation_segments, keep_state):
+def __animate_subcircuit(subcircuit, animation_segments, keep_state, sequential_subcircuit):
     """Create a list of circuits where the entire subcircuit is converted into frames (vs a single instruction)."""
 
     frames = []
     sub_frames = []
 
     for inst, qargs, cargs in subcircuit.data:
-        sub_frames.append((__to_frames(inst, animation_segments, keep_state), qargs, cargs))
+        sub_frames.append((__to_frames(inst, animation_segments, keep_state, sequential_subcircuit), qargs, cargs))
 
-    for frame in range(animation_segments):
-        # base_circuit is copied each gate iteration to build circuit frames to simulate
+    if sequential_subcircuit:
+        # Sequentially animate each gate within the subcircuit
         subcircuit_copy = subcircuit.copy()
         subcircuit_copy.data.clear()  # Is this safe -- could we copy without data?
 
-        for sub_frame,  qargs, cargs in sub_frames:
-            subcircuit_copy.append(sub_frame[frame], qargs, cargs)
+        for sub_frame in sub_frames:
+            gates, gate_qargs, gate_cargs = sub_frame
+            for gate in gates:
+                subcircuit_copy.append(gate, gate_qargs, gate_cargs)
         
-        frames.append(subcircuit_copy)
+        frames.append(subcircuit)
+    else:
+        # Animate the subcircuit as one gate
+        for frame in range(animation_segments):
+            subcircuit_copy = subcircuit.copy()
+            subcircuit_copy.data.clear()  # Is this safe -- could we copy without data?
+
+            for sub_frame,  qargs, cargs in sub_frames:
+                subcircuit_copy.append(sub_frame[frame], qargs, cargs)
+            
+            frames.append(subcircuit_copy)
 
     return frames    
 
