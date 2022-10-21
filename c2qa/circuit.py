@@ -61,6 +61,7 @@ class CVCircuit(QuantumCircuit):
         super().__init__(*registers, name=name)
 
         self.ops = CVOperators(self.cutoff, num_qumodes)
+        self.cv_snapshot_id = 0
 
     def merge(self, circuit: QuantumCircuit):
         """
@@ -135,6 +136,11 @@ class CVCircuit(QuantumCircuit):
             elif hasattr(instruction, "cv_conditional") and instruction.cv_conditional:
                 cv_gates.add(instruction.label)
         return list(cv_gates)
+
+    def cv_snapshot(self):
+        """Wrap the Qiskit QuantumCircuit Snapshot function, giving it a known label for later Wigner function plot generation"""
+        self.snapshot(f"cv_snapshot_{self.cv_snapshot_id}")
+        self.cv_snapshot_id += 1
 
     def add_qubit_register(self, *regs):
         """Add a qubit register to the circuit.
