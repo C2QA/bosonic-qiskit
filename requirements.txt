@@ -1,5 +1,5 @@
 # Qiskit v0.35+ has regression in QuantumCircuit.initialize() that is anticipated to be fixed in an October 2023 Qiskit release.
-qiskit==0.34.2
+qiskit==0.39
 
 # For drawing circuits, state vectors, Wigner function plots
 matplotlib==3.5.2
