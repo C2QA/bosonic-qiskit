@@ -13,7 +13,7 @@ import qiskit
 
 from c2qa.circuit import CVCircuit
 from c2qa.operators import ParameterizedUnitaryGate
-from c2qa.util import simulate_wigner
+from c2qa.wigner import simulate_wigner
 
 
 def animate_wigner(
