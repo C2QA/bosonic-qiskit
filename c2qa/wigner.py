@@ -37,7 +37,7 @@ def simulate_wigner(
             state = states
             density_matrix = state
 
-        wigner_result = wigner(density_matrix, xvec, xvec, circuit.cutoff)
+        wigner_result = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
