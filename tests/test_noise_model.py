@@ -164,3 +164,32 @@ def test_photon_loss_pass_slow_displacement(capsys):
             file=wigner_filename,
             noise_pass=noise_pass,
         )
+
+
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
+def test_photon_loss_pass_slow_conditional_displacement(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        num_qubits_per_qumode = 4
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=num_qubits_per_qumode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.cv_initialize(3, qmr[0])
+
+        circuit.cv_c_d(1, qmr[0], qbr[0])
+
+        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
+
+        # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+
+        wigner_filename = "tests/noise_model_pass_slow_condiational_displacement.mp4"
+        c2qa.animate.animate_wigner(
+            circuit,
+            animation_segments=200,
+            file=wigner_filename,
+            noise_pass=noise_pass,
+        )
