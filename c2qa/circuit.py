@@ -123,6 +123,18 @@ class CVCircuit(QuantumCircuit):
         return qubits
 
     @property
+    def qumode_qubit_indices(self):
+        """A qubit index list of the qubits representing the qumode registers on the circuit"""
+        qmodes = self.qumode_qubits
+        indices = []
+
+        for index, qubit in enumerate(self.qubits):
+            if qubit in qmodes:
+                indices.append(index)
+
+        return indices
+
+    @property
     def cv_gate_labels(self):
         """
         All the CV gate names on the current circuit. These will either be

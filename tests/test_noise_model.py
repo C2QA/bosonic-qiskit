@@ -84,6 +84,36 @@ def test_kraus_operators(capsys):
         assert kraus.is_cptp(), "Is not CPTP"
 
 
+def test_noise_with_beamsplitter(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        qubits_per_mode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        init_circuit = c2qa.CVCircuit(qmr, qbr)
+        init_circuit.cv_initialize(2, qmr[0])
+        init_circuit.cv_c_bs(1, qmr[1], qmr[0], qbr[0])
+        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, init_circuit)
+        state, result = c2qa.util.simulate(init_circuit, noise_pass=noise_pass)
+
+def test_photon_loss_pass_with_conditional(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        qubits_per_mode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        init_circuit = c2qa.CVCircuit(qmr, qbr)
+        init_circuit.cv_initialize(2, qmr[0])
+        init_circuit.cv_c_d(1, qmr[0], qbr[0])
+        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, init_circuit)
+        state, result = c2qa.util.simulate(init_circuit, noise_pass=noise_pass)
+
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_photon_loss_pass_no_displacement(capsys):
     with capsys.disabled():

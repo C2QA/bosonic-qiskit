@@ -12,14 +12,14 @@ from qiskit.utils.units import apply_prefix
 import scipy
 
 
-def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit):
+def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None):
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
     Following equation 44 from Bosonic Oprations and Measurements, Girvin
 
     Args:
-        photon_loss_rakte (float): kappa, the rate of photon loss in Qiskit standard time units (seconds)
+        photon_loss_rate (float): kappa, the rate of photon loss in Qiskit standard time units (seconds)
         time (float): current duration of time (in Qiskit standard time units)
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
 
@@ -28,15 +28,24 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
     """
     operators = []
 
+    n = circuit.ops.N
+    a = circuit.ops.a
+    if op is not None and op.num_qubits > math.sqrt(circuit.cutoff):
+        new_dim = 2**op.num_qubits
+        n = n.copy()
+        n.resize((new_dim, new_dim))
+        a = a.copy()
+        a.resize((new_dim, new_dim))
+
     for photons in range(circuit.cutoff + 1):
         kraus = math.sqrt(
             math.pow((1 - math.exp(-1 * photon_loss_rate * time)), photons)
             / math.factorial(photons)
         )
         kraus = kraus * scipy.sparse.linalg.expm(
-            -1 * (photon_loss_rate / 2) * time * circuit.ops.N
+            -1 * (photon_loss_rate / 2) * time * n
         )
-        kraus = kraus.dot(circuit.ops.a**photons)
+        kraus = kraus.dot(a**photons)
         operators.append(kraus.toarray())
 
     return operators
@@ -78,8 +87,9 @@ class PhotonLossNoisePass(LocalNoisePass):
             duration = apply_prefix(op.duration, op.unit)
 
         kraus_operators = calculate_kraus(
-            self._photon_loss_rate, duration, self._circuit
+            self._photon_loss_rate, duration, self._circuit, op
         )
+
         error = kraus_error(kraus_operators)
 
         return error
