@@ -95,7 +95,7 @@ def test_noise_with_beamsplitter(capsys):
         init_circuit = c2qa.CVCircuit(qmr, qbr)
         init_circuit.cv_initialize(2, qmr[0])
         init_circuit.cv_c_bs(1, qmr[1], qmr[0], qbr[0], duration=100, unit="ns")
-        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        photon_loss_rate = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, init_circuit)
         state, result = c2qa.util.simulate(init_circuit, noise_pass=noise_pass)
 
@@ -110,7 +110,7 @@ def test_photon_loss_pass_with_conditional(capsys):
         init_circuit = c2qa.CVCircuit(qmr, qbr)
         init_circuit.cv_initialize(2, qmr[0])
         init_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
-        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        photon_loss_rate = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, init_circuit)
         state, result = c2qa.util.simulate(init_circuit, noise_pass=noise_pass)
 
@@ -126,7 +126,7 @@ def test_photon_loss_pass_no_displacement(capsys):
 
         circuit.cv_d(0, qmr[0], duration=100, unit="ns")
 
-        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        photon_loss_rate = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
 
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
@@ -152,7 +152,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
 
         circuit.cv_d(1, qmr[0], duration=100, unit="ns")
 
-        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        photon_loss_rate = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
 
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
@@ -181,7 +181,7 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
 
         circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
 
-        photon_loss_rate = 1000000  # At duration of 100ns, this makes kt = 0.1
+        photon_loss_rate = 0.1
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
 
         # state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
