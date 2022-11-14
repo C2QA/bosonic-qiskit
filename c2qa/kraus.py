@@ -57,6 +57,15 @@ class PhotonLossNoisePass(LocalNoisePass):
     def __init__(
         self, photon_loss_rate: float, circuit: c2qa.CVCircuit, dt: float = None
     ):
+        """
+        Initialize the Photon Loss noise pass
+        
+        Args:
+            photon_loss_rate (float): kappa, the rate of photon loss in Qiskit standard time units (seconds)
+            circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
+            dt (float): optional conversion factor for photon_loss_rate to Qiskit standard time units (seconds)
+        """
+
         self._photon_loss_rate = photon_loss_rate
         self._circuit = circuit
         self._dt = dt
