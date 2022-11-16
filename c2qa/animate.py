@@ -361,6 +361,9 @@ def _animate(frame, *fargs):
     if frame == 0:
         fig.colorbar(cont, ax=ax)
 
+    time_text = ax.text(0.05, 0.95, "", horizontalalignment="left", verticalalignment="top", transform=ax.transAxes)
+    time_text.set_text(f"Frame {frame}")
+
     if file:
         os.makedirs(f"{file}_frames", exist_ok=True)
         plt.savefig(f"{file}_frames/frame_{frame}.png")
