@@ -19,8 +19,8 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
     Following equation 44 from Bosonic Oprations and Measurements, Girvin
 
     Args:
-        photon_loss_rate (float): kappa, the rate of photon loss in Qiskit standard time units (seconds)
-        time (float): current duration of time (in Qiskit standard time units)
+        photon_loss_rate (float): kappa, the rate of photon loss per second
+        time (float): current duration of time in seconds
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
 
     Returns:
@@ -55,20 +55,29 @@ class PhotonLossNoisePass(LocalNoisePass):
     """Add photon loss noise model to a circuit during transpiler transformation pass."""
 
     def __init__(
-        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, dt: float = None
+        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, time_unit: str = "s", dt: float = None
     ):
         """
         Initialize the Photon Loss noise pass
         
         Args:
-            photon_loss_rate (float): kappa, the rate of photon loss in Qiskit standard time units (seconds)
+            photon_loss_rate (float): kappa, the rate of photon loss per second
             circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
-            dt (float): optional conversion factor for photon_loss_rate to Qiskit standard time units (seconds)
+            time_unit (string): string photon loss rate unit of time (default "s" for seconds)
+            dt (float): optional conversion factor for photon_loss_rate and operation duration to seconds
         """
 
         self._photon_loss_rate = photon_loss_rate
         self._circuit = circuit
+        self._time_unit = time_unit
         self._dt = dt
+
+        # Convert photon loss rate to photons per second
+        if self._time_unit == "dt":
+            self._photon_loss_rate_sec = self._photon_loss_rate * self._dt
+        else:
+            conversion = 1.0 / apply_prefix(1.0, self._time_unit)
+            self._photon_loss_rate_sec = self._photon_loss_rate * conversion
 
         super().__init__(self._photon_loss_error)
 
@@ -92,11 +101,10 @@ class PhotonLossNoisePass(LocalNoisePass):
                 )
             duration = op.duration * self._dt
         else:
-            # Convert duration into standard unit used by Qiskit
             duration = apply_prefix(op.duration, op.unit)
 
         kraus_operators = calculate_kraus(
-            self._photon_loss_rate, duration, self._circuit, op
+            self._photon_loss_rate_sec, duration, self._circuit, op
         )
 
         error = kraus_error(kraus_operators)
