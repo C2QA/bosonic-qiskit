@@ -172,7 +172,9 @@ def __to_frames(inst, animation_segments, keep_state, sequential_subcircuit):
         frames = __animate_instruction(inst, animation_segments, keep_state)
 
     else:
-        frames = __animate_copy(inst, animation_segments)
+        # Else just "animate" the instruction as a single frame (multiple frames commented out)
+        # frames = __animate_copy(inst, animation_segments)
+        frames = [inst]
     
     return frames
 
