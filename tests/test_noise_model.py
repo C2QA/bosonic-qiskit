@@ -180,7 +180,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
 
         circuit.cv_d(1, qmr[0], duration=100, unit="ns")
 
-        photon_loss_rate = 0.01
+        photon_loss_rate = 0.02
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
@@ -210,7 +210,7 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
 
         circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
 
-        photon_loss_rate = 0.01
+        photon_loss_rate = 0.02
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
