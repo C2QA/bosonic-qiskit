@@ -290,11 +290,11 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_d(self, theta, qumode, duration=100, unit="ns"):
+    def cv_d(self, alpha, qumode, duration=100, unit="ns"):
         """Displacement gate.
 
         Args:
-            theta (real or complex): displacement
+            alpha (real or complex): displacement
             qumode (list): list of qubits representing qumode
 
         Returns:
@@ -302,7 +302,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.d, [theta], num_qubits=len(qumode), label="D", duration=duration, unit=unit
+                self.ops.d, [alpha], num_qubits=len(qumode), label="D", duration=duration, unit=unit
             ),
             qargs=qumode,
         )

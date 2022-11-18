@@ -199,16 +199,16 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def d(self, theta):
+    def d(self, alpha):
         """Displacement operator
 
         Args:
-            theta (real): displacement
+            alpha (real): displacement
 
         Returns:
             ndarray: operator matrix
         """
-        arg = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
+        arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
 
         return scipy.sparse.linalg.expm(arg)
 
