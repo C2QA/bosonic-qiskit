@@ -8,6 +8,7 @@ from c2qa.util import cv_partial_trace, simulate
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import array, zeros, real, meshgrid, exp, pi, conj, sqrt
 from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
 import scipy.stats
@@ -37,7 +38,7 @@ def simulate_wigner(
             state = states
             density_matrix = state
 
-        wigner_result = _wigner(density_matrix, xvec, xvec, circuit.cutoff)
+        wigner_result = _wigner(density_matrix, xvec)
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
@@ -50,11 +51,9 @@ def simulate_wigner(
 
 def wigner(
     state,
-    cutoff: int,
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    hbar: int = 2,
 ):
     """
     Calculate the Wigner function on the given state vector.
@@ -71,16 +70,14 @@ def wigner(
         array-like: Results of Wigner function calculation
     """
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return _wigner(state, xvec, xvec, cutoff, hbar)
+    return _wigner(state, xvec)
 
 
 def wigner_mle(
     states,
-    cutoff: int,
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    hbar: int = 2,
 ):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
@@ -109,76 +106,67 @@ def wigner_mle(
 
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
-    return wigner(mle_normalized, cutoff, axes_min, axes_max, axes_steps, hbar)
+    return wigner(mle_normalized, axes_min, axes_max, axes_steps)
 
 
-def _wigner(state, xvec, pvec, cutoff: int, hbar: int = 2):
-    r"""
-    Copy of Xanadu Strawberry Fields Wigner function, placed here to reduce dependencies.
-    Starwberry Fields used the QuTiP "iterative" implementation.
-
-    Strawberry Fields is released under the Apache License: https://github.com/XanaduAI/strawberryfields/blob/master/LICENSE
-
-    QuTiP is released under the BSD 3-clause license: https://github.com/qutip/qutip/blob/master/LICENSE.txt
-
-    See:
-        <https://github.com/XanaduAI/strawberryfields/blob/e46bd122faff39976cc9052cc1a6472762c415b4/strawberryfields/backends/states.py#L725-L780>
-
-
-    Calculates the discretized Wigner function of the specified mode.
-    .. note::
-        This code is a modified version of the "iterative" method of the
-        `wigner function provided in QuTiP
-        <http://qutip.org/docs/4.0.2/apidoc/functions.html?highlight=wigner#qutip.wigner.wigner>`_,
-        which is released under the BSD license, with the following
-        copyright notice:
-        Copyright (C) 2011 and later, P.D. Nation, J.R. Johansson,
-        A.J.G. Pitchford, C. Granade, and A.L. Grimsmo. All rights reserved.
-    Args:
-        mode (int): the mode to calculate the Wigner function for
-        xvec (array): array of discretized :math:`x` quadrature values
-        pvec (array): array of discretized :math:`p` quadrature values
-    Returns:
-        array: 2D array of size [len(xvec), len(pvec)], containing reduced Wigner function
-        values for specified x and p values.
-    """
+def _wigner(state, xvec, yvec = None):
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
         rho = DensityMatrix(state).data
-    Q, P = np.meshgrid(xvec, pvec)
-    A = (Q + P * 1.0j) / (2 * np.sqrt(hbar / 2))
 
-    Wlist = np.array([np.zeros(np.shape(A), dtype=complex) for k in range(cutoff)])
+    if not yvec:
+        yvec = xvec
 
-    # Wigner function for |0><0|
-    Wlist[0] = np.exp(-2.0 * np.abs(A) ** 2) / np.pi
+    return _wigner_iterative(rho, xvec, yvec)
 
-    # W = rho(0,0)W(|0><0|)
-    W = np.real(rho[0, 0]) * np.real(Wlist[0])
 
-    for n in range(1, cutoff):
-        Wlist[n] = (2.0 * A * Wlist[n - 1]) / np.sqrt(n)
-        W += 2 * np.real(rho[0, n] * Wlist[n])
+def _wigner_iterative(rho, xvec, yvec, g=sqrt(2)):
+    r"""
+    Wigner function as implemented in QuTiP (i.e., copy/paste). QuTiP is released under the BSD 3-clause license: https://github.com/qutip/qutip/blob/master/LICENSE.txt
 
-    for m in range(1, cutoff):
+    See https://github.com/qutip/qutip/blob/master/qutip/wigner.py#L257-L300
+    
+    Using an iterative method to evaluate the wigner functions for the Fock
+    state :math:`|m><n|`.
+    The Wigner function is calculated as
+    :math:`W = \sum_{mn} \rho_{mn} W_{mn}` where :math:`W_{mn}` is the Wigner
+    function for the density matrix :math:`|m><n|`.
+    In this implementation, for each row m, Wlist contains the Wigner functions
+    Wlist = [0, ..., W_mm, ..., W_mN]. As soon as one W_mn Wigner function is
+    calculated, the corresponding contribution is added to the total Wigner
+    function, weighted by the corresponding element in the density matrix
+    :math:`rho_{mn}`.
+    """
+
+    M = np.prod(rho.shape[0])
+    X, Y = meshgrid(xvec, yvec)
+    A = 0.5 * g * (X + 1.0j * Y)
+
+    Wlist = array([zeros(np.shape(A), dtype=complex) for k in range(M)])
+    Wlist[0] = exp(-2.0 * abs(A) ** 2) / pi
+
+    W = real(rho[0, 0]) * real(Wlist[0])
+    for n in range(1, M):
+        Wlist[n] = (2.0 * A * Wlist[n - 1]) / sqrt(n)
+        W += 2 * real(rho[0, n] * Wlist[n])
+
+    for m in range(1, M):
         temp = copy(Wlist[m])
+        Wlist[m] = (2 * conj(A) * temp - sqrt(m) * Wlist[m - 1]) / sqrt(m)
+
         # Wlist[m] = Wigner function for |m><m|
-        Wlist[m] = (2 * np.conj(A) * temp - np.sqrt(m) * Wlist[m - 1]) / np.sqrt(m)
+        W += real(rho[m, m] * Wlist[m])
 
-        # W += rho(m,m)W(|m><m|)
-        W += np.real(rho[m, m] * Wlist[m])
-
-        for n in range(m + 1, cutoff):
-            temp2 = (2 * A * Wlist[n - 1] - np.sqrt(m) * temp) / np.sqrt(n)
+        for n in range(m + 1, M):
+            temp2 = (2 * A * Wlist[n - 1] - sqrt(m) * temp) / sqrt(n)
             temp = copy(Wlist[n])
-            # Wlist[n] = Wigner function for |m><n|
             Wlist[n] = temp2
 
-            # W += rho(m,n)W(|m><n|) + rho(n,m)W(|n><m|)
-            W += 2 * np.real(rho[m, n] * Wlist[n])
+            # Wlist[n] = Wigner function for |m><n|
+            W += 2 * real(rho[m, n] * Wlist[n])
 
-    return W / (hbar)
+    return 0.5 * W * g ** 2
 
 
 def plot_wigner(
@@ -210,7 +198,7 @@ def plot_wigner(
     else:
         state = state_vector
 
-    w_fock = wigner(state, circuit.cutoff, axes_min, axes_max, axes_steps)
+    w_fock = wigner(state, axes_min, axes_max, axes_steps)
 
     plot(
         data=w_fock,
@@ -309,10 +297,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
 
     # Calculate Wigner functions
     xvec = np.linspace(-6, 6, 200)
-    wigner_zero = _wigner(projection_zero, xvec, xvec, circuit.cutoff)
-    wigner_one = _wigner(projection_one, xvec, xvec, circuit.cutoff)
-    wigner_plus = _wigner(projection_plus, xvec, xvec, circuit.cutoff)
-    wigner_minus = _wigner(projection_minus, xvec, xvec, circuit.cutoff)
+    wigner_zero = _wigner(projection_zero, xvec)
+    wigner_one = _wigner(projection_one, xvec)
+    wigner_plus = _wigner(projection_plus, xvec)
+    wigner_minus = _wigner(projection_minus, xvec)
 
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))

@@ -138,7 +138,7 @@ def test_wigner_mle(capsys):
         circuit.h(qr[0])
 
         states, result = c2qa.util.simulate(circuit, per_shot_state_vector=True)
-        wigner = c2qa.wigner.wigner_mle(states, circuit.cutoff)
+        wigner = c2qa.wigner.wigner_mle(states)
         assert wigner is not None
         print(wigner)
 
