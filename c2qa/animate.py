@@ -352,6 +352,8 @@ def _animate(frame, *fargs):
     amax = numpy.amax(w_fock)
     amin = numpy.amin(w_fock)
     abs_max = max(amax, abs(amin))
+    if abs_max == 0:
+        abs_max = 5
     color_levels = numpy.linspace(-abs_max, abs_max, 100)
 
     ax.clear()
