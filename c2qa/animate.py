@@ -59,6 +59,7 @@ def animate_wigner(
         noise_pass (PhotonLossNoisePass, optional): noise pass to apply
         sequential_subcircuit (bool, optional): boolean flag to animate subcircuits as one gate (False) or as sequential 
                                                 gates (True). Defautls to False.
+        draw_grid (bool, optional): True if grid lines should be drawn on plot. Defaults to False.
 
     Returns:
         [type]: [description]

@@ -178,6 +178,7 @@ def plot_wigner(
     axes_max: int = 6,
     axes_steps: int = 200,
     num_colors: int = 100,
+    draw_grid: bool = False,
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -192,6 +193,7 @@ def plot_wigner(
         axes_max (int, optional): Maximum axes plot value. Defaults to 6.
         axes_steps (int, optional): Steps between axes ticks. Defaults to 200.
         num_colors (int, optional): Number of color gradients in legend. Defaults to 100.
+        draw_grid (bool, optional): True if grid lines should be drawn on plot. Defaults to False.
     """
     if trace:
         state = cv_partial_trace(circuit, state_vector)
@@ -207,6 +209,7 @@ def plot_wigner(
         axes_steps=axes_steps,
         file=file,
         num_colors=num_colors,
+        draw_grid=draw_grid,
     )
 
 
@@ -217,6 +220,7 @@ def plot(
     axes_steps: int = 200,
     file: str = None,
     num_colors: int = 100,
+    draw_grid: bool = False,
 ):
     """Contour plot the given data array"""
     xvec = np.linspace(axes_min, axes_max, axes_steps)
@@ -228,8 +232,17 @@ def plot(
 
     fig, ax = plt.subplots(constrained_layout=True)
     cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu_r")
+
+    xvec_int = [int(x) for x in xvec]
+    xvec_int = sorted(set(xvec_int))
     ax.set_xlabel("x")
+    ax.set_xticks(xvec_int)
     ax.set_ylabel("p")
+    ax.set_yticks(xvec_int)
+    if draw_grid:
+        ax.grid()
+
+
     cb = fig.colorbar(cont, ax=ax)
     cb.set_label(r"$W(x,p)$")
 
@@ -239,7 +252,7 @@ def plot(
         plt.show()
 
 
-def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
+def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_grid: bool = False):
     """Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
@@ -248,6 +261,7 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
         circuit (CVCircuit): circuit to simulate and plot
         qubit (Qubit): qubit to measure
         file (str, optional): File path to save file, if None return plot. Defaults to None.
+        draw_grid (bool, optional): True if gridlines should be drawn on plots. Defaults to False.
     """
     # Get unaltered state vector and partial trace
     x, _ = simulate(circuit)
@@ -305,10 +319,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None):
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
 
-    _add_contourf(ax0, fig, "Projection onto zero", xvec, xvec, wigner_zero)
-    _add_contourf(ax1, fig, "Projection onto one", xvec, xvec, wigner_one)
-    _add_contourf(ax2, fig, "Projection onto plus", xvec, xvec, wigner_plus)
-    _add_contourf(ax3, fig, "Projection onto minus", xvec, xvec, wigner_minus)
+    _add_contourf(ax0, fig, "Projection onto zero", xvec, xvec, wigner_zero, draw_grid)
+    _add_contourf(ax1, fig, "Projection onto one", xvec, xvec, wigner_one, draw_grid)
+    _add_contourf(ax2, fig, "Projection onto plus", xvec, xvec, wigner_plus, draw_grid)
+    _add_contourf(ax3, fig, "Projection onto minus", xvec, xvec, wigner_minus, draw_grid)
 
     # Save to file or display
     if file:
@@ -346,7 +360,7 @@ def plot_wigner_snapshot(
         plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors)
 
 
-def _add_contourf(ax, fig, title, x, y, z):
+def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
     """Add a matplotlib contourf plot with color levels based on min/max values in z."""
     amax = np.amax(z)
     amin = abs(np.amin(z))
@@ -354,7 +368,19 @@ def _add_contourf(ax, fig, title, x, y, z):
     color_levels = np.linspace(-max_value, max_value, 100)
 
     cont = ax.contourf(x, y, z, color_levels, cmap="RdBu_r")
+
+    xvec_int = [int(value) for value in x]
+    xvec_int = sorted(set(xvec_int))
     ax.set_xlabel("x")
+    ax.set_xticks(xvec_int)
+
+    yvec_int = [int(value) for value in y]
+    yvec_int = sorted(set(yvec_int))
     ax.set_ylabel("p")
+    ax.set_yticks(yvec_int)
+
+    if draw_grid:
+        ax.grid()
+
     ax.set_title(title)
     fig.colorbar(cont, ax=ax)
