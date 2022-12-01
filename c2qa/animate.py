@@ -28,8 +28,9 @@ def animate_wigner(
     axes_steps: int = 200,
     processes: int = None,
     keep_state: bool = True,
-    noise_pass=None,
+    noise_pass = None,
     sequential_subcircuit: bool = False,
+    draw_grid: bool = False,
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -111,7 +112,7 @@ def animate_wigner(
         init_func=_animate_init,
         func=_animate,
         frames=len(w_fock),
-        fargs=(fig, ax, xvec, w_fock, file),
+        fargs=(fig, ax, xvec, w_fock, file, draw_grid),
         interval=200,
         repeat=True,
     )
@@ -348,6 +349,7 @@ def _animate(frame, *fargs):
     xvec = fargs[2]
     w_fock = fargs[3][frame]
     file = fargs[4]
+    draw_grid = fargs[5]
 
     amax = numpy.amax(w_fock)
     amin = numpy.amin(w_fock)
@@ -361,10 +363,14 @@ def _animate(frame, *fargs):
 
     ax.clear()
     cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
+
     ax.set_xlabel("x")
     ax.set_xticks(xvec_int)
     ax.set_ylabel("p")
     ax.set_yticks(xvec_int)
+    if draw_grid:
+        ax.grid()
+
     if frame == 0:
         fig.colorbar(cont, ax=ax)
 

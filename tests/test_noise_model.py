@@ -192,6 +192,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
             animation_segments=200,
             file=wigner_filename,
             noise_pass=noise_pass,
+            # draw_grid=True
         )
 
 
