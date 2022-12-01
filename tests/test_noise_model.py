@@ -178,7 +178,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
 
         circuit.cv_initialize(3, qmr[0])
 
-        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(1.5, qmr[0], duration=100, unit="ns")
 
         photon_loss_rate = 0.02
         time_unit = "ns"
@@ -192,6 +192,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
             animation_segments=200,
             file=wigner_filename,
             noise_pass=noise_pass,
+            # draw_grid=True
         )
 
 
