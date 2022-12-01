@@ -356,10 +356,15 @@ def _animate(frame, *fargs):
         abs_max = 5
     color_levels = numpy.linspace(-abs_max, abs_max, 100)
 
+    xvec_int = [int(x) for x in xvec]
+    xvec_int = sorted(set(xvec_int))
+
     ax.clear()
     cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
     ax.set_xlabel("x")
+    ax.set_xticks(xvec_int)
     ax.set_ylabel("p")
+    ax.set_yticks(xvec_int)
     if frame == 0:
         fig.colorbar(cont, ax=ax)
 
