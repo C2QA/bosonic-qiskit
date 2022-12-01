@@ -29,6 +29,8 @@ source venv/bin/activate
 
 Jupyter Notebook tutorials can be found in the [tutorials](tutorials) folder. JupyterLab is a dependency found in [requirements.txt](requirements.txt), so after installing and activating the virtual environment, to run the tutorials simply start Jupyter with `jupyter lab` and then navigate to the desired tutorial.
 
+See our paper presented at IEEE HPEC 2022 on [arXiv](https://arxiv.org/abs/2209.11153) for more information on using bosonic-qiskit.
+
 ## How to add gates
 
 The code is structured to separate generation of the operator matrices from creating instances of QisKit Gate. 
