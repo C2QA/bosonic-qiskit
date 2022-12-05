@@ -134,6 +134,13 @@ class CVCircuit(QuantumCircuit):
 
         return indices
 
+    def get_qubit_index(self, qubit):
+        """Return the index of the given Qubit"""
+        for i, q in enumerate(self.qubits):
+            if q == qubit:
+                return i
+        return None
+
     @property
     def cv_gate_labels(self):
         """
