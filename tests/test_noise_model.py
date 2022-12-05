@@ -5,7 +5,10 @@ import random
 
 import c2qa
 import numpy as np
+
+
 import qiskit
+import qiskit.providers.aer.noise as noise
 
 
 def test_noise_model(capsys):
@@ -223,3 +226,27 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
             file=wigner_filename,
             noise_pass=noise_pass,
         )
+
+def test_photon_loss_and_phase_damping(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        qubits_per_mode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        init_circuit = c2qa.CVCircuit(qmr, qbr)
+        init_circuit.cv_initialize(2, qmr[0])
+        init_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
+
+        # Initialize PhotonLossNoisePass
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+
+        # Initialize phase damping NoiseModel
+        noise_model = noise.NoiseModel()
+        phase_error = noise.phase_damping_error(0.01)
+        noise_model.add_quantum_error(phase_error, ["cD"], [qbr[0]])
+
+        state, result = c2qa.util.simulate(init_circuit, noise_model=noise_model, noise_pass=noise_pass)
