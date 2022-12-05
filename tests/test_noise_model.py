@@ -229,17 +229,17 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
 
 def test_photon_loss_and_phase_damping(capsys):
     with capsys.disabled():
-        state_a, result_a = _build_photon_loss_and_phase_damping_circuit(0.3)
+        state_a, result_a = _build_photon_loss_and_amp_damping_circuit(0.0)
         print(state_a)
         assert result_a.success
 
-        state_b, result_b = _build_photon_loss_and_phase_damping_circuit(1)
+        state_b, result_b = _build_photon_loss_and_amp_damping_circuit(1.0)
         print(state_b)
         assert result_b.success
 
         assert not allclose(state_a, state_b)
     
-def _build_photon_loss_and_phase_damping_circuit(phase_damping = 0.3, photon_loss_rate = 0.01):
+def _build_photon_loss_and_amp_damping_circuit(amp_damp = 0.3, photon_loss_rate = 0.01):
     num_qumodes = 1
     qubits_per_mode = 2
     num_qubits = 1
@@ -253,7 +253,7 @@ def _build_photon_loss_and_phase_damping_circuit(phase_damping = 0.3, photon_los
 
     # Initialize phase damping NoiseModel
     noise_model = noise.NoiseModel()
-    phase_error = noise.phase_damping_error(phase_damping)
+    phase_error = noise.amplitude_damping_error(amp_damp)
     noise_model.add_quantum_error(phase_error, ["x"], [circuit.get_qubit_index(qbr[0])])
 
     # Initialize PhotonLossNoisePass
