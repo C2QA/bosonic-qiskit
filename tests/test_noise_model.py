@@ -240,13 +240,13 @@ def test_photon_loss_and_phase_damping(capsys):
         init_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
 
         # Initialize PhotonLossNoisePass
-        photon_loss_rate = 0.3
+        photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
 
         # Initialize phase damping NoiseModel
         noise_model = noise.NoiseModel()
-        phase_error = noise.phase_damping_error(0.01)
+        phase_error = noise.phase_damping_error(0.3)
         noise_model.add_quantum_error(phase_error, ["cD"], [qbr[0]])
 
         state, result = c2qa.util.simulate(init_circuit, noise_model=noise_model, noise_pass=noise_pass)
