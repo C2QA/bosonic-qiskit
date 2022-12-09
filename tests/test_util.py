@@ -49,6 +49,27 @@ def test_partial_trace_one(capsys):
         # print(trace.probabilities_dict())
 
 
+def test_partial_trace(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qbr = qiskit.QuantumRegister(size=1)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.initialize([1, 0], qbr[0])
+        circuit.cv_initialize(1, qmr[0])
+
+        state, _ = c2qa.util.simulate(circuit)
+        trace = c2qa.util.cv_partial_trace(circuit, state, [qbr[0]])
+
+        assert state.dims() == (2, 2, 2)
+        assert trace.dims() == (2, 2)
+        prob = trace.probabilities_dict()
+        numpy.testing.assert_almost_equal(prob["01"], 1.0)
+
+        # print("Partial trace Fock state one")
+        # print(DensityMatrix(state).probabilities_dict())
+        # print(trace.probabilities_dict())
+
 def test_measure_all_xyz(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
