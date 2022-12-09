@@ -241,6 +241,7 @@ def simulate(
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
+    noise_model=None,
     noise_pass=None,
     max_parallel_threads: int = 0,
 ):
@@ -278,7 +279,7 @@ def simulate(
 
     # Run and get statevector
     result = simulator.run(
-        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads
+        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
     ).result()
 
     # The user may have added their own circuit.save_statevector

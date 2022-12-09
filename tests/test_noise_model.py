@@ -5,7 +5,10 @@ import random
 
 import c2qa
 import numpy as np
+
+
 import qiskit
+import qiskit.providers.aer.noise as noise
 
 
 def test_noise_model(capsys):
@@ -224,3 +227,49 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
             file=wigner_filename,
             noise_pass=noise_pass,
         )
+
+def test_photon_loss_and_phase_damping(capsys):
+    with capsys.disabled():
+        state_a, result_a = _build_photon_loss_and_amp_damping_circuit(0.0)
+        print(state_a)
+        assert result_a.success
+
+        state_b, result_b = _build_photon_loss_and_amp_damping_circuit(1.0)
+        print(state_b)
+        assert result_b.success
+
+        assert not allclose(state_a, state_b)
+    
+def _build_photon_loss_and_amp_damping_circuit(amp_damp = 0.3, photon_loss_rate = 0.01):
+    num_qumodes = 1
+    qubits_per_mode = 2
+    num_qubits = 1
+
+    qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+    qbr = qiskit.QuantumRegister(size=num_qubits)
+    circuit = c2qa.CVCircuit(qmr, qbr)
+    circuit.cv_initialize(2, qmr[0])
+    circuit.x(qbr[0])
+    circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+
+    # Initialize phase damping NoiseModel
+    noise_model = noise.NoiseModel()
+    phase_error = noise.amplitude_damping_error(amp_damp)
+    noise_model.add_quantum_error(phase_error, ["x"], [circuit.get_qubit_index(qbr[0])])
+
+    # Initialize PhotonLossNoisePass
+    noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit="ns")
+
+    return c2qa.util.simulate(circuit, noise_model=noise_model, noise_pass=noise_pass)
+
+def allclose(a, b) -> bool:
+    """Convert SciPy sparse matrices to ndarray and test with Numpy"""
+
+    # If a and b are SciPy sparse matrices, they'll have a "toarray()" function
+    if hasattr(a, "toarray"):
+        a = a.toarray()
+
+    if hasattr(b, "toarray"):
+        b = b.toarray()
+
+    return np.allclose(a, b)
