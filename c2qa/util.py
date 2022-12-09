@@ -390,6 +390,9 @@ def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
 
     Returns:
         DensityMatrix: partial trace"""
+    
+    if not isinstance(qubits, list):
+        qubits = [qubits]
     indices = circuit.get_qubit_indices(qubits)
 
     return partial_trace(state_vector, indices)
