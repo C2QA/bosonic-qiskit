@@ -143,9 +143,16 @@ class CVCircuit(QuantumCircuit):
 
     def get_qubit_indices(self, qubits: list):
         """Return the indices of the given Qubits"""
+        flat_list = []
+        for el in qubits:
+            if isinstance(el, list):
+                flat_list += el
+            else:
+                flat_list += [el]
+       
         indices = []
         for i, q in enumerate(self.qubits):
-            if q in qubits:
+            if q in flat_list:
                 indices.append(i)
         return indices
 
