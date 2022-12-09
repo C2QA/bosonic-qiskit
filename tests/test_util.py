@@ -15,7 +15,7 @@ def test_partial_trace_zero(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace(circuit, state)
+        trace = c2qa.util.cv_partial_trace_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -37,7 +37,7 @@ def test_partial_trace_one(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace(circuit, state)
+        trace = c2qa.util.cv_partial_trace_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
