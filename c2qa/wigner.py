@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 from c2qa.circuit import CVCircuit
-from c2qa.util import cv_partial_trace_qubits, simulate
+from c2qa.util import trace_out_qubits, simulate
 
 
 import matplotlib.pyplot as plt
@@ -33,7 +33,7 @@ def simulate_wigner(
         if conditional:
             state = states["0x0"]  # even state
             # state = states["0x1"]  # odd state
-            density_matrix = cv_partial_trace_qubits(circuit, state)
+            density_matrix = trace_out_qubits(circuit, state)
         else:
             state = states
             density_matrix = state
@@ -196,7 +196,7 @@ def plot_wigner(
         draw_grid (bool, optional): True if grid lines should be drawn on plot. Defaults to False.
     """
     if trace:
-        state = cv_partial_trace_qubits(circuit, state_vector)
+        state = trace_out_qubits(circuit, state_vector)
     else:
         state = state_vector
 
@@ -277,10 +277,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
     y_xT = y.data * xT
     y_yT = y.data * yT
 
-    trace_x_xT = cv_partial_trace_qubits(circuit, x_xT)
-    trace_x_yT = cv_partial_trace_qubits(circuit, x_yT)
-    trace_y_xT = cv_partial_trace_qubits(circuit, y_xT)
-    trace_y_yT = cv_partial_trace_qubits(circuit, y_yT)
+    trace_x_xT = trace_out_qubits(circuit, x_xT)
+    trace_x_yT = trace_out_qubits(circuit, x_yT)
+    trace_y_xT = trace_out_qubits(circuit, y_xT)
+    trace_y_yT = trace_out_qubits(circuit, y_yT)
 
     projection_zero = (trace_x_xT + trace_x_yT + trace_y_xT + trace_y_yT) / 4
     projection_one = (trace_x_xT - trace_x_yT - trace_y_xT + trace_y_yT) / 4
@@ -298,10 +298,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
     y_xT = y.data * xT
     y_yT = y.data * yT
 
-    trace_x_xT = cv_partial_trace_qubits(circuit, x_xT)
-    trace_x_yT = cv_partial_trace_qubits(circuit, x_yT)
-    trace_y_xT = cv_partial_trace_qubits(circuit, y_xT)
-    trace_y_yT = cv_partial_trace_qubits(circuit, y_yT)
+    trace_x_xT = trace_out_qubits(circuit, x_xT)
+    trace_x_yT = trace_out_qubits(circuit, x_yT)
+    trace_y_xT = trace_out_qubits(circuit, y_xT)
+    trace_y_yT = trace_out_qubits(circuit, y_yT)
 
     projection_plus = (trace_x_xT + trace_x_yT + trace_y_xT + trace_y_yT) / 4
     projection_minus = (trace_x_xT - trace_x_yT - trace_y_xT + trace_y_yT) / 4

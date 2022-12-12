@@ -5,7 +5,7 @@ import qiskit
 from qiskit.visualization import plot_histogram
 
 
-def test_partial_trace_zero(capsys):
+def test_trace_out_zero(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
@@ -15,7 +15,7 @@ def test_partial_trace_zero(capsys):
         circuit.cv_initialize(0, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace_qubits(circuit, state)
+        trace = c2qa.util.trace_out_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -27,7 +27,7 @@ def test_partial_trace_zero(capsys):
         # print(trace.probabilities_dict())
 
 
-def test_partial_trace_one(capsys):
+def test_trace_out_one(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
@@ -37,7 +37,7 @@ def test_partial_trace_one(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace_qubits(circuit, state)
+        trace = c2qa.util.trace_out_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -49,7 +49,7 @@ def test_partial_trace_one(capsys):
         # print(trace.probabilities_dict())
 
 
-def test_partial_trace_qubit(capsys):
+def test_trace_out_qubit(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qbr = qiskit.QuantumRegister(size=1)
@@ -59,7 +59,7 @@ def test_partial_trace_qubit(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace(circuit, state, qbr[0])
+        trace = c2qa.util.trace_out(circuit, state, qbr[0])
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -71,7 +71,7 @@ def test_partial_trace_qubit(capsys):
         # print(trace.probabilities_dict())
 
 
-def test_partial_trace_qumode(capsys):
+def test_trace_out_qumode(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qbr = qiskit.QuantumRegister(size=1)
@@ -81,7 +81,7 @@ def test_partial_trace_qumode(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace(circuit, state, qmr[0])
+        trace = c2qa.util.trace_out(circuit, state, qmr[0])
 
 
 def test_measure_all_xyz(capsys):

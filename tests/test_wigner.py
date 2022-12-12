@@ -21,7 +21,7 @@ def test_plot_zero(capsys):
         circuit.cv_c_d(dist, qmr[0], qr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace_qubits(circuit, state)
+        trace = c2qa.util.trace_out_qubits(circuit, state)
         c2qa.wigner.plot_wigner(circuit, trace, file="tests/zero.png", trace=False)
 
 
