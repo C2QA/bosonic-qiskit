@@ -510,6 +510,42 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + [qubit],
         )
 
+    def cv_c_schwinger(self, params, qumode_a, qumode_b, qubit, duration=100, unit="ns"):
+        """General form of a controlled Schwinger gate, containing both the controlled phase beamsplitter
+        and pairs of controlled phase space rotations as special cases.
+
+        It has the form exp(-i*beta* (n1_hat.sigma)(n2_hat.S)),
+        where ni_hat = sin(theta_i)*cos(phi_i) + sin(theta_i)*sin(phi_i) + cos(theta_i).
+        sigma = [sigmax, sigmay, sigmaz] is the vector of Pauli operators, and
+        S = [Sx, Sy, Sz] is a vector of Schwinger boson operators,
+
+        Sx = (a*bdag + adag*b)/2
+        Sy = (a*bdag - adag*b)/2i
+        Sz = (bdag*b - adag*a)/2,
+
+        obeying the commutation relations [Sj, Sk] = i*epsilon_{ijk}*Sz, where epsilon_{ijk} is the Levi-Civita tensor.
+
+        Args:
+            params (real): [beta, theta_1, phi_1, theta_2, phi_2]
+            qubit_ancilla (Qubit): QisKit control Qubit
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(
+            ParameterizedUnitaryGate(
+                self.ops.cschwinger,
+                params,
+                num_qubits=len(qumode_a) + len(qumode_b) + 1,
+                label="cSchw",
+                duration=duration,
+                unit=unit
+            ),
+            qargs=qumode_a + qumode_b + [qubit],
+        )
+
     def cv_snap(self, theta, n, qumode, qubit=None, duration=100, unit="ns"):
         """SNAP (Selective Number-dependent Arbitrary Phase) gate.
         TODO: Add second snap implementation that includes sigma_z qubit

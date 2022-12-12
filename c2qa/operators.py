@@ -9,7 +9,7 @@ import scipy.sparse.linalg
 
 
 xQB = numpy.array([[0, 1], [1, 0]])
-yQB = numpy.array([[0, 1j], [-1j, 0]])
+yQB = numpy.array([[0, -1j], [1j, 0]])
 zQB = numpy.array([[1, 0], [0, -1]])
 idQB = numpy.array([[1, 0], [0, 1]])
 sigma_plus = numpy.array([[0, 1], [0, 0]])
@@ -360,10 +360,37 @@ class CVOperators:
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
-        argm = theta * (a1dag2 - a12dag)
+        argm = theta*a1dag2 - numpy.conjugate(theta)*a12dag
         arg = scipy.sparse.kron(zQB, argm).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
+
+    def cschwinger(self, beta, theta_1, phi_1, theta_2, phi_2):
+        """General form of a controlled Schwinger gate
+
+        Args:
+            params (real): [beta, theta_1, phi_1, theta_2, phi_2]
+
+        Returns:
+            ndarray: operator matrix
+        """
+        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
+        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
+        self.a1dag = self.a1.conjugate().transpose().tocsc()
+        self.a2dag = self.a2.conjugate().transpose().tocsc()
+
+        a12dag = self.a1 * self.a2dag
+        a1dag2 = self.a1dag * self.a2
+
+        Sx = (self.a1 * self.a2dag + self.a1dag * self.a2)/2
+        Sy = (self.a1 * self.a2dag - self.a1dag * self.a2)/(2*1j)
+        Sz = (self.a2dag * self.a2 - self.a1dag * self.a1)/2
+
+        sigma = numpy.sin(theta_1)*numpy.cos(phi_1)*xQB + numpy.sin(theta_1)*numpy.sin(phi_1)*yQB + numpy.cos(theta_1)*zQB
+        S = numpy.sin(theta_2)*numpy.cos(phi_2)*Sx + numpy.sin(theta_2)*numpy.sin(phi_2)*Sy + numpy.cos(theta_2)*Sz
+        arg = scipy.sparse.kron(sigma, S).tocsc()
+
+        return scipy.sparse.linalg.expm(-1j*beta*arg)
 
     def snap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator

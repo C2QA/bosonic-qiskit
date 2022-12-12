@@ -89,6 +89,20 @@ def test_conditional_beamsplitter():
     # assert_changed(state, result)
     assert_unchanged(state, result)
 
+def test_conditional_schwinger():
+    circuit, qmr, qr = create_conditional()
+
+    beta = random.random()
+    theta_1 = random.random()
+    phi_1 = random.random()
+    theta_2 = random.random()
+    phi_2 = random.random()
+    circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+
+    assert_unchanged(state, result)
+
 
 def test_beamsplitter_twice():
     circuit, qmr = create_unconditional()
