@@ -499,7 +499,7 @@ class CVCircuit(QuantumCircuit):
         """General form of a controlled Schwinger gate, containing both the controlled phase beamsplitter
         and pairs of controlled phase space rotations as special cases.
 
-        It has the form exp(-i*beta* (n1_hat.sigma)(n2_hat.S)),
+        It has the form exp(-i*beta*(n1_hat.sigma)(n2_hat.S)),
         where ni_hat = sin(theta_i)*cos(phi_i) + sin(theta_i)*sin(phi_i) + cos(theta_i).
         sigma = [sigmax, sigmay, sigmaz] is the vector of Pauli operators, and
         S = [Sx, Sy, Sz] is a vector of Schwinger boson operators,
@@ -554,7 +554,7 @@ class CVCircuit(QuantumCircuit):
         else:
             self.append(
                 ParameterizedUnitaryGate(
-                    self.ops.csnap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                    self.ops.csnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                 ),
                 qargs=qumode + [qubit],
             )
