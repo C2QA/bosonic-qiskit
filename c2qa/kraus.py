@@ -30,7 +30,10 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
 
     n = circuit.ops.N
     a = circuit.ops.a
-    if op is not None and op.num_qubits > math.sqrt(circuit.cutoff):
+
+    # Redefine N and a for the operation size
+    # Qiskit `delay` gates are always for one qubit, see https://qiskit.org/documentation/stubs/qiskit.circuit.QuantumCircuit.delay.html
+    if op is not None and (op.name == "delay" or op.num_qubits > math.sqrt(circuit.cutoff)):
         new_dim = 2**op.num_qubits
         n = n.copy()
         n.resize((new_dim, new_dim))
