@@ -410,6 +410,26 @@ class CVOperators:
         arg = theta * 1j * sparse_projector.tocsc()
         return scipy.sparse.linalg.expm(arg)
 
+    def csnap(self, theta, n):
+        """SNAP (Selective Number-dependent Arbitrary Phase) operator,
+        with explicit sigmaz in exponential. Can be used to generate
+        fock-number selective qubit rotations.
+
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+
+        Returns:
+            ndarray: operator matrix
+        """
+
+        ket_n = numpy.zeros(self.cutoff_value)
+        ket_n[n] = 1
+        projector = numpy.outer(ket_n, ket_n)
+        sparse_projector = scipy.sparse.csr_matrix(projector)
+        arg = theta * 1j * scipy.sparse.kron(zQB, sparse_projector)
+        return scipy.sparse.linalg.expm(arg)
+
     def eswap(self, theta):
         """Exponential SWAP operator
 
