@@ -2,7 +2,9 @@ import math
 
 import numpy as np
 import qiskit
-from qiskit.quantum_info import Statevector, partial_trace
+import qiskit.quantum_info
+from qiskit.quantum_info import Statevector
+
 
 from c2qa import CVCircuit
 
@@ -346,8 +348,8 @@ def _find_qubit_indices(circuit: CVCircuit):
     return indices
 
 
-def cv_qubits_reduced_density_matrix(circuit: CVCircuit, state_vector):
-    """Return reduced density matrix of the qubits by tracing out the cavities from the given Fock state vector.
+def trace_out_qumodes(circuit: CVCircuit, state_vector):
+    """Return reduced density matrix of the qubits by tracing out the cavities of the CVCircuit from the given Fock state vector.
 
     Args:
         circuit (CVCircuit): circuit yielding the results to trace over
@@ -359,15 +361,15 @@ def cv_qubits_reduced_density_matrix(circuit: CVCircuit, state_vector):
 
     indices = _find_cavity_indices(circuit)
 
-    return partial_trace(state_vector, indices)
+    return qiskit.quantum_info.partial_trace(state_vector, indices)
 
 
-def cv_partial_trace(circuit: CVCircuit, state_vector):
-    """Return reduced density matrix of the cavities by tracing out the qubits from the given Fock state vector.
+def trace_out_qubits(circuit: CVCircuit, state_vector):
+    """Return reduced density matrix of the cavities by tracing out the all qubits of the CVCircuit from the given Fock state vector.
 
     Args:
         circuit (CVCircuit): circuit with results to trace (to find Qubit index)
-        state_vector (Statevector): simulation results to trace over
+        state_vector (Statevector or DensityMatrix): simulation results to trace over
 
     Returns:
         DensityMatrix: partial trace
@@ -375,4 +377,24 @@ def cv_partial_trace(circuit: CVCircuit, state_vector):
 
     indices = _find_qubit_indices(circuit)
 
-    return partial_trace(state_vector, indices)
+    return qiskit.quantum_info.partial_trace(state_vector, indices)
+
+
+def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
+    """Return reduced density matrix over the given Qiskit Qubits. 
+    
+    First find the indices of the given Qubits, then call qiskit.quantum_info.partial_trace
+    
+    Args:
+        circuit (CVCircuit): circuit with results to trace (to find Qubit index)
+        state_vector (Statevector or DensityMatrix): simulation results to trace over
+        qubits (list): list of Qiskit Qubit to trace over
+
+    Returns:
+        DensityMatrix: partial trace"""
+    
+    if not isinstance(qubits, list):
+        qubits = [qubits]
+    indices = circuit.get_qubit_indices(qubits)
+
+    return qiskit.quantum_info.partial_trace(state_vector, indices)
