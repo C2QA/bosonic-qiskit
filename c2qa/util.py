@@ -380,7 +380,7 @@ def trace_out_qubits(circuit: CVCircuit, state_vector):
     return qiskit.quantum_info.partial_trace(state_vector, indices)
 
 
-def trace_out(circuit: CVCircuit, state_vector, qubits: list):
+def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
     """Return reduced density matrix over the given Qiskit Qubits. 
     
     First find the indices of the given Qubits, then call qiskit.quantum_info.partial_trace

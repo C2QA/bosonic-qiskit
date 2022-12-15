@@ -59,7 +59,7 @@ def test_trace_out_qubit(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.trace_out(circuit, state, qbr[0])
+        trace = c2qa.util.cv_partial_trace(circuit, state, qbr[0])
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -81,7 +81,7 @@ def test_trace_out_qumode(capsys):
         circuit.cv_initialize(1, qmr[0])
 
         state, _ = c2qa.util.simulate(circuit)
-        trace = c2qa.util.trace_out(circuit, state, qmr[0])
+        trace = c2qa.util.cv_partial_trace(circuit, state, qmr[0])
 
 
 def test_measure_all_xyz(capsys):
