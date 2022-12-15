@@ -58,6 +58,25 @@ def test_with_initialize():
     assert result.success
 
 
+def test_with_delay(capsys):
+    with capsys.disabled():
+        number_of_modes = 1
+        number_of_qubits = 1
+        number_of_qubits_per_mode = 2
+
+        qmr = c2qa.QumodeRegister(
+            num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
+        )
+        qbr = qiskit.QuantumRegister(size=number_of_qubits)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.delay(100)
+        circuit.cv_d(1, qmr[0])
+
+        state, result = c2qa.util.simulate(circuit)
+        assert result.success
+
+
 def test_get_qubit_indices(capsys):
     with capsys.disabled():
         number_of_modes = 2
