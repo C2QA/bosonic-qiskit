@@ -9,6 +9,7 @@ import numpy as np
 
 import qiskit
 import qiskit.providers.aer.noise as noise
+from qiskit.providers.aer.noise.noiseerror import NoiseError
 
 
 def test_noise_model(capsys):
@@ -120,6 +121,47 @@ def test_photon_loss_pass_with_conditional(capsys):
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(init_circuit, noise_pass=noise_pass)
 
+
+def test_photon_loss_pass_delay_without_unit(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        qubits_per_mode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+
+        with pytest.raises(NoiseError):
+            fail_circuit = c2qa.CVCircuit(qmr, qbr)
+            fail_circuit.cv_initialize(2, qmr[0])
+            fail_circuit.delay(100)
+            fail_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
+            photon_loss_rate = 0.01
+            time_unit = "ns"
+            noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=fail_circuit, time_unit=time_unit)
+            state, result = c2qa.util.simulate(fail_circuit, noise_pass=noise_pass)
+
+
+def test_photon_loss_pass_delay_with_unit(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        qubits_per_mode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+
+        pass_circuit = c2qa.CVCircuit(qmr, qbr)
+        pass_circuit.cv_initialize(2, qmr[0])
+        pass_circuit.delay(duration=100, unit="ns")
+        pass_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=pass_circuit, time_unit=time_unit)
+        state, result = c2qa.util.simulate(pass_circuit, noise_pass=noise_pass)
+        assert result.success
+
+
 def test_animate_photon_loss_pass(capsys):
     with capsys.disabled():
         num_qumodes = 1
@@ -143,6 +185,7 @@ def test_animate_photon_loss_pass(capsys):
             noise_pass=noise_pass,
         )
         assert Path(wigner_filename).is_file()
+
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_photon_loss_pass_no_displacement(capsys):
