@@ -31,6 +31,12 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
     n = circuit.ops.N
     a = circuit.ops.a
 
+
+    # FIXME -- This will resize N & a based on the number of qubits in an operation, filling zero.
+    # The circuit's N & a will be the size of 2^num_qubits_per_qumode.
+    # But will the position of the new values be correct? 
+    # Numpy will fill zero to the right & down (higher indices). That may not be the qubit indices for the qumodes selected.
+    #
     # Redefine N and a for the operation size
     # Qiskit `delay` gates are always for one qubit, see https://qiskit.org/documentation/stubs/qiskit.circuit.QuantumCircuit.delay.html
     if op is not None and (op.name == "delay" or op.num_qubits > math.sqrt(circuit.cutoff)):
@@ -39,6 +45,7 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
         n.resize((new_dim, new_dim))
         a = a.copy()
         a.resize((new_dim, new_dim))
+
 
     for photons in range(circuit.cutoff + 1):
         kraus = math.sqrt(
