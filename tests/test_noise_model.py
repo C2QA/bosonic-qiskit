@@ -271,6 +271,77 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
             noise_pass=noise_pass,
         )
 
+
+def test_photon_loss_instruction(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=num_qubits_per_qumode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.cv_initialize(1, qmr[0])
+        circuit.cv_initialize(1, qmr[1])
+
+        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_c_d(1, qmr[1], qbr[0], duration=100, unit="ns")
+
+        photon_loss_rate = 0.02
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"])
+
+        state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+        assert result.success
+
+
+def test_photon_loss_qumode(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=num_qubits_per_qumode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.cv_initialize(1, qmr[0])
+
+        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_c_d(1, qmr[1], qbr[0], duration=100, unit="ns")
+
+        photon_loss_rate = 0.02
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, qumodes=qmr[0])
+
+        state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+        assert result.success
+
+
+def test_photon_loss_instruction_qumode(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=num_qubits_per_qumode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.cv_initialize(1, qmr[0])
+
+        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_c_d(1, qmr[1], qbr[0], duration=100, unit="ns")
+
+        photon_loss_rate = 0.02
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"], qumodes=qmr[0])
+
+        state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+        assert result.success
+
+
 def test_photon_loss_and_phase_damping(capsys):
     with capsys.disabled():
         state_a, result_a = _build_photon_loss_and_amp_damping_circuit(0.0)
