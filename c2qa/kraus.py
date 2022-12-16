@@ -58,14 +58,16 @@ class PhotonLossNoisePass(LocalNoisePass):
     """Add photon loss noise model to a circuit during transpiler transformation pass."""
 
     def __init__(
-        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, time_unit: str = "s", dt: float = None
+        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, instructions = None, qumodes = None, time_unit: str = "s", dt: float = None
     ):
         """
         Initialize the Photon Loss noise pass
         
         Args:
             photon_loss_rate (float): kappa, the rate of photon loss per second
-            circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
+            circuit (CVCircuit): cq2a.CVCircuit with ops for N and a, and cutoff
+            instructions (str or list[str]): the instructions error applies to
+            qubits (Sequence[Qubit]): qumode qubits instruction error applies to
             time_unit (string): string photon loss rate unit of time (default "s" for seconds)
             dt (float): optional conversion factor for photon_loss_rate and operation duration to seconds
         """
@@ -74,6 +76,25 @@ class PhotonLossNoisePass(LocalNoisePass):
         self._circuit = circuit
         self._time_unit = time_unit
         self._dt = dt
+
+        if instructions is None:
+            self._instructions = None
+        elif isinstance(instructions, list):
+            self._instructions = instructions
+        else:
+            self._instructions = [instructions]
+
+        if qumodes is None:
+            self._qumodes = None
+        elif isinstance(qumodes, list):
+            self._qumodes = qumodes
+        else:
+            self._qumodes = [qumodes]
+
+        if self._qumodes is None:
+            self._qumode_indices = None
+        else:
+            self._qumode_indices = circuit.get_qubit_indices(self._qumodes)
 
         # Convert photon loss rate to photons per second
         if self._time_unit == "dt":
@@ -86,30 +107,33 @@ class PhotonLossNoisePass(LocalNoisePass):
 
     def _photon_loss_error(self, op: Instruction, qubits: Sequence[int]):
         """Return photon loss error on each operand qubit"""
-        if not op.duration:
-            if op.duration is None:
-                warnings.warn(
-                    "PhotonLossNoisePass ignores instructions without duration,"
-                    " you may need to schedule circuit in advance.",
-                    UserWarning,
-                )
-            return None
+        error = None
+        
+        if (self._instructions is None or op.name in self._instructions) and (self._qumode_indices is None or set(qubits).issubset(self._qumode_indices)):
+            if not op.duration:
+                if op.duration is None:
+                    warnings.warn(
+                        "PhotonLossNoisePass ignores instructions without duration,"
+                        " you may need to schedule circuit in advance.",
+                        UserWarning,
+                    )
+                return None
 
-        # Convert op duration to seconds
-        if op.unit == "dt":
-            if self._dt is None:
-                raise NoiseError(
-                    "PhotonLossNoisePass cannot apply noise to a 'dt' unit duration"
-                    " without a dt time set."
-                )
-            duration = op.duration * self._dt
-        else:
-            duration = apply_prefix(op.duration, op.unit)
+            # Convert op duration to seconds
+            if op.unit == "dt":
+                if self._dt is None:
+                    raise NoiseError(
+                        "PhotonLossNoisePass cannot apply noise to a 'dt' unit duration"
+                        " without a dt time set."
+                    )
+                duration = op.duration * self._dt
+            else:
+                duration = apply_prefix(op.duration, op.unit)
 
-        kraus_operators = calculate_kraus(
-            self._photon_loss_rate_sec, duration, self._circuit, op
-        )
+            kraus_operators = calculate_kraus(
+                self._photon_loss_rate_sec, duration, self._circuit, op
+            )
 
-        error = kraus_error(kraus_operators)
+            error = kraus_error(kraus_operators)
 
         return error
