@@ -12,7 +12,7 @@ from qiskit.utils.units import apply_prefix
 import scipy
 
 
-def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None):
+def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None, qubit_indices: list = None):
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
@@ -22,15 +22,14 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
         photon_loss_rate (float): kappa, the rate of photon loss per second
         time (float): current duration of time in seconds
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
+        op (Instruction): current instruction to apply noise model
+        qubit_indices (list): list of integer qubit indices on which to apply Kraus operators
 
     Returns:
         List of Kraus operators for all qubits up to circuit.cutoff
     """
-    operators = []
-
     n = circuit.ops.N
     a = circuit.ops.a
-
 
     # FIXME -- This will resize N & a based on the number of qubits in an operation, filling zero.
     # The circuit's N & a will be the size of 2^num_qubits_per_qumode.
@@ -46,7 +45,53 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
         a = a.copy()
         a.resize((new_dim, new_dim))
 
+    return __kraus_operators(photon_loss_rate, time, circuit, a, n)
 
+
+def calculate_kraus_tensor(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None, qubit_indices: list = None):
+    """
+    Calculate Kraus operator given number of photons and photon loss rate over specified time.
+
+    Apply Krause operator to provided qubit_indices only, tensor product with identity for remaining qubits.
+
+    Following equation 44 from Bosonic Oprations and Measurements, Girvin
+
+    Args:
+        photon_loss_rate (float): kappa, the rate of photon loss per second
+        time (float): current duration of time in seconds
+        circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
+        op (Instruction): current instruction to apply noise model
+        qubit_indices (list): list of integer qubit indices on which to apply Kraus operators
+
+    Returns:
+        List of Kraus operators for all qubits up to circuit.cutoff
+    """
+
+    # Identity for individual qubit
+    qubit_eye = scipy.sparse.eye(2)
+
+    # Kraus operators for selected qumode
+    operators = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
+
+    for operator in operators:
+        value = []
+        op_tensor = False
+        for qubit_index in range(0, circuit.num_qubits):
+            if qubit_index in qubit_indices:
+                # Tensor Kraus operators (once)
+                if not op_tensor:
+                    value = scipy.sparse.kron(value, operator)
+                    op_tensor = True
+            else:
+                # Tensor identity
+                value = scipy.sparse.kron(value, qubit_eye)
+        operators.append(value)
+
+    return operators
+
+
+def __kraus_operators(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, a, n):
+    operators = []
     for photons in range(circuit.cutoff + 1):
         kraus = math.sqrt(
             math.pow((1 - math.exp(-1 * photon_loss_rate * time)), photons)
@@ -65,7 +110,7 @@ class PhotonLossNoisePass(LocalNoisePass):
     """Add photon loss noise model to a circuit during transpiler transformation pass."""
 
     def __init__(
-        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, instructions = None, qumodes = None, time_unit: str = "s", dt: float = None
+        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, instructions = None, qumode = None, time_unit: str = "s", dt: float = None
     ):
         """
         Initialize the Photon Loss noise pass
@@ -74,7 +119,7 @@ class PhotonLossNoisePass(LocalNoisePass):
             photon_loss_rate (float): kappa, the rate of photon loss per second
             circuit (CVCircuit): cq2a.CVCircuit with ops for N and a, and cutoff
             instructions (str or list[str]): the instructions error applies to
-            qubits (Sequence[Qubit]): qumode qubits instruction error applies to
+            qumode (Sequence[Qubit]): qumode qubits error noise pass applies to
             time_unit (string): string photon loss rate unit of time (default "s" for seconds)
             dt (float): optional conversion factor for photon_loss_rate and operation duration to seconds
         """
@@ -91,17 +136,17 @@ class PhotonLossNoisePass(LocalNoisePass):
         else:
             self._instructions = [instructions]
 
-        if qumodes is None:
-            self._qumodes = None
-        elif isinstance(qumodes, list):
-            self._qumodes = qumodes
+        if qumode is None:
+            self._qumode = None
+        elif isinstance(qumode, list):
+            self._qumode = qumode
         else:
-            self._qumodes = [qumodes]
+            self._qumode = [qumode]
 
-        if self._qumodes is None:
+        if self._qumode is None:
             self._qumode_indices = None
         else:
-            self._qumode_indices = circuit.get_qubit_indices(self._qumodes)
+            self._qumode_indices = circuit.get_qubit_indices(self._qumode)
 
         # Convert photon loss rate to photons per second
         if self._time_unit == "dt":
@@ -137,9 +182,14 @@ class PhotonLossNoisePass(LocalNoisePass):
             else:
                 duration = apply_prefix(op.duration, op.unit)
 
-            kraus_operators = calculate_kraus(
-                self._photon_loss_rate_sec, duration, self._circuit, op
-            )
+            if self._qumode_indices:
+                kraus_operators = calculate_kraus_tensor(
+                    self._photon_loss_rate_sec, duration, self._circuit, op, self._qumode_indices
+                )
+            else:
+                kraus_operators = calculate_kraus(
+                    self._photon_loss_rate_sec, duration, self._circuit, op
+                )
 
             error = kraus_error(kraus_operators)
 
