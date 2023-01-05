@@ -412,7 +412,7 @@ class CVOperators:
 
     def csnap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator,
-        with explicit sigmaz in exponential. Can be used to generate
+        with explicit sigma_z in exponential. Can be used to generate
         fock-number selective qubit rotations.
 
         Args:
@@ -426,8 +426,8 @@ class CVOperators:
         ket_n = numpy.zeros(self.cutoff_value)
         ket_n[n] = 1
         projector = numpy.outer(ket_n, ket_n)
-        sparse_projector = scipy.sparse.csr_matrix(projector)
-        arg = theta * 1j * scipy.sparse.kron(zQB, sparse_projector)
+        # sparse_projector = scipy.sparse.csc_matrix(projector)
+        arg = theta * 1j * scipy.sparse.kron(zQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
 
     def eswap(self, theta):
