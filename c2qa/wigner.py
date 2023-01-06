@@ -20,8 +20,9 @@ def simulate_wigner(
     shots: int,
     noise_pass=None,
     conditional: bool = True,
+    trace: bool = False,
 ):
-    """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
+    """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
     states, _ = simulate(
         circuit,
         shots=shots,
@@ -33,10 +34,11 @@ def simulate_wigner(
         if conditional:
             state = states["0x0"]  # even state
             # state = states["0x1"]  # odd state
-            density_matrix = trace_out_qubits(circuit, state)
         else:
             state = states
-            density_matrix = state
+
+        if trace:
+            density_matrix = trace_out_qubits(circuit, state)
 
         wigner_result = _wigner(density_matrix, xvec)
     else:
