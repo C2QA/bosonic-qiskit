@@ -231,6 +231,9 @@ def plot(
 
     amax = np.amax(data)
     amin = np.amin(data)
+    if amax == 0 and amin == 0:
+        amax = 1
+        amin = -1
     abs_max = max(amax, abs(amin))
     color_levels = np.linspace(-abs_max, abs_max, num_colors)
 
