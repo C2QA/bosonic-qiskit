@@ -293,7 +293,7 @@ def test_photon_loss_instruction(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"])
 
-        state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+        state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
 
 
@@ -316,7 +316,7 @@ def test_photon_loss_qumode(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, qumode=qmr[0])
 
-        state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+        state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
 
 
@@ -339,7 +339,7 @@ def test_photon_loss_instruction_qumode(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"], qumode=qmr[0])
 
-        state, result = c2qa.util.simulate(circuit, noise_pass=noise_pass)
+        state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
 
 
