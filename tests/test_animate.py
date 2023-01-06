@@ -199,12 +199,12 @@ def __animate_without_cbit(filename: str, trace: bool = False):
 
 def test_animate_with_trace(capsys):
     with capsys.disabled():
-        __animate_with_cbit("tests/animate_with_trace.gif")
+        __animate_without_cbit("tests/animate_with_trace.gif", True)
 
 
 def test_animate_without_trace(capsys):
     with capsys.disabled():
-        __animate_with_cbit("tests/animate_without_trace.gif")
+        __animate_without_cbit("tests/animate_without_trace.gif", False)
 
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
