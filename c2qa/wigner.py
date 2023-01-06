@@ -39,6 +39,8 @@ def simulate_wigner(
 
         if trace:
             density_matrix = trace_out_qubits(circuit, state)
+        else:
+            density_matrix = state
 
         wigner_result = _wigner(density_matrix, xvec)
     else:
