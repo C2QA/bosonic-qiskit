@@ -28,9 +28,10 @@ def animate_wigner(
     axes_steps: int = 200,
     processes: int = None,
     keep_state: bool = True,
-    noise_pass = None,
+    noise_passes = None,
     sequential_subcircuit: bool = False,
     draw_grid: bool = False,
+    trace: bool = True,
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -56,10 +57,11 @@ def animate_wigner(
         keep_state (bool, optional): True if each frame builds on the previous frame's state vector.
                                      False if each frame starts over from the beginning of the circuit.
                                      If True, it requires sequential simulation of each frame.
-        noise_pass (PhotonLossNoisePass, optional): noise pass to apply
+        noise_passes (lisst of Qiskit noise passes, optional): noise passes to apply
         sequential_subcircuit (bool, optional): boolean flag to animate subcircuits as one gate (False) or as sequential 
                                                 gates (True). Defautls to False.
         draw_grid (bool, optional): True if grid lines should be drawn on plot. Defaults to False.
+        trace (bool, optional):  True if qubits should be tracedfor each frame prior to calculating Wigner function. Defaults to True.
 
     Returns:
         [type]: [description]
@@ -76,7 +78,7 @@ def animate_wigner(
     xvec = numpy.linspace(axes_min, axes_max, axes_steps)
 
     if keep_state:
-        w_fock = __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_pass)
+        w_fock = __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_passes, trace)
     elif processes == 1:
         w_fock = []
         for circuit in circuits:
@@ -84,8 +86,9 @@ def animate_wigner(
                 circuit,
                 xvec,
                 shots,
-                noise_pass=noise_pass,
+                noise_passes=noise_passes,
                 conditional=cbit is not None,
+                trace=trace or cbit is not None,
             )
             w_fock.append(fock)
     else:
@@ -93,7 +96,7 @@ def animate_wigner(
         results = pool.starmap(
             simulate_wigner,
             (
-                (circuit, xvec, shots, noise_pass, cbit is not None)
+                (circuit, xvec, shots, noise_passes, cbit is not None, trace or cbit is not None)
                 for circuit in circuits
             ),
         )
@@ -383,7 +386,7 @@ def _animate(frame, *fargs):
         plt.savefig(f"{file}_frames/frame_{frame}.png")
 
 
-def __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_pass):
+def __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_passes, trace):
     """Simulate Wigner function, preserving state between iterations"""
     w_fock = []
     previous_state = None
@@ -410,8 +413,9 @@ def __simulate_wigner_with_state(circuits, qubit, cbit, xvec, shots, noise_pass)
             sim_circuit,
             xvec,
             shots,
-            noise_pass=noise_pass,
+            noise_passes=noise_passes,
             conditional=cbit is not None,
+            trace=trace or cbit is not None,
         )
         w_fock.append(fock)
 

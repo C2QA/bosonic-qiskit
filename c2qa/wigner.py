@@ -18,14 +18,15 @@ def simulate_wigner(
     circuit: CVCircuit,
     xvec: np.ndarray,
     shots: int,
-    noise_pass=None,
+    noise_passes=None,
     conditional: bool = True,
+    trace: bool = False,
 ):
-    """Simulate the circuit, partial trace the results, and calculate the Wigner function."""
+    """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
     states, _ = simulate(
         circuit,
         shots=shots,
-        noise_pass=noise_pass,
+        noise_passes=noise_passes,
         conditional_state_vector=conditional,
     )
 
@@ -33,9 +34,12 @@ def simulate_wigner(
         if conditional:
             state = states["0x0"]  # even state
             # state = states["0x1"]  # odd state
-            density_matrix = trace_out_qubits(circuit, state)
         else:
             state = states
+
+        if trace:
+            density_matrix = trace_out_qubits(circuit, state)
+        else:
             density_matrix = state
 
         wigner_result = _wigner(density_matrix, xvec)

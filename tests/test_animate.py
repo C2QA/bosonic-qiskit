@@ -134,15 +134,15 @@ def test_animate_parameterized(capsys):
 
 def test_animate_gif(capsys):
     with capsys.disabled():
-        __animate("tests/displacement.gif")
+        __animate_with_cbit("tests/displacement.gif")
 
 
 def test_animate_apng(capsys):
     with capsys.disabled():
-        __animate("tests/displacement.apng")
+        __animate_with_cbit("tests/displacement.apng")
 
 
-def __animate(filename: str):
+def __animate_with_cbit(filename: str):
     qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
     qr = qiskit.QuantumRegister(size=1)
     cr = qiskit.ClassicalRegister(size=1)
@@ -168,6 +168,43 @@ def __animate(filename: str):
         shots=25,
     )
     assert Path(filename).is_file()
+
+
+def __animate_without_cbit(filename: str, trace: bool = False):
+    qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+    qr = qiskit.QuantumRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qr)
+
+    dist = 3
+
+    circuit.initialize([1, 0], qr[0])
+    circuit.cv_initialize(0, qmr[0])
+
+    circuit.h(qr[0])
+    circuit.cv_c_d(dist, qmr[0], qr[0])
+
+    c2qa.animate.animate_wigner(
+        circuit,
+        qubit=qr[0],
+        file=filename,
+        axes_min=-8,
+        axes_max=8,
+        animation_segments=5,
+        processes=1,
+        shots=25,
+        trace=trace,
+    )
+    assert Path(filename).is_file()
+
+
+def test_animate_with_trace(capsys):
+    with capsys.disabled():
+        __animate_without_cbit("tests/animate_with_trace.gif", True)
+
+
+def test_animate_without_trace(capsys):
+    with capsys.disabled():
+        __animate_without_cbit("tests/animate_without_trace.gif", False)
 
 
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
