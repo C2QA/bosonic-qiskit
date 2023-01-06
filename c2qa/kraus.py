@@ -1,9 +1,11 @@
+import functools
 import math
 from typing import Sequence
 import warnings
 
 
 import c2qa
+import numpy
 from qiskit.circuit import Instruction
 from qiskit.providers.aer.noise.passes.local_noise_pass import LocalNoisePass
 from qiskit.providers.aer.noise import kraus_error
@@ -48,7 +50,7 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
     return __kraus_operators(photon_loss_rate, time, circuit, a, n)
 
 
-def calculate_kraus_tensor(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None, qubit_indices: list = None):
+def calculate_kraus_tensor(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None, qumode = None):
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
@@ -61,33 +63,47 @@ def calculate_kraus_tensor(photon_loss_rate: float, time: float, circuit: c2qa.C
         time (float): current duration of time in seconds
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
         op (Instruction): current instruction to apply noise model
-        qubit_indices (list): list of integer qubit indices on which to apply Kraus operators
+        qumode (Sequence[Qubit]): qumode qubits error noise pass applies to
 
     Returns:
         List of Kraus operators for all qubits up to circuit.cutoff
     """
 
     # Identity for individual qubit
-    qubit_eye = scipy.sparse.eye(2)
+    qubit_eye = numpy.eye(2)
 
     # Kraus operators for selected qumode
-    operators = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
+    kraus_ops = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
+    operators = []
 
-    for operator in operators:
-        value = []
-        op_tensor = False
-        for qubit_index in range(0, circuit.num_qubits):
-            if qubit_index in qubit_indices:
+    # circuit_instruction = find_circuit_instruction(circuit, op)
+
+    for kraus_op in kraus_ops:
+        matrices = []
+        kraus_tensor = False
+
+        for op_qubit in op.definition.qubits:
+            # FIXME the operation had been copied, its QuantumRegister has different Qubit instances in it and won't equal.
+            if not kraus_tensor and op_qubit in qumode:
                 # Tensor Kraus operators (once)
-                if not op_tensor:
-                    value = scipy.sparse.kron(value, operator)
-                    op_tensor = True
+                matrices.append(kraus_op)
+                kraus_tensor = True
             else:
-                # Tensor identity
-                value = scipy.sparse.kron(value, qubit_eye)
-        operators.append(value)
+                # Tensor qubit identity
+                matrices.append(qubit_eye)
+
+        operators.append(functools.reduce(numpy.kron, matrices))
 
     return operators
+
+
+def find_circuit_instruction(circuit, op):
+    result = None
+    for circuit_instruction in circuit.data:
+        if circuit_instruction.operation == op:  # FIXME the operation.definitions are not equal!
+            result = circuit_instruction
+            break
+    return result
 
 
 def __kraus_operators(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, a, n):
@@ -184,7 +200,7 @@ class PhotonLossNoisePass(LocalNoisePass):
 
             if self._qumode_indices:
                 kraus_operators = calculate_kraus_tensor(
-                    self._photon_loss_rate_sec, duration, self._circuit, op, self._qumode_indices
+                    self._photon_loss_rate_sec, duration, self._circuit, op, self._qumode
                 )
             else:
                 kraus_operators = calculate_kraus(
