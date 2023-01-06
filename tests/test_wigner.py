@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 import c2qa
+import numpy
 import qiskit
 
 
@@ -174,3 +175,11 @@ def test_plot_wigner_snapshot(capsys):
         state, result = c2qa.util.simulate(circuit)
 
         c2qa.wigner.plot_wigner_snapshot(circuit, result, "tests")
+
+
+def test_plot_zero_contour(capsys):
+    with capsys.disabled():
+        data = numpy.zeros((200, 200)).tolist()
+        filename = "tests/test_plot_zero_contour.png"
+        c2qa.wigner.plot(data, file=filename)
+        assert Path(filename).is_file()
