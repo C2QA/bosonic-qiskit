@@ -348,3 +348,36 @@ def test_relaxation_noise_pass(capsys):
             noise_passes=noise_pass,
         )
         assert Path(filename).is_file()
+
+
+def test_relaxation_and_photon_loss_noise_passes(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        num_qubits_per_qumode = 2
+        num_qubits = 1
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=num_qubits_per_qumode)
+        qbr = qiskit.QuantumRegister(size=num_qubits)
+        circuit = c2qa.CVCircuit(qmr, qbr)
+
+        circuit.cv_initialize(3, qmr[0])
+
+        circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
+
+        noise_passes = []
+
+        t1s = np.ones(circuit.num_qubits).tolist()
+        t2s = np.ones(circuit.num_qubits).tolist()
+        noise_passes.append(RelaxationNoisePass(t1s, t2s))
+
+        photon_loss_rate = 0.02
+        noise_passes.append(c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit="ns"))
+
+        filename = "tests/test_relaxation_and_photon_loss_noise_passes.gif"
+        c2qa.animate.animate_wigner(
+            circuit,
+            animation_segments=200,
+            file=filename,
+            noise_passes=noise_passes,
+        )
+        assert Path(filename).is_file()
