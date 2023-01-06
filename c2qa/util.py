@@ -244,7 +244,7 @@ def simulate(
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
     noise_model=None,
-    noise_pass=None,
+    noise_passes=None,
     max_parallel_threads: int = 0,
 ):
     """Convenience function to simulate using the given backend.
@@ -270,8 +270,12 @@ def simulate(
         )
 
     # Run noise pass, if provided
-    if noise_pass:
-        circuit_compiled = noise_pass(circuit)
+    if noise_passes:
+        if not isinstance(noise_passes, list):
+            noise_passes = [noise_passes]
+
+        for noise_pass in noise_passes:
+            circuit_compiled = noise_pass(circuit)
     else:
         circuit_compiled = circuit
 

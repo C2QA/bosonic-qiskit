@@ -18,7 +18,7 @@ def simulate_wigner(
     circuit: CVCircuit,
     xvec: np.ndarray,
     shots: int,
-    noise_pass=None,
+    noise_passes=None,
     conditional: bool = True,
     trace: bool = False,
 ):
@@ -26,7 +26,7 @@ def simulate_wigner(
     states, _ = simulate(
         circuit,
         shots=shots,
-        noise_pass=noise_pass,
+        noise_passes=noise_passes,
         conditional_state_vector=conditional,
     )
 
