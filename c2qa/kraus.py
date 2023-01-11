@@ -50,7 +50,13 @@ def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircui
     return __kraus_operators(photon_loss_rate, time, circuit, a, n)
 
 
-def calculate_kraus_tensor(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None, qumode = None):
+def calculate_kraus_tensor(
+    photon_loss_rate: float, 
+    time: float, 
+    circuit: c2qa.CVCircuit, 
+    op: Instruction = None, 
+    op_qubits: Sequence[int] = [],
+    qumode_indices = None):
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
@@ -82,12 +88,13 @@ def calculate_kraus_tensor(photon_loss_rate: float, time: float, circuit: c2qa.C
         matrices = []
         kraus_tensor = False
 
-        for op_qubit in op.definition.qubits:
+        for op_qubit in op_qubits:
             # FIXME the operation had been copied, its QuantumRegister has different Qubit instances in it and won't equal.
-            if not kraus_tensor and op_qubit in qumode:
+            if op_qubit in qumode_indices:
                 # Tensor Kraus operators (once)
-                matrices.append(kraus_op)
-                kraus_tensor = True
+                if not kraus_tensor:
+                    matrices.append(kraus_op)
+                    kraus_tensor = True
             else:
                 # Tensor qubit identity
                 matrices.append(qubit_eye)
@@ -177,7 +184,7 @@ class PhotonLossNoisePass(LocalNoisePass):
         """Return photon loss error on each operand qubit"""
         error = None
         
-        if (self._instructions is None or op.name in self._instructions) and (self._qumode_indices is None or set(qubits).issubset(self._qumode_indices)):
+        if (self._instructions is None or op.name in self._instructions) and (self._qumode_indices is None or any(x in qubits for x in self._qumode_indices)):
             if not op.duration:
                 if op.duration is None:
                     warnings.warn(
@@ -200,7 +207,7 @@ class PhotonLossNoisePass(LocalNoisePass):
 
             if self._qumode_indices:
                 kraus_operators = calculate_kraus_tensor(
-                    self._photon_loss_rate_sec, duration, self._circuit, op, self._qumode
+                    self._photon_loss_rate_sec, duration, self._circuit, op, qubits, self._qumode_indices
                 )
             else:
                 kraus_operators = calculate_kraus(
