@@ -242,10 +242,10 @@ def plot(
 
     xvec_int = [int(x) for x in xvec]
     xvec_int = sorted(set(xvec_int))
-    ax.set_xlabel("x")
-    ax.set_xticks(xvec_int)
-    ax.set_ylabel("p")
-    ax.set_yticks(xvec_int)
+    ax.set_xlabel(r"$x$")
+    # ax.set_xticks(xvec_int)
+    ax.set_ylabel(r"$p$")
+    # ax.set_yticks(xvec_int)
     if draw_grid:
         ax.grid()
 
