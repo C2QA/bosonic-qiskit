@@ -90,7 +90,69 @@ def test_kraus_operators(capsys):
         assert kraus.is_cptp(), "Is not CPTP"
 
 
+def test_beamsplitter_kraus_operators(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        qubits_per_mode = 2
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        circuit = c2qa.CVCircuit(qmr)
+        circuit.cv_initialize(2, qmr[0])
+        circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        photon_loss_rate = 1000000  # per second
+        time = 1.0  # seconds
+        kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit, [2,3,0,1], [0,1,2,3])
+
+        kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
+        assert kraus.is_cp(), "Is not completely positive"
+
+        print()
+        print("Kraus Operators")
+        accum = 0j
+        for index, op in enumerate(kraus_operators):
+            print(f"op {index}")
+            print(op)
+
+            op_dag = np.transpose(np.conj(op))
+            print(f"op_dag {index}")
+            print(op_dag)
+
+            op_dot = np.dot(op_dag, op)
+            print(f"op_dot {index}")
+            print(op_dot)
+
+            accum += op_dot
+            print()
+
+        print("Sum")
+        print(accum)
+
+        is_identity = (accum.shape[0] == accum.shape[1]) and np.allclose(
+            accum, np.eye(accum.shape[0])
+        )
+        print(f"Sum is identity {is_identity}")
+        assert is_identity, "Sum is not identity"
+
+        assert kraus.is_tp(), "Is not trace preserving"
+        assert kraus.is_cptp(), "Is not CPTP"
+
+
 def test_noise_with_beamsplitter(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        qubits_per_mode = 2
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        init_circuit = c2qa.CVCircuit(qmr)
+        init_circuit.cv_initialize(2, qmr[0])
+        init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        state, result = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+
+
+def test_noise_with_cnd_beamsplitter(capsys):
     with capsys.disabled():
         num_qumodes = 2
         qubits_per_mode = 2
@@ -105,6 +167,7 @@ def test_noise_with_beamsplitter(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+
 
 def test_photon_loss_pass_with_conditional(capsys):
     with capsys.disabled():
@@ -132,15 +195,15 @@ def test_photon_loss_pass_delay_without_unit(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
         qbr = qiskit.QuantumRegister(size=num_qubits)
 
-        with pytest.raises(NoiseError):
-            fail_circuit = c2qa.CVCircuit(qmr, qbr)
-            fail_circuit.cv_initialize(2, qmr[0])
-            fail_circuit.delay(100)
-            fail_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
-            photon_loss_rate = 0.01
-            time_unit = "ns"
-            noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=fail_circuit, time_unit=time_unit)
-            state, result = c2qa.util.simulate(fail_circuit, noise_passes=noise_pass)
+        fail_circuit = c2qa.CVCircuit(qmr, qbr)
+        fail_circuit.cv_initialize(2, qmr[0])
+        fail_circuit.delay(duration=100) #, unit="ns")
+        fail_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=fail_circuit, time_unit=time_unit)
+        state, result = c2qa.util.simulate(fail_circuit, noise_passes=noise_pass)
+        assert result.success
 
 
 def test_photon_loss_pass_delay_with_unit(capsys):

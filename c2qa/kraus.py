@@ -14,47 +14,10 @@ from qiskit.utils.units import apply_prefix
 import scipy
 
 
-def calculate_kraus(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, op: Instruction = None, qubit_indices: list = None):
-    """
-    Calculate Kraus operator given number of photons and photon loss rate over specified time.
-
-    Following equation 44 from Bosonic Oprations and Measurements, Girvin
-
-    Args:
-        photon_loss_rate (float): kappa, the rate of photon loss per second
-        time (float): current duration of time in seconds
-        circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
-        op (Instruction): current instruction to apply noise model
-        qubit_indices (list): list of integer qubit indices on which to apply Kraus operators
-
-    Returns:
-        List of Kraus operators for all qubits up to circuit.cutoff
-    """
-    n = circuit.ops.N
-    a = circuit.ops.a
-
-    # FIXME -- This will resize N & a based on the number of qubits in an operation, filling zero.
-    # The circuit's N & a will be the size of 2^num_qubits_per_qumode.
-    # But will the position of the new values be correct? 
-    # Numpy will fill zero to the right & down (higher indices). That may not be the qubit indices for the qumodes selected.
-    #
-    # Redefine N and a for the operation size
-    # Qiskit `delay` gates are always for one qubit, see https://qiskit.org/documentation/stubs/qiskit.circuit.QuantumCircuit.delay.html
-    if op is not None and (op.name == "delay" or op.num_qubits > math.sqrt(circuit.cutoff)):
-        new_dim = 2**op.num_qubits
-        n = n.copy()
-        n.resize((new_dim, new_dim))
-        a = a.copy()
-        a.resize((new_dim, new_dim))
-
-    return __kraus_operators(photon_loss_rate, time, circuit, a, n)
-
-
-def calculate_kraus_tensor(
+def calculate_kraus(
     photon_loss_rate: float, 
     time: float, 
-    circuit: c2qa.CVCircuit, 
-    op: Instruction = None, 
+    circuit: c2qa.CVCircuit,
     op_qubits: Sequence[int] = [],
     qumode_indices = None):
     """
@@ -68,8 +31,8 @@ def calculate_kraus_tensor(
         photon_loss_rate (float): kappa, the rate of photon loss per second
         time (float): current duration of time in seconds
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
-        op (Instruction): current instruction to apply noise model
-        qumode (Sequence[Qubit]): qumode qubits error noise pass applies to
+        op_qubits (sequence[int]): qubit int indices in the given CVCircuit used by the current instruction
+        qumode_indices (Sequence[int]): qumode int indices in the given CVCircuit to test if qubits from instruction are a part of a qumode
 
     Returns:
         List of Kraus operators for all qubits up to circuit.cutoff
@@ -82,35 +45,28 @@ def calculate_kraus_tensor(
     kraus_ops = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
     operators = []
 
-    # circuit_instruction = find_circuit_instruction(circuit, op)
-
     for kraus_op in kraus_ops:
         matrices = []
-        kraus_tensor = False
+        kraus_tensor = {}
 
         for op_qubit in op_qubits:
-            # FIXME the operation had been copied, its QuantumRegister has different Qubit instances in it and won't equal.
-            if op_qubit in qumode_indices:
+            if qumode_indices and op_qubit in qumode_indices:
+                qubit_index = qumode_indices.index(op_qubit)
+                qumode_index = math.floor(qubit_index / circuit.num_qubits_per_qumode)
                 # Tensor Kraus operators (once)
-                if not kraus_tensor:
+                if not kraus_tensor.get(qumode_index, False):
                     matrices.append(kraus_op)
-                    kraus_tensor = True
+                    kraus_tensor[qumode_index] = True
             else:
                 # Tensor qubit identity
                 matrices.append(qubit_eye)
 
-        operators.append(functools.reduce(numpy.kron, matrices))
+        if len(matrices) > 0:
+            operators.append(functools.reduce(numpy.kron, matrices))
+        else:
+            operators = kraus_ops
 
     return operators
-
-
-def find_circuit_instruction(circuit, op):
-    result = None
-    for circuit_instruction in circuit.data:
-        if circuit_instruction.operation == op:  # FIXME the operation.definitions are not equal!
-            result = circuit_instruction
-            break
-    return result
 
 
 def __kraus_operators(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, a, n):
@@ -160,16 +116,16 @@ class PhotonLossNoisePass(LocalNoisePass):
             self._instructions = [instructions]
 
         if qumode is None:
-            self._qumode = None
+            # Apply photon loss to all qumodes by default
+            self._qumode = self._circuit.qumode_qubits
         elif isinstance(qumode, list):
             self._qumode = qumode
         else:
             self._qumode = [qumode]
 
-        if self._qumode is None:
-            self._qumode_indices = None
-        else:
-            self._qumode_indices = circuit.get_qubit_indices(self._qumode)
+        self._qumode_indices = circuit.get_qubit_indices(self._qumode)
+        if len(self._qumode_indices) % self._circuit.num_qubits_per_qumode != 0:
+            raise Exception("List of qumode indices in PhotonLossNoisePass is not a multiple of the number of qubits per qumode")
 
         # Convert photon loss rate to photons per second
         if self._time_unit == "dt":
@@ -194,6 +150,11 @@ class PhotonLossNoisePass(LocalNoisePass):
                     )
                 return None
 
+            # Qiskit `delay` gates are always for one qubit, see https://qiskit.org/documentation/stubs/qiskit.circuit.QuantumCircuit.delay.html            
+            if op.name == "delay":
+                warnings.warn("Qiskit applies delays as single qubit gates. Qumode PhotonLossNoisePass will not be applied")
+                return None
+
             # Convert op duration to seconds
             if op.unit == "dt":
                 if self._dt is None:
@@ -205,14 +166,9 @@ class PhotonLossNoisePass(LocalNoisePass):
             else:
                 duration = apply_prefix(op.duration, op.unit)
 
-            if self._qumode_indices:
-                kraus_operators = calculate_kraus_tensor(
-                    self._photon_loss_rate_sec, duration, self._circuit, op, qubits, self._qumode_indices
-                )
-            else:
-                kraus_operators = calculate_kraus(
-                    self._photon_loss_rate_sec, duration, self._circuit, op
-                )
+            kraus_operators = calculate_kraus(
+                self._photon_loss_rate_sec, duration, self._circuit, qubits, self._qumode_indices
+            )
 
             error = kraus_error(kraus_operators)
 
