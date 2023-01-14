@@ -247,6 +247,7 @@ def plot(
     # ax.set_xticks(xvec_int)
     ax.set_ylabel(r"$p$")
     # ax.set_yticks(xvec_int)
+    ax.set_aspect('equal', 'box')
     if draw_grid:
         ax.grid()
 
