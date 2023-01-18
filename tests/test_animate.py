@@ -262,6 +262,8 @@ def test_animate_cat_state_wigner(capsys):
         wigner_filename = "tests/test_animate_cat_state_wigner.mp4"
         c2qa.animate.animate_wigner(
             circuit,
+            qubit=qr[0],
+            cbit=cr[0],
             file=wigner_filename,
             trace=True,
             axes_min=-6,
