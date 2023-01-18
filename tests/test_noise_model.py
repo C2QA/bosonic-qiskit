@@ -155,6 +155,38 @@ def test_beamsplitter_kraus_operators(capsys):
         assert kraus.is_cptp(), "Is not CPTP"
 
 
+def test_invalid_photon_loss_rate_length(capsys):
+    with pytest.raises(Exception), capsys.disabled():
+        num_qumodes = 2
+        qubits_per_mode = 2
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        init_circuit = c2qa.CVCircuit(qmr)
+        init_circuit.cv_initialize(2, qmr[0])
+        init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        photon_loss_rate = [1,2,3]  # Should only have two loss rates
+        time_unit = "ns"
+
+        # Should raise Exception for not having proper number of loss rates
+        c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+
+
+def test_valid_photon_loss_rate_length(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        qubits_per_mode = 2
+
+        qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
+        init_circuit = c2qa.CVCircuit(qmr)
+        init_circuit.cv_initialize(2, qmr[0])
+        init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        photon_loss_rate = [1,2]  # Should only have two loss rates
+        time_unit = "ns"
+        
+        # Should not raise exception as has proper number of loss rates
+        c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+
+
 def test_noise_with_beamsplitter(capsys):
     with capsys.disabled():
         num_qumodes = 2
