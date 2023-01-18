@@ -15,7 +15,7 @@ import scipy
 
 
 def calculate_kraus(
-    photon_loss_rate: float, 
+    photon_loss_rate: Sequence[float], 
     time: float, 
     circuit: c2qa.CVCircuit,
     op_qubits: Sequence[int],
@@ -23,19 +23,19 @@ def calculate_kraus(
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
-    Apply Krause operator to provided qubit_indices only, tensor product with identity for remaining qubits.
+    Apply Kraus operator to provided qubit_indices only, tensor product with identity for remaining qubits.
 
     Following equation 44 from Bosonic Oprations and Measurements, Girvin
 
     Args:
-        photon_loss_rate (float): kappa, the rate of photon loss per second
+        photon_loss_rate (Sequence[float]): kappas, the rate of photon loss per second for each qumode
         time (float): current duration of time in seconds
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
-        op_qubits (sequence[int]): qubit int indices in the given CVCircuit used by the current instruction
+        op_qubits (Sequence[int]): qubit int indices in the given CVCircuit used by the current instruction
         qumode_indices (Sequence[int]): qumode int indices in the given CVCircuit to test if qubits from instruction are a part of a qumode
 
     Returns:
-        List of Kraus operators for all qubits up to circuit.cutoff
+        List of Kraus operators
     """
 
     # Identity for individual qubit
@@ -51,8 +51,7 @@ def calculate_kraus(
 
             # Tensor Kraus operators, if not already done
             if not kraus_tensor.get(qumode_index, False):
-                # TODO make photon_loss_rate per qumode
-                kraus_ops = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
+                kraus_ops = __kraus_operators(photon_loss_rate[qumode_index], time, circuit, circuit.ops.a, circuit.ops.N)
                 operators = __tensor_operators(operators, kraus_ops)               
                 kraus_tensor[qumode_index] = True
         else:
@@ -109,7 +108,6 @@ class PhotonLossNoisePass(LocalNoisePass):
             dt (float): optional conversion factor for photon_loss_rate and operation duration to seconds
         """
 
-        self._photon_loss_rate = photon_loss_rate
         self._circuit = circuit
         self._time_unit = time_unit
         self._dt = dt
@@ -133,12 +131,27 @@ class PhotonLossNoisePass(LocalNoisePass):
         if len(self._qumode_indices) % self._circuit.num_qubits_per_qumode != 0:
             raise Exception("List of qumode indices in PhotonLossNoisePass is not a multiple of the number of qubits per qumode")
 
+        self._num_qumodes = len(self._qumode_indices) // self._circuit.num_qubits_per_qumode
+
+        if isinstance(photon_loss_rate, list):
+            self._photon_loss_rate = photon_loss_rate
+        else:
+            self._photon_loss_rate = [photon_loss_rate]
+
+        # If only one rate was given for multiple qumodes, apply that rate to all qumodes
+        if len(self._photon_loss_rate) == 1 and self._num_qumodes > 1:
+            self._photon_loss_rate = self._photon_loss_rate * self._num_qumodes
+
+        # Test that we have the correct number of photon loss rates
+        if len(self._photon_loss_rate) != self._num_qumodes:
+            raise Exception("List of photon loss rates must have same length as number of qumodes! (i.e., one rate per qumode)")
+
         # Convert photon loss rate to photons per second
         if self._time_unit == "dt":
-            self._photon_loss_rate_sec = self._photon_loss_rate * self._dt
+            self._photon_loss_rate_sec = [rate * self._dt for rate in self._photon_loss_rate] 
         else:
             conversion = 1.0 / apply_prefix(1.0, self._time_unit)
-            self._photon_loss_rate_sec = self._photon_loss_rate * conversion
+            self._photon_loss_rate_sec = [rate * conversion for rate in self._photon_loss_rate] 
 
         super().__init__(self._photon_loss_error)
 

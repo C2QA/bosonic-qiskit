@@ -36,7 +36,13 @@ def test_noise_model(capsys):
 
         photon_loss_rate = 1000000  # per second
         time = 5.0  # seconds
-        kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit, [0, 1, 2], [0, 1])
+        kraus_operators = c2qa.kraus.calculate_kraus(
+            photon_loss_rate=[photon_loss_rate, photon_loss_rate],
+            time=time, 
+            circuit=circuit,
+            op_qubits=[0, 1, 2],
+            qumode_indices=[0, 1]
+        )
 
         print("kraus")
         print(kraus_operators)
@@ -54,7 +60,13 @@ def test_kraus_operators(capsys):
 
         photon_loss_rate = 1000000  # per second
         time = 1.0  # seconds
-        kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit, [0, 1, 2], [0, 1])
+        kraus_operators = c2qa.kraus.calculate_kraus(
+            photon_loss_rate=[photon_loss_rate, photon_loss_rate],
+            time=time, 
+            circuit=circuit,
+            op_qubits=[0, 1, 2],
+            qumode_indices=[0, 1]
+        )
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
         assert kraus.is_cp(), "Is not completely positive"
@@ -101,7 +113,13 @@ def test_beamsplitter_kraus_operators(capsys):
         circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
         photon_loss_rate = 1000000  # per second
         time = 1.0  # seconds
-        kraus_operators = c2qa.kraus.calculate_kraus(photon_loss_rate, time, circuit, [2,3,0,1], [0,1,2,3])
+        kraus_operators = c2qa.kraus.calculate_kraus(
+            photon_loss_rate=[photon_loss_rate, photon_loss_rate],
+            time=time, 
+            circuit=circuit,
+            op_qubits=[2, 3, 0, 1],
+            qumode_indices=[0, 1, 2, 3]
+        )
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
         assert kraus.is_cp(), "Is not completely positive"
