@@ -80,12 +80,24 @@ def test_cat_state_wigner_plot(capsys):
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
+        state, _ = c2qa.util.simulate(circuit)
+        wigner_filename = "tests/test_cat_state_wigner_plot.png"
+        c2qa.wigner.plot_wigner(
+            circuit,
+            state,
+            file=wigner_filename,
+            trace=True,
+            axes_min=-6,
+            axes_max=6,
+        )
+        assert Path(wigner_filename).is_file()
+
         # conditional_state_vector=True will return two state vectors, one for 0 and 1 classical register value
         state, _ = c2qa.util.simulate(circuit, conditional_state_vector=True)
         even_state = state["0x0"]
         odd_state = state["0x1"]
 
-        wigner_filename = "tests/cat_wigner_even.png"
+        wigner_filename = "tests/test_cat_state_wigner_plot_even.png"
         c2qa.wigner.plot_wigner(
             circuit,
             even_state,
@@ -96,7 +108,7 @@ def test_cat_state_wigner_plot(capsys):
         )
         assert Path(wigner_filename).is_file()
 
-        wigner_filename = "tests/cat_wigner_odd.png"
+        wigner_filename = "tests/test_cat_state_wigner_plot_odd.png"
         c2qa.wigner.plot_wigner(
             circuit,
             odd_state,
@@ -106,17 +118,6 @@ def test_cat_state_wigner_plot(capsys):
             axes_max=6,
         )
         assert Path(wigner_filename).is_file()
-
-        # # Need to recreate circuit state prior to measure collapsing qubit state for projections
-        # qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
-        # qr = qiskit.QuantumRegister(size=1)
-        # cr = qiskit.ClassicalRegister(size=1)
-        # circuit = c2qa.CVCircuit(qmr, qr, cr)
-        # circuit.initialize(state)
-
-        # wigner_filename = "tests/repeat_projection_wigner.png"
-        # c2qa.wigner.plot_wigner_projection(circuit, qr[0], file=wigner_filename)
-        # assert Path(wigner_filename).is_file()
 
 
 def test_wigner_mle(capsys):
