@@ -18,8 +18,8 @@ def calculate_kraus(
     photon_loss_rate: float, 
     time: float, 
     circuit: c2qa.CVCircuit,
-    op_qubits: Sequence[int] = [],
-    qumode_indices = None):
+    op_qubits: Sequence[int],
+    qumode_indices: Sequence[int]):
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
@@ -41,32 +41,38 @@ def calculate_kraus(
     # Identity for individual qubit
     qubit_eye = numpy.eye(2)
 
-    # Kraus operators for selected qumode
-    kraus_ops = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
     operators = []
+    kraus_tensor = {}
 
-    for kraus_op in kraus_ops:
-        matrices = []
-        kraus_tensor = {}
+    for op_qubit in op_qubits:
+        if qumode_indices and op_qubit in qumode_indices:
+            qubit_index = qumode_indices.index(op_qubit)
+            qumode_index = math.floor(qubit_index / circuit.num_qubits_per_qumode)
 
-        for op_qubit in op_qubits:
-            if qumode_indices and op_qubit in qumode_indices:
-                qubit_index = qumode_indices.index(op_qubit)
-                qumode_index = math.floor(qubit_index / circuit.num_qubits_per_qumode)
-                # Tensor Kraus operators (once)
-                if not kraus_tensor.get(qumode_index, False):
-                    matrices.append(kraus_op)
-                    kraus_tensor[qumode_index] = True
-            else:
-                # Tensor qubit identity
-                matrices.append(qubit_eye)
-
-        if len(matrices) > 0:
-            operators.append(functools.reduce(numpy.kron, matrices))
+            # Tensor Kraus operators, if not already done
+            if not kraus_tensor.get(qumode_index, False):
+                # TODO make photon_loss_rate per qumode
+                kraus_ops = __kraus_operators(photon_loss_rate, time, circuit, circuit.ops.a, circuit.ops.N)
+                operators = __tensor_operators(operators, kraus_ops)               
+                kraus_tensor[qumode_index] = True
         else:
-            operators = kraus_ops
+            # Tensor qubit identity
+            operators = __tensor_operators(operators, [qubit_eye])
 
     return operators
+
+
+def __tensor_operators(current: list, new: list):
+    result = []
+    if len(current) > 0:
+        for current_op in current:
+            for new_op in new:
+                result.append(numpy.kron(current_op, new_op))
+    else:
+        result.extend(new)
+
+    return result
+
 
 
 def __kraus_operators(photon_loss_rate: float, time: float, circuit: c2qa.CVCircuit, a, n):
