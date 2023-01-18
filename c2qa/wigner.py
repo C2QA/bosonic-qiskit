@@ -12,6 +12,7 @@ from numpy import array, zeros, real, meshgrid, exp, pi, conj, sqrt
 from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
 import scipy.stats
+import matplotlib.ticker as tick
 
 
 def simulate_wigner(
@@ -238,20 +239,21 @@ def plot(
     color_levels = np.linspace(-abs_max, abs_max, num_colors)
 
     fig, ax = plt.subplots(constrained_layout=True)
-    cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu_r")
+    cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu")
 
     xvec_int = [int(x) for x in xvec]
     xvec_int = sorted(set(xvec_int))
-    ax.set_xlabel("x")
-    ax.set_xticks(xvec_int)
-    ax.set_ylabel("p")
-    ax.set_yticks(xvec_int)
+    ax.set_xlabel(r"$x$")
+    # ax.set_xticks(xvec_int)
+    ax.set_ylabel(r"$p$")
+    # ax.set_yticks(xvec_int)
+    ax.set_aspect('equal', 'box')
     if draw_grid:
         ax.grid()
 
 
-    cb = fig.colorbar(cont, ax=ax)
-    cb.set_label(r"$W(x,p)$")
+    cb = fig.colorbar(cont, ax=ax, format=tick.FormatStrFormatter('%.2f'))
+    cb.set_label(r"$W(x,p)$",rotation=270,labelpad=25)
 
     if file:
         plt.savefig(file)
@@ -374,7 +376,7 @@ def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
     max_value = max(amax, amin, 0.0001)  # Force a range if amin/amax are equal
     color_levels = np.linspace(-max_value, max_value, 100)
 
-    cont = ax.contourf(x, y, z, color_levels, cmap="RdBu_r")
+    cont = ax.contourf(x, y, z, color_levels, cmap="RdBu")
 
     xvec_int = [int(value) for value in x]
     xvec_int = sorted(set(xvec_int))
