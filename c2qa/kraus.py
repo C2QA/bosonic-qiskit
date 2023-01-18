@@ -6,7 +6,7 @@ import warnings
 
 import c2qa
 import numpy
-from qiskit.circuit import Instruction
+from qiskit.circuit import Instruction, Qubit
 from qiskit.providers.aer.noise.passes.local_noise_pass import LocalNoisePass
 from qiskit.providers.aer.noise import kraus_error
 from qiskit.providers.aer.noise.noiseerror import NoiseError
@@ -15,7 +15,7 @@ import scipy
 
 
 def calculate_kraus(
-    photon_loss_rate: Sequence[float], 
+    photon_loss_rates: Sequence[float], 
     time: float, 
     circuit: c2qa.CVCircuit,
     op_qubits: Sequence[int],
@@ -28,7 +28,7 @@ def calculate_kraus(
     Following equation 44 from Bosonic Oprations and Measurements, Girvin
 
     Args:
-        photon_loss_rate (Sequence[float]): kappas, the rate of photon loss per second for each qumode
+        photon_loss_rates (Sequence[float]): kappas, the rate of photon loss per second for each qumode
         time (float): current duration of time in seconds
         circuit (CVCircuit): cq2a.CVCircuit with ops for N and a
         op_qubits (Sequence[int]): qubit int indices in the given CVCircuit used by the current instruction
@@ -51,7 +51,7 @@ def calculate_kraus(
 
             # Tensor Kraus operators, if not already done
             if not kraus_tensor.get(qumode_index, False):
-                kraus_ops = __kraus_operators(photon_loss_rate[qumode_index], time, circuit, circuit.ops.a, circuit.ops.N)
+                kraus_ops = __kraus_operators(photon_loss_rates[qumode_index], time, circuit, circuit.ops.a, circuit.ops.N)
                 operators = __tensor_operators(operators, kraus_ops)               
                 kraus_tensor[qumode_index] = True
         else:
@@ -94,7 +94,13 @@ class PhotonLossNoisePass(LocalNoisePass):
     """Add photon loss noise model to a circuit during transpiler transformation pass."""
 
     def __init__(
-        self, photon_loss_rate: float, circuit: c2qa.CVCircuit, instructions = None, qumode = None, time_unit: str = "s", dt: float = None
+        self,
+        photon_loss_rates: Sequence[float],
+        circuit: c2qa.CVCircuit,
+        instructions: Sequence[str] = None,
+        qumodes: Sequence[Qubit] = None,
+        time_unit: str = "s",
+        dt: float = None
     ):
         """
         Initialize the Photon Loss noise pass
@@ -119,39 +125,39 @@ class PhotonLossNoisePass(LocalNoisePass):
         else:
             self._instructions = [instructions]
 
-        if qumode is None:
+        if qumodes is None:
             # Apply photon loss to all qumodes by default
-            self._qumode = self._circuit.qumode_qubits
-        elif isinstance(qumode, list):
-            self._qumode = qumode
+            self._qumodes = self._circuit.qumode_qubits
+        elif isinstance(qumodes, list):
+            self._qumodes = qumodes
         else:
-            self._qumode = [qumode]
+            self._qumodes = [qumodes]
 
-        self._qumode_indices = circuit.get_qubit_indices(self._qumode)
+        self._qumode_indices = circuit.get_qubit_indices(self._qumodes)
         if len(self._qumode_indices) % self._circuit.num_qubits_per_qumode != 0:
             raise Exception("List of qumode indices in PhotonLossNoisePass is not a multiple of the number of qubits per qumode")
 
         self._num_qumodes = len(self._qumode_indices) // self._circuit.num_qubits_per_qumode
 
-        if isinstance(photon_loss_rate, list):
-            self._photon_loss_rate = photon_loss_rate
+        if isinstance(photon_loss_rates, list):
+            self._photon_loss_rates = photon_loss_rates
         else:
-            self._photon_loss_rate = [photon_loss_rate]
+            self._photon_loss_rates = [photon_loss_rates]
 
         # If only one rate was given for multiple qumodes, apply that rate to all qumodes
-        if len(self._photon_loss_rate) == 1 and self._num_qumodes > 1:
-            self._photon_loss_rate = self._photon_loss_rate * self._num_qumodes
+        if len(self._photon_loss_rates) == 1 and self._num_qumodes > 1:
+            self._photon_loss_rates = self._photon_loss_rates * self._num_qumodes
 
         # Test that we have the correct number of photon loss rates
-        if len(self._photon_loss_rate) != self._num_qumodes:
+        if len(self._photon_loss_rates) != self._num_qumodes:
             raise Exception("List of photon loss rates must have same length as number of qumodes! (i.e., one rate per qumode)")
 
         # Convert photon loss rate to photons per second
         if self._time_unit == "dt":
-            self._photon_loss_rate_sec = [rate * self._dt for rate in self._photon_loss_rate] 
+            self._photon_loss_rates_sec = [rate * self._dt for rate in self._photon_loss_rates] 
         else:
             conversion = 1.0 / apply_prefix(1.0, self._time_unit)
-            self._photon_loss_rate_sec = [rate * conversion for rate in self._photon_loss_rate] 
+            self._photon_loss_rates_sec = [rate * conversion for rate in self._photon_loss_rates] 
 
         super().__init__(self._photon_loss_error)
 
@@ -186,7 +192,7 @@ class PhotonLossNoisePass(LocalNoisePass):
                 duration = apply_prefix(op.duration, op.unit)
 
             kraus_operators = calculate_kraus(
-                self._photon_loss_rate_sec, duration, self._circuit, qubits, self._qumode_indices
+                self._photon_loss_rates_sec, duration, self._circuit, qubits, self._qumode_indices
             )
 
             error = kraus_error(kraus_operators)

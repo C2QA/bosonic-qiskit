@@ -37,7 +37,7 @@ def test_noise_model(capsys):
         photon_loss_rate = 1000000  # per second
         time = 5.0  # seconds
         kraus_operators = c2qa.kraus.calculate_kraus(
-            photon_loss_rate=[photon_loss_rate, photon_loss_rate],
+            photon_loss_rates=[photon_loss_rate, photon_loss_rate],
             time=time, 
             circuit=circuit,
             op_qubits=[0, 1, 2],
@@ -61,7 +61,7 @@ def test_kraus_operators(capsys):
         photon_loss_rate = 1000000  # per second
         time = 1.0  # seconds
         kraus_operators = c2qa.kraus.calculate_kraus(
-            photon_loss_rate=[photon_loss_rate, photon_loss_rate],
+            photon_loss_rates=[photon_loss_rate, photon_loss_rate],
             time=time, 
             circuit=circuit,
             op_qubits=[0, 1, 2],
@@ -114,7 +114,7 @@ def test_beamsplitter_kraus_operators(capsys):
         photon_loss_rate = 1000000  # per second
         time = 1.0  # seconds
         kraus_operators = c2qa.kraus.calculate_kraus(
-            photon_loss_rate=[photon_loss_rate, photon_loss_rate],
+            photon_loss_rates=[photon_loss_rate, photon_loss_rate],
             time=time, 
             circuit=circuit,
             op_qubits=[2, 3, 0, 1],
@@ -164,11 +164,11 @@ def test_invalid_photon_loss_rate_length(capsys):
         init_circuit = c2qa.CVCircuit(qmr)
         init_circuit.cv_initialize(2, qmr[0])
         init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
-        photon_loss_rate = [1,2,3]  # Should only have two loss rates
+        photon_loss_rates = [1,2,3]  # Should only have two loss rates
         time_unit = "ns"
 
         # Should raise Exception for not having proper number of loss rates
-        c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rates, circuit=init_circuit, time_unit=time_unit)
 
 
 def test_valid_photon_loss_rate_length(capsys):
@@ -180,11 +180,11 @@ def test_valid_photon_loss_rate_length(capsys):
         init_circuit = c2qa.CVCircuit(qmr)
         init_circuit.cv_initialize(2, qmr[0])
         init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
-        photon_loss_rate = [1,2]  # Should only have two loss rates
+        photon_loss_rates = [1,2]  # Should only have two loss rates
         time_unit = "ns"
         
         # Should not raise exception as has proper number of loss rates
-        c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rates, circuit=init_circuit, time_unit=time_unit)
 
 
 def test_noise_with_beamsplitter(capsys):
@@ -198,7 +198,7 @@ def test_noise_with_beamsplitter(capsys):
         init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
@@ -215,7 +215,7 @@ def test_noise_with_cnd_beamsplitter(capsys):
         init_circuit.cv_c_bs(1, qmr[1], qmr[0], qbr[0], duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
@@ -232,7 +232,7 @@ def test_photon_loss_pass_with_conditional(capsys):
         init_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
@@ -251,7 +251,7 @@ def test_photon_loss_pass_delay_without_unit(capsys):
         fail_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=fail_circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=fail_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(fail_circuit, noise_passes=noise_pass)
         assert result.success
 
@@ -271,7 +271,7 @@ def test_photon_loss_pass_delay_with_unit(capsys):
         pass_circuit.cv_c_d(1, qmr[0], qbr[0], duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=pass_circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=pass_circuit, time_unit=time_unit)
         state, result = c2qa.util.simulate(pass_circuit, noise_passes=noise_pass)
         assert result.success
 
@@ -289,7 +289,7 @@ def test_animate_photon_loss_pass(capsys):
 
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
         wigner_filename = "tests/test_animate_photon_loss_pass.gif"
         c2qa.animate.animate_wigner(
@@ -315,7 +315,7 @@ def test_photon_loss_pass_no_displacement(capsys):
 
         photon_loss_rate = 0.01
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
         # state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
@@ -342,7 +342,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
         # state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
@@ -373,7 +373,7 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
         # state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
@@ -404,7 +404,7 @@ def test_photon_loss_instruction(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"])
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"])
 
         state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
@@ -427,7 +427,7 @@ def test_photon_loss_qumode(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, qumode=qmr[1])
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit, qumodes=qmr[1])
 
         state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
@@ -450,7 +450,7 @@ def test_photon_loss_instruction_qumode(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"], qumode=qmr[0])
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"], qumodes=qmr[0])
 
         state, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
@@ -487,7 +487,7 @@ def _build_photon_loss_and_amp_damping_circuit(amp_damp = 0.3, photon_loss_rate 
     noise_model.add_quantum_error(phase_error, ["x"], [circuit.get_qubit_index(qbr[0])])
 
     # Initialize PhotonLossNoisePass
-    noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit="ns")
+    noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit="ns")
 
     return c2qa.util.simulate(circuit, noise_model=noise_model, noise_passes=noise_pass)
 
@@ -554,7 +554,7 @@ def test_relaxation_and_photon_loss_noise_passes(capsys):
         noise_passes.append(RelaxationNoisePass(t1s, t2s))
 
         photon_loss_rate = 0.02
-        noise_passes.append(c2qa.kraus.PhotonLossNoisePass(photon_loss_rate=photon_loss_rate, circuit=circuit, time_unit="ns"))
+        noise_passes.append(c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit="ns"))
 
         filename = "tests/test_relaxation_and_photon_loss_noise_passes.gif"
         c2qa.animate.animate_wigner(
