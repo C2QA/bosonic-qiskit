@@ -12,5 +12,5 @@ setup(
     long_description="Qiskit extension supporting simulation of bosonic qumode Fock states reprsented as qubits within Qiskit",
     python_requires=">=3.7",
     packages=find_packages(),
-    install_requires=["qiskit==0.39", "matplotlib==3.5.2", "pylatexenc==2.10"],
+    install_requires=["qiskit==0.39.5", "matplotlib==3.6.3", "pylatexenc==2.10"],
 )
