@@ -11,6 +11,7 @@ import qiskit
 import qiskit.providers.aer.noise as noise
 from qiskit.providers.aer.noise.noiseerror import NoiseError
 from qiskit.providers.aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
+from qiskit.tools.visualization import plot_histogram
 
 
 def test_noise_model(capsys):
@@ -564,3 +565,28 @@ def test_relaxation_and_photon_loss_noise_passes(capsys):
             noise_passes=noise_passes,
         )
         assert Path(filename).is_file()
+
+
+def test_manual_validate_beamsplitter(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        circuit = c2qa.CVCircuit(qmr)
+
+        circuit.cv_initialize(1, qmr[0])
+        circuit.cv_initialize(1, qmr[1])
+        circuit.cv_bs(np.pi/4, qmr[0], qmr[1], duration=1, unit="s")
+        circuit.cv_bs(-np.pi/4, qmr[0], qmr[1], duration=1, unit="s")
+
+        photon_loss_rate = 10000000
+        noise_pass = c2qa.kraus.PhotonLossNoisePass([photon_loss_rate, photon_loss_rate], circuit)
+
+        print()
+        for i in range(10):
+            print("----------------------")
+            print(f"Iteration {i}")
+            stateop, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+            # plot_histogram(result.get_counts(circuit), filename=f"tests/test_manual_validate_beamsplitter-{i}.png")
+            occupation, state = c2qa.util.stateread(stateop, 0, num_qumodes, 2**num_qubits_per_qumode,verbose=True)
+        
