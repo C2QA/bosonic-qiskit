@@ -278,28 +278,4 @@ def test_animate_cat_state_wigner(capsys):
             trace=True,
             conditional=False,
         )
-        # c2qa.animate.animate_wigner(
-        #     circuit,
-        #     qubit=qr[0],
-        #     # cbit=cr[0],
-        #     file=wigner_filename,
-        #     axes_min=-6,
-        #     axes_max=6,
-        #     animation_segments=48,
-        #     shots=25,
-        #     trace=True,
-        #     # conditional=False,
-        # )
         assert Path(filename).is_file()
-
-        # state, _ = c2qa.util.simulate(circuit)
-        # wigner_filename = "tests/test_animate_cat_state_wigner_final_plot.png"
-        # c2qa.wigner.plot_wigner(
-        #     circuit,
-        #     state,
-        #     file=wigner_filename,
-        #     trace=True,
-        #     axes_min=-6,
-        #     axes_max=6,
-        # )
-        # assert Path(wigner_filename).is_file()
