@@ -584,7 +584,7 @@ def test_multi_qumode_loss_probability(capsys):
 
         fity_fifty = False
         print()
-        for i in range(10):
+        for i in range(20):
             print("----------------------")
             print(f"Iteration {i}")
             state_vector, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
