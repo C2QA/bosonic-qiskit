@@ -239,7 +239,7 @@ def test_calibration_animate_mp4(capsys):
         )
 
 
-# @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
+@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate_cat_state_noise_wigner(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
