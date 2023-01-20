@@ -567,7 +567,7 @@ def test_relaxation_and_photon_loss_noise_passes(capsys):
         assert Path(filename).is_file()
 
 
-def test_manual_validate_beamsplitter(capsys):
+def test_multi_qumode_loss_probability(capsys):
     with capsys.disabled():
         num_qumodes = 2
         num_qubits_per_qumode = 2
@@ -576,17 +576,29 @@ def test_manual_validate_beamsplitter(capsys):
 
         circuit.cv_initialize(1, qmr[0])
         circuit.cv_initialize(1, qmr[1])
-        circuit.cv_bs(np.pi/4, qmr[0], qmr[1], duration=1, unit="s")
-        circuit.cv_bs(-np.pi/4, qmr[0], qmr[1], duration=1, unit="s")
+        circuit.cv_bs(np.pi/4, qmr[0], qmr[1], duration=100, unit="ns")
+        circuit.cv_bs(-np.pi/4, qmr[0], qmr[1], duration=100, unit="ns")
 
         photon_loss_rate = 10000000
-        noise_pass = c2qa.kraus.PhotonLossNoisePass([photon_loss_rate, photon_loss_rate], circuit)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
 
+        fity_fifty = False
         print()
         for i in range(10):
             print("----------------------")
             print(f"Iteration {i}")
-            stateop, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+            state_vector, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
             # plot_histogram(result.get_counts(circuit), filename=f"tests/test_manual_validate_beamsplitter-{i}.png")
-            occupation, state = c2qa.util.stateread(stateop, 0, num_qumodes, 2**num_qubits_per_qumode,verbose=True)
+            occupation, fock_states = c2qa.util.stateread(state_vector, 0, num_qumodes, 2**num_qubits_per_qumode,verbose=True)
+
+            for qumode_state, qubit_state, amplitude in fock_states:
+                # print(f"{qumode_state} {qubit_state} {amplitude}")
+                qumode1 = qumode_state[0]
+                qumode2 = qumode_state[1]
+                probability = amplitude**2
+
+                if (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode1 == 1) and probability == 0.5:
+                    fity_fifty = True
+            
+        assert fity_fifty
         
