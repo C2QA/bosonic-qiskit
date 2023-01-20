@@ -11,6 +11,7 @@ import qiskit
 import qiskit.providers.aer.noise as noise
 from qiskit.providers.aer.noise.noiseerror import NoiseError
 from qiskit.providers.aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
+from qiskit.tools.visualization import plot_histogram
 
 
 def test_noise_model(capsys):
@@ -564,3 +565,40 @@ def test_relaxation_and_photon_loss_noise_passes(capsys):
             noise_passes=noise_passes,
         )
         assert Path(filename).is_file()
+
+
+def test_multi_qumode_loss_probability(capsys):
+    with capsys.disabled():
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        circuit = c2qa.CVCircuit(qmr)
+
+        circuit.cv_initialize(1, qmr[0])
+        circuit.cv_initialize(1, qmr[1])
+        circuit.cv_bs(np.pi/4, qmr[0], qmr[1], duration=100, unit="ns")
+        circuit.cv_bs(-np.pi/4, qmr[0], qmr[1], duration=100, unit="ns")
+
+        photon_loss_rate = 10000000
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
+
+        fity_fifty = False
+        print()
+        for i in range(10):
+            print("----------------------")
+            print(f"Iteration {i}")
+            state_vector, result = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+            # plot_histogram(result.get_counts(circuit), filename=f"tests/test_manual_validate_beamsplitter-{i}.png")
+            occupation, fock_states = c2qa.util.stateread(state_vector, 0, num_qumodes, 2**num_qubits_per_qumode,verbose=True)
+
+            for qumode_state, qubit_state, amplitude in fock_states:
+                # print(f"{qumode_state} {qubit_state} {amplitude}")
+                qumode1 = qumode_state[0]
+                qumode2 = qumode_state[1]
+                probability = amplitude**2
+
+                if (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode1 == 1) and probability == 0.5:
+                    fity_fifty = True
+            
+        assert fity_fifty
+        
