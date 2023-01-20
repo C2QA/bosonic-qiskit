@@ -1,9 +1,10 @@
 from pathlib import Path
 
 
-import numpy
+import numpy as np
 import pytest
 import qiskit
+from qiskit.providers.aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
 
 
 import c2qa
@@ -22,7 +23,7 @@ def __build_subcircuit():
     alpha = 1
 
     # Choose total animation time
-    total_time = 1*2*numpy.pi/omega_R
+    total_time = 1*2*np.pi/omega_R
 
     # Create new circuit
     qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode)
@@ -47,7 +48,7 @@ def __build_subcircuit():
 
     # Now initialize the qumode in a coherent state
     # cutoff = 2**num_qubits_per_qumode
-    # coeffs = [numpy.exp(-numpy.abs(alpha)**2/2)*alpha**n/(numpy.sqrt(numpy.math.factorial(n))) for n in range(0,cutoff)]
+    # coeffs = [np.exp(-np.abs(alpha)**2/2)*alpha**n/(np.sqrt(np.math.factorial(n))) for n in range(0,cutoff)]
     # circuit_0.cv_initialize(coeffs,qmr[0])
 
 
@@ -238,8 +239,8 @@ def test_calibration_animate_mp4(capsys):
         )
 
 
-@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
-def test_animate_cat_state_wigner(capsys):
+# @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
+def test_animate_cat_state_noise_wigner(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
         qr = qiskit.QuantumRegister(size=2)
@@ -258,13 +259,20 @@ def test_animate_cat_state_wigner(capsys):
         circuit.measure(qr[0], cr[0])
 
         # Rotate using conditional on qr[1]
-        # circuit.cv_c_r(2* numpy.pi, qmr[0], qr[1], duration=1, unit="us")
-        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
-        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
-        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
-        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
+        circuit.x(qr[1])
+        # circuit.cv_c_r(2* np.pi, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(np.pi/2, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(np.pi/2, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(np.pi/2, qmr[0], qr[1], duration=1, unit="s")
+        circuit.cv_c_r(np.pi/2, qmr[0], qr[1], duration=1, unit="s")
 
-        filename = "tests/test_animate_cat_state_wigner.mp4"
+
+        # Add qubit relaxation noise to qr[1], but not qumode qubits or qr[0] (np.inf)
+        t1s = [np.inf, np.inf, np.inf, np.inf, np.inf, 1e-4]
+        t2s = [np.inf, np.inf, np.inf, np.inf, np.inf, 1e-4]
+        noise_pass = RelaxationNoisePass(t1s, t2s)
+
+        filename = "tests/test_animate_cat_state_noise_wigner.mp4"
         c2qa.animate.animate_wigner(
             circuit,
             # qubit=qr[0],
@@ -277,5 +285,6 @@ def test_animate_cat_state_wigner(capsys):
             shots=25,
             trace=True,
             conditional=False,
+            noise_passes=noise_pass
         )
         assert Path(filename).is_file()
