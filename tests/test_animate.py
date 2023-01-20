@@ -241,46 +241,65 @@ def test_calibration_animate_mp4(capsys):
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_animate_cat_state_wigner(capsys):
     with capsys.disabled():
-        num_qubits_per_qumode = 4
-        dist = 2
-
-        qmr = c2qa.QumodeRegister(
-            num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode
-        )
-        qr = qiskit.QuantumRegister(size=1)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+        qr = qiskit.QuantumRegister(size=2)
         cr = qiskit.ClassicalRegister(size=1)
         circuit = c2qa.CVCircuit(qmr, qr, cr)
+
+        dist = 2
 
         circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
+        # Cat state using conditional on qr[0] with Hadamard/measure
         circuit.h(qr[0])
         circuit.cv_c_d(dist, qmr[0], qr[0])
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
-        wigner_filename = "tests/test_animate_cat_state_wigner.mp4"
+        # Rotate using conditional on qr[1]
+        # circuit.cv_c_r(2* numpy.pi, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
+        circuit.cv_c_r(numpy.pi/2, qmr[0], qr[1], duration=1, unit="us")
+
+        filename = "tests/test_animate_cat_state_wigner.mp4"
         c2qa.animate.animate_wigner(
             circuit,
-            qubit=qr[0],
-            cbit=cr[0],
-            file=wigner_filename,
+            # qubit=qr[0],
+            # cbit=cr[0],
+            file=filename,
+            axes_min=-8,
+            axes_max=8,
+            animation_segments=5,
+            processes=1,
+            shots=25,
             trace=True,
-            axes_min=-6,
-            axes_max=6,
-            animation_segments=48,
-            shots=128,
+            conditional=False,
         )
-        assert Path(wigner_filename).is_file()
+        # c2qa.animate.animate_wigner(
+        #     circuit,
+        #     qubit=qr[0],
+        #     # cbit=cr[0],
+        #     file=wigner_filename,
+        #     axes_min=-6,
+        #     axes_max=6,
+        #     animation_segments=48,
+        #     shots=25,
+        #     trace=True,
+        #     # conditional=False,
+        # )
+        assert Path(filename).is_file()
 
-        state, _ = c2qa.util.simulate(circuit)
-        wigner_filename = "tests/test_animate_cat_state_wigner_final_plot.png"
-        c2qa.wigner.plot_wigner(
-            circuit,
-            state,
-            file=wigner_filename,
-            trace=True,
-            axes_min=-6,
-            axes_max=6,
-        )
-        assert Path(wigner_filename).is_file()
+        # state, _ = c2qa.util.simulate(circuit)
+        # wigner_filename = "tests/test_animate_cat_state_wigner_final_plot.png"
+        # c2qa.wigner.plot_wigner(
+        #     circuit,
+        #     state,
+        #     file=wigner_filename,
+        #     trace=True,
+        #     axes_min=-6,
+        #     axes_max=6,
+        # )
+        # assert Path(wigner_filename).is_file()
