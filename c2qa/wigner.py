@@ -184,6 +184,7 @@ def plot_wigner(
     axes_steps: int = 200,
     num_colors: int = 100,
     draw_grid: bool = False,
+    dpi: int = 100
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -215,6 +216,7 @@ def plot_wigner(
         file=file,
         num_colors=num_colors,
         draw_grid=draw_grid,
+        dpi = dpi
     )
 
 
@@ -226,6 +228,7 @@ def plot(
     file: str = None,
     num_colors: int = 100,
     draw_grid: bool = False,
+    dpi = 100
 ):
     """Contour plot the given data array"""
     xvec = np.linspace(axes_min, axes_max, axes_steps)
@@ -256,7 +259,7 @@ def plot(
     cb.set_label(r"$W(x,p)$",rotation=270,labelpad=25)
 
     if file:
-        plt.savefig(file)
+        plt.savefig(file, dpi=dpi)
     else:
         plt.show()
 
