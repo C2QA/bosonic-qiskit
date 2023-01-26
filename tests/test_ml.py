@@ -6,7 +6,7 @@ import qiskit
 from math import pi
 import matplotlib.pyplot as plt
 import numpy as np
-from IPython.display import clear_output
+# from IPython.display import clear_output
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
 from qiskit.circuit import Parameter
@@ -34,35 +34,28 @@ def test_bosnic_qiskit(capsys):
 
         plt.plot(X_, f(X_), "r--")
         plt.plot(X, y, "bo")
-        plt.show()
-
-        #preparing the circuit
-        qmr = c2qa.QumodeRegister(num_qumodes=2, num_qubits_per_qumode=1)
-        qbr = qiskit.QuantumRegister(1)
+        # plt.show()
 
         # construct simple feature map
         param_x = Parameter("x")
-        feature_map = c2qa.CVCircuit(qmr, name="fm")
-        feature_map.cv_d(param_x, qmr[0])
+        feature_qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=1)
+        feature_map = c2qa.CVCircuit(feature_qmr, name="fm")
+        # feature_map.cv_d(param_x, feature_qmr[0])
+        feature_map.cv_r(param_x, feature_qmr[0])
 
         # construct simple ansatz
         param_y = Parameter("y")
-        ansatz = c2qa.CVCircuit(qmr, name="vf")
-        ansatz.cv_d(param_y, qmr[0])
-        ansatz.cv_r(param_y, qmr[0])
-
-        # Initial bind values to prime the fit
-        # feature_map = feature_map.bind_parameters({param_x: 1})
-        # ansatz = ansatz.bind_parameters({param_y: 1})
+        ansatz_qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=1)
+        ansatz = c2qa.CVCircuit(ansatz_qmr, name="vf")
+        # ansatz.cv_d(param_y, ansatz_qmr[0])
+        ansatz.cv_r(param_y, ansatz_qmr[0])
 
         # construct a circuit
-        qmr = c2qa.QumodeRegister(num_qumodes=2, num_qubits_per_qumode=1)
-        qbr = qiskit.QuantumRegister(1)
-
-        qc = c2qa.CVCircuit(qmr, qbr)
+        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=1)
+        qc = c2qa.CVCircuit(qmr)
         qc.compose(feature_map, inplace=True)
         qc.compose(ansatz, inplace=True)
-        qc.draw()
+        # qc.draw()
 
         # construct QNN
         regression_estimator_qnn = EstimatorQNN(
@@ -71,13 +64,13 @@ def test_bosnic_qiskit(capsys):
 
         # callback function that draws a live plot when the .fit() method is called
         def callback_graph(weights, obj_func_eval):
-            clear_output(wait=True)
+            # clear_output(wait=True)
             objective_func_vals.append(obj_func_eval)
             plt.title("Objective function value against iteration")
             plt.xlabel("Iteration")
             plt.ylabel("Objective function value")
             plt.plot(range(len(objective_func_vals)), objective_func_vals)
-            plt.show()
+            # plt.show()
 
 
         # construct the regressor from the neural network
@@ -117,7 +110,7 @@ def test_qiskit(capsys):
 
         plt.plot(X_, f(X_), "r--")
         plt.plot(X, y, "bo")
-        plt.show()
+        # plt.show()
 
         # construct simple feature map
         param_x = Parameter("x")
@@ -141,13 +134,13 @@ def test_qiskit(capsys):
 
         # callback function that draws a live plot when the .fit() method is called
         def callback_graph(weights, obj_func_eval):
-            clear_output(wait=True)
+            # clear_output(wait=True)
             objective_func_vals.append(obj_func_eval)
             plt.title("Objective function value against iteration")
             plt.xlabel("Iteration")
             plt.ylabel("Objective function value")
             plt.plot(range(len(objective_func_vals)), objective_func_vals)
-            plt.show()
+            # plt.show()
 
         # construct the regressor from the neural network
         regressor = NeuralNetworkRegressor(
