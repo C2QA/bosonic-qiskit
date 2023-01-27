@@ -6,6 +6,7 @@ import qiskit
 from math import pi
 import matplotlib.pyplot as plt
 import numpy as np
+import pytest
 # from IPython.display import clear_output
 from qiskit import QuantumCircuit
 from qiskit.algorithms.optimizers import COBYLA, L_BFGS_B
@@ -162,3 +163,17 @@ def test_qiskit(capsys):
 
         # score the result
         regressor.score(X, y)
+
+
+def test_qiskit_without_ml(capsys):
+    with pytest.raises(qiskit.exceptions.QiskitError), capsys.disabled():
+        theta = Parameter("theta")
+        circuit = QuantumCircuit(1, name="fm")
+        circuit.r(theta, np.pi / 2, 0)
+
+        simulator = qiskit.Aer.get_backend('aer_simulator')
+        circuit_transpiled = qiskit.transpile(circuit, simulator)
+
+        # You can't simulate a Qiskit circuit with an unbound parameter
+        # simulator.run(circuit_transpiled.bind_parameters([0.2]))
+        simulator.run(circuit_transpiled)
