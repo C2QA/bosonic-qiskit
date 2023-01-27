@@ -173,8 +173,8 @@ def test_qiskit_without_ml(capsys):
         circuit.r(theta, np.pi / 2, 0)
 
         simulator = qiskit.Aer.get_backend('aer_simulator')
-        circuit_transpiled = qiskit.transpile(circuit, simulator)
+        # circuit = qiskit.transpile(circuit, simulator)
 
         # You can't simulate a Qiskit circuit with an unbound parameter
         # simulator.run(circuit_transpiled.bind_parameters([0.2]))
-        simulator.run(circuit_transpiled)
+        simulator.run(circuit)
