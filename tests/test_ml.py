@@ -166,6 +166,7 @@ def test_qiskit(capsys):
 
 
 def test_qiskit_without_ml(capsys):
+    """Use pytest.raises context to test that unbound parameter raises QiskitError"""
     with pytest.raises(qiskit.exceptions.QiskitError), capsys.disabled():
         theta = Parameter("theta")
         circuit = QuantumCircuit(1, name="fm")
