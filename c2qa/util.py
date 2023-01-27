@@ -22,6 +22,8 @@ def stateread(
     amp_qb = []
     state = []
 
+    cutoff = 2**int(np.ceil(np.log2(cutoff))) # The cutoff needs to be a power of 2 for this code to work
+
     for i in range(len(st)):
         res = st[
             i
