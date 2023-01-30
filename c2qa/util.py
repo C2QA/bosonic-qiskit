@@ -131,8 +131,8 @@ def stateread(
         for i in range(len(state)):
             state[i][0] = state[i][0][::-1]
             state[i][1] = state[i][1][::-1]
-            occupation_cv = occupation_cv[::-1]
-            occupation_qb = occupation_qb[::-1]
+        occupation_cv = occupation_cv[::-1]
+        occupation_qb = occupation_qb[::-1]
 
     return [occupation_cv, occupation_qb], state
 
