@@ -6,6 +6,7 @@ from qiskit.circuit.parameter import ParameterExpression
 from qiskit.extensions.unitary import UnitaryGate
 import scipy.sparse
 import scipy.sparse.linalg
+import warnings
 
 
 xQB = numpy.array([[0, 1], [1, 0]])
@@ -59,9 +60,14 @@ class ParameterizedUnitaryGate(Gate):
                 #     values.append(float(param))
                 # else:
                 #     values.append(complex(param))
-                values.append(
-                    complex(param)
-                )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
+                try:
+                    values.append(
+                        complex(param)
+                    )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
+                except TypeError as err:
+                    warnings.warn(f"CV unitaries require bound parameters, attempting to create with unbound parameter {param}")
+                    values.append(param)
+
             else:
                 values.append(param)
         values = tuple(values)
