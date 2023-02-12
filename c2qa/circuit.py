@@ -573,6 +573,22 @@ class CVCircuit(QuantumCircuit):
                 ),
                 qargs=qumode + [qubit],
             )
+            
+      def cv_c_multiboson_sampling(self, max, qumode, qubit=None, duration=1, unit="us"):
+        """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
+        Args:
+            max (int): the period of the mapping
+            qumode (list): list of qubits representing qumode
+            qubit (Qubit): control qubit.
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(
+            ParameterizedUnitaryGate(
+                self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
+            ),
+            qargs=qumode + [qubit],
+        )
 
     def cv_eswap(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
         """Exponential SWAP gate.
