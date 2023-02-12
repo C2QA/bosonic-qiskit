@@ -16,9 +16,9 @@ def cv_multiboson_sampling(circuit: CVCircuit,qumode:int, qmr_number:int=0):
     # Collect qumode register from circuit
     qmr = circuit.qmregs[qmr_number]
     # Add one last qubit to the circuit for the SNAP gate
-    qbr_extra = qiskit.QuantumRegister(size=1, name="qbr_multiphoton_sampling")
+    qbr_extra = qiskit.QuantumRegister(size=1, name="qbr_multiboson_sampling")
     # Add classical bits to readout measurement results
-    cbr_extra = qiskit.ClassicalRegister(circuit.num_qubits_per_qumode, name="cbr_multiphoton_sampling")
+    cbr_extra = qiskit.ClassicalRegister(circuit.num_qubits_per_qumode, name="cbr_multiboson_sampling")
     circuit.add_register(qbr_extra,cbr_extra)
     # Set the initial maximum Fock state
     max = circuit.cutoff
@@ -27,7 +27,7 @@ def cv_multiboson_sampling(circuit: CVCircuit,qumode:int, qmr_number:int=0):
         # Make sure the last qubit added to the circuit is always reset to 0
         circuit.initialize('0',-1)
         # Apply a circuit which flips the last qubit added to the circuit if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
-        circuit.cv_c_multiphoton_sampling(max,qmr[qumode],-1)
+        circuit.cv_c_multiboson_sampling(max,qmr[qumode],-1)
         # Measure the qubit onto the classical bits (from left to right)
         circuit.measure(-1,circuit.num_qubits_per_qumode-1-iteration)
         # Update the maximum value for the SNAP gate creation
