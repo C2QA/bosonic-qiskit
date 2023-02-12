@@ -40,7 +40,7 @@ def cv_multiboson_sampling(circuit,list_qumodes_to_sample:list, qmr_number:int=0
         circuit.barrier()
         qumode_counter+=1
     # Simulate circuit with a single shot
-    _, result = c2qa.util.simulate(circuit, shots=1)
+    _, result = simulate(circuit, shots=1)
     # Return integer value of boson number occupation, converted from the bits which make up a binary number
     print(result.get_counts())
     full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
