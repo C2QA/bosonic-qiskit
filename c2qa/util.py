@@ -9,6 +9,34 @@ from qiskit.quantum_info import Statevector
 from c2qa import CVCircuit
 
 
+def cv_multiboson_sampling(circuit: CVCircuit,qumode:int, qmr_number:int=0):
+    """
+    Returns the Fock state of a qumode, using single shots on an additional ancilla qubit and classical bits.
+    """
+    # Collect qumode register from circuit
+    qmr = circuit.qmregs[qmr_number]
+    # Add one last qubit to the circuit for the SNAP gate
+    qbr_extra = qiskit.QuantumRegister(size=1, name="qbr_multiphoton_sampling")
+    # Add classical bits to readout measurement results
+    cbr_extra = qiskit.ClassicalRegister(circuit.num_qubits_per_qumode, name="cbr_multiphoton_sampling")
+    circuit.add_register(qbr_extra,cbr_extra)
+    # Set the initial maximum Fock state
+    max = circuit.cutoff
+    # Iterate a number of time corresponding to the number of bits required to represent the maximum Fock state in binary (remove useless characters at the front)
+    for iteration in range(len(bin(circuit.cutoff))-3):
+        # Make sure the last qubit added to the circuit is always reset to 0
+        circuit.initialize('0',-1)
+        # Apply a circuit which flips the last qubit added to the circuit if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
+        circuit.cv_c_multiphoton_sampling(max,qmr[qumode],-1)
+        # Measure the qubit onto the classical bits (from left to right)
+        circuit.measure(-1,circuit.num_qubits_per_qumode-1-iteration)
+        # Update the maximum value for the SNAP gate creation
+        max = int(max/2)
+        # Simulate circuit with a single shot
+        _, result = simulate(circuit, shots=1)
+    # Return integer value of photon number occupation, converted from the bits which make up a binary number
+    return int(list(result.get_counts().keys())[0].encode('ascii'),2)
+
 def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
 ):
