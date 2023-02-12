@@ -9,33 +9,45 @@ from qiskit.quantum_info import Statevector
 from c2qa import CVCircuit
 
 
-def cv_multiboson_sampling(circuit: CVCircuit,qumode:int, qmr_number:int=0):
-    """
-    Returns the Fock state of a qumode, using single shots on an additional ancilla qubit and classical bits.
-    """
+def cv_multiboson_sampling(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
+    # Count number of qubits in circuit so far
+    num_qubits = len(flatten(circuit._qubit_regs))
     # Collect qumode register from circuit
     qmr = circuit.qmregs[qmr_number]
-    # Add one last qubit to the circuit for the SNAP gate
-    qbr_extra = qiskit.QuantumRegister(size=1, name="qbr_multiboson_sampling")
+    # Add one ancilla qubits to the circuit per qumode to measure
+    qbr_extra = qiskit.QuantumRegister(size=len(list_qumodes_to_sample), name="qbr_sampling")
     # Add classical bits to readout measurement results
-    cbr_extra = qiskit.ClassicalRegister(circuit.num_qubits_per_qumode, name="cbr_multiboson_sampling")
+    cbr_extra = qiskit.ClassicalRegister(len(list_qumodes_to_sample)*circuit.num_qubits_per_qumode, name="cbr_sampling")
     circuit.add_register(qbr_extra,cbr_extra)
-    # Set the initial maximum Fock state
-    max = circuit.cutoff
-    # Iterate a number of time corresponding to the number of bits required to represent the maximum Fock state in binary (remove useless characters at the front)
-    for iteration in range(len(bin(circuit.cutoff))-3):
-        # Make sure the last qubit added to the circuit is always reset to 0
-        circuit.initialize('0',-1)
-        # Apply a circuit which flips the last qubit added to the circuit if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
-        circuit.cv_c_multiboson_sampling(max,qmr[qumode],-1)
-        # Measure the qubit onto the classical bits (from left to right)
-        circuit.measure(-1,circuit.num_qubits_per_qumode-1-iteration)
-        # Update the maximum value for the SNAP gate creation
-        max = int(max/2)
-        # Simulate circuit with a single shot
-        _, result = simulate(circuit, shots=1)
-    # Return integer value of photon number occupation, converted from the bits which make up a binary number
-    return int(list(result.get_counts().keys())[0].encode('ascii'),2)
+    # Iterate over the qumodes
+    qumode_counter=0
+    for j in list_qumodes_to_sample:
+        # Set the initial maximum Fock state
+        max = circuit.cutoff
+        # Iterate a number of time corresponding to the number of bits required to represent the maximum Fock state in binary (remove useless characters at the front)
+        for iteration in range(len(bin(circuit.cutoff))-3):
+            # Make sure the ancilla qubit is always reset to 0
+            circuit.initialize('0',qbr_extra[qumode_counter])
+            # Apply a circuit which flips the ancilla if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
+            circuit.cv_c_multiboson_sampling(max,qmr[list_qumodes_to_sample[j]],qbr_extra[qumode_counter])
+            # Measure the qubit onto the classical bits (from left to right)
+            classical_bit=circuit.num_qubits_per_qumode-1-iteration+(qumode_counter*circuit.num_qubits_per_qumode)
+            circuit.measure(qbr_extra[qumode_counter],classical_bit)
+            # Update the maximum value for the SNAP gate creation
+            max = int(max/2)
+        circuit.barrier()
+        qumode_counter+=1
+    # Simulate circuit with a single shot
+    _, result = c2qa.util.simulate(circuit, shots=1)
+    # Return integer value of boson number occupation, converted from the bits which make up a binary number
+    print(result.get_counts())
+    full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
+    results_integers = np.zeros([len(list_qumodes_to_sample)])
+    for j in range(len(list_qumodes_to_sample)):
+        binary_number = full_set_of_binary[j*circuit.num_qubits_per_qumode:((j+1)*circuit.num_qubits_per_qumode)]
+        print(binary_number)
+        results_integers[-(j+1)] = int(binary_number,2)
+    return results_integers
 
 def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
