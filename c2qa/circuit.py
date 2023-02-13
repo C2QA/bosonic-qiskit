@@ -574,7 +574,7 @@ class CVCircuit(QuantumCircuit):
                 qargs=qumode + [qubit],
             )
             
-      def cv_c_multiboson_sampling(self, max, qumode, qubit=None, duration=1, unit="us"):
+    def cv_c_multiboson_sampling(self, max, qumode, qubit=None, duration=1, unit="us"):
         """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
         Args:
             max (int): the period of the mapping
