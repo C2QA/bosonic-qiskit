@@ -388,7 +388,7 @@ class CVCircuit(QuantumCircuit):
         )
 
     def cv_c_r(self, theta, qumode, qubit, duration=100, unit="ns"):
-        """Qubit dependent phase-space rotation gate.
+        """Qubit dependent phase-space rotation gate (i.e., dispersive interaction).
 
         Args:
             theta (real): phase
