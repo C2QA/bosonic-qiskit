@@ -88,6 +88,8 @@ class ParameterizedUnitaryGate(Gate):
             return parameter
         elif isinstance(parameter, str):  # accept strings as-is
             return parameter
+        elif isinstance(parameter, list):
+            return parameter
         else:
             return super().validate_parameter(parameter)
 
@@ -492,3 +494,14 @@ class CVOperators:
 
         arg = 1j * phi * scipy.sparse.kron(xQB, idQB)
         return scipy.sparse.linalg.expm(arg)
+
+    def c_multiboson_sampling(self, max):
+        """SNAP gate creation for multiboson sampling purposes.
+        Args:
+            max (int): the period of the mapping
+        Returns:
+            ndarray: operator matrix
+        """
+        print(max)
+
+        return self.eye
