@@ -105,3 +105,22 @@ def test_get_qubit_indices(capsys):
         indices = circuit.get_qubit_indices([qbr[0]])
         print(f"qbr[0] indices = {indices}")
         assert indices == [4]
+
+def test_initialize_qubit_values(capsys):
+    with capsys.disabled():
+        print()
+
+        for fock in range(16):
+            number_of_modes = 1
+            number_of_qubits_per_mode = 4
+
+            qmr = c2qa.QumodeRegister(
+                num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
+            )
+            circuit = c2qa.CVCircuit(qmr)
+            circuit.cv_initialize(fock, qmr[0])
+
+            state, result = c2qa.util.simulate(circuit)
+            assert result.success
+
+            print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")
