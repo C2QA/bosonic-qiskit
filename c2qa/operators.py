@@ -94,6 +94,8 @@ class ParameterizedUnitaryGate(Gate):
             return parameter
         elif isinstance(parameter, str):  # accept strings as-is
             return parameter
+        elif isinstance(parameter, list):
+            return parameter
         else:
             return super().validate_parameter(parameter)
 
@@ -435,6 +437,27 @@ class CVOperators:
         # sparse_projector = scipy.sparse.csc_matrix(projector)
         arg = theta * 1j * scipy.sparse.kron(zQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
+    
+    def c_multiboson_sampling(self, max):
+        """SNAP gate creation for multiboson sampling purposes.
+        Args:
+            max (int): the period of the mapping
+        Returns:
+            ndarray: operator matrix
+        """
+        ket_n = numpy.zeros(self.cutoff_value)
+        projector = numpy.outer(ket_n, ket_n)
+        # binary search
+        for j in range(int(max / 2)):
+            for i in range(j, self.cutoff_value, max):
+                ket_n = numpy.zeros(self.cutoff_value)
+                # fill from right to left
+                ket_n[-(i+1)] = 1
+                projector += numpy.outer(ket_n, ket_n)
+
+        # Flip qubit if there is a boson present in any of the modes addressed by the projector
+        arg = 1j * (-numpy.pi/2) * scipy.sparse.kron(xQB, projector).tocsc()
+        return scipy.sparse.linalg.expm(arg)
 
     def eswap(self, theta):
         """Exponential SWAP operator
@@ -477,3 +500,14 @@ class CVOperators:
 
         arg = 1j * phi * scipy.sparse.kron(xQB, idQB)
         return scipy.sparse.linalg.expm(arg)
+
+    def c_multiboson_sampling(self, max):
+        """SNAP gate creation for multiboson sampling purposes.
+        Args:
+            max (int): the period of the mapping
+        Returns:
+            ndarray: operator matrix
+        """
+        print(max)
+
+        return self.eye

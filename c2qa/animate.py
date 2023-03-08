@@ -32,6 +32,7 @@ def animate_wigner(
     sequential_subcircuit: bool = False,
     draw_grid: bool = False,
     trace: bool = True,
+    bitrate: int = -1
 ):
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
@@ -123,7 +124,7 @@ def animate_wigner(
 
     # Save to file using ffmpeg, Pillow (GIF, APNG), or display
     if file:
-        save_animation(anim, file)
+        save_animation(anim, file, bitrate)
 
     return anim
 
@@ -326,18 +327,18 @@ def __animate_copy(inst, animation_segments):
     return frames
 
 
-def save_animation(anim: matplotlib.animation.FuncAnimation, file: str):
+def save_animation(anim: matplotlib.animation.FuncAnimation, file: str, bitrate: int):
     file_path = pathlib.Path(file)
 
     if file_path.suffix == ".mp4":
-        writer = matplotlib.animation.FFMpegWriter(fps=24)
+        writer = matplotlib.animation.FFMpegWriter(fps=24, bitrate=bitrate)
     elif file_path.suffix == ".gif" or file_path.suffix == ".apng":
-        writer = matplotlib.animation.PillowWriter(fps=24)
+        writer = matplotlib.animation.PillowWriter(fps=24, bitrate=bitrate)
     else:
         print(
             f"Unknown animation file type {file_path.suffix}, defaulting to using PillowWriter"
         )
-        writer = matplotlib.animation.PillowWriter(fps=24)
+        writer = matplotlib.animation.PillowWriter(fps=24, bitrate=bitrate)
 
     anim.save(file, writer=writer)
 
@@ -366,11 +367,11 @@ def _animate(frame, *fargs):
     xvec_int = sorted(set(xvec_int))
 
     ax.clear()
-    cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu_r")
+    cont = ax.contourf(xvec, xvec, w_fock, color_levels, cmap="RdBu")
 
-    ax.set_xlabel("x")
+    ax.set_xlabel(r"$x$")
     ax.set_xticks(xvec_int)
-    ax.set_ylabel("p")
+    ax.set_ylabel(r"$p$")
     ax.set_yticks(xvec_int)
     if draw_grid:
         ax.grid()

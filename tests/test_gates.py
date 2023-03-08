@@ -354,3 +354,17 @@ def test_eswap():
     circuit.cv_eswap(phi, qmr[0], qmr[1])
 
     state, result = c2qa.util.simulate(circuit)
+
+def test_multiboson_sampling(capsys):
+    with capsys.disabled():
+        num_qubits=1
+        num_qumodes=2
+        num_qubits_per_qumode=2
+        qmrA = c2qa.QumodeRegister(num_qumodes = num_qumodes, num_qubits_per_qumode = num_qubits_per_qumode,name="qmrA_initial")
+        qmrB = c2qa.QumodeRegister(num_qumodes = num_qumodes, num_qubits_per_qumode = num_qubits_per_qumode,name="qmrB_initial")
+        qbr = qiskit.QuantumRegister(size=num_qubits,name='qbr_initial')
+        circuit = c2qa.CVCircuit(qmrA, qmrB, qbr)
+        circuit.cv_c_multiboson_sampling([0,1,2,3], qmrA[0], qbr[0])
+
+        state, result = c2qa.util.simulate(circuit)
+        assert result.success

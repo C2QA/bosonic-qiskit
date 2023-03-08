@@ -8,6 +8,48 @@ from qiskit.quantum_info import Statevector
 
 from c2qa import CVCircuit
 
+def flatten(l):
+    return [item for sublist in l for item in sublist]
+
+def cv_multiboson_sampling(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
+    # Count number of qubits in circuit so far
+    num_qubits = len(flatten(circuit._qubit_regs))
+    # Collect qumode register from circuit
+    qmr = circuit.qmregs[qmr_number]
+    # Add one ancilla qubits to the circuit per qumode to measure
+    qbr_extra = qiskit.QuantumRegister(size=len(list_qumodes_to_sample), name="qbr_sampling")
+    # Add classical bits to readout measurement results
+    cbr_extra = qiskit.ClassicalRegister(len(list_qumodes_to_sample)*circuit.num_qubits_per_qumode, name="cbr_sampling")
+    circuit.add_register(qbr_extra,cbr_extra)
+    # Iterate over the qumodes
+    qumode_counter=0
+    for j in list_qumodes_to_sample:
+        # Set the initial maximum Fock state
+        max = circuit.cutoff
+        # Iterate a number of time corresponding to the number of bits required to represent the maximum Fock state in binary (remove useless characters at the front)
+        for iteration in range(len(bin(circuit.cutoff))-3):
+            # Make sure the ancilla qubit is always reset to 0
+            circuit.initialize('0',qbr_extra[qumode_counter])
+            # Apply a circuit which flips the ancilla if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
+            circuit.cv_c_multiboson_sampling(max,qmr[list_qumodes_to_sample[j]],qbr_extra[qumode_counter])
+            # Measure the qubit onto the classical bits (from left to right)
+            classical_bit=circuit.num_qubits_per_qumode-1-iteration+(qumode_counter*circuit.num_qubits_per_qumode)
+            circuit.measure(qbr_extra[qumode_counter],classical_bit)
+            # Update the maximum value for the SNAP gate creation
+            max = int(max/2)
+        circuit.barrier()
+        qumode_counter+=1
+    # Simulate circuit with a single shot
+    _, result = simulate(circuit, shots=1)
+    # Return integer value of boson number occupation, converted from the bits which make up a binary number
+    print(result.get_counts())
+    full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
+    results_integers = np.zeros([len(list_qumodes_to_sample)])
+    for j in range(len(list_qumodes_to_sample)):
+        binary_number = full_set_of_binary[j*circuit.num_qubits_per_qumode:((j+1)*circuit.num_qubits_per_qumode)]
+        print(binary_number)
+        results_integers[-(j+1)] = int(binary_number,2)
+    return results_integers
 
 def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
@@ -21,6 +63,8 @@ def stateread(
     amp_cv = []
     amp_qb = []
     state = []
+
+    cutoff = 2**int(np.ceil(np.log2(cutoff))) # The cutoff needs to be a power of 2 for this code to work
 
     for i in range(len(st)):
         res = st[
@@ -129,8 +173,8 @@ def stateread(
         for i in range(len(state)):
             state[i][0] = state[i][0][::-1]
             state[i][1] = state[i][1][::-1]
-            occupation_cv = occupation_cv[::-1]
-            occupation_qb = occupation_qb[::-1]
+        occupation_cv = occupation_cv[::-1]
+        occupation_qb = occupation_qb[::-1]
 
     return [occupation_cv, occupation_qb], state
 
