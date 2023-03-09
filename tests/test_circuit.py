@@ -110,10 +110,10 @@ def test_initialize_qubit_values(capsys):
     with capsys.disabled():
         print()
 
-        for fock in range(16):
-            number_of_modes = 1
-            number_of_qubits_per_mode = 4
+        number_of_modes = 1
+        number_of_qubits_per_mode = 4
 
+        for fock in range(pow(2, number_of_qubits_per_mode)):
             qmr = c2qa.QumodeRegister(
                 num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
             )
