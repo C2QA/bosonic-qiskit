@@ -53,26 +53,27 @@ class ParameterizedUnitaryGate(Gate):
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
         # return self.op_func(*map(complex, self.params)).toarray()
-        values = []
-        for param in self.params:
-            if isinstance(param, ParameterExpression):
-                # if param.is_real():
-                #     values.append(float(param))
-                # else:
-                #     values.append(complex(param))
-                try:
-                    values.append(
-                        complex(param)
-                    )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
-                except TypeError as err:
-                    warnings.warn(f"CV unitaries require bound parameters, attempting to create with unbound parameter {param}")
-                    values.append(param)
+        # values = []
+        # for param in self.params:
+        #     if isinstance(param, ParameterExpression):
+        #         # if param.is_real():
+        #         #     values.append(float(param))
+        #         # else:
+        #         #     values.append(complex(param))
+        #         try:
+        #             values.append(
+        #                 complex(param)
+        #             )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
+        #         except TypeError as err:
+        #             warnings.warn(f"CV unitaries require bound parameters, attempting to create with unbound parameter {param}")
+        #             values.append(param)
 
-            else:
-                values.append(param)
-        values = tuple(values)
+        #     else:
+        #         values.append(param)
+        # values = tuple(values)
 
-        return self.op_func(*values).toarray()
+        # return self.op_func(*values)
+        return self.op_func(*self.params)
 
     def _define(self):
         mat = self.to_matrix()
@@ -179,20 +180,53 @@ class CVOperators:
         """
         # Annihilation operator
         data = numpy.sqrt(range(cutoff))
-        self.a = scipy.sparse.spdiags(
+        self._a = scipy.sparse.spdiags(
             data=data, diags=[1], m=len(data), n=len(data)
         ).tocsc()
 
         # Creation operator
-        self.a_dag = self.a.conjugate().transpose().tocsc()
+        self._a_dag = self._a.conjugate().transpose().tocsc()
 
         # Number operator for a single qumode.
         # self.N = scipy.sparse.matmul(self.a_dag, self.a)
-        self.N = self.a_dag * self.a
+        self._N = self._a_dag * self._a
 
-        self.eye = scipy.sparse.eye(cutoff)
+        self._eye = scipy.sparse.eye(cutoff)
 
         self.cutoff_value = cutoff
+
+    @property
+    def a(self):
+        return self._a.toarray()
+    
+    @property
+    def a_dag(self):
+        return self._a_dag.toarray()
+    
+    @property
+    def N(self):
+        return self._N.toarray()
+    
+    @property
+    def eye(self):
+        return self._eye.toarray()
+    
+
+    @property
+    def a1(self):
+        return scipy.sparse.kron(self._a, self._eye).tocsc().toarray()
+    
+    @property
+    def a2(self):
+        return scipy.sparse.kron(self._eye, self._a).tocsc().toarray()
+    
+    @property
+    def a1_dag(self):
+        return scipy.sparse.kron(self._a, self._eye).conjugate().transpose().tocsc().toarray()
+    
+    @property
+    def a2_dag(self):
+        return scipy.sparse.kron(self._eye, self._a).conjugate().transpose().tocsc().toarray()
 
     def r(self, theta):
         """Phase space rotation operator
@@ -205,7 +239,7 @@ class CVOperators:
         """
         arg = 1j * theta * self.N
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def d(self, alpha):
         """Displacement operator
@@ -218,7 +252,7 @@ class CVOperators:
         """
         arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def s(self, theta):
         """Single-mode squeezing operator
@@ -233,7 +267,7 @@ class CVOperators:
         a_dag_sqr = self.a_dag * self.a_dag
         arg = 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def s2(self, theta):
         """Two-mode squeezing operator
@@ -245,17 +279,12 @@ class CVOperators:
             ndarray: operator matrix
         """
 
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
         a12_dag = self.a1_dag * self.a2_dag
         a12 = self.a1 * self.a2
 
         arg = (numpy.conjugate(theta * 1j) * a12_dag) - (theta * 1j * a12)
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def bs(self, theta):
         """Two-mode beam splitter operator
@@ -267,17 +296,12 @@ class CVOperators:
             ndarray: operator matrix
         """
 
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
 
         arg = theta * a1dag2 - numpy.conj(theta) * a12dag
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def cr(self, theta):
         """Controlled phase space rotation operator
@@ -290,7 +314,7 @@ class CVOperators:
         """
         arg = theta * 1j * scipy.sparse.kron(zQB, self.N).tocsc()
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def crx(self, theta):
         """Controlled phase space rotation operator around sigma^x
@@ -303,7 +327,7 @@ class CVOperators:
         """
         arg = theta * 1j * scipy.sparse.kron(xQB, self.N).tocsc()
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def cry(self, theta):
         """Controlled phase space rotation operator around sigma^x
@@ -316,7 +340,7 @@ class CVOperators:
         """
         arg = theta * 1j * scipy.sparse.kron(yQB, self.N).tocsc()
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def cd(self, theta, beta=None):
         """Controlled displacement operator
@@ -334,8 +358,8 @@ class CVOperators:
         displace1 = (beta * self.a_dag) - (numpy.conjugate(beta) * self.a)
 
         return scipy.sparse.kron(
-            (idQB + zQB) / 2, scipy.sparse.linalg.expm(displace0)
-        ) + scipy.sparse.kron((idQB - zQB) / 2, scipy.sparse.linalg.expm(displace1))
+            (idQB + zQB) / 2, numpy.exp(displace0)
+        ) + scipy.sparse.kron((idQB - zQB) / 2, numpy.exp(displace1))
 
     def ecd(self, theta):
         """Echoed controlled displacement operator
@@ -349,7 +373,7 @@ class CVOperators:
         argm = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
         arg = scipy.sparse.kron(zQB, argm)
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def cbs(self, theta):
         """Controlled phase two-mode beam splitter operator
@@ -360,10 +384,6 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
 
         a12dag = self.a1 * self.a2_dag
         a1dag2 = self.a1_dag * self.a2
@@ -371,7 +391,7 @@ class CVOperators:
         argm = theta*a1dag2 - numpy.conjugate(theta)*a12dag
         arg = scipy.sparse.kron(zQB, argm).tocsc()
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def cschwinger(self, beta, theta_1, phi_1, theta_2, phi_2):
         """General form of a controlled Schwinger gate
@@ -382,23 +402,15 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1dag = self.a1.conjugate().transpose().tocsc()
-        self.a2dag = self.a2.conjugate().transpose().tocsc()
-
-        a12dag = self.a1 * self.a2dag
-        a1dag2 = self.a1dag * self.a2
-
-        Sx = (self.a1 * self.a2dag + self.a1dag * self.a2)/2
-        Sy = (self.a1 * self.a2dag - self.a1dag * self.a2)/(2*1j)
-        Sz = (self.a2dag * self.a2 - self.a1dag * self.a1)/2
+        Sx = (self.a1 * self.a2_dag + self.a1d_ag * self.a2)/2
+        Sy = (self.a1 * self.a2_dag - self.a1_dag * self.a2)/(2*1j)
+        Sz = (self.a2_dag * self.a2 - self.a1_dag * self.a1)/2
 
         sigma = numpy.sin(theta_1)*numpy.cos(phi_1)*xQB + numpy.sin(theta_1)*numpy.sin(phi_1)*yQB + numpy.cos(theta_1)*zQB
         S = numpy.sin(theta_2)*numpy.cos(phi_2)*Sx + numpy.sin(theta_2)*numpy.sin(phi_2)*Sy + numpy.cos(theta_2)*Sz
         arg = scipy.sparse.kron(sigma, S).tocsc()
 
-        return scipy.sparse.linalg.expm(-1j*beta*arg)
+        return numpy.exp(-1j*beta*arg)
 
     def snap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
@@ -416,7 +428,7 @@ class CVOperators:
         projector = numpy.outer(ket_n, ket_n)
         sparse_projector = scipy.sparse.csr_matrix(projector)
         arg = theta * 1j * sparse_projector.tocsc()
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def csnap(self, theta, n):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator,
@@ -436,7 +448,7 @@ class CVOperators:
         projector = numpy.outer(ket_n, ket_n)
         # sparse_projector = scipy.sparse.csc_matrix(projector)
         arg = theta * 1j * scipy.sparse.kron(zQB, projector).tocsc()
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
     
     def c_multiboson_sampling(self, max):
         """SNAP gate creation for multiboson sampling purposes.
@@ -457,7 +469,7 @@ class CVOperators:
 
         # Flip qubit if there is a boson present in any of the modes addressed by the projector
         arg = 1j * (-numpy.pi/2) * scipy.sparse.kron(xQB, projector).tocsc()
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def eswap(self, theta):
         """Exponential SWAP operator
@@ -477,7 +489,7 @@ class CVOperators:
 
         arg = 1j * theta * self.sparse_mat
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
 
     def csq(self, theta):
@@ -493,13 +505,13 @@ class CVOperators:
         a_dag_sqr = self.a_dag * self.a_dag
         arg = scipy.sparse.kron(zQB, 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))).tocsc()
 
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
 
     def testqubitorderf(self, phi):
 
         arg = 1j * phi * scipy.sparse.kron(xQB, idQB)
-        return scipy.sparse.linalg.expm(arg)
+        return numpy.exp(arg)
 
     def c_multiboson_sampling(self, max):
         """SNAP gate creation for multiboson sampling purposes.
