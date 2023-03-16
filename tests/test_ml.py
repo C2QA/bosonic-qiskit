@@ -178,3 +178,27 @@ def test_qiskit_without_ml(capsys):
         # You can't simulate a Qiskit circuit with an unbound parameter
         # simulator.run(circuit_transpiled.bind_parameters([0.2]))
         simulator.run(circuit)
+
+
+def test_parameterized_ndarray(capsys):
+    with capsys.disabled():
+        param = Parameter("test")
+        array = np.random.rand(4, 4)
+
+        result = param * array
+        print(result)
+
+
+def test_parameterized_sparse_array(capsys):
+    import scipy.sparse
+
+    with pytest.raises(ValueError), capsys.disabled():
+        param = Parameter("test")
+        
+        data = np.sqrt(range(4))
+        array = scipy.sparse.spdiags(
+            data=data, diags=[1], m=len(data), n=len(data)
+        ).tocsc()
+
+        result = param * array
+        print(result)
