@@ -12,7 +12,7 @@ import qiskit
 
 
 from c2qa.circuit import CVCircuit
-from c2qa.operators import ParameterizedUnitaryGate
+from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
 from c2qa.wigner import simulate_wigner
 
 
