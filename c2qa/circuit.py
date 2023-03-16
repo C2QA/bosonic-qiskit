@@ -6,7 +6,8 @@ from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.parametertable import ParameterTable
 import qiskit.providers.aer.library.save_instructions as save
 
-from c2qa.operators import CVOperators, ParameterizedUnitaryGate
+from c2qa.operators import CVOperators
+from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
 from c2qa.qumoderegister import QumodeRegister
 
 
