@@ -282,6 +282,28 @@ class CVOperators:
         arg = theta * 1j * scipy.sparse.kron(zQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
     
+    def multisnap(self, *args):
+        """multi-SNAP (Selective Number-dependent Arbitrary Phase) operator,
+        with explicit sigma_z in exponential. Can be used to generate
+        fock-number selective qubit rotations.
+        Args:
+            theta (real): phase
+            n (integer): Fock state in which the mode should acquire the phase
+        Returns:
+            ndarray: operator matrix
+        """
+        thetas = args[:len(args) // 2]
+        ns = args[len(args) // 2:]
+        if len(thetas)!=len(ns):
+            raise Exception("len(thetas) must be equal to len(ns)")
+        ket_n = numpy.zeros(self.cutoff_value)
+        for i in range(len(ns)):
+            ket_n[ns[i]] = thetas[i]
+        projector = numpy.outer(ket_n, ket_n)
+        sparse_projector = scipy.sparse.csr_matrix(projector)
+        arg = 1j * sparse_projector.tocsc()
+        return scipy.sparse.linalg.expm(arg)
+    
     def c_multiboson_sampling(self, max):
         """SNAP gate creation for multiboson sampling purposes.
         Args:
