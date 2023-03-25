@@ -575,6 +575,15 @@ class CVCircuit(QuantumCircuit):
                 qargs=qumode + [qubit],
             )
             
+    def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
+        params = thetas + ns
+        self.append(
+            ParameterizedUnitaryGate(
+                self.ops.multisnap, params, num_qubits=len(qumode), label="mSNAP", duration=duration, unit=unit
+            ),
+            qargs=qumode,
+        )
+            
     def cv_c_multiboson_sampling(self, max, qumode, qubit=None, duration=1, unit="us"):
         """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
         Args:
