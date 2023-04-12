@@ -292,17 +292,26 @@ class CVOperators:
         Returns:
             ndarray: operator matrix
         """
-        thetas = args[:len(args) // 2]
-        ns = args[len(args) // 2:]
-        if len(thetas)!=len(ns):
+        # Divide list in two because thetas and ns must be sent in as a single list
+        thetas = args[:len(args) // 2] # arguments
+        ns = args[len(args) // 2:] # Fock states on which they are applied
+        if len(thetas)!=len(ns): # one theta per Fock state to apply it to
             raise Exception("len(thetas) must be equal to len(ns)")
-        ket_n = numpy.zeros(self.cutoff_value)
+
+        id = numpy.eye(self.cutoff_value)
+        ket_0 = numpy.zeros(self.cutoff_value)
+        ket_0[0] = 1
+        projector = numpy.outer(ket_0, ket_0)
+        coeff = numpy.exp(- 1j * 0) - 1
+        gate = scipy.sparse.csr_matrix(id + coeff * projector)
         for i in range(len(ns)):
-            ket_n[ns[i]] = thetas[i]
-        projector = numpy.outer(ket_n, ket_n)
-        sparse_projector = scipy.sparse.csr_matrix(projector)
-        arg = 1j * sparse_projector.tocsc()
-        return scipy.sparse.linalg.expm(arg)
+            ket_n = numpy.zeros(self.cutoff_value)
+            ket_n[ns[i]] = 1
+            projector = numpy.outer(ket_n, ket_n)
+            coeff = numpy.exp(- 1j * thetas[i]) - 1
+            mat = scipy.sparse.csr_matrix(id + (coeff * projector))
+            gate = gate @ mat
+        return scipy.sparse.csr_matrix(gate)
     
     def c_multiboson_sampling(self, max):
         """SNAP gate creation for multiboson sampling purposes.
