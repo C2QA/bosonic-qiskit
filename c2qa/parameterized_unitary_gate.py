@@ -1,3 +1,6 @@
+import warnings
+
+
 import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
@@ -56,16 +59,20 @@ class ParameterizedUnitaryGate(Gate):
         return self.op_func(*values).toarray()
 
     def _define(self):
-        mat = self.to_matrix()
-        q = QuantumRegister(self.num_qubits)
-        qc = QuantumCircuit(q, name=self.name)
-        rules = [
-            (UnitaryGate(mat, self.label), [i for i in q], []),
-        ]
-        for instr, qargs, cargs in rules:
-            qc._append(instr, qargs, cargs)
+        try:
+            mat = self.to_matrix()
+            q = QuantumRegister(self.num_qubits)
+            qc = QuantumCircuit(q, name=self.name)
+            rules = [
+                (UnitaryGate(mat, self.label), [i for i in q], []),
+            ]
+            for instr, qargs, cargs in rules:
+                qc._append(instr, qargs, cargs)
 
-        self.definition = qc
+            self.definition = qc
+        except:
+            warnings.warn("Unable to define gate")
+            self.definition = None
 
     def validate_parameter(self, parameter):
         """Gate parameters should be int, float, or ParameterExpression"""

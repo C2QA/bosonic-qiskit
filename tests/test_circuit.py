@@ -1,7 +1,9 @@
 import c2qa
+import json
+import numpy
 import pytest
 import qiskit
-import numpy
+from qiskit.providers.ibmq.runtime.utils import RuntimeEncoder
 
 
 def test_no_registers():
@@ -124,3 +126,24 @@ def test_initialize_qubit_values(capsys):
             assert result.success
 
             print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")
+
+def test_serialize(capsys):
+    with capsys.disabled():
+        print()
+
+        from qiskit.providers.ibmq.runtime.utils import RuntimeEncoder
+
+        qumodes = c2qa.QumodeRegister(2)
+        bosonic_circuit = c2qa.CVCircuit(qumodes)
+
+        init_state = [0,2]
+        for i in range(qumodes.num_qumodes):
+            bosonic_circuit.cv_initialize(init_state[i], qumodes[i])
+
+        phi = qiskit.circuit.Parameter('phi')
+        bosonic_circuit.cv_bs(phi, qumodes[0], qumodes[1])
+
+        #print(bosonic_circuit.draw())
+        print('\nAttempt to serialize an unbound CVCircuit:')
+        bosonic_serial = json.dumps(bosonic_circuit, cls=RuntimeEncoder)
+        print(bosonic_serial)
