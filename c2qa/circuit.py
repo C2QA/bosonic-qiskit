@@ -6,7 +6,8 @@ from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.parametertable import ParameterTable
 import qiskit.providers.aer.library.save_instructions as save
 
-from c2qa.operators import CVOperators, ParameterizedUnitaryGate
+from c2qa.operators import CVOperators
+from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
 from c2qa.qumoderegister import QumodeRegister
 
 
@@ -574,6 +575,15 @@ class CVCircuit(QuantumCircuit):
                 qargs=qumode + [qubit],
             )
             
+    def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
+        params = thetas + ns
+        self.append(
+            ParameterizedUnitaryGate(
+                self.ops.multisnap, params, num_qubits=len(qumode), label="mSNAP", duration=duration, unit=unit
+            ),
+            qargs=qumode,
+        )
+            
     def cv_c_multiboson_sampling(self, max, qumode, qubit=None, duration=1, unit="us"):
         """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
         Args:
@@ -735,3 +745,19 @@ class CVCircuit(QuantumCircuit):
             self.measure(flat_list, cbit_list[0:len(flat_list)])
         else:
             self.measure(flat_list, cbit_list)
+
+    def cv_c_multiboson_sampling(self, max, qumode, qubit, duration=1, unit="us"):
+        """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
+        Args:
+            max (int): the period of the mapping
+            qumode (list): list of qubits representing qumode
+            qubit (Qubit): control qubit.
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(
+            ParameterizedUnitaryGate(
+                self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
+            ),
+            qargs=qumode + [qubit],
+        )
