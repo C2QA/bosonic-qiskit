@@ -511,7 +511,7 @@ class CVCircuit(QuantumCircuit):
         )
 
     def cv_c_schwinger(self, params, qumode_a, qumode_b, qubit, duration=100, unit="ns"):
-        """General form of a controlled Schwinger gate, containing both the controlled phase beamsplitter
+        """General form of a controlled 'Schwinger' gate, containing both the controlled phase beamsplitter
         and pairs of controlled phase space rotations as special cases.
 
         It has the form exp(-i*beta*(n1_hat.sigma)(n2_hat.S)),
