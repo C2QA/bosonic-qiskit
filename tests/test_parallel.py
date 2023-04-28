@@ -140,6 +140,7 @@ def test_parallel_bosonic_qiskit(capsys):
 
         # Github Windows, Linux runners have 2 cores, macOS has 3 cores.
         # It doens't make much sense to test more than 2 threads...
+        # See https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         all_less = True
         for i in range(1, len(shotss)): # Can't parallelize only one shot
             if two_thread_times[i] > one_thread_times[i]:
