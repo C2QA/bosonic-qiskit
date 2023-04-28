@@ -138,12 +138,14 @@ def test_parallel_bosonic_qiskit(capsys):
         # %timeit run(1)
         # %timeit run(0)
 
+        # Github Windows, Linux runners have 2 cores, macOS has 3 cores.
+        # It doens't make much sense to test more than 2 threads...
         all_less = True
         for i in range(1, len(shotss)): # Can't parallelize only one shot
             if two_thread_times[i] > one_thread_times[i]:
                 all_less = False
-            if four_thread_times[i] > two_thread_times[i]:
-                all_less = False
-            if eight_thread_times[i] > four_thread_times[i]:
-                all_less = False
+            # if four_thread_times[i] > two_thread_times[i]:
+            #     all_less = False
+            # if eight_thread_times[i] > four_thread_times[i]:
+            #     all_less = False
         assert all_less
