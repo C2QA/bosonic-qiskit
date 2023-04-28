@@ -113,16 +113,21 @@ def test_parallel_bosonic_qiskit(capsys):
         shotss=[1,10,100]
 
         one_thread_times = [run(shots,1) for shots in shotss]
-        print(f"One thread  {one_thread_times}")
+        print(f"1 thread {one_thread_times}")
         # plt.plot(shotss, one_thread_times, 'x',label="1")
 
-        # plt.plot(shotss,[run(shots,2) for shots in shotss], 'x',label="2")
+        two_thread_times = [run(shots,2) for shots in shotss]
+        print(f"2 thread {two_thread_times}")
+        # plt.plot(shotss, two_thread_times, 'x',label="2")
 
         four_thread_times = [run(shots,4) for shots in shotss]
-        print(f"Four thread {four_thread_times}")
+        print(f"4 thread {four_thread_times}")
         # plt.plot(shotss, four_thread_times, 'x',label="4")
 
-        # plt.plot(shotss,[run(shots,8) for shots in shotss], 'x',label="8")
+        eight_thread_times = [run(shots,8) for shots in shotss]
+        print(f"8 thread  {eight_thread_times}")
+        # plt.plot(shotss, eight_thread_times, 'x',label="8")
+
         # plt.legend()
         # plt.xlabel("shots")
         # plt.ylabel("seconds")
@@ -135,6 +140,10 @@ def test_parallel_bosonic_qiskit(capsys):
 
         all_less = True
         for i in range(1, len(shotss)): # Can't parallelize only one shot
-            if four_thread_times[i] > one_thread_times[i]:
+            if two_thread_times[i] > one_thread_times[i]:
+                all_less = False
+            if four_thread_times[i] > two_thread_times[i]:
+                all_less = False
+            if eight_thread_times[i] > four_thread_times[i]:
                 all_less = False
         assert all_less
