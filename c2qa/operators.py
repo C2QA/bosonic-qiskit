@@ -38,6 +38,18 @@ class CVOperators:
 
         self.cutoff_value = cutoff
 
+    def id(self):
+        """Identity gate (used by cv_delay)
+
+        Args:
+            None
+
+        Returns:
+            ndarray: operator matrix
+        """
+
+        return self.eye
+
     def r(self, theta):
         """Phase space rotation operator
 

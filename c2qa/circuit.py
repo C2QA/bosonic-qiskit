@@ -746,6 +746,24 @@ class CVCircuit(QuantumCircuit):
         else:
             self.measure(flat_list, cbit_list)
 
+    def cv_delay(self, duration, qumode, unit="ns"):
+        """CV_delay. Implements an identity gate of the specified duration. 
+        This is particularly useful for the implementation of a noise pass.
+
+        Args:
+            duration (real): duration of delay gate
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.id, [], num_qubits=len(qumode), label="delay(" + str(duration) + " " + unit +")", duration=duration, unit=unit
+            ),
+            qargs=qumode,
+        )
+
     def cv_c_multiboson_sampling(self, max, qumode, qubit, duration=1, unit="us"):
         """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
         Args:

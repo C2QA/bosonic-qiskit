@@ -154,6 +154,13 @@ def test_displacement_once(capsys):
         state, result = c2qa.util.simulate(circuit)
         assert_changed(state, result)
 
+def test_cv_delay():
+    circuit, qmr = create_unconditional()
+
+    circuit.cv_delay(100,qmr[0])
+
+    state, result = c2qa.util.simulate(circuit)
+
 
 def test_displacement_twice():
     circuit, qmr = create_unconditional()
