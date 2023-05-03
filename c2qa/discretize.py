@@ -4,7 +4,7 @@ from c2qa.circuit import CVCircuit
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
 
 
-def discretize_circuit(circuit, animation_segments, keep_state, qubit, cbit, sequential_subcircuit):
+def discretize_circuit(circuit: CVCircuit, segments_per_gate: int, keep_state: bool, qubit:qiskit.circuit.quantumcircuit.QubitSpecifier, cbit: qiskit.circuit.quantumcircuit.QubitSpecifier, sequential_subcircuit: bool):
     sim_circuits = []  # Each frame will have its own circuit to simulate
 
     # base_circuit is copied each gate iteration to build circuit frames to simulate
@@ -16,7 +16,7 @@ def discretize_circuit(circuit, animation_segments, keep_state, qubit, cbit, seq
         # qubit = xxx
         # cbit = yyy
 
-        frames = __to_frames(inst, animation_segments, keep_state, sequential_subcircuit)
+        frames = __to_frames(inst, segments_per_gate, keep_state, sequential_subcircuit)
 
         for frame in frames:
             sim_circuit = base_circuit.copy()
@@ -36,42 +36,41 @@ def discretize_circuit(circuit, animation_segments, keep_state, qubit, cbit, seq
     return sim_circuits
 
 
-def __to_frames(inst, animation_segments, keep_state, sequential_subcircuit):
-    """Split the instruction into animation_semgments frames"""
+def __to_frames(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool, sequential_subcircuit: bool):
+    """Split the instruction into segments_per_gate frames"""
 
     if isinstance(inst, ParameterizedUnitaryGate):
-        frames = __discretize_parameterized(inst, animation_segments, keep_state)
+        frames = __discretize_parameterized(inst, segments_per_gate, keep_state)
 
     elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
-        frames = __discretize_conditional(inst, animation_segments, keep_state)
+        frames = __discretize_conditional(inst, segments_per_gate, keep_state)
 
     # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
     elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
-        frames = __discretize_subcircuit(inst.definition, animation_segments, keep_state, sequential_subcircuit)
+        frames = __discretize_subcircuit(inst.definition, segments_per_gate, keep_state, sequential_subcircuit)
 
     elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize":  # Don't animate instructions initializing system state
-        frames = __discretize_instruction(inst, animation_segments, keep_state)
+        frames = __discretize_instruction(inst, segments_per_gate, keep_state)
 
     else:
-        # Else just "animate" the instruction as a single frame (multiple frames commented out)
-        # frames = __discretize_copy(inst, animation_segments)
+        # Else just "discretize" the instruction as a single frame
         frames = [inst]
     
     return frames
 
 
-def __discretize_parameterized(inst, animation_segments, keep_state):
+def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool):
     """Split ParameterizedUnitaryGate into multiple frames"""
     frames = []
-    for index in range(1, animation_segments + 1):
+    for index in range(1, segments_per_gate + 1):
         params = inst.calculate_frame_params(
             current_step=index,
-            total_steps=animation_segments,
+            total_steps=segments_per_gate,
             keep_state=keep_state,
         )
         duration, unit = inst.calculate_frame_duration(
             current_step=index,
-            total_steps=animation_segments,
+            total_steps=segments_per_gate,
             keep_state=keep_state,
         )
 
@@ -89,26 +88,26 @@ def __discretize_parameterized(inst, animation_segments, keep_state):
     return frames
 
 
-def __discretize_conditional(inst, animation_segments, keep_state):
+def __discretize_conditional(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool):
     """Split Qiskit conditional gates into multiple frames"""
     frames = []
     inst_0, qargs_0, cargs_0 = inst.definition.data[0]
     inst_1, qargs_1, cargs_1 = inst.definition.data[1]
 
-    for index in range(1, animation_segments + 1):
+    for index in range(1, segments_per_gate + 1):
         params_0 = inst_0.base_gate.calculate_frame_params(
             current_step=index,
-            total_steps=animation_segments,
+            total_steps=segments_per_gate,
             keep_state=keep_state,
         )
         params_1 = inst_1.base_gate.calculate_frame_params(
             current_step=index,
-            total_steps=animation_segments,
+            total_steps=segments_per_gate,
             keep_state=keep_state,
         )
 
         duration, unit = inst_0.base_gate.calculate_frame_duration(
-            current_step=index, total_steps=animation_segments
+            current_step=index, total_steps=segments_per_gate
         )
 
         frames.append(
@@ -127,14 +126,14 @@ def __discretize_conditional(inst, animation_segments, keep_state):
     return frames
 
 
-def __discretize_subcircuit(subcircuit, animation_segments, keep_state, sequential_subcircuit):
+def __discretize_subcircuit(subcircuit: qiskit.QuantumCircuit, segments_per_gate: int, keep_state: bool, sequential_subcircuit: bool):
     """Create a list of circuits where the entire subcircuit is converted into frames (vs a single instruction)."""
 
     frames = []
     sub_frames = []
 
     for inst, qargs, cargs in subcircuit.data:
-        sub_frames.append((__to_frames(inst, animation_segments, keep_state, sequential_subcircuit), qargs, cargs))
+        sub_frames.append((__to_frames(inst, segments_per_gate, keep_state, sequential_subcircuit), qargs, cargs))
 
     if sequential_subcircuit:
         # Sequentially animate each gate within the subcircuit
@@ -149,7 +148,7 @@ def __discretize_subcircuit(subcircuit, animation_segments, keep_state, sequenti
         frames.append(subcircuit)
     else:
         # Animate the subcircuit as one gate
-        for frame in range(animation_segments):
+        for frame in range(segments_per_gate):
             subcircuit_copy = subcircuit.copy()
             subcircuit_copy.data.clear()  # Is this safe -- could we copy without data?
 
@@ -161,19 +160,19 @@ def __discretize_subcircuit(subcircuit, animation_segments, keep_state, sequenti
     return frames    
 
 
-def __discretize_instruction(inst, animation_segments, keep_state):
+def __discretize_instruction(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool):
     """Split Qiskit Instruction into multiple frames"""
     frames = []
 
-    for index in range(1, animation_segments + 1):
+    for index in range(1, segments_per_gate + 1):
         params = inst.calculate_frame_params(
             current_step=index,
-            total_steps=animation_segments,
+            total_steps=segments_per_gate,
             keep_state=keep_state,
         )
         duration, unit = inst.calculate_frame_duration(
             current_step=index,
-            total_steps=animation_segments,
+            total_steps=segments_per_gate,
             keep_state=keep_state,
         )
         
