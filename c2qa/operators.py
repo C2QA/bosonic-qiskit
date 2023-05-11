@@ -293,14 +293,12 @@ class CVOperators:
         # sparse_projector = scipy.sparse.csc_matrix(projector)
         arg = theta * 1j * scipy.sparse.kron(zQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
-    
+        
     def multisnap(self, *args):
-        """multi-SNAP (Selective Number-dependent Arbitrary Phase) operator,
-        with explicit sigma_z in exponential. Can be used to generate
-        fock-number selective qubit rotations.
+        """multi-SNAP (Selective Number-dependent Arbitrary Phase) operator.
+        Generates an arbitrary number of fock-number selective qubit rotations.
         Args:
-            theta (real): phase
-            n (integer): Fock state in which the mode should acquire the phase
+            args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
         Returns:
             ndarray: operator matrix
         """
@@ -315,14 +313,14 @@ class CVOperators:
         ket_0[0] = 1
         projector = numpy.outer(ket_0, ket_0)
         coeff = numpy.exp(- 1j * 0) - 1
-        gate = scipy.sparse.csr_matrix(id + coeff * projector)
+        gate = scipy.sparse.csr_matrix(id + (coeff * projector))
         for i in range(len(ns)):
             ket_n = numpy.zeros(self.cutoff_value)
             ket_n[ns[i]] = 1
             projector = numpy.outer(ket_n, ket_n)
             coeff = numpy.exp(- 1j * thetas[i]) - 1
-            mat = scipy.sparse.csr_matrix(id + (coeff * projector))
-            gate = gate @ mat
+            mat = scipy.sparse.csr_matrix(coeff * projector)
+            gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
     
     def c_multiboson_sampling(self, max):
