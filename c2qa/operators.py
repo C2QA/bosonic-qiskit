@@ -295,7 +295,7 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
         
     def multisnap(self, *args):
-        """multi-SNAP (Selective Number-dependent Arbitrary Phase) operator.
+        """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations.
         Args:
             args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
@@ -306,7 +306,36 @@ class CVOperators:
         thetas = args[:len(args) // 2] # arguments
         ns = args[len(args) // 2:] # Fock states on which they are applied
         if len(thetas)!=len(ns): # one theta per Fock state to apply it to
-            raise Exception("len(thetas) must be equal to len(ns)")
+            raise Exception("len(theta) must be equal to len(n)")
+
+        id = numpy.eye(self.cutoff_value)
+        ket_0 = numpy.zeros(self.cutoff_value)
+        ket_0[0] = 1
+        projector = numpy.outer(ket_0, ket_0)
+        coeff = numpy.exp(- 1j * 0) - 1
+        gate = scipy.sparse.csr_matrix(id + (coeff * projector))
+        for i in range(len(ns)):
+            ket_n = numpy.zeros(self.cutoff_value)
+            ket_n[ns[i]] = 1
+            projector = numpy.outer(ket_n, ket_n)
+            coeff = numpy.exp(- 1j * thetas[i]) - 1
+            mat = scipy.sparse.csr_matrix(coeff * projector)
+            gate = numpy.add(gate, mat)
+        return scipy.sparse.csr_matrix(gate)
+
+    def multicsnap(self, *args):
+        """multi-SNAP (Selective Number-dependent Arbitrary Phase) operator.
+        Generates an arbitrary number of fock-number selective qubit rotations with sigma_z explicit.
+        Args:
+            args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
+        Returns:
+            ndarray: operator matrix
+        """
+        # Divide list in two because thetas and ns must be sent in as a single list
+        thetas = args[:len(args) // 2] # arguments
+        ns = args[len(args) // 2:] # Fock states on which they are applied
+        if len(thetas)!=len(ns): # one theta per Fock state to apply it to
+            raise Exception("len(theta) must be equal to len(n)")
 
         id = numpy.eye(self.cutoff_value)
         ket_0 = numpy.zeros(self.cutoff_value)
@@ -323,8 +352,8 @@ class CVOperators:
             gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
     
-    def c_multiboson_sampling(self, max):
-        """SNAP gate creation for multiboson sampling purposes.
+    def c_pnr(self, max):
+        """Photon number readout.
         Args:
             max (int): the period of the mapping
         Returns:
