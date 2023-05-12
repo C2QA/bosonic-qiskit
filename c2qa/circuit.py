@@ -580,27 +580,22 @@ class CVCircuit(QuantumCircuit):
                     ),
                     qargs=qumode + [qubit],
                 )
-        elif isinstance(n,list):
-            if len(n) != len(theta):
-                raise ValueError("if passed as lists, theta and n must have the same length.")
-            
+        elif isinstance(n,list) and isinstance(theta,list):
             if qubit is None:
-                params = theta + n
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.multisnap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                        self.ops.multisnap, theta + n, num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode,
                 )
             else:
-                params = theta + n
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.multicsnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                        self.ops.multicsnap, theta + n, num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode + [qubit],
                 )
-        elif (isinstance(n,list) and not isinstance(theta,list)) or (not isinstance(n,list) and isinstance(theta,list)):
+        else:
             raise ValueError("if theta is passed as a list, then n must also be a list of equal length (and vice versa).")
 
 
@@ -617,8 +612,8 @@ class CVCircuit(QuantumCircuit):
     #         qargs=qumode,
     #     )
             
-    def cv_c_pnr(self, max, qumode, qubit=None, duration=100, unit="ns"):
-        """ PNR (Photon number readout) Needs comments/explanation/citation!
+    def cv_c_pnr(self, max, qumode, qubit, duration=100, unit="ns"):
+        """ PNR (Photon number readout) TODO: Needs comments/explanation/citation!
         Args:
             max (int): the period of the mapping
             qumode (list): list of qubits representing qumode
@@ -628,7 +623,7 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(
             ParameterizedUnitaryGate(
-                self.ops.c_pnr, [max], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
+                self.ops.pnr, [max], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )

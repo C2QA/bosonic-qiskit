@@ -309,11 +309,7 @@ class CVOperators:
             raise Exception("len(theta) must be equal to len(n)")
 
         id = numpy.eye(self.cutoff_value)
-        ket_0 = numpy.zeros(self.cutoff_value)
-        ket_0[0] = 1
-        projector = numpy.outer(ket_0, ket_0)
-        coeff = numpy.exp(1j * 0) - 1
-        gate = scipy.sparse.csr_matrix(id + (coeff * projector))
+        gate = scipy.sparse.csr_matrix(id)
         for i in range(len(ns)):
             ket_n = numpy.zeros(self.cutoff_value)
             ket_n[ns[i]] = 1
@@ -338,11 +334,7 @@ class CVOperators:
             raise Exception("len(theta) must be equal to len(n)")
 
         id = numpy.eye(self.cutoff_value)
-        ket_0 = numpy.zeros(self.cutoff_value)
-        ket_0[0] = 1
-        projector = numpy.outer(ket_0, ket_0)
-        coeff = numpy.exp(1j * 0) - 1
-        gate = scipy.sparse.csr_matrix(id + (coeff * projector))
+        gate = scipy.sparse.csr_matrix(scipy.sparse.kron(idQB,id))
         for i in range(len(ns)):
             ket_n = numpy.zeros(self.cutoff_value)
             ket_n[ns[i]] = 1
@@ -353,7 +345,7 @@ class CVOperators:
         return scipy.sparse.csr_matrix(gate)
 
     
-    def c_pnr(self, max):
+    def pnr(self, max):
         """Photon number readout.
         Args:
             max (int): the period of the mapping
