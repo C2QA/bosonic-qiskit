@@ -323,9 +323,9 @@ class CVOperators:
             gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
 
-    def multisnap(self, *args):
+    def multicsnap(self, *args):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
-        Generates an arbitrary number of fock-number selective qubit rotations.
+        Generates an arbitrary number of fock-number selective qubit rotations, with the qubit that accrues the geometric phase explicit.
         Args:
             args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
         Returns:
@@ -347,8 +347,8 @@ class CVOperators:
             ket_n = numpy.zeros(self.cutoff_value)
             ket_n[ns[i]] = 1
             projector = numpy.outer(ket_n, ket_n)
-            coeff = numpy.exp(1j * thetas[i]) - 1
-            mat = scipy.sparse.csr_matrix(coeff * projector)
+            coeff = scipy.sparse.linalg.expm(1j * thetas[i] * zQB) - idQB
+            mat = scipy.sparse.kron(coeff,projector).tocsr()
             gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
 

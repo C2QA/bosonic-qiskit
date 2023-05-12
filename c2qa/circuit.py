@@ -564,6 +564,8 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         if isinstance(n,int):
+            if n > self.cutoff:
+                ValueError("Fock state specified by n exceeds the cutoff.")
             if qubit is None:
                 self.append(
                     ParameterizedUnitaryGate(
@@ -579,11 +581,11 @@ class CVCircuit(QuantumCircuit):
                     qargs=qumode + [qubit],
                 )
         elif isinstance(n,list):
-            if len(n) != len(thetas):
+            if len(n) != len(theta):
                 raise ValueError("if passed as lists, theta and n must have the same length.")
             
-            params = thetas + n
             if qubit is None:
+                params = theta + n
                 self.append(
                     ParameterizedUnitaryGate(
                         self.ops.multisnap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
@@ -591,12 +593,16 @@ class CVCircuit(QuantumCircuit):
                     qargs=qumode,
                 )
             else:
+                params = theta + n
                 self.append(
                     ParameterizedUnitaryGate(
                         self.ops.multicsnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode + [qubit],
                 )
+        elif (isinstance(n,list) and not isinstance(theta,list)) or (not isinstance(n,list) and isinstance(theta,list)):
+            raise ValueError("if theta is passed as a list, then n must also be a list of equal length (and vice versa).")
+
 
     # def cv_c_sqr(self, theta, n, qumode, qubit, duration=100, unit="ns"):
     #     """TODO"""
