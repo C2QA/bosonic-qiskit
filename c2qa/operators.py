@@ -346,7 +346,7 @@ class CVOperators:
 
     
     def pnr(self, max):
-        """Photon number readout.
+        """Support gate for photon number readout (see Curtis et al., PRA (2021) and Wang et al., PRX (2020))
         Args:
             max (int): the period of the mapping
         Returns:
