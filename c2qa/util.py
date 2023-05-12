@@ -11,7 +11,11 @@ from c2qa import CVCircuit
 def flatten(l):
     return [item for sublist in l for item in sublist]
 
-def cv_multiboson_sampling(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
+def cv_measure_fock(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
+    """Simulate the circuit with an appended binary search for boson number, and determine the Fock state of a set of qumodes.
+    
+    Returns the Fock state of the qumodes in list_qumodes_to_sample, in qumode register qmr_number.
+    """
     # Count number of qubits in circuit so far
     num_qubits = len(flatten(circuit._qubit_regs))
     # Collect qumode register from circuit
