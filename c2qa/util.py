@@ -35,7 +35,7 @@ def cv_measure_fock(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
             # Make sure the ancilla qubit is always reset to 0
             circuit.initialize('0',qbr_extra[qumode_counter])
             # Apply a circuit which flips the ancilla if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
-            circuit.cv_c_multiboson_sampling(max,qmr[list_qumodes_to_sample[j]],qbr_extra[qumode_counter])
+            circuit.cv_c_pnr(max,qmr[list_qumodes_to_sample[j]],qbr_extra[qumode_counter])
             # Measure the qubit onto the classical bits (from left to right)
             classical_bit=circuit.num_qubits_per_qumode-1-iteration+(qumode_counter*circuit.num_qubits_per_qumode)
             circuit.measure(qbr_extra[qumode_counter],classical_bit)
