@@ -16,7 +16,6 @@ def cv_measure_fock(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
     
     Returns the Fock state of the qumodes in list_qumodes_to_sample, in qumode register qmr_number.
     """
-    
     # Count number of qubits in circuit so far
     num_qubits = len(flatten(circuit._qubit_regs))
     # Collect qumode register from circuit
