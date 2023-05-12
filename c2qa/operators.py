@@ -312,20 +312,20 @@ class CVOperators:
         ket_0 = numpy.zeros(self.cutoff_value)
         ket_0[0] = 1
         projector = numpy.outer(ket_0, ket_0)
-        coeff = numpy.exp(- 1j * 0) - 1
+        coeff = numpy.exp(1j * 0) - 1
         gate = scipy.sparse.csr_matrix(id + (coeff * projector))
         for i in range(len(ns)):
             ket_n = numpy.zeros(self.cutoff_value)
             ket_n[ns[i]] = 1
             projector = numpy.outer(ket_n, ket_n)
-            coeff = numpy.exp(- 1j * thetas[i]) - 1
+            coeff = numpy.exp(1j * thetas[i]) - 1
             mat = scipy.sparse.csr_matrix(coeff * projector)
             gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
 
-    def multicsnap(self, *args):
-        """multi-SNAP (Selective Number-dependent Arbitrary Phase) operator.
-        Generates an arbitrary number of fock-number selective qubit rotations with sigma_z explicit.
+    def multisnap(self, *args):
+        """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
+        Generates an arbitrary number of fock-number selective qubit rotations.
         Args:
             args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
         Returns:
@@ -341,16 +341,17 @@ class CVOperators:
         ket_0 = numpy.zeros(self.cutoff_value)
         ket_0[0] = 1
         projector = numpy.outer(ket_0, ket_0)
-        coeff = numpy.exp(- 1j * 0) - 1
+        coeff = numpy.exp(1j * 0) - 1
         gate = scipy.sparse.csr_matrix(id + (coeff * projector))
         for i in range(len(ns)):
             ket_n = numpy.zeros(self.cutoff_value)
             ket_n[ns[i]] = 1
             projector = numpy.outer(ket_n, ket_n)
-            coeff = numpy.exp(- 1j * thetas[i]) - 1
+            coeff = numpy.exp(1j * thetas[i]) - 1
             mat = scipy.sparse.csr_matrix(coeff * projector)
             gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
+
     
     def c_pnr(self, max):
         """Photon number readout.

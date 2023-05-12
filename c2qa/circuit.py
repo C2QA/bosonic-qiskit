@@ -598,56 +598,8 @@ class CVCircuit(QuantumCircuit):
                     qargs=qumode + [qubit],
                 )
 
-    def cv_c_sqr(self, theta, n, qumode, qubit, duration=100, unit="ns"):
-        """SQR (Selective Qubit Rotation) gate. If no qubit is passed,
-        then phases are applied to each qumode Fock state specified in theta and n (without
-        explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by
-        sigma_z-dependent geometric phase (akin to the implementation of the SNAP gate
-        as described in Heeres et al, PRL (2015).
-
-        Args:
-            theta (real or list[real]): phase
-            n (integer or list[integer]): Fock state in which the mode should acquire the phase
-            qumode (list): list of qubits representing qumode
-            qubit (Qubit): control qubit. If no qubit is passed, the gate will implement for sigma^z = +1.
-
-        Returns:
-            Instruction: QisKit instruction
-        """
-        if isinstane(n,int):
-            if qubit is None:
-                self.append(
-                    ParameterizedUnitaryGate(
-                        self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
-                    ),
-                    qargs=qumode,
-                )
-            else:
-                self.append(
-                    ParameterizedUnitaryGate(
-                        self.ops.csnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
-                    ),
-                    qargs=qumode + [qubit],
-                )
-        elif isinstane(n,list):
-            if len(n) != len(thetas):
-                raise ValueError("if passed as lists, theta and n must have the same length.")
-            
-            params = thetas + n
-            if qubit is None:
-                self.append(
-                    ParameterizedUnitaryGate(
-                        self.ops.multisnap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
-                    ),
-                    qargs=qumode,
-                )
-            else:
-                self.append(
-                    ParameterizedUnitaryGate(
-                        self.ops.multicsnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
-                    ),
-                    qargs=qumode + [qubit],
-                )
+    # def cv_c_sqr(self, theta, n, qumode, qubit, duration=100, unit="ns"):
+    #     """TODO"""
 
             
     # def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
