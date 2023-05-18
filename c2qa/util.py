@@ -11,7 +11,7 @@ from c2qa import CVCircuit
 def flatten(l):
     return [item for sublist in l for item in sublist]
 
-def cv_measure_fock(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
+def cv_ancilla_fock_readout(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
     """Simulate a circuit with an appended binary search for boson number, and determine the Fock state of a set of qumodes using
     phase kickback on the qubit. For more information, see Curtis et al., PRA (2021) and Wang et al., PRX (2020).
     
