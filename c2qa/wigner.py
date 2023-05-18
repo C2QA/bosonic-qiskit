@@ -54,6 +54,40 @@ def simulate_wigner(
     return wigner_result, state
 
 
+def simulate_wigner_multiple_statevectors(
+    circuit: CVCircuit,
+    xvec: np.ndarray,
+    shots: int,
+    statevector_label: str,
+    noise_passes=None,
+    trace: bool = False,
+):
+    """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
+    state, result = simulate(
+        circuit,
+        shots=shots,
+        noise_passes=noise_passes
+    )
+
+    if len(result.results):
+        wigner_results = []
+        for label in result.data():
+            if label.startswith(statevector_label):
+                state = result.data()[label]
+                if trace:
+                    density_matrix = trace_out_qubits(circuit, state)
+                else:
+                    density_matrix = state
+
+                wigner_results.append(_wigner(density_matrix, xvec))
+    else:
+        print(
+            "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
+        )
+        wigner_results = None
+
+    return wigner_results
+
 def wigner(
     state,
     axes_min: int = -6,

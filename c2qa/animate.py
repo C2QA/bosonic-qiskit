@@ -12,8 +12,8 @@ import qiskit
 
 
 from c2qa.circuit import CVCircuit
-from c2qa.discretize import discretize_circuit
-from c2qa.wigner import simulate_wigner
+from c2qa.discretize import discretize_circuits, discretize_single_circuit
+from c2qa.wigner import simulate_wigner, simulate_wigner_multiple_statevectors
 
 
 def animate_wigner(
@@ -21,6 +21,7 @@ def animate_wigner(
     qubit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
     cbit: qiskit.circuit.quantumcircuit.ClbitSpecifier = None,
     animation_segments: int = 10,
+    discretize_epsilon: float = None,
     shots: int = 1,
     file: str = None,
     axes_min: int = -6,
@@ -68,7 +69,79 @@ def animate_wigner(
         [type]: [description]
     """
 
-    circuits = discretize_circuit(circuit, animation_segments, keep_state, qubit, cbit, sequential_subcircuit)
+    if qubit or cbit:
+        w_fock, xvec = __discretize_wigner_with_measure(
+            circuit,
+            qubit,
+            cbit,
+            animation_segments,
+            discretize_epsilon,
+            shots,
+            axes_min,
+            axes_max,
+            axes_steps,
+            processes,
+            keep_state,
+            noise_passes,
+            sequential_subcircuit,
+            trace
+        )
+    else:
+        w_fock, xvec = __discretize_wigner_without_measure(
+            circuit,
+            animation_segments,
+            discretize_epsilon,
+            shots,
+            axes_min,
+            axes_max,
+            axes_steps,
+            noise_passes,
+            sequential_subcircuit,
+            trace
+        )
+
+    # Remove None values in w_fock if simulation didn't produce results
+    w_fock = [i for i in w_fock if i is not None]
+
+    # Animate w_fock Wigner function results
+    # Create empty plot to animate
+    fig, ax = plt.subplots(constrained_layout=True)
+
+    # Animate
+    anim = matplotlib.animation.FuncAnimation(
+        fig=fig,
+        init_func=_animate_init,
+        func=_animate,
+        frames=len(w_fock),
+        fargs=(fig, ax, xvec, w_fock, file, draw_grid),
+        interval=200,
+        repeat=True,
+    )
+
+    # Save to file using ffmpeg, Pillow (GIF, APNG), or display
+    if file:
+        save_animation(anim, file, bitrate)
+
+    return anim
+
+
+def __discretize_wigner_with_measure(
+    circuit: CVCircuit,
+    qubit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
+    cbit: qiskit.circuit.quantumcircuit.ClbitSpecifier = None,
+    animation_segments: int = 10,
+    discretize_epsilon: float = None,
+    shots: int = 1,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    processes: int = None,
+    keep_state: bool = True,
+    noise_passes = None,
+    sequential_subcircuit: bool = False,
+    trace: bool = True,
+):
+    circuits = discretize_circuits(circuit, animation_segments, keep_state, qubit, cbit, sequential_subcircuit)
 
     # Calculate the Wigner functions for each frame
     if not processes or processes < 1:
@@ -103,30 +176,36 @@ def animate_wigner(
         )
         pool.close()
         w_fock = [i[0] for i in results if i is not None]
+    
+    return w_fock, xvec
 
-    # Remove None values in w_fock if simulation didn't produce results
-    w_fock = [i for i in w_fock if i is not None]
+def __discretize_wigner_without_measure(
+    circuit: CVCircuit,
+    animation_segments: int = 10,
+    discretize_epsilon: float = None,
+    shots: int = 1,
+    axes_min: int = -6,
+    axes_max: int = 6,
+    axes_steps: int = 200,
+    noise_passes = None,
+    sequential_subcircuit: bool = False,
+    trace: bool = True,
+):
+    statevector_label = "segment_"
+    discretized = discretize_single_circuit(circuit, animation_segments, discretize_epsilon, sequential_subcircuit, statevector_per_segment=True, statevector_label=statevector_label)
 
-    # Animate w_fock Wigner function results
-    # Create empty plot to animate
-    fig, ax = plt.subplots(constrained_layout=True)
+    xvec = numpy.linspace(axes_min, axes_max, axes_steps)
 
-    # Animate
-    anim = matplotlib.animation.FuncAnimation(
-        fig=fig,
-        init_func=_animate_init,
-        func=_animate,
-        frames=len(w_fock),
-        fargs=(fig, ax, xvec, w_fock, file, draw_grid),
-        interval=200,
-        repeat=True,
+    w_fock = simulate_wigner_multiple_statevectors(
+        circuit=discretized,
+        xvec=xvec,
+        shots=shots,
+        statevector_label=statevector_label,
+        noise_passes=noise_passes,
+        trace=trace
     )
 
-    # Save to file using ffmpeg, Pillow (GIF, APNG), or display
-    if file:
-        save_animation(anim, file, bitrate)
-
-    return anim
+    return w_fock, xvec
 
 
 def save_animation(anim: matplotlib.animation.FuncAnimation, file: str, bitrate: int):

@@ -4,7 +4,7 @@ from c2qa.circuit import CVCircuit
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
 
 
-def discretize_circuit(
+def discretize_circuits(
         circuit: CVCircuit, 
         segments_per_gate: int = 10, 
         keep_state: bool = True, 
@@ -12,7 +12,7 @@ def discretize_circuit(
         cbit: qiskit.circuit.quantumcircuit.QubitSpecifier = None, 
         sequential_subcircuit: bool = False):
     """
-    Discretize gates into a circuit into segments. Useful for incrementally applying noise or animating the circuit.
+    Discretize gates into a circuit into segments where each segment ends an indiviudal circuit. Useful for incrementally applying noise or animating the circuit.
 
     Args:
         circuit (CVCircuit): circuit to simulate and plot
@@ -58,6 +58,50 @@ def discretize_circuit(
         base_circuit.append(inst, qargs, cargs)
     
     return sim_circuits
+
+
+def discretize_single_circuit(
+        circuit: CVCircuit, 
+        segments_per_gate: int = 10, 
+        epsilon: float = None,
+        sequential_subcircuit: bool = False,
+        statevector_per_segment: bool = False,
+        statevector_label: str = "segment_"
+    ):
+    """
+    Discretize gates into a circuit into segments within a single output circuit. Useful for incrementally applying noise or animating the circuit.
+
+    Args:
+        circuit (CVCircuit): circuit to simulate and plot
+        segments_per_gate (int, optional): Number of segments to split each gate into. Defaults to 10.
+        epsilon (float, optional): float value used to discretize 
+        sequential_subcircuit (bool, optional): boolean flag to animate subcircuits as one gate (False) or as sequential 
+                                                gates (True). Defaults to False.
+        statevector_per_segment (bool, optional): boolean flag to save a statevector per gate segment. True will call Qiskit 
+                                                  save_statevector after each segment is simulated, creating statevectors labeled 
+                                                  "segment_*" that can used after simulation. Defaults to False.
+        statevector_label (str, optional): String prefix to use for the statevector saved after each segment
+    
+    Returns:
+        discretized Qiskit circuit
+    """
+
+    # discretized is a copy of the circuit as a whole. Each gate segment be added to simulate
+    discretized = circuit.copy()
+    discretized.data.clear()  # Is this safe -- could we copy without data?
+    segment_count = 0
+
+    for inst, qargs, cargs in circuit.data:
+        segments = __to_segments(inst=inst, segments_per_gate=segments_per_gate, keep_state=True, sequential_subcircuit=sequential_subcircuit)
+
+        for segment in segments:
+            discretized.append(instruction=segment, qargs=qargs, cargs=cargs)
+
+            if statevector_per_segment:
+                discretized.save_statevector(label=f"{statevector_label}{segment_count}")
+                segment_count += 1
+
+    return discretized
 
 
 def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool, sequential_subcircuit: bool):

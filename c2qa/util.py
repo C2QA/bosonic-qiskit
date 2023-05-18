@@ -8,7 +8,7 @@ from qiskit.quantum_info import Statevector
 
 
 from c2qa import CVCircuit
-from c2qa.discretize import discretize_circuit
+from c2qa.discretize import discretize_circuits
 
 
 def flatten(l):
@@ -316,7 +316,7 @@ def simulate(
         warnings.warn("Discretization of circuit intended for use with noise passes, but none provided")
 
     if discretize:
-        circuits = discretize_circuit(cvcircuit)
+        circuits = discretize_circuits(cvcircuit)
     else:
         circuits = [cvcircuit]
 
