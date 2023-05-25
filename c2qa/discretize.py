@@ -101,7 +101,7 @@ def discretize_single_circuit(
                 discretized.save_statevector(label=f"{statevector_label}{segment_count}")
                 segment_count += 1
 
-    return discretized, (segment_count - 1)
+    return discretized, segment_count
 
 
 def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool, sequential_subcircuit: bool):
