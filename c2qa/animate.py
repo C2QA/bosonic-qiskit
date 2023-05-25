@@ -13,7 +13,6 @@ import qiskit
 
 from c2qa.circuit import CVCircuit
 from c2qa.discretize import discretize_circuits, discretize_single_circuit
-from c2qa.kraus import PhotonLossNoisePass
 from c2qa.wigner import simulate_wigner, simulate_wigner_multiple_statevectors
 
 
@@ -60,7 +59,7 @@ def animate_wigner(
         keep_state (bool, optional): True if each frame builds on the previous frame's state vector.
                                      False if each frame starts over from the beginning of the circuit.
                                      If True, it requires sequential simulation of each frame.
-        noise_passes (lisst of Qiskit noise passes, optional): noise passes to apply
+        noise_passes (list of Qiskit noise passes, optional): noise passes to apply
         sequential_subcircuit (bool, optional): boolean flag to animate subcircuits as one gate (False) or as sequential 
                                                 gates (True). Defautls to False.
         draw_grid (bool, optional): True if grid lines should be drawn on plot. Defaults to False.
@@ -192,21 +191,10 @@ def __discretize_wigner_without_measure(
 ):
     statevector_label = "segment_"
 
-    kappa = None
-    if noise_passes:
-        if not isinstance(noise_passes, list):
-            noise_passes = [noise_passes]
-        for noise_pass in noise_passes:
-            # Pick the first PhotonLossNoisePass' kappa
-            # FIXME -- need to be sure the selected noise pass is for the same qumode as the instruction
-            if isinstance(noise_pass, PhotonLossNoisePass):
-                kappa = noise_pass._photon_loss_rates_sec
-
     discretized, num_statevectors = discretize_single_circuit(
         circuit, 
         animation_segments,
         discretize_epsilon,
-        kappa,
         sequential_subcircuit,
         statevector_per_segment=True,
         statevector_label=statevector_label)

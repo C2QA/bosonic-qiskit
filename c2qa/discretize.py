@@ -2,6 +2,7 @@ import math
 import qiskit
 
 from c2qa.circuit import CVCircuit
+from c2qa.kraus import PhotonLossNoisePass
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
 
 
@@ -11,7 +12,7 @@ def discretize_circuits(
         keep_state: bool = True, 
         qubit:qiskit.circuit.quantumcircuit.QubitSpecifier = None, 
         cbit: qiskit.circuit.quantumcircuit.QubitSpecifier = None, 
-        sequential_subcircuit: bool = False):
+        sequential_subcircuit: bool = False,):
     """
     Discretize gates into a circuit into segments where each segment ends an indiviudal circuit. Useful for incrementally applying noise or animating the circuit.
 
@@ -65,10 +66,10 @@ def discretize_single_circuit(
         circuit: CVCircuit, 
         segments_per_gate: int = 10, 
         epsilon: float = None,
-        kappa: float = None,
         sequential_subcircuit: bool = False,
         statevector_per_segment: bool = False,
-        statevector_label: str = "segment_"
+        statevector_label: str = "segment_",
+        noise_passes = None
     ):
     """
     Discretize gates into a circuit into segments within a single output circuit. Useful for incrementally applying noise or animating the circuit.
@@ -84,6 +85,7 @@ def discretize_single_circuit(
                                                   save_statevector after each segment is simulated, creating statevectors labeled 
                                                   "segment_*" that can used after simulation. Defaults to False.
         statevector_label (str, optional): String prefix to use for the statevector saved after each segment
+        noise_passes (list of Qiskit noise passes, optional): noise passes to apply
     
     Returns:
         discretized Qiskit circuit
@@ -92,13 +94,22 @@ def discretize_single_circuit(
     # discretized is a copy of the circuit as a whole. Each gate segment be added to simulate
     discretized = circuit.copy()
     discretized.data.clear()  # Is this safe -- could we copy without data?
-    segment_count = 0
 
+    noise_pass = None
+    if noise_passes:
+        if not isinstance(noise_passes, list):
+            noise_passes = [noise_passes]
+        for current in noise_passes:
+            # FIXME -- need to be sure the selected noise pass is for the same qumode as the instruction
+            if isinstance(current, PhotonLossNoisePass):
+                noise_pass = current
+                break
+
+    segment_count = 0
     for inst, qargs, cargs in circuit.data:
         num_segments = segments_per_gate
-        if epsilon is not None and kappa is not None:
-            # TODO get kappa from noise model, convert instruciton duration into kappa units
-            num_segments = math.ceil((kappa * inst.duration * circuit.cutoff) / epsilon)
+        if epsilon is not None and noise_pass is not None:
+            num_segments = math.ceil((noise_pass.photon_loss_rates_sec * noise_pass.duration_to_sec(inst) * circuit.cutoff) / epsilon)
 
         segments = __to_segments(inst=inst, segments_per_gate=num_segments, keep_state=True, sequential_subcircuit=sequential_subcircuit)
 

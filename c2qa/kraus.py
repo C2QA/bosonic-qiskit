@@ -154,10 +154,10 @@ class PhotonLossNoisePass(LocalNoisePass):
 
         # Convert photon loss rate to photons per second
         if self._time_unit == "dt":
-            self._photon_loss_rates_sec = [rate * self._dt for rate in self._photon_loss_rates] 
+            self.photon_loss_rates_sec = [rate * self._dt for rate in self._photon_loss_rates] 
         else:
             conversion = 1.0 / apply_prefix(1.0, self._time_unit)
-            self._photon_loss_rates_sec = [rate * conversion for rate in self._photon_loss_rates] 
+            self.photon_loss_rates_sec = [rate * conversion for rate in self._photon_loss_rates] 
 
         super().__init__(self._photon_loss_error)
 
@@ -180,21 +180,23 @@ class PhotonLossNoisePass(LocalNoisePass):
                 warnings.warn("Qiskit applies delays as single qubit gates. Qumode PhotonLossNoisePass will not be applied")
                 return None
 
-            # Convert op duration to seconds
-            if op.unit == "dt":
-                if self._dt is None:
-                    raise NoiseError(
-                        "PhotonLossNoisePass cannot apply noise to a 'dt' unit duration"
-                        " without a dt time set."
-                    )
-                duration = op.duration * self._dt
-            else:
-                duration = apply_prefix(op.duration, op.unit)
+            duration = self.duration_to_sec(op)
 
             kraus_operators = calculate_kraus(
-                self._photon_loss_rates_sec, duration, self._circuit, qubits, self._qumode_indices
+                self.photon_loss_rates_sec, duration, self._circuit, qubits, self._qumode_indices
             )
 
             error = kraus_error(kraus_operators)
 
         return error
+
+
+    def duration_to_sec(self, op: Instruction):
+        if op.unit == "dt":
+            if self._dt is None:
+                raise NoiseError("PhotonLossNoisePass cannot apply noise to a 'dt' unit duration without a dt time set.")
+            duration = op.duration * self._dt
+        else:
+            duration = apply_prefix(op.duration, op.unit)
+
+        return duration
