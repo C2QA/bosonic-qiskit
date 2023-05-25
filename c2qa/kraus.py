@@ -165,7 +165,7 @@ class PhotonLossNoisePass(LocalNoisePass):
         """Return photon loss error on each operand qubit"""
         error = None
         
-        if (self._instructions is None or op.name in self._instructions) and (self._qumode_indices is None or any(x in qubits for x in self._qumode_indices)):
+        if self.applies_to_instruction(op, qubits):
             if not op.duration:
                 if op.duration is None:
                     warnings.warn(
@@ -190,8 +190,12 @@ class PhotonLossNoisePass(LocalNoisePass):
 
         return error
 
+    def applies_to_instruction(self, op: Instruction, qubits: Sequence[int]):
+        """Test if this PhotonLossNoisePass applies to the given instruction based on its name and qumodes (qubits)"""
+        return (self._instructions is None or op.name in self._instructions) and (self._qumode_indices is None or any(x in qubits for x in self._qumode_indices))
 
     def duration_to_sec(self, op: Instruction):
+        """Return the given Instruction's duration in seconds"""
         if op.unit == "dt":
             if self._dt is None:
                 raise NoiseError("PhotonLossNoisePass cannot apply noise to a 'dt' unit duration without a dt time set.")

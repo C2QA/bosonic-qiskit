@@ -95,21 +95,23 @@ def discretize_single_circuit(
     discretized = circuit.copy()
     discretized.data.clear()  # Is this safe -- could we copy without data?
 
-    noise_pass = None
     if noise_passes:
         if not isinstance(noise_passes, list):
             noise_passes = [noise_passes]
-        for current in noise_passes:
-            # FIXME -- need to be sure the selected noise pass is for the same qumode as the instruction
-            if isinstance(current, PhotonLossNoisePass):
-                noise_pass = current
-                break
 
     segment_count = 0
     for inst, qargs, cargs in circuit.data:
         num_segments = segments_per_gate
-        if epsilon is not None and noise_pass is not None:
-            num_segments = math.ceil((noise_pass.photon_loss_rates_sec * noise_pass.duration_to_sec(inst) * circuit.cutoff) / epsilon)
+
+        if noise_passes:
+            noise_pass = None
+            for current in noise_passes:
+                if isinstance(current, PhotonLossNoisePass) and current.applies_to_instruction(inst, qargs):
+                    noise_pass = current
+                    break
+            
+            if epsilon is not None and noise_pass is not None:
+                num_segments = math.ceil((noise_pass.photon_loss_rates_sec * noise_pass.duration_to_sec(inst) * circuit.cutoff) / epsilon)
 
         segments = __to_segments(inst=inst, segments_per_gate=num_segments, keep_state=True, sequential_subcircuit=sequential_subcircuit)
 
