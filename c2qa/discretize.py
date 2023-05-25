@@ -1,3 +1,4 @@
+import math
 import qiskit
 
 from c2qa.circuit import CVCircuit
@@ -64,6 +65,7 @@ def discretize_single_circuit(
         circuit: CVCircuit, 
         segments_per_gate: int = 10, 
         epsilon: float = None,
+        kappa: float = None,
         sequential_subcircuit: bool = False,
         statevector_per_segment: bool = False,
         statevector_label: str = "segment_"
@@ -74,7 +76,8 @@ def discretize_single_circuit(
     Args:
         circuit (CVCircuit): circuit to simulate and plot
         segments_per_gate (int, optional): Number of segments to split each gate into. Defaults to 10.
-        epsilon (float, optional): float value used to discretize 
+        epsilon (float, optional): float value used to discretize, must specify along with kappa
+        kappa (float, optional): float phton loss rate to determine discretization sice, must specify along with epsilon
         sequential_subcircuit (bool, optional): boolean flag to animate subcircuits as one gate (False) or as sequential 
                                                 gates (True). Defaults to False.
         statevector_per_segment (bool, optional): boolean flag to save a statevector per gate segment. True will call Qiskit 
@@ -92,7 +95,12 @@ def discretize_single_circuit(
     segment_count = 0
 
     for inst, qargs, cargs in circuit.data:
-        segments = __to_segments(inst=inst, segments_per_gate=segments_per_gate, keep_state=True, sequential_subcircuit=sequential_subcircuit)
+        num_segments = segments_per_gate
+        if epsilon is not None and kappa is not None:
+            # TODO get kappa from noise model, convert instruciton duration into kappa units
+            num_segments = math.ceil((kappa * inst.duration * circuit.cutoff) / epsilon)
+
+        segments = __to_segments(inst=inst, segments_per_gate=num_segments, keep_state=True, sequential_subcircuit=sequential_subcircuit)
 
         for segment in segments:
             discretized.append(instruction=segment, qargs=qargs, cargs=cargs)
