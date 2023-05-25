@@ -75,7 +75,6 @@ def animate_wigner(
             qubit,
             cbit,
             animation_segments,
-            discretize_epsilon,
             shots,
             axes_min,
             axes_max,
@@ -130,7 +129,6 @@ def __discretize_wigner_with_measure(
     qubit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
     cbit: qiskit.circuit.quantumcircuit.ClbitSpecifier = None,
     animation_segments: int = 10,
-    discretize_epsilon: float = None,
     shots: int = 1,
     axes_min: int = -6,
     axes_max: int = 6,
@@ -192,7 +190,7 @@ def __discretize_wigner_without_measure(
     trace: bool = True,
 ):
     statevector_label = "segment_"
-    discretized = discretize_single_circuit(circuit, animation_segments, discretize_epsilon, sequential_subcircuit, statevector_per_segment=True, statevector_label=statevector_label)
+    discretized, num_statevectors = discretize_single_circuit(circuit, animation_segments, discretize_epsilon, sequential_subcircuit, statevector_per_segment=True, statevector_label=statevector_label)
 
     xvec = numpy.linspace(axes_min, axes_max, axes_steps)
 
@@ -201,6 +199,7 @@ def __discretize_wigner_without_measure(
         xvec=xvec,
         shots=shots,
         statevector_label=statevector_label,
+        num_statevectors=num_statevectors,
         noise_passes=noise_passes,
         trace=trace
     )

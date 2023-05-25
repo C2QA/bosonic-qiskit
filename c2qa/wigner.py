@@ -59,6 +59,7 @@ def simulate_wigner_multiple_statevectors(
     xvec: np.ndarray,
     shots: int,
     statevector_label: str,
+    num_statevectors:int,
     noise_passes=None,
     trace: bool = False,
 ):
@@ -71,15 +72,14 @@ def simulate_wigner_multiple_statevectors(
 
     if len(result.results):
         wigner_results = []
-        for label in result.data():
-            if label.startswith(statevector_label):
-                state = result.data()[label]
-                if trace:
-                    density_matrix = trace_out_qubits(circuit, state)
-                else:
-                    density_matrix = state
+        for num in range(num_statevectors):
+            state = result.data()[f"{statevector_label}{num}"]
+            if trace:
+                density_matrix = trace_out_qubits(circuit, state)
+            else:
+                density_matrix = state
 
-                wigner_results.append(_wigner(density_matrix, xvec))
+            wigner_results.append(_wigner(density_matrix, xvec))
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
