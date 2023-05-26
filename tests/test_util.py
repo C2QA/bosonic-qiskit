@@ -146,3 +146,51 @@ def test_stateread(capsys):
             cutoff=circuit.cutoff,
             verbose=True,
         )
+
+def test_fockmap(capsys):
+    with capsys.disabled():
+
+        # Build rand array of rand dim between 1 and 100, use fockmap to populate initally empty array, and assert that final array is equal to rand array
+        for _ in range(10): # Repeat test 10 times
+            dim = numpy.random.randint(low=1, high = 101)
+            randarray = numpy.random.uniform(low=0, high=1, size=(dim, dim))
+
+            testmatrix = numpy.zeros((dim, dim))
+            for i in range(dim):
+                for j in range (dim):
+                    testmatrix = c2qa.util.fockmap(testmatrix, j, i, randarray[i, j])
+                     
+            assert((testmatrix == randarray).all())
+
+        # Check fockmap using numpy.outer
+        matrix = numpy.zeros((4, 4))
+        assert((c2qa.util.fockmap(matrix, 0, 0) == numpy.outer([1, 0, 0 ,0], [1, 0, 0, 0])).all()) # |0><0|
+        assert((c2qa.util.fockmap(matrix, 1, [3, 2], [1, 0.5]) == (numpy.outer([0, 0, 0 ,1], [0, 1, 0, 0]) + 0.5 * numpy.outer([0, 0, 1 ,0], [0, 1, 0, 0]))).all()) # |3><1| + 0.5|2><1|
+        assert((c2qa.util.fockmap(matrix, 1, [3, 2, 1]) == c2qa.util.fockmap(matrix, [1, 1, 1], [3, 2, 1])).all()) # |3><1| + |2><1| + |1><1|
+
+        # Check the types which are accepted for each arg.
+        for i in range(10):
+            # Nested list, numpy.ndarray
+            m_types = [[[0, 0],[0 ,0]], numpy.zeros((2, 2))] 
+
+            # int, list
+            fi_types = [0, [1, 0]]
+
+            # int, list
+            fo_types = [1, [1, 0]]
+
+            #int, float, complex, empty list, list, numpy.ndarray
+            amp_types = [1, 1.0, 1j, [], [1, 1], numpy.array([1, 1])]
+
+            # Generate random indices to test for
+            m_index = numpy.random.randint(0, 2)
+            fi_index = numpy.random.randint(0, 2)
+            fo_index = numpy.random.randint(0, 2)
+
+            if (fi_index == 0) & (fo_index == 0):
+                amp_index = numpy.random.randint(0, 4)
+            else:
+                amp_index = numpy.random.randint(3, 5)
+            
+            # Assert that output is a numpy.ndarray
+            assert(type(c2qa.util.fockmap(m_types[m_index], fi_types[fi_index], fo_types[fo_index], amp_types[amp_index])) == numpy.ndarray)
