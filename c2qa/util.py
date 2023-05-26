@@ -451,3 +451,115 @@ def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
     indices = circuit.get_qubit_indices(qubits)
 
     return qiskit.quantum_info.partial_trace(state_vector, indices)
+
+def fockmap(matrix, fock_input, fock_output, amplitude=[]):
+    """Generates matrix corresponding to some specified mapping of Fock states. 
+    First feed function empty matrix, then call fmap_matrix however many times needed to fully define intended mapping.
+    Maps ith element in fock_input to ith element in fock_output with amplitude specified by ith element in amplitude.
+    If amplitude is left blank, function assumes amp = 1 for all mappings.
+
+    Two use cases 
+    1) int + list datatype combination (length of amp list must match length of either fock_input or fock_output, whichever is longer): 
+    >fockmap(matrix, 1, [0, 1]) 
+    ->> |0><1| + |1><1|
+
+    >fockmap(matrix, [3, 2], 0, [0.5j, 1])
+    ->> 0.5j|0><3| + |0><2|
+
+    2) list datatype
+    >fockmap(matrix, [3, 2], [2, 1], [0.1j, 0.8])
+    ->> 0.1j|2><3| + 0.8|1><2| 
+
+    >fockmap(matrix, [1, 1], [2, 4])
+    ->> |2><1| + |4><1| 
+
+
+    Args:
+        matrix (nested list/np.array): Matrix that you want to change
+        fock_input (int/list): Input state(s) for mapping, corresponds to bra
+        fock_output (int/list): Output states(s) for mapping, corresponds to ket
+        amplitude (int/float/complex/list/ndarray): Amplitudes corresponding to final mapped states
+
+    Returns:
+        np.array: Edited matrix"""
+    
+
+    # Convert args to lists for convenience of computation
+    if isinstance(fock_input, int):
+        fock_input = [fock_input]
+    elif isinstance(fock_input, (float, complex, str, bool)):
+        raise TypeError("Please ensure that your fock_input value is an int")
+    
+    if isinstance(fock_output, int):
+        fock_output = [fock_output]
+    elif isinstance(fock_output, (float, complex, str, bool)):
+        raise TypeError("Please ensure that your fock_output value is an int")
+    
+    if isinstance(amplitude, (int, float, complex)):
+        amplitude = [amplitude]
+
+    # If user inputs python list instead of np array
+    matrix = np.array(matrix, dtype=complex)
+
+    # Default amplitude is 1 for all states, unless otherwise specified
+    if amplitude == []:
+        amplitude = [1 for i in range(max(len(fock_input), len(fock_output)))]
+
+    ## Error flags
+    # Length of amplitude list must match the greater of either input or output
+    if not (len(amplitude) == max(len(fock_input), len(fock_output))):
+            raise ValueError("Please ensure that that length of amplitude arg matches length of either input or output list.")
+    # Datatype of args check
+    if not (isinstance(fock_input, list) & isinstance(fock_output, list) & isinstance(amplitude, (list, np.ndarray))):
+        raise TypeError("Please ensure that datatypes of input and output states are either int or list.")
+    # Check for cutoff
+    n, m = matrix.shape
+    if n != m:
+        raise ValueError("Matrix given is not square")
+    if any(i >= n for i in fock_input) or any(j >= n for j in fock_output): 
+        raise ValueError("Fock state(s) greater than cutoff.")
+
+    ## Use cases
+    # Int + int datatype for input/output args.
+    if ((len(fock_input) == 1) & (len(fock_output) == 1)):
+        if len(amplitude) > 1:
+            raise ValueError("Please ensure that only a single amplitude value is provided, as there is only 1 mapping provided")
+        if matrix[fock_output[0], fock_input[0]] != 0:
+            print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[0], fock_input[0]))
+                
+        matrix[fock_output[0], fock_input[0]] = amplitude[0]
+
+        return matrix
+
+    # Int + list datatype for input/output args. Length of amplitude must match length of list
+    elif (len(fock_input) == 1) & (len(fock_output) > 1):
+        for i in range(len(fock_output)):
+            if matrix[fock_output[i], fock_input[0]] != 0:
+                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[i], fock_input[0]))
+
+            matrix[fock_output[i], fock_input[0]] = amplitude[i]
+
+        return matrix
+    
+    elif (len(fock_output) == 1) & (len(fock_input) > 1):
+        for i in range(len(fock_input)):
+            if matrix[fock_output[0], fock_input[i]] != 0:
+                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[0], fock_input[i]))
+
+            matrix[fock_output[0], fock_input[i]] = amplitude[i]
+
+        return matrix        
+
+    # List datatype input/output/amp args. Lengths of all must match
+    elif (len(fock_input) == len(fock_output) == len(amplitude)):
+
+        for i in range(len(fock_input)):
+            if matrix[fock_output[i], fock_input[i]] != 0:
+                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[i], fock_input[i]))
+                
+            matrix[fock_output[i], fock_input[i]] = amplitude[i]
+
+        return matrix
+    
+    else:
+        raise ValueError("Please ensure that your args are correctly defined.")
