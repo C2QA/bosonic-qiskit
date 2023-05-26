@@ -4,6 +4,7 @@ import warnings
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.parametertable import ParameterTable
+from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import qiskit.providers.aer.library.save_instructions as save
 
 from c2qa.operators import CVOperators
@@ -806,4 +807,53 @@ class CVCircuit(QuantumCircuit):
                 self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
+        )
+
+    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns"):
+        """Converts matrix to gate.
+
+        Args:
+            matrix (np.array/list): Matrix for conversion into gate
+            qumodes (QumodeRegister/list): Qumodes initialized by QumodeRegister
+            qubits (QuantumRegister/list): Qubits initialized by QuantumRegister <-double check
+
+        Returns:
+            Instruction: QisKit instruction
+        """     
+        # If multiple qubits are given, slice to get list of qubits. Otherwise, encase QuantumRegister for single qubit in list.
+        try: 
+            qubits = qubits[:]
+        except: 
+            qubits = [qubits]
+
+        # Slice QumodeRegister to get list of qumodes
+        if isinstance(qumodes, QumodeRegister):    
+            qumodes = qumodes[:]
+
+        # Convert matrix to np.ndarray so that we can compute error flags easier
+        matrix = np.array(matrix)
+        
+        ## Error flags
+        # Matrix needs to be square
+        n, m = matrix.shape
+        if n != m:
+            raise ValueError("Matrix given is not square")
+        
+        # Determine if input matrix is same dimension as input qumodes+qubits
+        if n != 2 ** (len(qumodes) + len(qubits)):
+            raise ValueError("Matrix is of different dimension from qumodes + qubits")
+
+        # Checks if input matrix is unitary
+        if not is_unitary_matrix(matrix):
+            raise ValueError("The mapping provided is not unitary!")
+
+        # Make sure that np.ndarray doesn't get fed into PUG
+        if isinstance(matrix, np.ndarray):
+            matrix = matrix.tolist()
+
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.gate_from_matrix, [matrix], num_qubits=len(qumodes) + len(qubits), label="gate_from_matrix", duration=duration, unit=unit
+            ),
+            qargs=qumodes + qubits,
         )
