@@ -136,6 +136,32 @@ class CVCircuit(QuantumCircuit):
 
         return indices
 
+    @property
+    def qumode_qubits_indices_grouped(self):
+        """Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list."""
+        grouped_indices = []
+    
+        # Iterate through all qmregs
+        for _, qmreg in enumerate(self.qmregs):
+            num_qumodes_in_reg = qmreg.num_qumodes
+            num_qubits_per_qumode = qmreg.num_qubits_per_qumode
+
+            qmreg_qubit_indices = []
+
+            # For every qubit in circuit, append index of qubit to list if qubit is in qmreg
+            for qubit_index, qubit in enumerate(self.qubits): 
+                if qubit in qmreg[:]:
+                    qmreg_qubit_indices.append(qubit_index)
+
+            # Split list according to no. of qumodes in qmreg
+            qmreg_qubit_indices = [qmreg_qubit_indices[i * num_qubits_per_qumode: (i + 1) * num_qubits_per_qumode] for i in range(num_qumodes_in_reg)]
+
+            # Extend final list
+            grouped_indices.extend(qmreg_qubit_indices) 
+
+        return(grouped_indices)        
+         
+
     def get_qubit_index(self, qubit):
         """Return the index of the given Qubit"""
         for i, q in enumerate(self.qubits):
@@ -813,9 +839,9 @@ class CVCircuit(QuantumCircuit):
         """Converts matrix to gate.
 
         Args:
-            matrix (np.array/list): Matrix for conversion into gate
+            matrix (np.array/nested list): Matrix for conversion into gate
             qumodes (QumodeRegister/list): Qumodes initialized by QumodeRegister
-            qubits (QuantumRegister/list): Qubits initialized by QuantumRegister <-double check
+            qubits (QuantumRegister/list): Qubits initialized by QuantumRegister
 
         Returns:
             Instruction: QisKit instruction
