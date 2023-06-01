@@ -192,12 +192,13 @@ def __discretize_wigner_without_measure(
     statevector_label = "segment_"
 
     discretized, num_statevectors = discretize_single_circuit(
-        circuit, 
-        animation_segments,
-        discretize_epsilon,
-        sequential_subcircuit,
+        circuit=circuit, 
+        segments_per_gate=animation_segments,
+        epsilon=discretize_epsilon,
+        sequential_subcircuit=sequential_subcircuit,
         statevector_per_segment=True,
-        statevector_label=statevector_label)
+        statevector_label=statevector_label,
+        noise_passes=noise_passes)
 
     xvec = numpy.linspace(axes_min, axes_max, axes_steps)
 

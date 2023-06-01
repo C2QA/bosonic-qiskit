@@ -102,16 +102,18 @@ def discretize_single_circuit(
     segment_count = 0
     for inst, qargs, cargs in circuit.data:
         num_segments = segments_per_gate
+        qargs_indices = [qubit.index for qubit in qargs]
 
-        if noise_passes:
+        if noise_passes and not (isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name == "initialize"):  # Don't discretize instructions initializing system state:
             noise_pass = None
             for current in noise_passes:
-                if isinstance(current, PhotonLossNoisePass) and current.applies_to_instruction(inst, qargs):
+                if isinstance(current, PhotonLossNoisePass) and current.applies_to_instruction(inst, qargs_indices):
                     noise_pass = current
                     break
             
             if epsilon is not None and noise_pass is not None:
-                num_segments = math.ceil((noise_pass.photon_loss_rates_sec * noise_pass.duration_to_sec(inst) * circuit.cutoff) / epsilon)
+                photon_loss_rate = noise_pass.photon_loss_rates_sec[0]  # FIXME - which of the qumodes' loss rate should we use?
+                num_segments = math.ceil((photon_loss_rate * noise_pass.duration_to_sec(inst) * circuit.cutoff) / epsilon)
 
         segments = __to_segments(inst=inst, segments_per_gate=num_segments, keep_state=True, sequential_subcircuit=sequential_subcircuit)
 
