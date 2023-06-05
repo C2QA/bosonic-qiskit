@@ -234,6 +234,67 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
+    
+# This code is part of Mthree.
+#
+# (C) Copyright IBM 2021.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+# pylint: disable=no-name-in-module
+def _final_measurement_mapping(circuit):
+    """Return the measurement mapping for the circuit.
+
+    Dict keys label classical bits, whereas the values indicate the
+    physical qubits that are measured to produce those bit values.
+
+    Parameters:
+        circuit (QuantumCircuit): Input Qiskit QuantumCircuit.
+
+    Returns:
+        dict: Mapping of classical bits to qubits for final measurements.
+    """
+    active_qubits = list(range(circuit.num_qubits))
+    active_cbits = list(range(circuit.num_clbits))
+
+    # Map registers to ints
+    qint_map = {}
+    for idx, qq in enumerate(circuit.qubits):
+        qint_map[qq] = idx
+
+    cint_map = {}
+    for idx, qq in enumerate(circuit.clbits):
+        cint_map[qq] = idx
+
+    # Find final measurements starting in back
+    qmap = []
+    cmap = []
+    for item in circuit._data[::-1]:
+        if item[0].name == "measure":
+            cbit = cint_map[item[2][0]]
+            qbit = qint_map[item[1][0]]
+            if cbit in active_cbits and qbit in active_qubits:
+                qmap.append(qbit)
+                cmap.append(cbit)
+                active_cbits.remove(cbit)
+
+        if not active_cbits or not active_qubits:
+            break
+    mapping = {}
+    if cmap and qmap:
+        for idx, qubit in enumerate(qmap):
+            mapping[cmap[idx]] = qubit
+
+    # Sort so that classical bits are in numeric order low->high.
+    mapping = dict(sorted(mapping.items(), key=lambda item: item[0]))
+    return mapping
+
+
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     """Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
 
