@@ -234,7 +234,7 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
-def cv_newcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
+def newcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
     """Convert counts dictionary from Fock-basis binary representation into
     base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
     jobs.result(), along with the entire circuit.
@@ -469,11 +469,11 @@ def simulate(
     # Print counts
     if counts:
         try:
-            counts = cv_newcounts(circuit, result)
+            counts = newcounts(circuit, result)
             print(counts)
             return state, result, counts
         except:
-            Exception("cv_newcounts was not able to execute")
+            Exception("newcounts() was not able to execute")
 
     return state, result
 
