@@ -520,7 +520,7 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
         raise ValueError("Fock state(s) greater than cutoff.")
 
     ## Use cases
-    # Int + int datatype for input/output args.
+    # 1. Int + int datatype for input/output args.
     if ((len(fock_input) == 1) & (len(fock_output) == 1)):
         if len(amplitude) > 1:
             raise ValueError("Please ensure that only a single amplitude value is provided, as there is only 1 mapping provided")
@@ -531,7 +531,7 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
 
         return matrix
 
-    # Int + list datatype for input/output args. Length of amplitude must match length of list
+    # 2. Int + list datatype for input/output args. Length of amplitude must match length of list
     elif (len(fock_input) == 1) & (len(fock_output) > 1):
         for i in range(len(fock_output)):
             if matrix[fock_output[i], fock_input[0]] != 0:
@@ -550,7 +550,7 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
 
         return matrix        
 
-    # List datatype input/output/amp args. Lengths of all must match
+    # 3. List datatype input/output/amp args. Lengths of all must match
     elif (len(fock_input) == len(fock_output) == len(amplitude)):
 
         for i in range(len(fock_input)):
