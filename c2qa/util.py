@@ -234,6 +234,24 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
+
+
+def _final_qumode_mapping(circuit):
+    """
+    Return the classical bits that active qumode qubits are mapped onto. Bits corresponding to distinct qumodes are grouped together
+    """
+    final_measurement_mapping = _final_measurement_mapping(circuit)
+    active_qumode_bit_indices_grouped = []
+
+    # For each qumode qubit group, extract list of bits that map to qubits in group. Append list only if list is not empty
+    for qumode_qubit_group in circuit.qumode_qubits_indices_grouped:
+        qumode_bit_group = [key for key, val in final_measurement_mapping.items() for qubit in qumode_qubit_group if val == qubit]
+        
+        if qumode_bit_group != []:
+            active_qumode_bit_indices_grouped.append(qumode_bit_group)
+
+    return active_qumode_bit_indices_grouped
+
     
 # This code is part of Mthree.
 #
