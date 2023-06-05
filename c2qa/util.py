@@ -402,6 +402,7 @@ def get_probabilities(result: qiskit.result.Result):
 def simulate(
     circuit: CVCircuit,
     shots: int = 1024,
+    counts: bool = False,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
@@ -464,6 +465,15 @@ def simulate(
 
     if add_save_statevector:
         circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
+
+    # Print counts
+    if counts:
+        try:
+            counts = cv_newcounts(circuit, result)
+            print(counts)
+            return state, result, counts
+        except:
+            Exception("cv_newcounts was not able to execute")
 
     return state, result
 
