@@ -234,6 +234,40 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
+def cv_newcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
+    """Convert counts dictionary from Fock-basis binary representation into
+    base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
+    jobs.result(), along with the entire circuit.
+
+    Args:
+        result: dict() of results, as returned by job.result(), for a circuit which used cv_measure()
+        circuit: CVCircuit
+
+    Returns:
+        A new counts dict() which lists measurement results for the qubits and
+        qumodes in circuit in little endian order, with Fock-basis
+        qumode measurements reported as a base-10 integer.
+    """
+    counts = result.get_counts()
+    qumode_bit_mapping = _final_qumode_mapping(circuit)
+
+    newcounts = {}
+    for key in counts:
+        max_iter_index = len(key) - 1
+        newkey = key
+
+        for index in range(len(key)):
+            for qumode in qumode_bit_mapping:
+                if (max_iter_index - index) == min(qumode):
+                    fock_decimal = str(int(key[max_iter_index - max(qumode) : max_iter_index - min(qumode) + 1], base=2))
+                    newkey = newkey[: max_iter_index - max(qumode)] + fock_decimal + newkey[max_iter_index - min(qumode) + 1: ]
+                    
+                elif not (index in qumode):
+                    pass
+
+        newcounts[newkey] = counts[key]
+
+    return newcounts
 
 
 def _final_qumode_mapping(circuit):
