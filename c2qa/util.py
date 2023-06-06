@@ -256,14 +256,13 @@ def newcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
         max_iter_index = len(key) - 1
         newkey = key
 
+        # Using the nested list of qumode bit mappings, convert the relevant bits to base-10 integer and 
+        # form new key by concatenating the unchanged bits of key around the decimal value.
         for index in range(len(key)):
             for qumode in qumode_bit_mapping:
-                if (max_iter_index - index) == min(qumode):
+                if index == min(qumode):
                     fock_decimal = str(int(key[max_iter_index - max(qumode) : max_iter_index - min(qumode) + 1], base=2))
                     newkey = newkey[: max_iter_index - max(qumode)] + fock_decimal + newkey[max_iter_index - min(qumode) + 1: ]
-                    
-                elif not (index in qumode):
-                    pass
 
         newcounts[newkey] = counts[key]
 
@@ -283,6 +282,9 @@ def _final_qumode_mapping(circuit):
         
         if qumode_bit_group != []:
             active_qumode_bit_indices_grouped.append(qumode_bit_group)
+
+    # Sort nested list by first item in each sublist
+    active_qumode_bit_indices_grouped = sorted(active_qumode_bit_indices_grouped, key = lambda l: l[0])
 
     return active_qumode_bit_indices_grouped
 
