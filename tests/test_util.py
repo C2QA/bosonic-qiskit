@@ -152,7 +152,7 @@ def test_fockmap(capsys):
 
         # Build rand array of rand dim between 1 and 100, use fockmap to populate initally empty array, and assert that final array is equal to rand array
         for _ in range(10): # Repeat test 10 times
-            dim = numpy.random.randint(low=1, high = 101)
+            dim = numpy.random.randint(low=1, high=101)
             randarray = numpy.random.uniform(low=0, high=1, size=(dim, dim))
 
             testmatrix = numpy.zeros((dim, dim))
@@ -194,3 +194,72 @@ def test_fockmap(capsys):
             
             # Assert that output is a numpy.ndarray
             assert(type(c2qa.util.fockmap(m_types[m_index], fi_types[fi_index], fo_types[fo_index], amp_types[amp_index])) == numpy.ndarray)
+
+
+def test_newcounts(capsys):
+    with capsys.disabled():
+        for i in range(5):
+            # Generate 3 qmreg with random no. of qumodes each
+            num_qubits_per_qmr = 2
+            num_qm = [numpy.random.randint(low=1, high=3) for _ in range(3)]
+
+            qmr_0 = c2qa.QumodeRegister(num_qm[0], num_qubits_per_qmr)
+            qmr_1 = c2qa.QumodeRegister(num_qm[1], num_qubits_per_qmr)
+            qmr_2 = c2qa.QumodeRegister(num_qm[2], num_qubits_per_qmr)
+
+#            q_0 = qiskit.QuantumRegister(2)
+#            q_1 = qiskit.QuantumRegister(2)
+
+            cr = qiskit.ClassicalRegister(3 * 2) # We will measure 3 qumodes
+
+            circuit = c2qa.CVCircuit(qmr_0, qmr_1, qmr_2, cr)
+
+            # Initialize random state on random qumode within each qmreg
+            randstate = []
+            for _ in range(3):
+                _randstate = [0, 0, 0, 0]
+                _randstate[numpy.random.randint(low=0, high=4)] = 1
+                randstate.append(_randstate)
+
+            rand_qm = [numpy.random.randint(low=0, high=num_qm[i]) for i in range(3)]
+
+            circuit.cv_initialize(randstate[0], qmr_0[rand_qm[0]])
+            circuit.cv_initialize(randstate[1], qmr_1[rand_qm[1]])
+            circuit.cv_initialize(randstate[2], qmr_2[rand_qm[2]])
+
+            # # Initalize random state on random qubit within each q
+            # randstate = []
+            # for _ in range(2):
+            #     _randstate = [0, 0]
+            #     _randstate[numpy.random.randint(low=0, high=2)] = 1
+            #     randstate.append(_randstate)
+
+            # rand_q = [numpy.random.randint(low=0, high=2) for i in range(2)]
+
+            # circuit.initialize(randstate[0], q_0[rand_q[0]])
+            # circuit.initialize(randstate[1], q_1[rand_q[1]])
+
+            # Measure the circuit with random bits on classical register
+            rand_bit = numpy.random.permutation([0, 1, 2]) #[3])
+
+            circuit.cv_measure(qmr_0[rand_qm[0]], cr[rand_bit[0] * 2:(rand_bit[0] + 1) * 2])
+            circuit.cv_measure(qmr_1[rand_qm[1]], cr[rand_bit[1] * 2:(rand_bit[1] + 1) * 2])
+            circuit.cv_measure(qmr_2[rand_qm[2]], cr[rand_bit[2] * 2:(rand_bit[2] + 1) * 2 ])
+
+            # circuit.measure(q_0[rand_q[0]], cr[rand_bit[3] * 2])
+            # circuit.measure(q_1[rand_q[1]], cr[rand_bit[3] * 2 + 1])
+
+            # Generate regs arg for cv_fockcounts
+            _regs = [qmr_0[rand_qm[0]], qmr_1[rand_qm[1]], qmr_2[rand_qm[2]]] #[q_0[rand_q[0]], q_1[rand_q[1]]]
+            regs = []
+            for i in rand_bit:
+                # if i == 3: # Since q regs are always measured on consecutive bits, append both at same time
+                #     regs.append(_regs[3])
+                #     regs.append(_regs[4])
+                # else:
+                    regs.append(_regs[i])
+
+            # Compare output of fockcounts vs newcounts
+            _, result, counts = c2qa.util.simulate(circuit, counts=True)
+#            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
+            assert(counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
