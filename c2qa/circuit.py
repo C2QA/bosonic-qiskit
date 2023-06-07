@@ -751,11 +751,6 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit measure instruction
         """
-        if not self.probe_measure:
-            warnings.warn(
-                "Probe qubits not in use, set probe_measure to True for measure support.",
-                UserWarning,
-            )
 
         # Flattens the list (if necessary)
         flat_list = []
