@@ -103,7 +103,7 @@ class ParameterizedUnitaryGate(Gate):
                 "Unable to calculate incremental operator matrices for parameterized gate"
             )
 
-        values = self.calculate_frame_params(current_step, total_steps, keep_state)
+        values = self.calculate_segment_params(current_step, total_steps, keep_state)
 
         # if self.inverse:
         #     result = scipy.sparse.linalg.inv(self.op_func(*values))
@@ -117,7 +117,7 @@ class ParameterizedUnitaryGate(Gate):
         return result
 
 
-def __calculate_frame_params(
+def __calculate_segment_params(
     self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
 ):
     """Calculate the parameters at the current step. Return a tuples of the values."""
@@ -133,7 +133,7 @@ def __calculate_frame_params(
     return tuple(values)
 
 
-def __calculate_frame_duration(
+def __calculate_segment_duration(
     self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
 ):
     """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
@@ -151,5 +151,5 @@ def __calculate_frame_duration(
 
 
 # Monkey patch Qiskit Instruction to support animating base Qiskit Instruction
-qiskit.circuit.instruction.Instruction.calculate_frame_params = __calculate_frame_params
-qiskit.circuit.instruction.Instruction.calculate_frame_duration = __calculate_frame_duration
+qiskit.circuit.instruction.Instruction.calculate_segment_params = __calculate_segment_params
+qiskit.circuit.instruction.Instruction.calculate_segment_duration = __calculate_segment_duration

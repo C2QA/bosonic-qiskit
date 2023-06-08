@@ -1,4 +1,5 @@
 import math
+import warnings
 
 import numpy as np
 import qiskit
@@ -7,6 +8,8 @@ from qiskit.quantum_info import Statevector
 
 
 from c2qa import CVCircuit
+from c2qa.discretize import discretize_circuits
+
 
 def flatten(l):
     return [item for sublist in l for item in sublist]
@@ -287,7 +290,7 @@ def get_probabilities(result: qiskit.result.Result):
 
 
 def simulate(
-    circuit: CVCircuit,
+    cvcircuit: CVCircuit,
     shots: int = 1024,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
@@ -295,6 +298,7 @@ def simulate(
     noise_model=None,
     noise_passes=None,
     max_parallel_threads: int = 0,
+    discretize: bool = False
 ):
     """Convenience function to simulate using the given backend.
 
@@ -307,52 +311,83 @@ def simulate(
                                                should be added to the end of the circuit. Defaults to True.
         conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
                                                    (each state value gets its own state vector). Defaults to False.
+        discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
         tuple: (state, result) tuple from simulation
     """
 
-    # If this is false, the user must have already called save_statevector!
-    if add_save_statevector:
-        circuit.save_statevector(
-            conditional=conditional_state_vector, pershot=per_shot_state_vector
-        )
+    if discretize and not noise_passes:
+        warnings.warn("Discretization of circuit intended for use with noise passes, but none provided")
 
-    # Run noise pass, if provided
-    if noise_passes:
-        if not isinstance(noise_passes, list):
-            noise_passes = [noise_passes]
-
-        for noise_pass in noise_passes:
-            circuit_compiled = noise_pass(circuit)
+    if discretize:
+        circuits = discretize_circuits(cvcircuit)
     else:
-        circuit_compiled = circuit
+        circuits = [cvcircuit]
 
-    # Transpile for simulator
-    simulator = qiskit.providers.aer.AerSimulator()
-    circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+    results = []
+    previous_state = None
+    for circuit in circuits:
+        if previous_state:
+            # Initialize circuit to simulate with the previous frame's state, then append the last instruction
+            sim_circuit = circuit.copy()
+            sim_circuit.data.clear()  # Is this safe -- could we copy without data?
+            sim_circuit.initialize(previous_state)
+            last_instructions = circuit.data[-1:]  # Get the last instruction
 
-    # Run and get statevector
-    result = simulator.run(
-        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
-    ).result()
+            for inst in last_instructions:
+                sim_circuit.append(*inst)
+        else:
+            # No previous simulation state, just run the current circuit
+            sim_circuit = circuit
 
-    # The user may have added their own circuit.save_statevector
-    state = None
-    if len(result.results):
-        try:
-            if conditional_state_vector or per_shot_state_vector:
-                # Will get a dictionary of state vectors, one for each classical register value
-                state = result.data()["statevector"]
-            else:
-                state = Statevector(result.get_statevector(circuit_compiled))
-        except Exception:
-            state = None  # result.get_statevector() will fail if add_save_statevector is false
+        # If this is false, the user must have already called save_statevector!
+        if add_save_statevector:
+            sim_circuit.save_statevector(
+                conditional=conditional_state_vector, pershot=per_shot_state_vector
+            )
 
-    if add_save_statevector:
-        circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
+        # Run noise pass, if provided
+        if noise_passes:
+            if not isinstance(noise_passes, list):
+                noise_passes = [noise_passes]
 
-    return state, result
+            for noise_pass in noise_passes:
+                circuit_compiled = noise_pass(sim_circuit)
+        else:
+            circuit_compiled = sim_circuit
+
+        # Transpile for simulator
+        simulator = qiskit.providers.aer.AerSimulator()
+        circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+
+        # Run and get statevector
+        result = simulator.run(
+            circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
+        ).result()
+
+        # The user may have added their own circuit.save_statevector
+        state = None
+        if len(result.results):
+            try:
+                if conditional_state_vector or per_shot_state_vector:
+                    # Will get a dictionary of state vectors, one for each classical register value
+                    state = result.data()["statevector"]
+                else:
+                    state = Statevector(result.get_statevector(circuit_compiled))
+            except Exception:
+                state = None  # result.get_statevector() will fail if add_save_statevector is false
+
+        if add_save_statevector:
+            sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
+
+        previous_state = state
+        results.append((state, result))
+
+    if discretize:
+        return results
+    else:
+        return results[0]
 
 
 def _find_cavity_indices(circuit: CVCircuit):
