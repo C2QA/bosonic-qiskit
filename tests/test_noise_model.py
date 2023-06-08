@@ -302,6 +302,31 @@ def test_animate_photon_loss_pass(capsys):
         assert Path(wigner_filename).is_file()
 
 
+def test_animate_photon_loss_pas_with_epsilon(capsys):
+    with capsys.disabled():
+        num_qumodes = 1
+        num_qubits_per_qumode = 4
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        circuit = c2qa.CVCircuit(qmr)
+
+        circuit.cv_initialize(3, qmr[0])
+
+        circuit.cv_d(0, qmr[0], duration=100, unit="ns")
+
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
+
+        wigner_filename = "tests/test_animate_photon_loss_pas_with_epsilon.gif"
+        c2qa.animate.animate_wigner(
+            circuit,
+            discretize_epsilon=0.1,
+            file=wigner_filename,
+            noise_passes=noise_pass,
+        )
+        assert Path(wigner_filename).is_file()
+
+
 @pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_photon_loss_pass_no_displacement(capsys):
     with capsys.disabled():

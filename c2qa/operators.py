@@ -45,7 +45,7 @@ class CVOperators:
             None
 
         Returns:
-            ndarray: operator matrix
+            dia_matrix: operator matrix
         """
 
         return self.eye
@@ -57,7 +57,7 @@ class CVOperators:
             theta (real): rotation
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         arg = 1j * theta * self.N
 
@@ -70,7 +70,7 @@ class CVOperators:
             alpha (real): displacement
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
 
@@ -83,7 +83,7 @@ class CVOperators:
             theta (real): squeeze
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         a_sqr = self.a * self.a
         a_dag_sqr = self.a_dag * self.a_dag
@@ -98,7 +98,7 @@ class CVOperators:
             g (real): multiplied by 1j to yield imaginary phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
 
         self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
@@ -120,7 +120,7 @@ class CVOperators:
             theta: phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
 
         self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
@@ -142,7 +142,7 @@ class CVOperators:
             theta (real): phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(zQB, self.N).tocsc()
 
@@ -155,7 +155,7 @@ class CVOperators:
             theta (real): phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(xQB, self.N).tocsc()
 
@@ -168,7 +168,7 @@ class CVOperators:
             theta (real): phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         arg = theta * 1j * scipy.sparse.kron(yQB, self.N).tocsc()
 
@@ -182,7 +182,7 @@ class CVOperators:
             beta (real): displacement for qubit state 1. If None, use -alpha.
 
         Returns:
-            ndarray: operator matrix
+            bsr_matrix: operator matrix
         """
         displace0 = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
         if beta is None:
@@ -200,7 +200,7 @@ class CVOperators:
             theta (real): displacement
 
         Returns:
-            ndarray: operator matrix
+            csr_matrix: operator matrix
         """
         argm = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
         arg = scipy.sparse.kron(zQB, argm)
@@ -214,7 +214,7 @@ class CVOperators:
             theta (real): real phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
         self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
@@ -236,7 +236,7 @@ class CVOperators:
             params (real): [beta, theta_1, phi_1, theta_2, phi_2]
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
         self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
@@ -264,7 +264,7 @@ class CVOperators:
             n (integer): Fock state in which the mode should acquire the phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
 
         ket_n = numpy.zeros(self.cutoff_value)
@@ -284,7 +284,7 @@ class CVOperators:
             n (integer): Fock state in which the mode should acquire the phase
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
 
         ket_n = numpy.zeros(self.cutoff_value)
@@ -297,10 +297,12 @@ class CVOperators:
     def multisnap(self, *args):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations.
+        
         Args:
             args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
+        
         Returns:
-            ndarray: operator matrix
+            csr_matrix: operator matrix
         """
         # Divide list in two because thetas and ns must be sent in as a single list
         thetas = args[:len(args) // 2] # arguments
@@ -322,10 +324,12 @@ class CVOperators:
     def multicsnap(self, *args):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations, with the qubit that accrues the geometric phase explicit.
+        
         Args:
             args (List[reals, integers]): [List of phases, List of Fock states in which the mode should acquire the associated phase]
+        
         Returns:
-            ndarray: operator matrix
+            csr_matrix: operator matrix
         """
         # Divide list in two because thetas and ns must be sent in as a single list
         thetas = args[:len(args) // 2] # arguments
@@ -347,10 +351,12 @@ class CVOperators:
     
     def pnr(self, max):
         """Support gate for photon number readout (see Curtis et al., PRA (2021) and Wang et al., PRX (2020))
+        
         Args:
             max (int): the period of the mapping
+        
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         ket_n = numpy.zeros(self.cutoff_value)
         projector = numpy.outer(ket_n, ket_n)
@@ -373,7 +379,7 @@ class CVOperators:
             theta (real): rotation
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
 
         self.mat = numpy.zeros([self.cutoff_value * self.cutoff_value, self.cutoff_value * self.cutoff_value])
@@ -394,7 +400,7 @@ class CVOperators:
             theta (real): squeeze
 
         Returns:
-            ndarray: operator matrix
+            csc_matrix: operator matrix
         """
         a_sqr = self.a * self.a
         a_dag_sqr = self.a_dag * self.a_dag
@@ -410,10 +416,12 @@ class CVOperators:
 
     def c_multiboson_sampling(self, max):
         """SNAP gate creation for multiboson sampling purposes.
+        
         Args:
             max (int): the period of the mapping
+        
         Returns:
-            ndarray: operator matrix
+            dia_matrix: operator matrix
         """
         print(max)
 
