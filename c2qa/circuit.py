@@ -548,44 +548,72 @@ class CVCircuit(QuantumCircuit):
         )
 
     def cv_snap(self, theta, n, qumode, qubit=None, duration=100, unit="ns"):
-        """SNAP (Selective Number-dependent Arbitrary Phase) gate.
-        TODO: Add second snap implementation that includes sigma_z qubit
+        """SNAP (Selective Number-dependent Arbitrary Phase) gate. If no qubit is passed,
+        then phases are applied to each qumode Fock state specified in theta and n (without
+        explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by
+        sigma_z-dependent geometric phase (akin to the implementation of the SNAP gate
+        as described in Heeres et al, PRL (2015).
 
         Args:
-            theta (real): phase
-            n (integer): Fock state in which the mode should acquire the phase
+            theta (real or list[real]): phase
+            n (integer or list[integer]): Fock state in which the mode should acquire the phase
             qumode (list): list of qubits representing qumode
             qubit (Qubit): control qubit. If no qubit is passed, the gate will implement for sigma^z = +1.
 
         Returns:
             Instruction: QisKit instruction
         """
-        if qubit is None:
-            self.append(
-                ParameterizedUnitaryGate(
-                    self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
-                ),
-                qargs=qumode,
-            )
+        if isinstance(n,int):
+            if n > self.cutoff:
+                ValueError("Fock state specified by n exceeds the cutoff.")
+            if qubit is None:
+                self.append(
+                    ParameterizedUnitaryGate(
+                        self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                    ),
+                    qargs=qumode,
+                )
+            else:
+                self.append(
+                    ParameterizedUnitaryGate(
+                        self.ops.csnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                    ),
+                    qargs=qumode + [qubit],
+                )
+        elif isinstance(n,list) and isinstance(theta,list):
+            if qubit is None:
+                self.append(
+                    ParameterizedUnitaryGate(
+                        self.ops.multisnap, theta + n, num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                    ),
+                    qargs=qumode,
+                )
+            else:
+                self.append(
+                    ParameterizedUnitaryGate(
+                        self.ops.multicsnap, theta + n, num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                    ),
+                    qargs=qumode + [qubit],
+                )
         else:
-            self.append(
-                ParameterizedUnitaryGate(
-                    self.ops.csnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
-                ),
-                qargs=qumode + [qubit],
-            )
+            raise ValueError("if theta is passed as a list, then n must also be a list of equal length (and vice versa).")
+
+
+    # def cv_c_sqr(self, theta, n, qumode, qubit, duration=100, unit="ns"):
+    #     """TODO"""
+
             
-    def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
-        params = thetas + ns
-        self.append(
-            ParameterizedUnitaryGate(
-                self.ops.multisnap, params, num_qubits=len(qumode), label="mSNAP", duration=duration, unit=unit
-            ),
-            qargs=qumode,
-        )
+    # def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
+    #     params = thetas + ns
+    #     self.append(
+    #         ParameterizedUnitaryGate(
+    #             self.ops.multisnap, params, num_qubits=len(qumode), label="mSNAP", duration=duration, unit=unit
+    #         ),
+    #         qargs=qumode,
+    #     )
             
-    def cv_c_multiboson_sampling(self, max, qumode, qubit=None, duration=1, unit="us"):
-        """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
+    def cv_c_pnr(self, max, qumode, qubit, duration=100, unit="ns"):
+        """ PNR (Photon number readout) TODO: Needs comments/explanation/citation!
         Args:
             max (int): the period of the mapping
             qumode (list): list of qubits representing qumode
@@ -595,7 +623,7 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(
             ParameterizedUnitaryGate(
-                self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
+                self.ops.pnr, [max], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -723,11 +751,6 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit measure instruction
         """
-        if not self.probe_measure:
-            warnings.warn(
-                "Probe qubits not in use, set probe_measure to True for measure support.",
-                UserWarning,
-            )
 
         # Flattens the list (if necessary)
         flat_list = []
