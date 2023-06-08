@@ -67,6 +67,10 @@ class QumodeRegister:
     def __len__(self):
         """The length of a QumodeRegister is the number of qumodes (not the num_qumodes * num_qubits_per_qumode)"""
         return self.num_qumodes
+    
+    def __contains__(self, qubit):
+        """Return true if this QumodeRegister contains the given qubit. This allows callers to use `in` python syntax."""
+        return qubit in self.qreg
 
 
 class QumodeIterator:

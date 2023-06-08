@@ -127,6 +127,7 @@ def test_initialize_qubit_values(capsys):
 
             print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")
 
+
 def test_serialize(capsys):
     with capsys.disabled():
         print()
@@ -147,3 +148,23 @@ def test_serialize(capsys):
         print('\nAttempt to serialize an unbound CVCircuit:')
         bosonic_serial = json.dumps(bosonic_circuit, cls=RuntimeEncoder)
         print(bosonic_serial)
+
+
+def test_cv_initialize(capsys):
+    with capsys.disabled():
+        import c2qa
+
+        qmr1 = c2qa.QumodeRegister(1, 2)
+        qmr2 = c2qa.QumodeRegister(2, 2)
+        qmr3 = c2qa.QumodeRegister(2, 3) # <----- change to (2, 2) for no error
+        qmr4 = c2qa.QumodeRegister(1, 2)
+        qmr5 = c2qa.QumodeRegister(3, 2)
+        qmr6 = c2qa.QumodeRegister(3, 2)
+        circuit = c2qa.CVCircuit(qmr1, qmr2, qmr3, qmr4, qmr5, qmr6)
+
+        circuit.cv_initialize([0, 1], qmr1[0])
+        circuit.cv_initialize([0, 1], qmr2[0])
+        circuit.cv_initialize([0, 1], qmr3[0])
+        circuit.cv_initialize([0, 1], qmr4[0])
+        circuit.cv_initialize([0, 1], qmr5[0])
+        circuit.cv_initialize([0, 1], qmr6[0])
