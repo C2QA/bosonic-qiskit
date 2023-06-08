@@ -260,6 +260,6 @@ def test_newcounts(capsys):
                     regs.append(_regs[i])
 
             # Compare output of fockcounts vs newcounts
-            _, result, counts = c2qa.util.simulate(circuit, counts=True)
+            _, result, counts = c2qa.util.simulate(circuit, return_fockcounts=True)
 #            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
             assert(counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
