@@ -503,9 +503,13 @@ def simulate(
                 fockcounts = newcounts(circuit, result)
             except:
                 Exception("newcounts() was not able to execute")
+            
+            previous_state = state
+            results.append((state, result, fockcounts))
+            continue
 
         previous_state = state
-        results.append((state, result, fockcounts))
+        results.append((state, result))
 
     if discretize:
         return results
