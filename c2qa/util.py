@@ -206,7 +206,7 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
          qumodes in qubit_qumode_list in little endian order, with Fock-basis
          qumode measurements reported as a base-10 integer.
     """
-    warnings.warn("The function ``c2qa.util.cv_fockcounts()`` is deprecated as of bosonic-qiskit v8.2. The function is replaced by counts_to_fockcounts(), which can be called using simulate().")
+    warnings.warn("The function ``c2qa.util.cv_fockcounts()`` is deprecated as of bosonic-qiskit v8.2. The function is replaced by counts_to_fockcounts(), which can be called using util.simulate().")
 
     flat_list = []
     for el in qubit_qumode_list:
