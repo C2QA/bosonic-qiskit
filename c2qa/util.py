@@ -408,7 +408,7 @@ def get_probabilities(result: qiskit.result.Result):
 def simulate(
     cvcircuit: CVCircuit,
     shots: int = 1024,
-    return_fockcounts: bool = False,
+    return_fockcounts: bool = True,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
