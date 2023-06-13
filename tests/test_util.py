@@ -100,9 +100,9 @@ def test_measure_all_xyz(capsys):
         circuit.cv_c_d(dist, qmr[0], qr[0])
 
         (
-            (state_x, result_x),
-            (state_y, result_y),
-            (state_z, result_z),
+            (state_x, result_x, _),
+            (state_y, result_y, _),
+            (state_z, result_z, _),
         ) = c2qa.util.measure_all_xyz(circuit)
 
         print("state_x.probabilities_dict()")
