@@ -507,10 +507,9 @@ def simulate(
             
             previous_state = state
             results.append((state, result, fockcounts))
-            continue
-
-        previous_state = state
-        results.append((state, result, None))
+        else:
+            previous_state = state
+            results.append((state, result, None))
 
     if discretize:
         return results
