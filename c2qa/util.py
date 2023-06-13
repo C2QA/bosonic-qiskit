@@ -510,7 +510,7 @@ def simulate(
             continue
 
         previous_state = state
-        results.append((state, result))
+        results.append((state, result, None))
 
     if discretize:
         return results
