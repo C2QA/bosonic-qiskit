@@ -48,7 +48,7 @@ def test_parameterized_displacement(capsys):
 
         bound_circuit = circuit.bind_parameters({alpha: 3.14})
 
-        state, result = c2qa.util.simulate(bound_circuit)
+        state, result, _ = c2qa.util.simulate(bound_circuit)
         assert_changed(state, result)
 
 

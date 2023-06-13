@@ -56,7 +56,7 @@ def test_with_initialize():
 
     circuit.initialize(numpy.array([0, 1]), qbr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert result.success
 
 
@@ -75,7 +75,7 @@ def test_with_delay(capsys):
         circuit.delay(100)
         circuit.cv_d(1, qmr[0])
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
         assert result.success
 
 
@@ -122,7 +122,7 @@ def test_initialize_qubit_values(capsys):
             circuit = c2qa.CVCircuit(qmr)
             circuit.cv_initialize(fock, qmr[0])
 
-            state, result = c2qa.util.simulate(circuit)
+            state, result, _ = c2qa.util.simulate(circuit)
             assert result.success
 
             print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")

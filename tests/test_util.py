@@ -138,7 +138,7 @@ def test_stateread(capsys):
 
         circuit.cv_initialize(2, qmr[0])
         circuit.cv_initialize(0, qmr[1])
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
         c2qa.util.stateread(
             state,
             numberofqubits=0,
@@ -259,7 +259,7 @@ def test_newcounts(capsys):
                 # else:
                     regs.append(_regs[i])
 
-            # Compare output of fockcounts vs newcounts
+            # Compare output of cv_fockcounts vs counts_to_fockcounts
             _, result, counts = c2qa.util.simulate(circuit, return_fockcounts=True)
 #            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
             assert(counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))

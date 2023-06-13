@@ -172,7 +172,7 @@ def test_plot_wigner_snapshot(capsys):
 
         circuit.cv_snapshot()
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
 
         c2qa.wigner.plot_wigner_snapshot(circuit, result, "tests")
 
