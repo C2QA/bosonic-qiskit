@@ -432,7 +432,7 @@ def simulate(
         discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
-        tuple: (state, result) tuple from simulation
+        tuple: (state, result, fockcounts) tuple from simulation
     """
 
     if discretize and not noise_passes:
