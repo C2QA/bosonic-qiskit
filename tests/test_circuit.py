@@ -203,7 +203,7 @@ def test_cv_gate_from_matrix(capsys):
 
                 circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
 
-                _, result = c2qa.util.simulate(circuit)
+                _, result, _ = c2qa.util.simulate(circuit)
                 fock_counts = c2qa.util.cv_fockcounts(result.get_counts(), [qmr1[0], qmr1[1], qmr2[0], qmr2[1], q[0], q[1], q[2]])
 
                 # There should only be 1 result
@@ -218,7 +218,7 @@ def test_cv_gate_from_matrix(capsys):
 
                 circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
 
-                _, result = c2qa.util.simulate(circuit)
+                _, result, _ = c2qa.util.simulate(circuit)
                 fock_counts = c2qa.util.cv_fockcounts(result.get_counts(), [qmr1[0], qmr1[1], qmr2[0], qmr2[1], q[0], q[1], q[2]])
 
                 # There should only be 1 result
