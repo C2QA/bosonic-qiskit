@@ -196,7 +196,7 @@ def test_fockmap(capsys):
             assert(type(c2qa.util.fockmap(m_types[m_index], fi_types[fi_index], fo_types[fo_index], amp_types[amp_index])) == numpy.ndarray)
 
 
-def test_newcounts(capsys):
+def test_counts_to_fockcounts(capsys):
     with capsys.disabled():
         for i in range(5):
             # Generate 3 qmreg with random no. of qumodes each
