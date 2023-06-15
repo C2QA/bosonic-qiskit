@@ -168,3 +168,7 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr4[0])
         circuit.cv_initialize([0, 1], qmr5[0])
         circuit.cv_initialize([0, 1], qmr6[0])
+
+        # saving a state vector for all the registers takes a considerable amount of time
+        state, result = c2qa.util.simulate(circuit, add_save_statevector=False)
+        assert result.success
