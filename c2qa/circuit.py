@@ -109,6 +109,10 @@ class CVCircuit(QuantumCircuit):
     def cutoff(self):
         """Integer cutoff size."""
         return self.qmregs[-1].cutoff
+    
+    def qumode_cutoff(self, qumode_index:int):
+        """Return the qumode cutoff at the given index"""
+        return self.qmregs[qumode_index].cutoff
 
     @property
     def num_qubits_per_qumode(self):
@@ -156,6 +160,13 @@ class CVCircuit(QuantumCircuit):
             if q in flat_list:
                 indices.append(i)
         return indices
+    
+    def get_qubit_qumode_index(self, qubit):
+        """Return the qumode index for the given qubit. If not found, return -1."""
+        for index, qmr in enumerate(self.qmregs):
+            if qubit in qmr:
+                return index
+        raise ValueError(f"Bit {qubit} not found in circuit.")
 
     @property
     def cv_gate_labels(self):
@@ -212,21 +223,25 @@ class CVCircuit(QuantumCircuit):
             modes = [qumodes]
 
         if isinstance(params, int):
-            if params >= self.qmregs[-1].cutoff:
-                raise ValueError("The given Fock state is greater than the cutoff.")
-
             for qumode in modes:
-                value = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+                qumode_index = self.get_qubit_qumode_index(qumode[0])
+
+                if params >= self.qumode_cutoff(qumode_index):
+                    raise ValueError("The given Fock state is greater than the cutoff.")
+
+                value = np.zeros((self.qumode_cutoff(qumode_index),), dtype=np.complex_)
                 value[params] = 1 + 0j
 
                 super().initialize(value, qumode)
         else:
-            if len(params) > self.qmregs[-1].cutoff:
-                raise ValueError("len(params) exceeds the cutoff.")
-
             for qumode in modes:
+                qumode_index = self.get_qubit_qumode_index(qumode[0])
+
+                if len(params) > self.qumode_cutoff(qumode_index):
+                    raise ValueError("len(params) exceeds the cutoff.")
+
                 params = np.array(params) / np.linalg.norm(np.array(params))
-                amplitudes = np.zeros((self.qmregs[-1].cutoff,), dtype=np.complex_)
+                amplitudes = np.zeros((self.qumode_cutoff(qumode_index),), dtype=np.complex_)
                 for ind in range(len(params)):
                     amplitudes[ind] = complex(params[ind])
 
