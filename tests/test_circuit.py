@@ -235,8 +235,6 @@ def test_cv_gate_from_matrix(capsys):
 
 def test_cv_initialize(capsys):
     with capsys.disabled():
-        import c2qa
-
         qmr1 = c2qa.QumodeRegister(1, 2)
         qmr2 = c2qa.QumodeRegister(2, 2)
         qmr3 = c2qa.QumodeRegister(2, 3) # <----- change to (2, 2) for no error
@@ -253,5 +251,5 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr6[0])
 
         # saving a state vector for all the registers takes a considerable amount of time
-        state, result, _ = c2qa.util.simulate(circuit, add_save_statevector=False)
+        state, result, _ = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
         assert result.success
