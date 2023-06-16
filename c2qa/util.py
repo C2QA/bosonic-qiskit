@@ -63,7 +63,7 @@ def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
 ):
     """Print values for states of qubits and qumodes using the result of a
-    simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
+    simulation of the statevector, e.g. using stateop, _, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
