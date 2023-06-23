@@ -1,4 +1,5 @@
 import c2qa
+import pytest
 import qiskit
 import random
 
@@ -55,3 +56,30 @@ def test_cv_c_schwinger(capsys):
         assert discretized_params[2] == phi_1
         assert discretized_params[3] == theta_2
         assert discretized_params[4] == phi_2
+
+
+@pytest.mark.skip(reason="Enable and test manually with debug breakpoint to ensure only first param is discretized")
+def test_cv_c_schwinger_animate(capsys):
+    """The cv_c_schwinger gate should discretize the first param, but the others not"""
+    with capsys.disabled():
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qr = qiskit.QuantumRegister(2)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        beta = random.random()
+        theta_1 = random.random()
+        phi_1 = random.random()
+        theta_2 = random.random()
+        phi_2 = random.random()
+        circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
+
+        c2qa.animate.animate_wigner(
+            circuit,
+            file="tests/test_cv_c_schwinger_animate.gif",
+            axes_min=-8,
+            axes_max=8,
+            animation_segments=2,
+            shots=1,
+        )
