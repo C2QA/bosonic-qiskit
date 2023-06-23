@@ -23,11 +23,35 @@ def test_cv_c_d(capsys):
         print(f"Original theta={theta}")
         print(f"Discretized params {discretized_params}")
 
-        assert discretized_params[0] == (theta / 2)
-        assert discretized_params[1] == (beta / 2)
+        assert discretized_params[0] == (theta / total_steps)
+        assert discretized_params[1] == (beta / total_steps)
 
 
 def test_cv_c_schwinger(capsys):
     """The cv_c_schwinger gate should discretize the first param, but the others not"""
     with capsys.disabled():
-        pass
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qr = qiskit.QuantumRegister(2)
+        circuit = c2qa.CVCircuit(qmr, qr)
+
+        beta = random.random()
+        theta_1 = random.random()
+        phi_1 = random.random()
+        theta_2 = random.random()
+        phi_2 = random.random()
+        circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
+
+        gate = circuit.data[0].operation
+        total_steps = 2
+        discretized_params = gate.calculate_segment_params(current_step=1, total_steps=total_steps, keep_state=True)
+
+        print(f"Original params {(beta, theta_1, phi_1, theta_2, phi_2)}")
+        print(f"Discretized params {discretized_params}")
+
+        assert discretized_params[0] == (beta / total_steps)
+        assert discretized_params[1] == theta_1
+        assert discretized_params[2] == phi_1
+        assert discretized_params[3] == theta_2
+        assert discretized_params[4] == phi_2

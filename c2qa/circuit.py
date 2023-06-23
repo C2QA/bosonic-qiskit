@@ -557,7 +557,8 @@ class CVCircuit(QuantumCircuit):
                 num_qubits=len(qumode_a) + len(qumode_b) + 1,
                 label="cSchw",
                 duration=duration,
-                unit=unit
+                unit=unit,
+                discretized_param_indices=[0]
             ),
             qargs=qumode_a + qumode_b + [qubit],
         )
