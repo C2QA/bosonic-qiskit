@@ -56,7 +56,7 @@ def test_with_initialize():
 
     circuit.initialize(numpy.array([0, 1]), qbr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert result.success
 
 
@@ -75,7 +75,7 @@ def test_with_delay(capsys):
         circuit.delay(100)
         circuit.cv_d(1, qmr[0])
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
         assert result.success
 
 
@@ -122,7 +122,7 @@ def test_initialize_qubit_values(capsys):
             circuit = c2qa.CVCircuit(qmr)
             circuit.cv_initialize(fock, qmr[0])
 
-            state, result = c2qa.util.simulate(circuit)
+            state, result, _ = c2qa.util.simulate(circuit)
             assert result.success
 
             print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")
@@ -150,10 +150,91 @@ def test_serialize(capsys):
         print(bosonic_serial)
 
 
+def test_cv_gate_from_matrix(capsys):
+    with capsys.disabled():
+        # This test picks random qumode/qubit to initialize xgate on, does fockcounts, and checks that results match expected values.
+        xgate = [[0, 1],[1, 0]] # For qubit, flips |1> to |0> and vice versa. For qumode, flips fock |1> to fock |0> and vice versa
+        
+        num_qumode_registers = 2
+        num_qumodes_per_register = 2
+        num_qubits_per_qumode = 1
+
+        num_qubits = 3
+
+        total_qubits = num_qumode_registers * num_qumodes_per_register * num_qubits_per_qumode + num_qubits
+        for i in range(10): # Repeat test 10 times
+            # Two qumode registers, One quantum register, One classical register. Hilbert space dimension = 2**(2 * 2 * 1 + 3) = 128
+            qmr1 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+            qmr2 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+            q = qiskit.QuantumRegister(num_qubits)
+            creg = qiskit.ClassicalRegister(total_qubits)
+
+            # Initialize all qumodes to fock |1> and all qubits to |1> state
+            circuit = c2qa.CVCircuit(qmr1, qmr2, q, creg)
+            circuit.cv_initialize([0, 1], qmr1)
+            circuit.cv_initialize([0, 1], qmr2)
+
+            for i in range(num_qubits):
+                circuit.initialize([0, 1], q[i])
+            
+            # Pick one of the qumode registers to act on
+            register = numpy.random.randint(1, 3)
+
+            # Pick one of the qumodes to act on
+            qumode_no = numpy.random.randint(0, 2)
+
+            # Pick one of the qubits to act on
+            qubit_no = numpy.random.randint(0, 3)
+
+            # Create string corresponding to expected results
+            expect = ['1' for _ in range(total_qubits)]
+
+            if register == 1:
+                expect[qumode_no] = '0'
+            elif register == 2:
+                expect[qumode_no + 2] = '0'
+
+            expect[4 + qubit_no] = '0' 
+
+            expect = ''.join(reversed(expect))
+
+            # Depending on quantum register chosen, assert result to be true
+            if register == 1:
+                circuit.cv_gate_from_matrix(xgate, qumodes=qmr1[qumode_no])
+                circuit.cv_gate_from_matrix(xgate, qubits=q[qubit_no])
+
+                circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
+
+                _, result, _ = c2qa.util.simulate(circuit)
+                fock_counts = c2qa.util.cv_fockcounts(result.get_counts(), [qmr1[0], qmr1[1], qmr2[0], qmr2[1], q[0], q[1], q[2]])
+
+                # There should only be 1 result
+                if len(list(fock_counts.keys())) > 1:
+                    raise Exception
+
+                assert(list(fock_counts.keys())[0] == expect)
+
+            elif register == 2:
+                circuit.cv_gate_from_matrix(xgate, qmr2[qumode_no])
+                circuit.cv_gate_from_matrix(xgate, qubits=q[qubit_no])
+
+                circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
+
+                _, result, _ = c2qa.util.simulate(circuit)
+                fock_counts = c2qa.util.cv_fockcounts(result.get_counts(), [qmr1[0], qmr1[1], qmr2[0], qmr2[1], q[0], q[1], q[2]])
+
+                # There should only be 1 result
+                if len(list(fock_counts.keys())) > 1:
+                    raise Exception
+
+                assert(list(fock_counts.keys())[0] == expect)
+
+            else:
+                raise Exception
+
+
 def test_cv_initialize(capsys):
     with capsys.disabled():
-        import c2qa
-
         qmr1 = c2qa.QumodeRegister(1, 2)
         qmr2 = c2qa.QumodeRegister(2, 2)
         qmr3 = c2qa.QumodeRegister(2, 3) # <----- change to (2, 2) for no error
@@ -170,5 +251,5 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr6[0])
 
         # saving a state vector for all the registers takes a considerable amount of time
-        state, result = c2qa.util.simulate(circuit, add_save_statevector=False)
+        state, result, _ = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
         assert result.success

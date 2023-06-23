@@ -48,7 +48,7 @@ def cv_ancilla_fock_measure(circuit,list_qumodes_to_sample:list, qmr_number:int=
         circuit.barrier()
         qumode_counter+=1
     # Simulate circuit with a single shot
-    _, result = simulate(circuit, shots=1)
+    _, result, _ = simulate(circuit, shots=1)
     # Return integer value of boson number occupation, converted from the bits which make up a binary number
     print(result.get_counts())
     full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
@@ -63,7 +63,7 @@ def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
 ):
     """Print values for states of qubits and qumodes using the result of a
-    simulation of the statevector, e.g. using stateop, _ = c2qa.util.simulate(circuit).
+    simulation of the statevector, e.g. using stateop, _, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
@@ -206,6 +206,7 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
          qumodes in qubit_qumode_list in little endian order, with Fock-basis
          qumode measurements reported as a base-10 integer.
     """
+    warnings.warn("The function ``c2qa.util.cv_fockcounts()`` is deprecated as of bosonic-qiskit v8.2. The function is replaced by counts_to_fockcounts(), which can be called using util.simulate().")
 
     flat_list = []
     for el in qubit_qumode_list:
@@ -237,36 +238,151 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
+def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
+    """Convert counts dictionary from Fock-basis binary representation into
+    base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
+    jobs.result(), along with the entire circuit.
+
+    Args:
+        result: dict() of results, as returned by job.result(), for a circuit which used cv_measure()
+        circuit: CVCircuit
+
+    Returns:
+        A new counts dict() which lists measurement results for the qubits and
+        qumodes in circuit in little endian order, with Fock-basis
+        qumode measurements reported as a base-10 integer.
+    """
+    counts = result.get_counts()
+    qumode_bit_mapping = _final_qumode_mapping(circuit)
+
+    newcounts = {}
+    for key in counts:
+        max_iter_index = len(key) - 1
+        newkey = key
+
+        # Using the nested list of qumode bit mappings, convert the relevant bits to base-10 integer and 
+        # form new key by concatenating the unchanged bits of key around the decimal value.
+        for index in range(len(key)):
+            for qumode in qumode_bit_mapping:
+                if index == min(qumode):
+                    fock_decimal = str(int(key[max_iter_index - max(qumode) : max_iter_index - min(qumode) + 1], base=2))
+                    newkey = newkey[: max_iter_index - max(qumode)] + fock_decimal + newkey[max_iter_index - min(qumode) + 1: ]
+
+        newcounts[newkey] = counts[key]
+
+    return newcounts
+
+
+def _final_qumode_mapping(circuit):
+    """
+    Return the classical bits that active qumode qubits are mapped onto. Bits corresponding to distinct qumodes are grouped together
+    """
+    final_measurement_mapping = _final_measurement_mapping(circuit)
+    active_qumode_bit_indices_grouped = []
+
+    # For each qumode qubit group, extract list of bits that map to qubits in group. Append list only if list is not empty
+    for qumode_qubit_group in circuit.qumode_qubits_indices_grouped:
+        qumode_bit_group = [key for key, val in final_measurement_mapping.items() for qubit in qumode_qubit_group if val == qubit]
+        
+        if qumode_bit_group != []:
+            active_qumode_bit_indices_grouped.append(qumode_bit_group)
+
+    # Sort nested list by first item in each sublist
+    active_qumode_bit_indices_grouped = sorted(active_qumode_bit_indices_grouped, key = lambda l: l[0])
+
+    return active_qumode_bit_indices_grouped
+
+    
+# This code is part of Mthree.
+#
+# (C) Copyright IBM 2021.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+# pylint: disable=no-name-in-module
+def _final_measurement_mapping(circuit):
+    """Return the measurement mapping for the circuit.
+
+    Dict keys label classical bits, whereas the values indicate the
+    physical qubits that are measured to produce those bit values.
+
+    Parameters:
+        circuit (QuantumCircuit): Input Qiskit QuantumCircuit.
+
+    Returns:
+        dict: Mapping of classical bits to qubits for final measurements.
+    """
+    active_qubits = list(range(circuit.num_qubits))
+    active_cbits = list(range(circuit.num_clbits))
+
+    # Map registers to ints
+    qint_map = {}
+    for idx, qq in enumerate(circuit.qubits):
+        qint_map[qq] = idx
+
+    cint_map = {}
+    for idx, qq in enumerate(circuit.clbits):
+        cint_map[qq] = idx
+
+    # Find final measurements starting in back
+    qmap = []
+    cmap = []
+    for item in circuit._data[::-1]:
+        if item[0].name == "measure":
+            cbit = cint_map[item[2][0]]
+            qbit = qint_map[item[1][0]]
+            if cbit in active_cbits and qbit in active_qubits:
+                qmap.append(qbit)
+                cmap.append(cbit)
+                active_cbits.remove(cbit)
+
+        if not active_cbits or not active_qubits:
+            break
+    mapping = {}
+    if cmap and qmap:
+        for idx, qubit in enumerate(qmap):
+            mapping[cmap[idx]] = qubit
+
+    # Sort so that classical bits are in numeric order low->high.
+    mapping = dict(sorted(mapping.items(), key=lambda item: item[0]))
+    return mapping
+
+
 def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     """Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
 
-    Returns state, result tuples each for the X, Y, and Z basis.
+    Returns state, result, fockcounts tuples each for the X, Y, and Z basis.
 
     Args:
         circuit (qiskit.QuantumCircuit): circuit to measure qubits one
 
     Returns:
-        x,y,z state & result tuples: (state, result) tuples for each x,y,z measurements
+        x,y,z state & result tuples: (state, result, fockcounts) tuples for each x,y,z measurements
     """
 
     # QuantumCircuit.measure_all(False) returns a copy of the circuit with measurement gates.
     circuit_z = circuit.measure_all(False)
-    state_z, result_z = simulate(circuit_z)
+    state_z, result_z, fockcounts_z = simulate(circuit_z)
 
     circuit_x = circuit.copy()
     for qubit in circuit_x.qubits:
         circuit_x.h(qubit)
     circuit_x.measure_all()  # Add measure gates in-place
-    state_x, result_x = simulate(circuit_x)
+    state_x, result_x, fockcounts_x = simulate(circuit_x)
 
     circuit_y = circuit.copy()
     for qubit in circuit_y.qubits:
         circuit_y.sdg(qubit)
         circuit_y.h(qubit)
     circuit_y.measure_all()  # Add measure gates in-place
-    state_y, result_y = simulate(circuit_y)
+    state_y, result_y, fockcounts_y = simulate(circuit_y)
 
-    return (state_x, result_x), (state_y, result_y), (state_z, result_z)
+    return (state_x, result_x, fockcounts_x), (state_y, result_y, fockcounts_y), (state_z, result_z, fockcounts_z)
 
 
 def get_probabilities(result: qiskit.result.Result):
@@ -292,6 +408,7 @@ def get_probabilities(result: qiskit.result.Result):
 def simulate(
     cvcircuit: CVCircuit,
     shots: int = 1024,
+    return_fockcounts: bool = True,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
@@ -307,6 +424,7 @@ def simulate(
     Args:
         circuit (CVCircuit): circuit to simulate
         shots (int, optional): Number of simulation shots. Defaults to 1024.
+        return_fockcounts (bool, optional): Set to True if measurement results should be returned. Defaults to False
         add_save_statevector (bool, optional): Set to True if a state_vector instruction
                                                should be added to the end of the circuit. Defaults to True.
         conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
@@ -314,7 +432,7 @@ def simulate(
         discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
-        tuple: (state, result) tuple from simulation
+        tuple: (state, result, fockcounts) tuple from simulation
     """
 
     if discretize and not noise_passes:
@@ -381,8 +499,17 @@ def simulate(
         if add_save_statevector:
             sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
 
-        previous_state = state
-        results.append((state, result))
+        if return_fockcounts:
+            try:
+                fockcounts = counts_to_fockcounts(circuit, result)
+            except:
+                Exception("counts_to_fockcounts() was not able to execute")
+            
+            previous_state = state
+            results.append((state, result, fockcounts))
+        else:
+            previous_state = state
+            results.append((state, result, None))
 
     if discretize:
         return results
@@ -486,3 +613,115 @@ def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
     indices = circuit.get_qubit_indices(qubits)
 
     return qiskit.quantum_info.partial_trace(state_vector, indices)
+
+def fockmap(matrix, fock_input, fock_output, amplitude=[]):
+    """Generates matrix corresponding to some specified mapping of Fock states. 
+    First feed function empty matrix, then call fmap_matrix however many times needed to fully define intended mapping.
+    Maps ith element in fock_input to ith element in fock_output with amplitude specified by ith element in amplitude.
+    If amplitude is left blank, function assumes amp = 1 for all mappings.
+
+    Two use cases 
+    1) int + list datatype combination (length of amp list must match length of either fock_input or fock_output, whichever is longer): 
+    >fockmap(matrix, 1, [0, 1]) 
+    ->> |0><1| + |1><1|
+
+    >fockmap(matrix, [3, 2], 0, [0.5j, 1])
+    ->> 0.5j|0><3| + |0><2|
+
+    2) list datatype
+    >fockmap(matrix, [3, 2], [2, 1], [0.1j, 0.8])
+    ->> 0.1j|2><3| + 0.8|1><2| 
+
+    >fockmap(matrix, [1, 1], [2, 4])
+    ->> |2><1| + |4><1| 
+
+
+    Args:
+        matrix (nested list/np.array): Matrix that you want to change
+        fock_input (int/list): Input state(s) for mapping, corresponds to bra
+        fock_output (int/list): Output states(s) for mapping, corresponds to ket
+        amplitude (int/float/complex/list/ndarray): Amplitudes corresponding to final mapped states
+
+    Returns:
+        np.array: Edited matrix"""
+    
+
+    # Convert args to lists for convenience of computation
+    if isinstance(fock_input, int):
+        fock_input = [fock_input]
+    elif isinstance(fock_input, (float, complex, str, bool)):
+        raise TypeError("Please ensure that your fock_input value is an int")
+    
+    if isinstance(fock_output, int):
+        fock_output = [fock_output]
+    elif isinstance(fock_output, (float, complex, str, bool)):
+        raise TypeError("Please ensure that your fock_output value is an int")
+    
+    if isinstance(amplitude, (int, float, complex)):
+        amplitude = [amplitude]
+
+    # If user inputs python list instead of np array
+    matrix = np.array(matrix, dtype=complex)
+
+    # Default amplitude is 1 for all states, unless otherwise specified
+    if amplitude == []:
+        amplitude = [1 for i in range(max(len(fock_input), len(fock_output)))]
+
+    ## Error flags
+    # Length of amplitude list must match the greater of either input or output
+    if not (len(amplitude) == max(len(fock_input), len(fock_output))):
+            raise ValueError("Please ensure that that length of amplitude arg matches length of either input or output list.")
+    # Datatype of args check
+    if not (isinstance(fock_input, list) & isinstance(fock_output, list) & isinstance(amplitude, (list, np.ndarray))):
+        raise TypeError("Please ensure that datatypes of input and output states are either int or list.")
+    # Check for cutoff
+    n, m = matrix.shape
+    if n != m:
+        raise ValueError("Matrix given is not square")
+    if any(i >= n for i in fock_input) or any(j >= n for j in fock_output): 
+        raise ValueError("Fock state(s) greater than cutoff.")
+
+    ## Use cases
+    # 1. Int + int datatype for input/output args.
+    if ((len(fock_input) == 1) & (len(fock_output) == 1)):
+        if len(amplitude) > 1:
+            raise ValueError("Please ensure that only a single amplitude value is provided, as there is only 1 mapping provided")
+        if matrix[fock_output[0], fock_input[0]] != 0:
+            print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[0], fock_input[0]))
+                
+        matrix[fock_output[0], fock_input[0]] = amplitude[0]
+
+        return matrix
+
+    # 2. Int + list datatype for input/output args. Length of amplitude must match length of list
+    elif (len(fock_input) == 1) & (len(fock_output) > 1):
+        for i in range(len(fock_output)):
+            if matrix[fock_output[i], fock_input[0]] != 0:
+                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[i], fock_input[0]))
+
+            matrix[fock_output[i], fock_input[0]] = amplitude[i]
+
+        return matrix
+    
+    elif (len(fock_output) == 1) & (len(fock_input) > 1):
+        for i in range(len(fock_input)):
+            if matrix[fock_output[0], fock_input[i]] != 0:
+                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[0], fock_input[i]))
+
+            matrix[fock_output[0], fock_input[i]] = amplitude[i]
+
+        return matrix        
+
+    # 3. List datatype input/output/amp args. Lengths of all must match
+    elif (len(fock_input) == len(fock_output) == len(amplitude)):
+
+        for i in range(len(fock_input)):
+            if matrix[fock_output[i], fock_input[i]] != 0:
+                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[i], fock_input[i]))
+                
+            matrix[fock_output[i], fock_input[i]] = amplitude[i]
+
+        return matrix
+    
+    else:
+        raise ValueError("Please ensure that your args are correctly defined.")

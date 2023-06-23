@@ -426,3 +426,12 @@ class CVOperators:
         print(max)
 
         return self.eye
+
+    def gate_from_matrix(self, matrix):
+        """Converts matrix into gate. Called using ParameterizedUnitaryGate.
+        Args:
+            matrix (list): the (unitary) matrix that you wish to convert into a gate
+        Returns:
+            csc_matrix: operator matrix
+        """ 
+        return scipy.sparse.csc_matrix(matrix)

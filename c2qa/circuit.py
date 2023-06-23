@@ -4,6 +4,7 @@ import warnings
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.parametertable import ParameterTable
+from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import qiskit.providers.aer.library.save_instructions as save
 
 from c2qa.operators import CVOperators
@@ -138,6 +139,32 @@ class CVCircuit(QuantumCircuit):
                 indices.append(index)
 
         return indices
+
+    @property
+    def qumode_qubits_indices_grouped(self):
+        """Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list."""
+        grouped_indices = []
+    
+        # Iterate through all qmregs
+        for _, qmreg in enumerate(self.qmregs):
+            num_qumodes_in_reg = qmreg.num_qumodes
+            num_qubits_per_qumode = qmreg.num_qubits_per_qumode
+
+            qmreg_qubit_indices = []
+
+            # For every qubit in circuit, append index of qubit to list if qubit is in qmreg
+            for qubit_index, qubit in enumerate(self.qubits): 
+                if qubit in qmreg[:]:
+                    qmreg_qubit_indices.append(qubit_index)
+
+            # Split list according to no. of qumodes in qmreg
+            qmreg_qubit_indices = [qmreg_qubit_indices[i * num_qubits_per_qumode: (i + 1) * num_qubits_per_qumode] for i in range(num_qumodes_in_reg)]
+
+            # Extend final list
+            grouped_indices.extend(qmreg_qubit_indices) 
+
+        return(grouped_indices)        
+         
 
     def get_qubit_index(self, qubit):
         """Return the index of the given Qubit"""
@@ -816,4 +843,55 @@ class CVCircuit(QuantumCircuit):
                 self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
+        )
+
+    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns"):
+        """Converts matrix to gate. Note that if you choose to feed a single mega-matrix that would have been physically 
+        implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate will 
+        not be applied in a way that is physical.
+
+        Args:
+            matrix (np.array/nested list): Matrix for conversion into gate
+            qumodes (QumodeRegister/list): Qumodes initialized by QumodeRegister
+            qubits (QuantumRegister/list): Qubits initialized by QuantumRegister
+
+        Returns:
+            Instruction: QisKit instruction
+        """     
+        # If multiple qubits are given, slice to get list of qubits. Otherwise, encase QuantumRegister for single qubit in list.
+        try: 
+            qubits = qubits[:]
+        except: 
+            qubits = [qubits]
+
+        # Slice QumodeRegister to get list of qumodes
+        if isinstance(qumodes, QumodeRegister):    
+            qumodes = qumodes[:]
+
+        # Convert matrix to np.ndarray so that we can compute error flags easier
+        matrix = np.array(matrix)
+        
+        ## Error flags
+        # Matrix needs to be square
+        n, m = matrix.shape
+        if n != m:
+            raise ValueError("Matrix given is not square")
+        
+        # Determine if input matrix is same dimension as input qumodes+qubits
+        if n != 2 ** (len(qumodes) + len(qubits)):
+            raise ValueError("Matrix is of different dimension from qumodes + qubits")
+
+        # Checks if input matrix is unitary
+        if not is_unitary_matrix(matrix):
+            raise ValueError("The mapping provided is not unitary!")
+
+        # Make sure that np.ndarray doesn't get fed into PUG
+        if isinstance(matrix, np.ndarray):
+            matrix = matrix.tolist()
+
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.gate_from_matrix, [matrix], num_qubits=len(qumodes) + len(qubits), label="gate_from_matrix", duration=duration, unit=unit
+            ),
+            qargs=qumodes + qubits,
         )

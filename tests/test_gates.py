@@ -58,7 +58,7 @@ def assert_unchanged(state, result):
 
 def test_no_gates():
     circuit, qmr = create_unconditional()
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -68,7 +68,7 @@ def test_beamsplitter_once():
     phi = random.random()
     circuit.cv_bs(phi, qmr[0], qmr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
     # TODO - Beam splitter gate does not change state vector
     #        Both Strawberry Fields & FockWits are the same, too.
@@ -82,7 +82,7 @@ def test_conditional_beamsplitter():
     theta = random.random()
     circuit.cv_c_bs(theta, qmr[0], qmr[1], qr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
     # TODO - Beam splitter gate does not change state vector
     #        Both Strawberry Fields & FockWits are the same, too.
@@ -99,7 +99,7 @@ def test_conditional_schwinger():
     phi_2 = random.random()
     circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
     assert_unchanged(state, result)
 
@@ -111,7 +111,7 @@ def test_beamsplitter_twice():
     circuit.cv_bs(phi, qmr[0], qmr[1])
     circuit.cv_bs(-phi, qmr[0], qmr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -125,7 +125,7 @@ def test_conditonal_displacement():
     circuit.cv_c_d(-alpha, qmr[0], qr[1])
     circuit.cv_c_d(alpha, qmr[0], qr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -139,7 +139,7 @@ def test_conditonal_squeezing():
     circuit.cv_c_sq(-alpha, qmr[0], qr[1])
     circuit.cv_c_sq(alpha, qmr[0], qr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -151,7 +151,7 @@ def test_displacement_once(capsys):
         alpha = 1
         circuit.cv_d(alpha, qmr[0])
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
         assert_changed(state, result)
 
 def test_cv_delay():
@@ -159,7 +159,7 @@ def test_cv_delay():
 
     circuit.cv_delay(100,qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
 
 def test_displacement_twice():
@@ -169,7 +169,7 @@ def test_displacement_twice():
     circuit.cv_d(alpha, qmr[0])
     circuit.cv_d(-alpha, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -185,7 +185,7 @@ def test_cond_displacement_gate_vs_two_separate():
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
     circuit.cv_c_d(alpha, qmr[0], qr[0])
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert result.success
     state_cnd = result.get_statevector(circuit)
 
@@ -207,7 +207,7 @@ def test_cond_displacement_gate_vs_two_separate():
         ),
         [qr[0]] + qmr[0],
     )
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert result.success
     state_unitary = result.get_statevector(circuit)
 
@@ -234,7 +234,7 @@ def test_displacement_calibration(capsys):
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
         assert result.success
 
         state = result.get_statevector(circuit)
@@ -255,7 +255,7 @@ def test_rotation_once():
     theta = random.random()
     circuit.cv_r(theta, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
     # TODO - Rotation gate does not change state vector.
     #        Both Strawberry Fields & FockWits are the same, too.
@@ -270,7 +270,7 @@ def test_rotation_twice():
     circuit.cv_r(theta, qmr[0])
     circuit.cv_r(-theta, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -280,7 +280,7 @@ def test_squeezing_once():
     z = random.random()
     circuit.cv_sq(z, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_changed(state, result)
 
 
@@ -291,7 +291,7 @@ def test_squeezing_twice():
     circuit.cv_sq(z, qmr[0])
     circuit.cv_sq(-z, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -301,7 +301,7 @@ def test_two_mode_squeezing_once():
     z = random.random()
     circuit.cv_sq2(z, qmr[0], qmr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_changed(state, result)
 
 
@@ -312,7 +312,7 @@ def test_two_mode_squeezing_twice():
     circuit.cv_sq2(z, qmr[0], qmr[1])
     circuit.cv_sq2(-z, qmr[0], qmr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -339,7 +339,7 @@ def test_gates():
     circuit.cv_c_sq(z, qmr[0], qr[0])
     circuit.cv_c_sq(z, qmr[1], qr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
     assert result.success
 
@@ -351,7 +351,7 @@ def test_snap():
     n = 1
     circuit.cv_snap(phi, n, qmr[0])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
 
 def test_eswap():
@@ -360,7 +360,7 @@ def test_eswap():
     phi = random.random()
     circuit.cv_eswap(phi, qmr[0], qmr[1])
 
-    state, result = c2qa.util.simulate(circuit)
+    state, result, _ = c2qa.util.simulate(circuit)
 
 def test_multiboson_sampling(capsys):
     with capsys.disabled():
@@ -373,5 +373,5 @@ def test_multiboson_sampling(capsys):
         circuit = c2qa.CVCircuit(qmrA, qmrB, qbr)
         circuit.cv_c_multiboson_sampling([0,1,2,3], qmrA[0], qbr[0])
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
         assert result.success

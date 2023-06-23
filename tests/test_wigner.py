@@ -21,7 +21,7 @@ def test_plot_zero(capsys):
         circuit.h(qr[0])
         circuit.cv_c_d(dist, qmr[0], qr[0])
 
-        state, _ = c2qa.util.simulate(circuit)
+        state, _, _ = c2qa.util.simulate(circuit)
         trace = c2qa.util.trace_out_qubits(circuit, state)
         c2qa.wigner.plot_wigner(circuit, trace, file="tests/zero.png", trace=False)
 
@@ -36,7 +36,7 @@ def test_plot_one(capsys):
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(1, qmr[0])
 
-        state, _ = c2qa.util.simulate(circuit)
+        state, _, _ = c2qa.util.simulate(circuit)
         # print("Qumode initialized to one:")
         # print(state)
         c2qa.wigner.plot_wigner(circuit, state, file="tests/one.png")
@@ -81,7 +81,7 @@ def test_cat_state_wigner_plot(capsys):
         circuit.measure(qr[0], cr[0])
 
         # conditional_state_vector=True will return two state vectors, one for 0 and 1 classical register value
-        state, _ = c2qa.util.simulate(circuit, conditional_state_vector=True)
+        state, _, _ = c2qa.util.simulate(circuit, conditional_state_vector=True)
         even_state = state["0x0"]
         odd_state = state["0x1"]
 
@@ -138,7 +138,7 @@ def test_wigner_mle(capsys):
         circuit.cv_c_d(dist, qmr[0], qr[0])
         circuit.h(qr[0])
 
-        states, result = c2qa.util.simulate(circuit, per_shot_state_vector=True)
+        states, result, _ = c2qa.util.simulate(circuit, per_shot_state_vector=True)
         wigner = c2qa.wigner.wigner_mle(states)
         assert wigner is not None
         print(wigner)
@@ -172,7 +172,7 @@ def test_plot_wigner_snapshot(capsys):
 
         circuit.cv_snapshot()
 
-        state, result = c2qa.util.simulate(circuit)
+        state, result, _ = c2qa.util.simulate(circuit)
 
         c2qa.wigner.plot_wigner_snapshot(circuit, result, "tests")
 
