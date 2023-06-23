@@ -58,7 +58,7 @@ def test_cv_c_schwinger(capsys):
         assert discretized_params[4] == phi_2
 
 
-@pytest.mark.skip(reason="Enable and test manually with debug breakpoint to ensure only first param is discretized")
+@pytest.mark.skip(reason="Enable and test manually with debug breakpoint in__calculate_segment_params to ensure only first param is discretized")
 def test_cv_c_schwinger_animate(capsys):
     """The cv_c_schwinger gate should discretize the first param, but the others not"""
     with capsys.disabled():
