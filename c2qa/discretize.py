@@ -150,7 +150,7 @@ def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gat
     return segments
 
 
-def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool):
+def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool, discretized_param_indices: list = []):
     """Split ParameterizedUnitaryGate into multiple segments"""
     segments = []
     for index in range(1, segments_per_gate + 1):

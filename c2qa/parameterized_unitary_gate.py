@@ -12,7 +12,7 @@ class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
     def __init__(
-        self, op_func, params, num_qubits, label=None, duration=100, unit="ns"
+        self, op_func, params, num_qubits, label=None, duration=100, unit="ns", discretized_param_indices: list = []
     ):
         """Initialize ParameterizedUnitaryGate
 
@@ -26,6 +26,7 @@ class ParameterizedUnitaryGate(Gate):
             label (string, optional): Gate name. Defaults to None.
             duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
+            discretized_param_indices (list): list of int indices into self.params for parameters to be discretized. An empty list will discretize all params.
         """
         super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
 
@@ -38,6 +39,7 @@ class ParameterizedUnitaryGate(Gate):
 
         self.duration = duration
         self.unit = unit
+        self.discretized_param_indices = discretized_param_indices
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
@@ -120,15 +122,28 @@ class ParameterizedUnitaryGate(Gate):
 def __calculate_segment_params(
     self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
 ):
-    """Calculate the parameters at the current step. Return a tuples of the values."""
+    """
+    Calculate the parameters at the current step. Return a tuples of the values.
+    
+     Args:
+        current_step (int): 0-based current step index of the discretization
+        total_steps (int): total number of discretization steps
+        keep_state (bool): true if the state should be kept between discretization steps (i.e., if the discretization value should be 1/total_steps vs current_step/total_steps)
+        
+    Returns:
+        discretized parameter values as tuple
+    """
     if keep_state:
         param_fraction = 1 / total_steps
     else:
         param_fraction = current_step / total_steps
 
     values = []
-    for param in self.params:
-        values.append(param * param_fraction)
+    for index, param in enumerate(self.params):
+        if not hasattr(self, "discretized_param_indices") or len(self.discretized_param_indices) == 0 or index in self.discretized_param_indices:
+            values.append(param * param_fraction)
+        else:
+            values.append(param)
 
     return tuple(values)
 
