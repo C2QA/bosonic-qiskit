@@ -505,11 +505,15 @@ def simulate(
             except:
                 Exception("counts_to_fockcounts() was not able to execute")
             
-            previous_state = state
             results.append((state, result, fockcounts))
         else:
-            previous_state = state
             results.append((state, result, None))
+        
+        if per_shot_state_vector:
+            # Assume we'll take the first state vector
+            previous_state = state[0]
+        else:
+            previous_state = state
 
     if discretize:
         return results

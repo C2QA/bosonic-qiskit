@@ -83,3 +83,21 @@ def test_cv_c_schwinger_animate(capsys):
             animation_segments=2,
             shots=1,
         )
+
+
+def test_discretize_with_pershot_statevector(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(1, 3)
+        creg = qiskit.ClassicalRegister(3)
+        circ = c2qa.CVCircuit(qmr, creg)
+        circ.cv_initialize(7, qmr[0])
+
+        circ.cv_delay(duration=100, qumode=qmr[0], unit="ns")
+        circ.cv_measure(qmr[0], creg)
+
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.02, circuit=circ, time_unit="ns")
+        results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=True, shots=2, per_shot_state_vector=True)
+
+        for state, result, counts in results:
+            print(counts)
+            assert result.success
