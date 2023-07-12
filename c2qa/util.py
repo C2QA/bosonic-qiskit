@@ -728,15 +728,16 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     
 
 def avg_photon_num(state, decimals: int=2):
-    """Return average photon number of state using the number operator.
+    """Returns average photon number of state using the number operator.
 
     Args:
-        state (Statevector or DensityMatrix): state to operate on
-        decimals: precision of calculation
+        state (Statevector or DensityMatrix): State to operate on
+        decimals: Determines precision of calculation
 
     Returns:
-        float: average photon number to specified precision
+        float: Average photon number to specified precision
     """
+    
     # Generate number operator based on dimension of state
     dim = state.dim
     N = np.diag(range(dim))
