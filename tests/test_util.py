@@ -3,6 +3,7 @@ import numpy
 from pathlib import Path
 import qiskit
 from qiskit.visualization import plot_histogram
+from qiskit.quantum_info import Statevector, DensityMatrix
 
 
 def test_trace_out_zero(capsys):
@@ -263,3 +264,26 @@ def test_counts_to_fockcounts(capsys):
             _, result, counts = c2qa.util.simulate(circuit, return_fockcounts=True)
 #            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
             assert(counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
+            
+            
+def test_avg_photon_num(capsys):
+    with capsys.disabled():
+        for _ in range(5): # Repeat test 5 times
+            # Decimals
+            decimals = numpy.random.randint(1, 6)
+            
+            # Generate random vector
+            dim = numpy.random.randint(1, 11)
+            vector = numpy.random.uniform(-1, 1, dim) + 1.j * numpy.random.uniform(-1, 1, dim)
+            
+            # Compute magnitude of each element within vector, and norm of vector
+            element_norm = numpy.multiply(vector, numpy.conjugate(vector))
+            norm = numpy.sum(element_norm)
+
+            # Dot product between number operator and magnitude
+            avg_num = numpy.mean(numpy.dot(element_norm, numpy.array(range(dim))))/norm
+            
+            # Average photon number of statevector, density matrix, and random vector must all match
+            assert(c2qa.util.avg_photon_num(Statevector(vector), decimals) == c2qa.util.avg_photon_num(DensityMatrix(vector), decimals) == round(avg_num.real, decimals))
+            
+            
