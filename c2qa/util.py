@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 import qiskit
 import qiskit.quantum_info
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Statevector, DensityMatrix
 
 
 from c2qa import CVCircuit
@@ -725,3 +725,34 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     
     else:
         raise ValueError("Please ensure that your args are correctly defined.")
+    
+
+def avg_photon_num(state, decimals: int=2):
+    """Return average photon number of state using the number operator.
+
+    Args:
+        state (Statevector or DensityMatrix): state to operate on
+        decimals: precision of calculation
+
+    Returns:
+        float: average photon number to specified precision
+    """
+    # Generate number operator based on dimension of state
+    dim = state.dim
+    N = np.diag(range(dim))
+    
+    # Normalise state
+    if isinstance(state, Statevector):
+        for_norm = state.inner(state)
+    elif isinstance(state, DensityMatrix):
+        for_norm = state.trace()  
+    else:
+        raise TypeError("Only Statevector or DensityMatrix are accepted as valid types.")
+    
+    # Calculate average photon number
+    avg_photon = state.expectation_value(N)/for_norm
+    
+    if round(avg_photon.imag, 6) != 0:
+        raise Exception("Magnitude of average photon is complex, check inputs. Imaginary portion = {}".format(avg_photon.imag))
+    
+    return np.round(avg_photon.real, decimals)
