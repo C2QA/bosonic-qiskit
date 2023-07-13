@@ -459,11 +459,12 @@ def simulate(
             # No previous simulation state, just run the current circuit
             sim_circuit = circuit
 
+        # FIXME -- when using DensityMatrix for previous state, the circuit cannot contain save_statevector instructions
         # If this is false, the user must have already called save_statevector!
-        if add_save_statevector:
-            sim_circuit.save_statevector(
-                conditional=conditional_state_vector, pershot=per_shot_state_vector
-            )
+        # if add_save_statevector:
+        #     sim_circuit.save_statevector(
+        #         conditional=conditional_state_vector, pershot=per_shot_state_vector
+        #     )
 
         # Run noise pass, if provided
         if noise_passes:
@@ -509,11 +510,12 @@ def simulate(
         else:
             results.append((state, result, None))
         
-        if per_shot_state_vector:
-            # Assume we'll take the first state vector
-            previous_state = state[0]
-        else:
-            previous_state = state
+        # if per_shot_state_vector:
+        #     # Assume we'll take the first state vector
+        #     previous_state = state[0]
+        # else:
+        #     previous_state = state
+        previous_state = DensityMatrix(circuit_compiled)
 
     if discretize:
         return results
