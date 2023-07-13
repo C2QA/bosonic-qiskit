@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 import qiskit
 import qiskit.quantum_info
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Statevector, DensityMatrix
 
 
 from c2qa import CVCircuit
@@ -501,6 +501,7 @@ def simulate(
             sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
 
         if return_fockcounts:
+            fockcounts = None
             try:
                 fockcounts = counts_to_fockcounts(circuit, result)
             except:
