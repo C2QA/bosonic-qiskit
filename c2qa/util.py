@@ -619,7 +619,7 @@ def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
     return qiskit.quantum_info.partial_trace(state_vector, indices)
 
 def fockmap(matrix, fock_input, fock_output, amplitude=[]):
-    """Generates matrix corresponding to some specified mapping of Fock states. 
+    """Generates matrix corresponding to some specified mapping of Fock states for a single qumode.
     First feed function empty matrix, then call fmap_matrix however many times needed to fully define intended mapping.
     Maps ith element in fock_input to ith element in fock_output with amplitude specified by ith element in amplitude.
     If amplitude is left blank, function assumes amp = 1 for all mappings.

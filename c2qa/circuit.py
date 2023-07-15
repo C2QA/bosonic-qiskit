@@ -847,8 +847,8 @@ class CVCircuit(QuantumCircuit):
         )
 
     def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns"):
-        """Converts matrix to gate. Note that if you choose to feed a single mega-matrix that would have been physically 
-        implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate will 
+        """Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically 
+        implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may 
         not be applied in a way that is physical.
 
         Args:
