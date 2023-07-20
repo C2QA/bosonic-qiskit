@@ -124,16 +124,18 @@ def test_accumulated_counts(capsys):
         if discretize:
             results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
 
-            for state, result, counts in results:
+            for state, result, accumulated_counts, fock_counts in results:
                 print("##############")
                 print(f"Result counts: {result.get_counts()}")
-                print(f"Fock counts: {counts}")
+                print(f"Accumulated counts: {accumulated_counts}")
+                print(f"Fock counts: {fock_counts}")
                 assert result.success
         else:
-            state, result, counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
+            state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
             print("##############")
             print(f"Result counts: {result.get_counts()}")
-            print(f"Fock counts: {counts}")
+            print(f"Accumulated counts: {accumulated_counts}")
+            print(f"Fock counts: {fock_counts}")
             assert result.success
 
     with capsys.disabled():

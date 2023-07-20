@@ -238,7 +238,7 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
-def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
+def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result, counts: dict = None):
     """Convert counts dictionary from Fock-basis binary representation into
     base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
     jobs.result(), along with the entire circuit.
@@ -252,7 +252,8 @@ def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result
         qumodes in circuit in little endian order, with Fock-basis
         qumode measurements reported as a base-10 integer.
     """
-    counts = result.get_counts()
+    if not counts:
+        counts = result.get_counts()
     qumode_bit_mapping = _final_qumode_mapping(circuit)
 
     newcounts = {}
@@ -432,7 +433,7 @@ def simulate(
         discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
-        tuple: (state, result, fockcounts) tuple from simulation
+        tuple: (state, result, accumulated_counts, fock_counts) tuple from [optionally discretized] simulations
     """
 
     if discretize and not noise_passes:
@@ -445,7 +446,7 @@ def simulate(
 
     results = []
     previous_state = None
-    previous_counts = {}
+    accumulated_counts = {}
     for circuit in circuits:
         if previous_state:
             # Initialize circuit to simulate with the previous frame's state, then append the last instruction
@@ -503,23 +504,22 @@ def simulate(
         # Keep a running counts dict
         if "counts" in result.data():
             current_counts = result.get_counts()
-            # print("##############")
+            # print("!!!!!!!!!!!!!!")
             # print(f"current_counts {current_counts}")
-            # print(f"prevous_counts {previous_counts}")
-            previous_counts = {x: previous_counts.get(x, 0) + current_counts.get(x, 0)
-                               for x in set(previous_counts).union(current_counts)}
-            # print(f"acculumated_counts {previous_counts}")
-            result.data()["counts"] = previous_counts  # hopefully Qiskit is OK with us overwriting these counts...
+            # print(f"accumulated_counts {accumulated_counts}")
+            accumulated_counts = {x: accumulated_counts.get(x, 0) + current_counts.get(x, 0)
+                               for x in set(accumulated_counts).union(current_counts)}
+            # print(f"acculumated_counts {accumulated_counts}")
 
         if return_fockcounts:
             try:
-                fockcounts = counts_to_fockcounts(circuit, result)
+                fockcounts = counts_to_fockcounts(circuit, result, accumulated_counts)
             except:
                 Exception("counts_to_fockcounts() was not able to execute")
             
-            results.append((state, result, fockcounts))
+            results.append((state, result, accumulated_counts, fockcounts))
         else:
-            results.append((state, result, None))
+            results.append((state, result, accumulated_counts, None))
         
         if per_shot_state_vector:
             # Assume we'll take the first state vector
