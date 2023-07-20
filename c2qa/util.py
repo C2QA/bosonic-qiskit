@@ -503,8 +503,12 @@ def simulate(
         # Keep a running counts dict
         if "counts" in result.data():
             current_counts = result.get_counts()
+            # print("##############")
+            # print(f"current_counts {current_counts}")
+            # print(f"prevous_counts {previous_counts}")
             previous_counts = {x: previous_counts.get(x, 0) + current_counts.get(x, 0)
-                            for x in set(previous_counts).union(current_counts)}
+                               for x in set(previous_counts).union(current_counts)}
+            # print(f"acculumated_counts {previous_counts}")
             result.data()["counts"] = previous_counts  # hopefully Qiskit is OK with us overwriting these counts...
 
         if return_fockcounts:

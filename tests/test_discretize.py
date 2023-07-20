@@ -101,3 +101,45 @@ def test_discretize_with_pershot_statevector(capsys):
         for state, result, counts in results:
             print(counts)
             assert result.success
+
+
+def test_accumulated_counts(capsys):
+    def simulate_test(discretize: bool):
+        qmr = c2qa.QumodeRegister(1, 3)
+        anc = qiskit.circuit.AncillaRegister(1)
+        cr = qiskit.circuit.ClassicalRegister(1)
+        circ = c2qa.CVCircuit(qmr, anc, cr)
+
+        circ.initialize([1, 0], anc[0]) # Ancilla in |g>
+        circ.cv_initialize(3, qmr[0]) # Qumode in |3>
+
+        # Photon number parity circuit
+        circ.h(anc[0])
+        circ.cv_c_r(3.14 / 2, qmr[0], anc[0], duration=1, unit="µs")
+        circ.h(anc[0])
+        circ.measure(anc[0], cr[0])
+
+        # Simulate
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.1, circuit=circ, time_unit="µs")
+        if discretize:
+            results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
+
+            for state, result, counts in results:
+                print("##############")
+                print(f"Result counts: {result.get_counts()}")
+                print(f"Fock counts: {counts}")
+                assert result.success
+        else:
+            state, result, counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
+            print("##############")
+            print(f"Result counts: {result.get_counts()}")
+            print(f"Fock counts: {counts}")
+            assert result.success
+
+    with capsys.disabled():
+        print()
+        print("NOT DICRETIZED")
+        simulate_test(discretize=False)
+        print()
+        print("DICRETIZED")
+        simulate_test(discretize=True)
