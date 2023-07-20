@@ -445,6 +445,7 @@ def simulate(
 
     results = []
     previous_state = None
+    previous_counts = {}
     for circuit in circuits:
         if previous_state:
             # Initialize circuit to simulate with the previous frame's state, then append the last instruction
@@ -498,6 +499,13 @@ def simulate(
 
         if add_save_statevector:
             sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
+
+        # Keep a running counts dict
+        if "counts" in result.data():
+            current_counts = result.get_counts()
+            previous_counts = {x: previous_counts.get(x, 0) + current_counts.get(x, 0)
+                            for x in set(previous_counts).union(current_counts)}
+            result.data()["counts"] = previous_counts  # hopefully Qiskit is OK with us overwriting these counts...
 
         if return_fockcounts:
             try:
