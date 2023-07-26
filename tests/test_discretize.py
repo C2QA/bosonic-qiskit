@@ -122,7 +122,7 @@ def test_accumulated_counts(capsys):
         # Simulate
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.1, circuit=circ, time_unit="µs")
         if discretize:
-            results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000, add_save_statevector=False)
+            results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
 
             for state, result, accumulated_counts, fock_counts in results:
                 print("##############")
