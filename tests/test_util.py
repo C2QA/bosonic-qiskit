@@ -101,9 +101,9 @@ def test_measure_all_xyz(capsys):
         circuit.cv_c_d(dist, qmr[0], qr[0])
 
         (
-            (state_x, result_x, _),
-            (state_y, result_y, _),
-            (state_z, result_z, _),
+            (state_x, result_x, _, _),
+            (state_y, result_y, _, _),
+            (state_z, result_z, _, _),
         ) = c2qa.util.measure_all_xyz(circuit)
 
         print("state_x.probabilities_dict()")
@@ -263,7 +263,7 @@ def test_counts_to_fockcounts(capsys):
             # Compare output of cv_fockcounts vs counts_to_fockcounts
             _, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, return_fockcounts=True)
 #            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
-            assert(accumulated_counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
+            assert(fock_counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
             
             
 def test_avg_photon_num(capsys):

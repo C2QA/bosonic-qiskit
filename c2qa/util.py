@@ -368,22 +368,22 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
 
     # QuantumCircuit.measure_all(False) returns a copy of the circuit with measurement gates.
     circuit_z = circuit.measure_all(False)
-    state_z, result_z, fockcounts_z = simulate(circuit_z)
+    state_z, result_z, accumulated_counts_z, fockcounts_z = simulate(circuit_z)
 
     circuit_x = circuit.copy()
     for qubit in circuit_x.qubits:
         circuit_x.h(qubit)
     circuit_x.measure_all()  # Add measure gates in-place
-    state_x, result_x, fockcounts_x = simulate(circuit_x)
+    state_x, result_x, accumulated_counts_x, fockcounts_x = simulate(circuit_x)
 
     circuit_y = circuit.copy()
     for qubit in circuit_y.qubits:
         circuit_y.sdg(qubit)
         circuit_y.h(qubit)
     circuit_y.measure_all()  # Add measure gates in-place
-    state_y, result_y, fockcounts_y = simulate(circuit_y)
+    state_y, result_y, accumulated_counts_y, fockcounts_y = simulate(circuit_y)
 
-    return (state_x, result_x, fockcounts_x), (state_y, result_y, fockcounts_y), (state_z, result_z, fockcounts_z)
+    return (state_x, result_x, accumulated_counts_x, fockcounts_x), (state_y, result_y, accumulated_counts_y, fockcounts_y), (state_z, result_z, accumulated_counts_z, fockcounts_z)
 
 
 def get_probabilities(result: qiskit.result.Result):
@@ -504,19 +504,20 @@ def simulate(
         # Keep a running counts dict
         if "counts" in result.data():
             current_counts = result.get_counts()
+            accumulated_counts = {x: accumulated_counts.get(x, 0) + current_counts.get(x, 0)
+                                  for x in set(accumulated_counts).union(current_counts)}
             # print("!!!!!!!!!!!!!!")
             # print(f"current_counts {current_counts}")
-            # print(f"accumulated_counts {accumulated_counts}")
-            accumulated_counts = {x: accumulated_counts.get(x, 0) + current_counts.get(x, 0)
-                               for x in set(accumulated_counts).union(current_counts)}
             # print(f"acculumated_counts {accumulated_counts}")
+        # else:
+        #     print("Result has no counts!")
 
         if return_fockcounts and add_save_statevector:
             try:
                 fockcounts = counts_to_fockcounts(circuit, result, accumulated_counts)
                 results.append((state, result, accumulated_counts, fockcounts))
             except:
-                Exception("counts_to_fockcounts() was not able to execute")
+                raise Exception("counts_to_fockcounts() was not able to execute")
         else:
             results.append((state, result, accumulated_counts, None))
         

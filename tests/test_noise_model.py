@@ -484,11 +484,11 @@ def test_photon_loss_instruction_qumode(capsys):
 
 def test_photon_loss_and_phase_damping(capsys):
     with capsys.disabled():
-        state_a, result_a, _ = _build_photon_loss_and_amp_damping_circuit(0.0)
+        state_a, result_a, accumulated_counts, fock_counts = _build_photon_loss_and_amp_damping_circuit(0.0)
         print(state_a)
         assert result_a.success
 
-        state_b, result_b, _ = _build_photon_loss_and_amp_damping_circuit(1.0)
+        state_b, result_b, accumulated_counts, fock_counts = _build_photon_loss_and_amp_damping_circuit(1.0)
         print(state_b)
         assert result_b.success
 
@@ -612,7 +612,7 @@ def test_multi_qumode_loss_probability(capsys):
         for i in range(20):
             print("----------------------")
             print(f"Iteration {i}")
-            state_vector, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+            state_vector, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
             # plot_histogram(result.get_counts(circuit), filename=f"tests/test_manual_validate_beamsplitter-{i}.png")
             occupation, fock_states = c2qa.util.stateread(state_vector, 0, num_qumodes, 2**num_qubits_per_qumode,verbose=True)
 
