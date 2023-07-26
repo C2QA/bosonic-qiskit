@@ -24,7 +24,7 @@ def simulate_wigner(
     trace: bool = False,
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
-    states, _, _ = simulate(
+    states, _, _, _ = simulate(
         circuit,
         shots=shots,
         noise_passes=noise_passes,
@@ -64,7 +64,7 @@ def simulate_wigner_multiple_statevectors(
     trace: bool = False,
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
-    state, result, _ = simulate(
+    state, result, _, _ = simulate(
         circuit,
         shots=shots,
         noise_passes=noise_passes
@@ -310,12 +310,12 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
         draw_grid (bool, optional): True if gridlines should be drawn on plots. Defaults to False.
     """
     # Get unaltered state vector and partial trace
-    x, _, _ = simulate(circuit)
+    x, _, _, _ = simulate(circuit)
     xT = x.data.conjugate().transpose()
 
     # Project onto 0 and 1 using Pauli Z
     circuit.z(qubit)
-    y, _, _ = simulate(circuit)
+    y, _, _, _ = simulate(circuit)
     yT = y.data.conjugate().transpose()
 
     x_xT = x.data * xT
@@ -336,7 +336,7 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
 
     # Project onto + and - using Pauli X
     circuit.x(qubit)
-    y, _, _ = simulate(circuit)
+    y, _, _, _ = simulate(circuit)
     yT = y.data.conjugate().transpose()
 
     x_xT = x.data * xT

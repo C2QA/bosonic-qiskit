@@ -48,7 +48,7 @@ def test_noise_model(capsys):
         print("kraus")
         print(kraus_operators)
 
-        state, result, _ = c2qa.util.simulate(circuit)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit)
 
 
 def test_kraus_operators(capsys):
@@ -200,7 +200,7 @@ def test_noise_with_beamsplitter(capsys):
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
-        state, result, _ = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
 def test_noise_with_cnd_beamsplitter(capsys):
@@ -217,7 +217,7 @@ def test_noise_with_cnd_beamsplitter(capsys):
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
-        state, result, _ = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
 def test_photon_loss_pass_with_conditional(capsys):
@@ -234,7 +234,7 @@ def test_photon_loss_pass_with_conditional(capsys):
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
-        state, result, _ = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
 def test_photon_loss_pass_delay_without_unit(capsys):
@@ -253,7 +253,7 @@ def test_photon_loss_pass_delay_without_unit(capsys):
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=fail_circuit, time_unit=time_unit)
-        state, result, _ = c2qa.util.simulate(fail_circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(fail_circuit, noise_passes=noise_pass)
         assert result.success
 
 
@@ -273,7 +273,7 @@ def test_photon_loss_pass_delay_with_unit(capsys):
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=pass_circuit, time_unit=time_unit)
-        state, result, _ = c2qa.util.simulate(pass_circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(pass_circuit, noise_passes=noise_pass)
         assert result.success
 
 
@@ -343,7 +343,7 @@ def test_photon_loss_pass_no_displacement(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
-        # state, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+        # state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
         wigner_filename = "tests/test_photon_loss_pass_no_displacement.mp4"
         c2qa.animate.animate_wigner(
@@ -370,7 +370,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
-        # state, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+        # state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
         wigner_filename = "tests/test_photon_loss_pass_slow_displacement.mp4"
         c2qa.animate.animate_wigner(
@@ -401,7 +401,7 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
 
-        # state, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+        # state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
         wigner_filename = "tests/test_photon_loss_pass_slow_conditional_displacement.mp4"
         c2qa.animate.animate_wigner(
@@ -432,7 +432,7 @@ def test_photon_loss_instruction(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"])
 
-        state, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
 
 
@@ -455,7 +455,7 @@ def test_photon_loss_qumode(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit, qumodes=qmr[1])
 
-        state, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
 
 
@@ -478,7 +478,7 @@ def test_photon_loss_instruction_qumode(capsys):
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit, instructions=["cD"], qumodes=qmr[0])
 
-        state, result, _ = c2qa.util.simulate(circuit, noise_passes=noise_pass)
+        state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
         assert result.success
 
 

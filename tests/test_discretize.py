@@ -98,8 +98,8 @@ def test_discretize_with_pershot_statevector(capsys):
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.02, circuit=circ, time_unit="ns")
         results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=True, shots=2, per_shot_state_vector=True)
 
-        for state, result, counts in results:
-            print(counts)
+        for state, result, accumulated_counts, fock_counts in results:
+            print(accumulated_counts)
             assert result.success
 
 
@@ -122,7 +122,7 @@ def test_accumulated_counts(capsys):
         # Simulate
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.1, circuit=circ, time_unit="µs")
         if discretize:
-            results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
+            results = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000, add_save_statevector=False)
 
             for state, result, accumulated_counts, fock_counts in results:
                 print("##############")
@@ -140,8 +140,8 @@ def test_accumulated_counts(capsys):
 
     with capsys.disabled():
         print()
-        print("NOT DICRETIZED")
+        print("NOT DISCRETIZED")
         simulate_test(discretize=False)
         print()
-        print("DICRETIZED")
+        print("DISCRETIZED")
         simulate_test(discretize=True)

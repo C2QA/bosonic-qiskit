@@ -48,7 +48,7 @@ def cv_ancilla_fock_measure(circuit,list_qumodes_to_sample:list, qmr_number:int=
         circuit.barrier()
         qumode_counter+=1
     # Simulate circuit with a single shot
-    _, result, _ = simulate(circuit, shots=1)
+    _, result, _, _ = simulate(circuit, shots=1)
     # Return integer value of boson number occupation, converted from the bits which make up a binary number
     print(result.get_counts())
     full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
@@ -63,7 +63,7 @@ def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
 ):
     """Print values for states of qubits and qumodes using the result of a
-    simulation of the statevector, e.g. using stateop, _, _ = c2qa.util.simulate(circuit).
+    simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
@@ -511,13 +511,12 @@ def simulate(
                                for x in set(accumulated_counts).union(current_counts)}
             # print(f"acculumated_counts {accumulated_counts}")
 
-        if return_fockcounts:
+        if return_fockcounts and add_save_statevector:
             try:
                 fockcounts = counts_to_fockcounts(circuit, result, accumulated_counts)
+                results.append((state, result, accumulated_counts, fockcounts))
             except:
                 Exception("counts_to_fockcounts() was not able to execute")
-            
-            results.append((state, result, accumulated_counts, fockcounts))
         else:
             results.append((state, result, accumulated_counts, None))
         

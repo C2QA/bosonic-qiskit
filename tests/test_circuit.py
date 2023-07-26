@@ -56,7 +56,7 @@ def test_with_initialize():
 
     circuit.initialize(numpy.array([0, 1]), qbr[0])
 
-    state, result, _ = c2qa.util.simulate(circuit)
+    state, result, _, _ = c2qa.util.simulate(circuit)
     assert result.success
 
 
@@ -75,7 +75,7 @@ def test_with_delay(capsys):
         circuit.delay(100)
         circuit.cv_d(1, qmr[0])
 
-        state, result, _ = c2qa.util.simulate(circuit)
+        state, result, _, _ = c2qa.util.simulate(circuit)
         assert result.success
 
 
@@ -122,7 +122,7 @@ def test_initialize_qubit_values(capsys):
             circuit = c2qa.CVCircuit(qmr)
             circuit.cv_initialize(fock, qmr[0])
 
-            state, result, _ = c2qa.util.simulate(circuit)
+            state, result, _, _ = c2qa.util.simulate(circuit)
             assert result.success
 
             print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")
@@ -205,7 +205,7 @@ def test_cv_gate_from_matrix(capsys):
 
                 circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
 
-                _, result, _ = c2qa.util.simulate(circuit)
+                _, result, _, _ = c2qa.util.simulate(circuit)
                 fock_counts = c2qa.util.cv_fockcounts(result.get_counts(), [qmr1[0], qmr1[1], qmr2[0], qmr2[1], q[0], q[1], q[2]])
 
                 # There should only be 1 result
@@ -220,7 +220,7 @@ def test_cv_gate_from_matrix(capsys):
 
                 circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
 
-                _, result, _ = c2qa.util.simulate(circuit)
+                _, result, _, _ = c2qa.util.simulate(circuit)
                 fock_counts = c2qa.util.cv_fockcounts(result.get_counts(), [qmr1[0], qmr1[1], qmr2[0], qmr2[1], q[0], q[1], q[2]])
 
                 # There should only be 1 result
@@ -251,5 +251,5 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr6[0])
 
         # saving a state vector for all the registers takes a considerable amount of time
-        state, result, _ = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
+        state, result, _, _ = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
         assert result.success
