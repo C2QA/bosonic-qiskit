@@ -103,7 +103,7 @@ def test_discretize_with_pershot_statevector(capsys):
             assert result.success
 
 
-def test_accumulated_counts(capsys):
+def test_accumulated_counts_cv_c_r(capsys):
     def simulate_test(discretize: bool):
         qmr = c2qa.QumodeRegister(1, 3)
         anc = qiskit.circuit.AncillaRegister(1)
@@ -132,6 +132,47 @@ def test_accumulated_counts(capsys):
                 assert result.success
         else:
             state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
+            print("##############")
+            print(f"Result counts: {result.get_counts()}")
+            print(f"Accumulated counts: {accumulated_counts}")
+            print(f"Fock counts: {fock_counts}")
+            assert result.success
+
+    with capsys.disabled():
+        print()
+        print("NOT DISCRETIZED")
+        simulate_test(discretize=False)
+        print()
+        print("DISCRETIZED")
+        simulate_test(discretize=True)
+
+
+def test_accumulated_counts_cv_d(capsys):
+    def simulate_test(discretize: bool):
+        num_qumodes = 1
+        num_qubits_per_qumode = 4
+        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        circuit = c2qa.CVCircuit(qmr)
+
+        circuit.cv_initialize(3, qmr[0])
+
+        circuit.cv_d(1.5, qmr[0], duration=100, unit="ns")
+
+        photon_loss_rate = 0.02
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
+    
+        if discretize:
+            results = c2qa.util.simulate(circuit, noise_passes=noise_pass, discretize=discretize, shots=200)
+
+            for state, result, accumulated_counts, fock_counts in results:
+                print("##############")
+                print(f"Result counts: {result.get_counts()}")
+                print(f"Accumulated counts: {accumulated_counts}")
+                print(f"Fock counts: {fock_counts}")
+                assert result.success
+        else:
+            state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass, discretize=discretize, shots=200)
             print("##############")
             print(f"Result counts: {result.get_counts()}")
             print(f"Accumulated counts: {accumulated_counts}")
