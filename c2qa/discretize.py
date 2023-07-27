@@ -143,13 +143,13 @@ def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gat
         # print(f"Discretizing QuantumCircuit {inst.name}")
         segments = __discretize_subcircuit(inst.definition, segments_per_gate, keep_state, sequential_subcircuit)
 
-    # elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name not in ["initialize", "h", "measure"]:  # Don't animate instructions initializing system state
-        # print(f"Discretizing Instruction {inst.name}")
-        # segments = __discretize_instruction(inst, segments_per_gate, keep_state)
+    elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name not in ["initialize"] and len(inst.params) > 0:  # Don't animate instructions initializing system state
+        print(f"Discretizing Instruction {inst.name}")
+        segments = __discretize_instruction(inst, segments_per_gate, keep_state)
 
     else:
         # Else just "discretize" the instruction as a single segment
-        # print(f"NOT discretizing {inst.name}")
+        print(f"NOT discretizing {inst.name}")
         segments = [inst]
     
     return segments

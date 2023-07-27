@@ -48,7 +48,7 @@ def cv_ancilla_fock_measure(circuit,list_qumodes_to_sample:list, qmr_number:int=
         circuit.barrier()
         qumode_counter+=1
     # Simulate circuit with a single shot
-    _, result, _, _ = simulate(circuit, shots=1)
+    _, result, _ = simulate(circuit, shots=1)
     # Return integer value of boson number occupation, converted from the bits which make up a binary number
     print(result.get_counts())
     full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
@@ -368,22 +368,22 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
 
     # QuantumCircuit.measure_all(False) returns a copy of the circuit with measurement gates.
     circuit_z = circuit.measure_all(False)
-    state_z, result_z, accumulated_counts_z, fockcounts_z = simulate(circuit_z)
+    state_z, result_z, fockcounts_z = simulate(circuit_z)
 
     circuit_x = circuit.copy()
     for qubit in circuit_x.qubits:
         circuit_x.h(qubit)
     circuit_x.measure_all()  # Add measure gates in-place
-    state_x, result_x, accumulated_counts_x, fockcounts_x = simulate(circuit_x)
+    state_x, result_x, fockcounts_x = simulate(circuit_x)
 
     circuit_y = circuit.copy()
     for qubit in circuit_y.qubits:
         circuit_y.sdg(qubit)
         circuit_y.h(qubit)
     circuit_y.measure_all()  # Add measure gates in-place
-    state_y, result_y, accumulated_counts_y, fockcounts_y = simulate(circuit_y)
+    state_y, result_y, fockcounts_y = simulate(circuit_y)
 
-    return (state_x, result_x, accumulated_counts_x, fockcounts_x), (state_y, result_y, accumulated_counts_y, fockcounts_y), (state_z, result_z, accumulated_counts_z, fockcounts_z)
+    return (state_x, result_x, fockcounts_x), (state_y, result_y, fockcounts_y), (state_z, result_z, fockcounts_z)
 
 
 def get_probabilities(result: qiskit.result.Result):
@@ -416,7 +416,7 @@ def simulate(
     noise_model=None,
     noise_passes=None,
     max_parallel_threads: int = 0,
-    discretize: bool = False
+    discretize: bool = False,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -433,98 +433,65 @@ def simulate(
         discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
-        tuple: (state, result, accumulated_counts, fock_counts) tuple from [optionally discretized] simulations
+        tuple: (state, result, fock_counts) tuple from [optionally discretized] simulations
     """
 
     if discretize and not noise_passes:
         warnings.warn("Discretization of circuit intended for use with noise passes, but none provided")
 
     if discretize:
-        circuits = discretize_circuits(cvcircuit)
+        sim_circuit = discretize_circuits(cvcircuit)[-1]
     else:
-        circuits = [cvcircuit]
+        sim_circuit = cvcircuit
 
-    results = []
-    previous_state = None
-    accumulated_counts = {}
-    for circuit in circuits:
-        if previous_state:
-            # Initialize circuit to simulate with the previous frame's state, then append the last instruction
-            sim_circuit = circuit.copy()
-            sim_circuit.data.clear()  # Is this safe -- could we copy without data?
-            sim_circuit.initialize(previous_state)
-            last_instructions = circuit.data[-1:]  # Get the last instruction
+    # If this is false, the user must have already called save_statevector!
+    if add_save_statevector:
+        sim_circuit.save_statevector(
+            conditional=conditional_state_vector, pershot=per_shot_state_vector
+        )
 
-            for inst in last_instructions:
-                sim_circuit.append(*inst)
-        else:
-            # No previous simulation state, just run the current circuit
-            sim_circuit = circuit
+    # Run noise pass, if provided
+    if noise_passes:
+        if not isinstance(noise_passes, list):
+            noise_passes = [noise_passes]
 
-        # If this is false, the user must have already called save_statevector!
-        if add_save_statevector:
-            sim_circuit.save_statevector(
-                conditional=conditional_state_vector, pershot=per_shot_state_vector
-            )
-
-        # Run noise pass, if provided
-        if noise_passes:
-            if not isinstance(noise_passes, list):
-                noise_passes = [noise_passes]
-
-            for noise_pass in noise_passes:
-                circuit_compiled = noise_pass(sim_circuit)
-        else:
-            circuit_compiled = sim_circuit
-
-        # Transpile for simulator
-        simulator = qiskit.providers.aer.AerSimulator()
-        circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
-
-        # Run and get statevector
-        result = simulator.run(
-            circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
-        ).result()
-
-        # The user may have added their own circuit.save_statevector
-        state = None
-        if len(result.results):
-            try:
-                if conditional_state_vector or per_shot_state_vector:
-                    # Will get a dictionary of state vectors, one for each classical register value
-                    state = result.data()["statevector"]
-                else:
-                    state = Statevector(result.get_statevector(circuit_compiled))
-            except Exception:
-                state = None  # result.get_statevector() will fail if add_save_statevector is false
-
-        if add_save_statevector:
-            sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
-
-        # Keep a running counts dict
-        current_counts = result.get_counts()
-        accumulated_counts = {x: accumulated_counts.get(x, 0) + current_counts.get(x, 0)
-                              for x in set(accumulated_counts).union(current_counts)}
-
-        if return_fockcounts and add_save_statevector:
-            try:
-                fockcounts = counts_to_fockcounts(circuit, result, accumulated_counts)
-                results.append((state, result, accumulated_counts, fockcounts))
-            except:
-                raise Exception("counts_to_fockcounts() was not able to execute")
-        else:
-            results.append((state, result, accumulated_counts, None))
-        
-        if per_shot_state_vector:
-            # Assume we'll take the first state vector
-            previous_state = state[0]
-        else:
-            previous_state = state
-
-    if discretize:
-        return results
+        for noise_pass in noise_passes:
+            circuit_compiled = noise_pass(sim_circuit)
     else:
-        return results[0]
+        circuit_compiled = sim_circuit
+
+    # Transpile for simulator
+    simulator = qiskit.providers.aer.AerSimulator()
+    circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+
+    # Run and get statevector
+    result = simulator.run(
+        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
+    ).result()
+
+    # The user may have added their own circuit.save_statevector
+    state = None
+    if len(result.results):
+        try:
+            if conditional_state_vector or per_shot_state_vector:
+                # Will get a dictionary of state vectors, one for each classical register value
+                state = result.data()["statevector"]
+            else:
+                state = Statevector(result.get_statevector(circuit_compiled))
+        except Exception:
+            state = None  # result.get_statevector() will fail if add_save_statevector is false
+
+    if add_save_statevector:
+        sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
+
+    if return_fockcounts and add_save_statevector:
+        try:
+            fockcounts = counts_to_fockcounts(sim_circuit, result, result.get_counts())
+            return (state, result, fockcounts)
+        except:
+            raise Exception("counts_to_fockcounts() was not able to execute")
+    else:
+        return (state, result, None)
 
 
 def _find_cavity_indices(circuit: CVCircuit):
