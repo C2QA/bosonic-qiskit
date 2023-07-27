@@ -502,15 +502,9 @@ def simulate(
             sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
 
         # Keep a running counts dict
-        if "counts" in result.data():
-            current_counts = result.get_counts()
-            accumulated_counts = {x: accumulated_counts.get(x, 0) + current_counts.get(x, 0)
-                                  for x in set(accumulated_counts).union(current_counts)}
-            # print("!!!!!!!!!!!!!!")
-            # print(f"current_counts {current_counts}")
-            # print(f"acculumated_counts {accumulated_counts}")
-        # else:
-        #     print("Result has no counts!")
+        current_counts = result.get_counts()
+        accumulated_counts = {x: accumulated_counts.get(x, 0) + current_counts.get(x, 0)
+                              for x in set(accumulated_counts).union(current_counts)}
 
         if return_fockcounts and add_save_statevector:
             try:

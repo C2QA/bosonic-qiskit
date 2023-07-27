@@ -129,8 +129,6 @@ def test_accumulated_counts_cv_c_r(capsys):
                 print(f"Result counts: {result.get_counts()}")
                 print(f"Accumulated counts: {accumulated_counts}")
                 print(f"Fock counts: {fock_counts}")
-                if "0011" in result.get_counts():
-                    print("  this is fine -- result has no counts and doesn't raise QiskitError")
                 assert result.success
         else:
             state, result, accumulated_counts, fock_counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
