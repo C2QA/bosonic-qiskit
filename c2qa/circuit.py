@@ -846,7 +846,7 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns"):
+    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns", label="gate_from_matrix"):
         """Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically 
         implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may 
         not be applied in a way that is physical.
@@ -892,7 +892,7 @@ class CVCircuit(QuantumCircuit):
 
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.gate_from_matrix, [matrix], num_qubits=len(qumodes) + len(qubits), label="gate_from_matrix", duration=duration, unit=unit
+                self.ops.gate_from_matrix, [matrix], num_qubits=len(qumodes) + len(qubits), label=label, duration=duration, unit=unit
             ),
             qargs=qumodes + qubits,
         )
