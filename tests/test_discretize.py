@@ -164,3 +164,38 @@ def test_accumulated_counts_cv_d(capsys):
         print()
         print("DISCRETIZED")
         simulate_test(discretize=True)
+
+def test_manual_vs_auto_discretize(capsys):
+    def simulate_test(manually_discretize: bool):
+        qmr = c2qa.QumodeRegister(1, 3)
+        anc = qiskit.circuit.AncillaRegister(1)
+        cr = qiskit.circuit.ClassicalRegister(1)
+        circ = c2qa.CVCircuit(qmr, anc, cr)
+
+        circ.initialize([1, 0], anc[0]) # Ancilla in |g>
+        circ.cv_initialize(3, qmr[0]) # Qumode in |3>
+
+        # Photon number parity circuit
+        circ.h(anc[0])
+        if manually_discretize:
+            for _ in range(10): # Manually discretize cv_c_r gate
+                circ.cv_c_r(numpy.pi/20, qmr[0], anc[0], duration=0.1, unit="µs")
+        else:
+            circ.cv_c_r(numpy.pi/2, qmr[0], anc[0], duration=1, unit="µs")
+        circ.h(anc[0])
+        circ.measure(anc[0], cr[0])
+
+        # Simulate
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.1, circuit=circ, time_unit="µs")
+        return c2qa.util.simulate(circ, noise_passes=noise_pass, shots=3000, discretize=(not manually_discretize))
+    
+    with capsys.disabled():
+        print()
+
+        print("Manual Discretization")
+        state, result, fockcounts = simulate_test(manually_discretize=True)
+        print(result.get_counts())
+
+        print("Auto Discretization")
+        state, result, fockcounts = simulate_test(manually_discretize=False)
+        print(result.get_counts())
