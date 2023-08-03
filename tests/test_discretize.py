@@ -1,6 +1,7 @@
 import c2qa
 import pytest
 import qiskit
+import math
 import numpy
 import random
 
@@ -193,9 +194,17 @@ def test_manual_vs_auto_discretize(capsys):
         print()
 
         print("Manual Discretization")
-        state, result, fockcounts = simulate_test(manually_discretize=True)
-        print(result.get_counts())
+        _, result_man, _ = simulate_test(manually_discretize=True)
+        counts_man = result_man.get_counts()
+        print(counts_man)
 
         print("Auto Discretization")
-        state, result, fockcounts = simulate_test(manually_discretize=False)
-        print(result.get_counts())
+        _, result_auto, _ = simulate_test(manually_discretize=False)
+        counts_auto = result_auto.get_counts()
+        print(counts_auto)
+
+        assert result_man.success
+        assert result_auto.success
+
+        for key in counts_man:
+            assert math.isclose(counts_man[key], counts_auto[key], rel_tol=0.2)

@@ -56,8 +56,8 @@ def discretize_circuits(
 
             sim_circuits.append(sim_circuit)
 
-        # Append the full instruction for the next segment
-        base_circuit.append(inst, qargs, cargs)
+            # Start with current instruction for next segment
+            base_circuit = sim_circuit
     
     return sim_circuits
 
