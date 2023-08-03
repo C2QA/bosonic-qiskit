@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 import pytest
 import random
@@ -607,7 +608,7 @@ def test_multi_qumode_loss_probability(capsys):
         photon_loss_rate = 10000000
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)
 
-        fity_fifty = False
+        fifty_fifty = False
         print()
         for i in range(20):
             print("----------------------")
@@ -622,8 +623,8 @@ def test_multi_qumode_loss_probability(capsys):
                 qumode2 = qumode_state[1]
                 probability = amplitude**2
 
-                if (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode1 == 1) and probability == 0.5:
-                    fity_fifty = True
+                if (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode1 == 1) and math.isclose(probability, 0.5, 0.025):
+                    fifty_fifty = True
             
-        assert fity_fifty
+        assert fifty_fifty
         
