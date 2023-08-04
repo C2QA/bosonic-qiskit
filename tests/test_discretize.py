@@ -191,20 +191,31 @@ def test_manual_vs_auto_discretize(capsys):
         return c2qa.util.simulate(circ, noise_passes=noise_pass, shots=3000, discretize=(not manually_discretize))
     
     with capsys.disabled():
-        print()
+        max_percent_diff = 0
+        for i in range(20):
+            print()
+            print(f"Test {i}")
 
-        print("Manual Discretization")
-        _, result_man, _ = simulate_test(manually_discretize=True)
-        counts_man = result_man.get_counts()
-        print(counts_man)
+            print("Manual Discretization")
+            _, result_man, _ = simulate_test(manually_discretize=True)
+            counts_man = result_man.get_counts()
+            print(counts_man)
 
-        print("Auto Discretization")
-        _, result_auto, _ = simulate_test(manually_discretize=False)
-        counts_auto = result_auto.get_counts()
-        print(counts_auto)
+            print("Auto Discretization")
+            _, result_auto, _ = simulate_test(manually_discretize=False)
+            counts_auto = result_auto.get_counts()
+            print(counts_auto)
 
-        assert result_man.success
-        assert result_auto.success
+            assert result_man.success
+            assert result_auto.success
 
-        for key in counts_man:
-            assert math.isclose(counts_man[key], counts_auto[key], rel_tol=0.2)
+            for key in counts_man:
+                max_value = max(counts_man[key], counts_auto[key])
+                min_value = min(counts_man[key], counts_auto[key])
+                diff = max_value - min_value
+                percent_diff = diff / max_value * 100
+                max_percent_diff = max(percent_diff, max_percent_diff)
+                print(f"Key '{key}' percent difference {percent_diff}")
+                assert math.isclose(counts_man[key], counts_auto[key], rel_tol=0.2)
+        
+        print(f"Max percent diff {max_percent_diff}")
