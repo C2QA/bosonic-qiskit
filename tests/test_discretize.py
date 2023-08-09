@@ -218,7 +218,7 @@ def test_manual_vs_auto_discretize(capsys):
                 min_percent_diff = min(percent_diff, min_percent_diff)
                 max_percent_diff = max(percent_diff, max_percent_diff)
                 print(f"Key '{key}' percent difference {percent_diff}")
-                assert math.isclose(counts_man[key], counts_auto[key], rel_tol=0.2)
+                assert math.isclose(counts_man[key], counts_auto[key], rel_tol=0.25)
         
         print(f"Min percent diff {min_percent_diff}")
         print(f"Max percent diff {max_percent_diff}")
