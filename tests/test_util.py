@@ -15,7 +15,7 @@ def test_trace_out_zero(capsys):
         circuit.initialize([0, 1], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
-        state, _, _ = c2qa.util.simulate(circuit)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
         trace = c2qa.util.trace_out_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
@@ -37,7 +37,7 @@ def test_trace_out_one(capsys):
         circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state, _, _ = c2qa.util.simulate(circuit)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
         trace = c2qa.util.trace_out_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
@@ -59,7 +59,7 @@ def test_trace_out_qubit(capsys):
         circuit.initialize([1, 0], qbr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state, _, _ = c2qa.util.simulate(circuit)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state, qbr[0])
 
         assert state.dims() == (2, 2, 2)
@@ -81,7 +81,7 @@ def test_trace_out_qumode(capsys):
         circuit.initialize([1, 0], qbr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state, _, _ = c2qa.util.simulate(circuit)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
         trace = c2qa.util.cv_partial_trace(circuit, state, qmr[0])
 
 
@@ -139,7 +139,7 @@ def test_stateread(capsys):
 
         circuit.cv_initialize(2, qmr[0])
         circuit.cv_initialize(0, qmr[1])
-        state, result, _ = c2qa.util.simulate(circuit)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
         c2qa.util.stateread(
             state,
             numberofqubits=0,
@@ -261,9 +261,9 @@ def test_counts_to_fockcounts(capsys):
                     regs.append(_regs[i])
 
             # Compare output of cv_fockcounts vs counts_to_fockcounts
-            _, result, counts = c2qa.util.simulate(circuit, return_fockcounts=True)
+            _, result, fock_counts = c2qa.util.simulate(circuit, return_fockcounts=True)
 #            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
-            assert(counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
+            assert(fock_counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
             
             
 def test_avg_photon_num(capsys):

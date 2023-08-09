@@ -56,8 +56,8 @@ def discretize_circuits(
 
             sim_circuits.append(sim_circuit)
 
-        # Append the full instruction for the next segment
-        base_circuit.append(inst, qargs, cargs)
+            # Start with current circuit for the next segment
+            base_circuit = sim_circuit
     
     return sim_circuits
 
@@ -131,20 +131,25 @@ def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gat
     """Split the instruction into segments_per_gate segments"""
 
     if isinstance(inst, ParameterizedUnitaryGate):
+        # print(f"Discretizing ParameterizedUnitaryGate {inst.name}")
         segments = __discretize_parameterized(inst, segments_per_gate, keep_state)
 
     elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
+        # print(f"Discretizing cv_conditional {inst.name}")
         segments = __discretize_conditional(inst, segments_per_gate, keep_state)
 
     # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
     elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
+        # print(f"Discretizing QuantumCircuit {inst.name}")
         segments = __discretize_subcircuit(inst.definition, segments_per_gate, keep_state, sequential_subcircuit)
 
-    elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize":  # Don't animate instructions initializing system state
+    elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name not in ["initialize"] and len(inst.params) > 0:  # Don't animate instructions initializing system state
+        # print(f"Discretizing Instruction {inst.name}")
         segments = __discretize_instruction(inst, segments_per_gate, keep_state)
 
     else:
         # Else just "discretize" the instruction as a single segment
+        # print(f"NOT discretizing {inst.name}")
         segments = [inst]
     
     return segments
@@ -164,6 +169,8 @@ def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, seg
             total_steps=segments_per_gate,
             keep_state=keep_state,
         )
+
+        # print(f"Discretized params {params} duration {duration} unit {unit}")
 
         segments.append(
             ParameterizedUnitaryGate(
