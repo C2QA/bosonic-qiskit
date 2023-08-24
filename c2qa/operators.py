@@ -133,7 +133,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cr(self, theta):
+    def cr(self, theta, cutoff):
         """Controlled phase space rotation operator
 
         Args:
@@ -142,7 +142,7 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(zQB, self.N).tocsc()
+        arg = theta * 1j * scipy.sparse.kron(zQB, self.get_N(cutoff)).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 

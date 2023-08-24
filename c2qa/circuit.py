@@ -336,7 +336,7 @@ class CVCircuit(QuantumCircuit):
             label=label, conditional=conditional, pershot=pershot
         )
 
-    def cv_r(self, theta, qumode, cutoff, duration=100, unit="ns"):
+    def cv_r(self, theta, qumode, duration=100, unit="ns"):
         """Phase space rotation gate.
 
         Args:
@@ -349,12 +349,12 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.r, [theta], cutoffs=[cutoff], num_qubits=len(qumode), label="R", duration=duration, unit=unit
+                self.ops.r, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="R", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
 
-    def cv_d(self, alpha, qumode, cutoff, duration=100, unit="ns"):
+    def cv_d(self, alpha, qumode, duration=100, unit="ns"):
         """Displacement gate.
 
         Args:
@@ -367,12 +367,12 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.d, [alpha], cutoffs=[cutoff], num_qubits=len(qumode), label="D", duration=duration, unit=unit
+                self.ops.d, [alpha], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="D", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
 
-    def cv_sq(self, theta, qumode, cutoff, duration=100, unit="ns"):
+    def cv_sq(self, theta, qumode, duration=100, unit="ns"):
         """Squeezing gate.
 
         Args:
@@ -384,12 +384,12 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.s, [theta], cutoffs=[cutoff], num_qubits=len(qumode), label="S", duration=duration, unit=unit
+                self.ops.s, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="S", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
 
-    def cv_sq2(self, theta, qumode_a, qumode_b, cutoff_a, cutoff_b, duration=100, unit="ns"):
+    def cv_sq2(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
         """Two-mode squeezing gate
 
         Args:
@@ -402,12 +402,12 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.s2, [theta], cutoffs=[cutoff_a, cutoff_b], num_qubits=len(qumode_a) + len(qumode_b), label="S2", duration=duration, unit=unit
+                self.ops.s2, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))], num_qubits=len(qumode_a) + len(qumode_b), label="S2", duration=duration, unit=unit
             ),
             qargs=qumode_a + qumode_b,
         )
 
-    def cv_bs(self, theta, qumode_a, qumode_b, cutoff_a, cutoff_b, duration=100, unit="ns"):
+    def cv_bs(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
         """Two-mode beam splitter gate.
 
         Args:
@@ -422,7 +422,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.bs,
                 [theta],
-                cutoffs=[cutoff_a, cutoff_b],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))],
                 num_qubits=len(qumode_a) + len(qumode_b),
                 label="BS",
                 duration=duration,
@@ -446,6 +446,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.cr,
                 [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
                 num_qubits=len(qumode) + 1,
                 label="cR",
                 duration=duration,

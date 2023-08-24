@@ -73,7 +73,7 @@ def test_with_delay(capsys):
         circuit = c2qa.CVCircuit(qmr, qbr)
 
         circuit.delay(100)
-        circuit.cv_d(1, qmr[0], qmr.cutoff)
+        circuit.cv_d(1, qmr[0])
 
         state, result, _ = c2qa.util.simulate(circuit)
         assert result.success

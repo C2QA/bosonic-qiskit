@@ -20,13 +20,17 @@ class QumodeRegister:
         self.size = num_qumodes * num_qubits_per_qumode
         self.num_qumodes = num_qumodes
         self.num_qubits_per_qumode = num_qubits_per_qumode
-        self.cutoff = 2**self.num_qubits_per_qumode
+        self.cutoff = QumodeRegister.calculate_cutoff(num_qubits_per_qumode)
 
         # Aggregate the QuantumRegister representing these qumodes as
         # extending the class confuses QisKit when overriding __getitem__().
         # It doesn't expect a list of Qubit back when indexing a single value
         # (i.e., qmr[0] is represented by multiple qubits).
         self.qreg = QuantumRegister(size=self.size, name=name)
+
+    @staticmethod
+    def calculate_cutoff(num_qubits_per_qumode: int):
+        return 2**num_qubits_per_qumode
 
     def __iter__(self):
         """Iterate over the list of lists representing the qubits for each qumode in the register"""
