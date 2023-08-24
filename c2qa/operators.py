@@ -14,43 +14,29 @@ sigma_minus = numpy.array([[0, 0], [1, 0]])
 class CVOperators:
     """Build operator matrices for continuously variable bosonic gates."""
 
-    def __init__(self, cutoff: int, num_qumodes: int):
-        """Initialize shared matrices used in building operators.
-
-        Args:
-            cutoff (int): qumode cutoff level
-            num_qumodes (int): number of qumodes being represented
-        """
-        # Annihilation operator
+    def get_a(self, cutoff: int):
+        """Annihilation operator"""
         data = numpy.sqrt(range(cutoff))
-        self.a = scipy.sparse.spdiags(
+        return scipy.sparse.spdiags(
             data=data, diags=[1], m=len(data), n=len(data)
         ).tocsc()
+    
+    def get_a_dag(self, cutoff: int):
+        """Creation operator"""
+        a = self.get_a(cutoff)
+        return a.conjugate().transpose().tocsc()
 
-        # Creation operator
-        self.a_dag = self.a.conjugate().transpose().tocsc()
+    def get_N(self, cutoff: int):
+        """Number operator"""
+        a = self.get_a(cutoff)
+        a_dag = self.get_a_dag(cutoff)
+        return a_dag * a
+    
+    def get_eye(self, cutoff: int):
+        """Identity matrix"""
+        return scipy.sparse.eye(cutoff)
 
-        # Number operator for a single qumode.
-        # self.N = scipy.sparse.matmul(self.a_dag, self.a)
-        self.N = self.a_dag * self.a
-
-        self.eye = scipy.sparse.eye(cutoff)
-
-        self.cutoff_value = cutoff
-
-    def id(self):
-        """Identity gate (used by cv_delay)
-
-        Args:
-            None
-
-        Returns:
-            dia_matrix: operator matrix
-        """
-
-        return self.eye
-
-    def r(self, theta):
+    def r(self, theta, cutoff):
         """Phase space rotation operator
 
         Args:
@@ -59,11 +45,11 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = 1j * theta * self.N
+        arg = 1j * theta * self.get_N(cutoff)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def d(self, alpha):
+    def d(self, alpha, cutoff):
         """Displacement operator
 
         Args:
@@ -72,7 +58,7 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
+        arg = (alpha * self.get_a_dag(cutoff)) - (numpy.conjugate(alpha) * self.get_a(cutoff))
 
         return scipy.sparse.linalg.expm(arg)
 

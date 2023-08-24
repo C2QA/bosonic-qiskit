@@ -146,7 +146,7 @@ def test_accumulated_counts_cv_d(capsys):
 
         circuit.cv_initialize(3, qmr[0])
 
-        circuit.cv_d(1.5, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(1.5, qmr[0], , qmr.cutoff, duration=100, unit="ns")
 
         photon_loss_rate = 0.02
         time_unit = "ns"

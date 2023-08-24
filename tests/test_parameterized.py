@@ -44,7 +44,7 @@ def test_parameterized_displacement(capsys):
         circuit, qmr, qr = create_conditional()
 
         alpha = qiskit.circuit.Parameter("alpha")
-        circuit.cv_d(alpha, qmr[0])
+        circuit.cv_d(alpha, qmr[0], qmr.cutoff)
 
         bound_circuit = circuit.bind_parameters({alpha: 3.14})
 

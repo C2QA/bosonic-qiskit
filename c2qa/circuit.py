@@ -30,7 +30,6 @@ class CVCircuit(QuantumCircuit):
 
         registers = []
 
-        num_qumodes = 0
         num_qubits = 0
 
         for reg in regs:
@@ -40,7 +39,6 @@ class CVCircuit(QuantumCircuit):
                         "More than one QumodeRegister provided. Using the last one for cutoff.",
                         UserWarning,
                     )
-                num_qumodes += reg.num_qumodes
                 self.qmregs.append(reg)
                 registers.append(reg.qreg)
                 num_qubits += reg.size
@@ -62,7 +60,7 @@ class CVCircuit(QuantumCircuit):
 
         super().__init__(*registers, name=name)
 
-        self.ops = CVOperators(self.cutoff, num_qumodes)
+        self.ops = CVOperators()
         self.cv_snapshot_id = 0
 
     def merge(self, circuit: QuantumCircuit):
@@ -338,36 +336,38 @@ class CVCircuit(QuantumCircuit):
             label=label, conditional=conditional, pershot=pershot
         )
 
-    def cv_r(self, theta, qumode, duration=100, unit="ns"):
+    def cv_r(self, theta, qumode, cutoff, duration=100, unit="ns"):
         """Phase space rotation gate.
 
         Args:
             theta (real): rotation
             qumode (list): list of qubits representing qumode
+            cutoff (int): qumode cutoff
 
         Returns:
             Instruction: QisKit instruction
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.r, [theta], num_qubits=len(qumode), label="R", duration=duration, unit=unit
+                self.ops.r, [theta], cutoffs=[cutoff], num_qubits=len(qumode), label="R", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
 
-    def cv_d(self, alpha, qumode, duration=100, unit="ns"):
+    def cv_d(self, alpha, qumode, cutoff, duration=100, unit="ns"):
         """Displacement gate.
 
         Args:
             alpha (real or complex): displacement
             qumode (list): list of qubits representing qumode
+            cutoff (int): qumode cutoff
 
         Returns:
             Instruction: QisKit instruction
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.d, [alpha], num_qubits=len(qumode), label="D", duration=duration, unit=unit
+                self.ops.d, [alpha], cutoffs=[cutoff], num_qubits=len(qumode), label="D", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
@@ -825,7 +825,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.id, [], num_qubits=len(qumode), label="delay(" + str(duration) + " " + unit +")", duration=duration, unit=unit
+                self.ops.get_eye(cutoff), [], num_qubits=len(qumode), label="delay(" + str(duration) + " " + unit +")", duration=duration, unit=unit
             ),
             qargs=qumode,
         )

@@ -149,7 +149,7 @@ def test_displacement_once(capsys):
 
         # alpha = random.random()
         alpha = 1
-        circuit.cv_d(alpha, qmr[0])
+        circuit.cv_d(alpha, qmr[0], qmr.cutoff)
 
         state, result, fock_counts = c2qa.util.simulate(circuit)
         assert_changed(state, result)
@@ -166,8 +166,8 @@ def test_displacement_twice():
     circuit, qmr = create_unconditional()
 
     alpha = random.random()
-    circuit.cv_d(alpha, qmr[0])
-    circuit.cv_d(-alpha, qmr[0])
+    circuit.cv_d(alpha, qmr[0], qmr.cutoff)
+    circuit.cv_d(-alpha, qmr[0], qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -228,9 +228,9 @@ def test_displacement_calibration(capsys):
 
         circuit.h(qr[0])
         circuit.cv_c_d(alpha, qmr[0], qr[0])
-        circuit.cv_d(1j * alpha, qmr[0])
+        circuit.cv_d(1j * alpha, qmr[0], qmr.cutoff)
         circuit.cv_c_d(-alpha, qmr[0], qr[0])
-        circuit.cv_d(-1j * alpha, qmr[0])
+        circuit.cv_d(-1j * alpha, qmr[0], qmr.cutoff)
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
@@ -253,7 +253,7 @@ def test_rotation_once():
     circuit, qmr = create_unconditional()
 
     theta = random.random()
-    circuit.cv_r(theta, qmr[0])
+    circuit.cv_r(theta, qmr[0], qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
 
@@ -267,8 +267,8 @@ def test_rotation_twice():
     circuit, qmr = create_unconditional()
 
     theta = random.random()
-    circuit.cv_r(theta, qmr[0])
-    circuit.cv_r(-theta, qmr[0])
+    circuit.cv_r(theta, qmr[0], qmr.cutoff)
+    circuit.cv_r(-theta, qmr[0], qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -328,8 +328,8 @@ def test_gates():
 
     # Basic Gaussian Operations on a Resonator
     circuit.cv_bs(phi, qmr[0], qmr[1])
-    circuit.cv_d(alpha, qmr[0])
-    circuit.cv_r(phi, qmr[0])
+    circuit.cv_d(alpha, qmr[0], qmr.cutoff)
+    circuit.cv_r(phi, qmr[0], qmr.cutoff)
     circuit.cv_sq(z, qmr[0])
     circuit.cv_sq2(z, qmr[0], qmr[1])
 

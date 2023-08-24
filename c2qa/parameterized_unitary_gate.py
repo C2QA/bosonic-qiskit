@@ -12,7 +12,7 @@ class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
     def __init__(
-        self, op_func, params, num_qubits, label=None, duration=100, unit="ns", discretized_param_indices: list = []
+        self, op_func, params, num_qubits, cutoffs, label=None, duration=100, unit="ns", discretized_param_indices: list = []
     ):
         """Initialize ParameterizedUnitaryGate
 
@@ -23,6 +23,7 @@ class ParameterizedUnitaryGate(Gate):
                 bound later)
             num_qubits (int): Number of qubits in the operator -- this would
                 likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
+            cutoffs (List): cutoff values for each param (taken from each QumodeRegister)
             label (string, optional): Gate name. Defaults to None.
             duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
@@ -40,11 +41,14 @@ class ParameterizedUnitaryGate(Gate):
         self.duration = duration
         self.unit = unit
         self.discretized_param_indices = discretized_param_indices
+        self.cutoffs = cutoffs
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
         # return self.op_func(*map(complex, self.params)).toarray()
         values = []
+
+        # Add parameters for op_func call
         for param in self.params:
             if isinstance(param, ParameterExpression):
                 # if param.is_real():
@@ -56,6 +60,11 @@ class ParameterizedUnitaryGate(Gate):
                 )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
             else:
                 values.append(param)
+        
+        # Add cutoff for each parameter
+        values.extend(self.cutoffs)
+
+        # Conver array to tupple
         values = tuple(values)
 
         return self.op_func(*values).toarray()

@@ -287,7 +287,7 @@ def test_animate_photon_loss_pass(capsys):
 
         circuit.cv_initialize(3, qmr[0])
 
-        circuit.cv_d(0, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(0, qmr[0], qmr.cutoff, duration=100, unit="ns")
 
         photon_loss_rate = 0.01
         time_unit = "ns"
@@ -312,7 +312,7 @@ def test_animate_photon_loss_pas_with_epsilon(capsys):
 
         circuit.cv_initialize(3, qmr[0])
 
-        circuit.cv_d(0, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(0, qmr[0], qmr.cutoff, duration=100, unit="ns")
 
         photon_loss_rate = 0.01
         time_unit = "ns"
@@ -338,7 +338,7 @@ def test_photon_loss_pass_no_displacement(capsys):
 
         circuit.cv_initialize(3, qmr[0])
 
-        circuit.cv_d(0, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(0, qmr[0], qmr.cutoff, duration=100, unit="ns")
 
         photon_loss_rate = 0.01
         time_unit = "ns"
@@ -365,7 +365,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
 
         circuit.cv_initialize(3, qmr[0])
 
-        circuit.cv_d(1.5, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(1.5, qmr[0], qmr.cutoff, duration=100, unit="ns")
 
         photon_loss_rate = 0.02
         time_unit = "ns"
@@ -426,7 +426,7 @@ def test_photon_loss_instruction(capsys):
         circuit.cv_initialize(1, qmr[0])
         circuit.cv_initialize(1, qmr[1])
 
-        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(1, qmr[0], qmr.cutoff, duration=100, unit="ns")
         circuit.cv_c_d(1, qmr[1], qbr[0], duration=100, unit="ns")
 
         photon_loss_rate = 0.02
@@ -449,7 +449,7 @@ def test_photon_loss_qumode(capsys):
 
         circuit.cv_initialize(1, qmr[0])
 
-        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(1, qmr[0], qmr.cutoff, duration=100, unit="ns")
         circuit.cv_c_d(1, qmr[1], qbr[0], duration=100, unit="ns")
 
         photon_loss_rate = 0.02
@@ -472,7 +472,7 @@ def test_photon_loss_instruction_qumode(capsys):
 
         circuit.cv_initialize(1, qmr[0])
 
-        circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+        circuit.cv_d(1, qmr[0], qmr.cutoff, duration=100, unit="ns")
         circuit.cv_c_d(1, qmr[1], qbr[0], duration=100, unit="ns")
 
         photon_loss_rate = 0.02
@@ -506,7 +506,7 @@ def _build_photon_loss_and_amp_damping_circuit(amp_damp = 0.3, photon_loss_rate 
     circuit = c2qa.CVCircuit(qmr, qbr)
     circuit.cv_initialize(2, qmr[0])
     circuit.x(qbr[0])
-    circuit.cv_d(1, qmr[0], duration=100, unit="ns")
+    circuit.cv_d(1, qmr[0], qmr.cutoff, duration=100, unit="ns")
 
     # Initialize phase damping NoiseModel
     noise_model = noise.NoiseModel()

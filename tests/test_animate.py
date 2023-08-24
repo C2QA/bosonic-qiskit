@@ -30,7 +30,7 @@ def __build_subcircuit():
     U_JC = c2qa.CVCircuit(qmr,qbr)
 
     # Append U_R
-    U_JC.cv_r(-omega_R*total_time,qmr[0])
+    U_JC.cv_r(-omega_R*total_time, qmr[0], qmr.cutoff)
     # Append U_Q
     U_JC.rz(omega_Q*total_time,qbr[0])
     # Append U_\chi -- KS: this needs to be updated to reflect naming conventions in manuscript
@@ -222,9 +222,9 @@ def test_calibration_animate_mp4(capsys):
 
         circuit.h(qr[0])
         circuit.cv_c_d(dist, qmr[0], qr[0])
-        circuit.cv_d(1j * dist, qmr[0])
+        circuit.cv_d(1j * dist, qmr[0], qmr.cutoff)
         circuit.cv_c_d(-dist, qmr[0], qr[0])
-        circuit.cv_d(-1j * dist, qmr[0])
+        circuit.cv_d(-1j * dist, qmr[0], qmr.cutoff)
 
         c2qa.animate.animate_wigner(
             circuit,
