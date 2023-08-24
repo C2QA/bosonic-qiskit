@@ -20,6 +20,15 @@ class CVOperators:
         return scipy.sparse.spdiags(
             data=data, diags=[1], m=len(data), n=len(data)
         ).tocsc()
+
+    def get_a1(self, cutoff: int):
+            return scipy.sparse.kron(self.get_a(cutoff), self.get_eye(cutoff)).tocsc()
+    
+    def get_a2(self, cutoff: int):
+        return scipy.sparse.kron(self.get_eye(cutoff), self.get_a(cutoff)).tocsc()
+        
+    def get_a12(self, cutoff: int):
+        return self.get_a1(cutoff) * self.get_a2(cutoff)
     
     def get_a_dag(self, cutoff: int):
         """Creation operator"""
@@ -32,6 +41,21 @@ class CVOperators:
         a_dag = self.get_a_dag(cutoff)
         return a_dag * a
     
+    def get_a1_dag(self, cutoff: int):
+        return self.get_a1(cutoff).conjugate().transpose().tocsc()
+    
+    def get_a2_dag(self, cutoff: int):
+        return self.get_a2(cutoff).conjugate().transpose().tocsc()
+    
+    def get_a12_dag(self, cutoff: int):
+        return self.get_a1_dag(cutoff) * self.get_a2_dag(cutoff)
+    
+    def get_a12dag(self, cutoff: int):
+        return self.get_a1(cutoff) * self.get_a2_dag(cutoff)
+    
+    def get_a1dag2(self, cutoff: int):
+        return self.get_a1_dag(cutoff) * self.get_a2(cutoff)
+
     def get_eye(self, cutoff: int):
         """Identity matrix"""
         return scipy.sparse.eye(cutoff)
@@ -79,7 +103,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def s2(self, theta):
+    def s2(self, theta, cutoff_a, cutoff_b):
         """Two-mode squeezing operator
 
         Args:
@@ -89,19 +113,12 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
-        a12_dag = self.a1_dag * self.a2_dag
-        a12 = self.a1 * self.a2
-
-        arg = (numpy.conjugate(theta * 1j) * a12_dag) - (theta * 1j * a12)
+        # FIXME which cutoff to use
+        arg = (numpy.conjugate(theta * 1j) * self.get_a12_dag(cutoff_a)) - (theta * 1j * self.get_a12(cutoff_a))
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs(self, theta):
+    def bs(self, theta, cutoff_a, cutoff_b):
         """Two-mode beam splitter operator
 
         Args:
@@ -111,15 +128,8 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        arg = theta * a1dag2 - numpy.conj(theta) * a12dag
+        # FIXME which cutoff to use
+        arg = theta * self.get_a1dag2(cutoff_a) - numpy.conj(theta) * self.get_a12dag(cutoff_a)
 
         return scipy.sparse.linalg.expm(arg)
 

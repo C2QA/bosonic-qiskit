@@ -112,7 +112,7 @@ def test_beamsplitter_kraus_operators(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
         circuit = c2qa.CVCircuit(qmr)
         circuit.cv_initialize(2, qmr[0])
-        circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        circuit.cv_bs(1, qmr[1], qmr[0], qmr.cutoff, qmr.cutoff, duration=100, unit="ns")
         photon_loss_rate = 1000000  # per second
         time = 1.0  # seconds
         kraus_operators = c2qa.kraus.calculate_kraus(
@@ -165,7 +165,7 @@ def test_invalid_photon_loss_rate_length(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
         init_circuit = c2qa.CVCircuit(qmr)
         init_circuit.cv_initialize(2, qmr[0])
-        init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        init_circuit.cv_bs(1, qmr[1], qmr[0], qmr.cutoff, qmr.cutoff, duration=100, unit="ns")
         photon_loss_rates = [1,2,3]  # Should only have two loss rates
         time_unit = "ns"
 
@@ -181,7 +181,7 @@ def test_valid_photon_loss_rate_length(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
         init_circuit = c2qa.CVCircuit(qmr)
         init_circuit.cv_initialize(2, qmr[0])
-        init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        init_circuit.cv_bs(1, qmr[1], qmr[0], qmr.cutoff, qmr.cutoff, duration=100, unit="ns")
         photon_loss_rates = [1,2]  # Should only have two loss rates
         time_unit = "ns"
         
@@ -197,7 +197,7 @@ def test_noise_with_beamsplitter(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode)
         init_circuit = c2qa.CVCircuit(qmr)
         init_circuit.cv_initialize(2, qmr[0])
-        init_circuit.cv_bs(1, qmr[1], qmr[0], duration=100, unit="ns")
+        init_circuit.cv_bs(1, qmr[1], qmr[0], qmr.cutoff, qmr.cutoff, duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
@@ -602,8 +602,8 @@ def test_multi_qumode_loss_probability(capsys):
 
         circuit.cv_initialize(1, qmr[0])
         circuit.cv_initialize(1, qmr[1])
-        circuit.cv_bs(np.pi/4, qmr[0], qmr[1], duration=100, unit="ns")
-        circuit.cv_bs(-np.pi/4, qmr[0], qmr[1], duration=100, unit="ns")
+        circuit.cv_bs(np.pi/4, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff, duration=100, unit="ns")
+        circuit.cv_bs(-np.pi/4, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff, duration=100, unit="ns")
 
         photon_loss_rate = 10000000
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rate, circuit)

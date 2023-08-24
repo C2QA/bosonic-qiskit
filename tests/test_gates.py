@@ -66,7 +66,7 @@ def test_beamsplitter_once():
     circuit, qmr = create_unconditional()
 
     phi = random.random()
-    circuit.cv_bs(phi, qmr[0], qmr[1])
+    circuit.cv_bs(phi, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
 
@@ -108,8 +108,8 @@ def test_beamsplitter_twice():
     circuit, qmr = create_unconditional()
 
     phi = random.random()
-    circuit.cv_bs(phi, qmr[0], qmr[1])
-    circuit.cv_bs(-phi, qmr[0], qmr[1])
+    circuit.cv_bs(phi, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
+    circuit.cv_bs(-phi, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -299,7 +299,7 @@ def test_two_mode_squeezing_once():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_sq2(z, qmr[0], qmr[1])
+    circuit.cv_sq2(z, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_changed(state, result)
@@ -309,8 +309,8 @@ def test_two_mode_squeezing_twice():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_sq2(z, qmr[0], qmr[1])
-    circuit.cv_sq2(-z, qmr[0], qmr[1])
+    circuit.cv_sq2(z, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
+    circuit.cv_sq2(-z, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -327,11 +327,11 @@ def test_gates():
     circuit, qmr, qr = create_conditional()
 
     # Basic Gaussian Operations on a Resonator
-    circuit.cv_bs(phi, qmr[0], qmr[1])
+    circuit.cv_bs(phi, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
     circuit.cv_d(alpha, qmr[0], qmr.cutoff)
     circuit.cv_r(phi, qmr[0], qmr.cutoff)
     circuit.cv_sq(z, qmr[0], qmr.cutoff)
-    circuit.cv_sq2(z, qmr[0], qmr[1])
+    circuit.cv_sq2(z, qmr[0], qmr[1], qmr.cutoff, qmr.cutoff)
 
     # Hybrid qubit-cavity gates
     circuit.cv_c_d(alpha, qmr[0], qr[0])

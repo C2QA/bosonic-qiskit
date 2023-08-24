@@ -389,7 +389,7 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_sq2(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
+    def cv_sq2(self, theta, qumode_a, qumode_b, cutoff_a, cutoff_b, duration=100, unit="ns"):
         """Two-mode squeezing gate
 
         Args:
@@ -402,12 +402,12 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.s2, [theta], num_qubits=len(qumode_a) + len(qumode_b), label="S2", duration=duration, unit=unit
+                self.ops.s2, [theta], cutoffs=[cutoff_a, cutoff_b], num_qubits=len(qumode_a) + len(qumode_b), label="S2", duration=duration, unit=unit
             ),
             qargs=qumode_a + qumode_b,
         )
 
-    def cv_bs(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
+    def cv_bs(self, theta, qumode_a, qumode_b, cutoff_a, cutoff_b, duration=100, unit="ns"):
         """Two-mode beam splitter gate.
 
         Args:
@@ -422,6 +422,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.bs,
                 [theta],
+                cutoffs=[cutoff_a, cutoff_b],
                 num_qubits=len(qumode_a) + len(qumode_b),
                 label="BS",
                 duration=duration,
