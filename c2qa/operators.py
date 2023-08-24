@@ -62,7 +62,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def s(self, theta):
+    def s(self, theta, cutoff):
         """Single-mode squeezing operator
 
         Args:
@@ -71,8 +71,10 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        a_sqr = self.a * self.a
-        a_dag_sqr = self.a_dag * self.a_dag
+        a = self.get_a(cutoff)
+        a_dag = self.get_a_dag(cutoff)
+        a_sqr = a * a
+        a_dag_sqr = a_dag * a_dag
         arg = 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))
 
         return scipy.sparse.linalg.expm(arg)

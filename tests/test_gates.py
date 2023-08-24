@@ -278,7 +278,7 @@ def test_squeezing_once():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_sq(z, qmr[0])
+    circuit.cv_sq(z, qmr[0], qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_changed(state, result)
@@ -288,8 +288,8 @@ def test_squeezing_twice():
     circuit, qmr = create_unconditional()
 
     z = random.random()
-    circuit.cv_sq(z, qmr[0])
-    circuit.cv_sq(-z, qmr[0])
+    circuit.cv_sq(z, qmr[0], qmr.cutoff)
+    circuit.cv_sq(-z, qmr[0], qmr.cutoff)
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_unchanged(state, result)
@@ -330,7 +330,7 @@ def test_gates():
     circuit.cv_bs(phi, qmr[0], qmr[1])
     circuit.cv_d(alpha, qmr[0], qmr.cutoff)
     circuit.cv_r(phi, qmr[0], qmr.cutoff)
-    circuit.cv_sq(z, qmr[0])
+    circuit.cv_sq(z, qmr[0], qmr.cutoff)
     circuit.cv_sq2(z, qmr[0], qmr[1])
 
     # Hybrid qubit-cavity gates

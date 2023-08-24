@@ -372,7 +372,7 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_sq(self, theta, qumode, duration=100, unit="ns"):
+    def cv_sq(self, theta, qumode, cutoff, duration=100, unit="ns"):
         """Squeezing gate.
 
         Args:
@@ -384,7 +384,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.s, [theta], num_qubits=len(qumode), label="S", duration=duration, unit=unit
+                self.ops.s, [theta], cutoffs=[cutoff], num_qubits=len(qumode), label="S", duration=duration, unit=unit
             ),
             qargs=qumode,
         )

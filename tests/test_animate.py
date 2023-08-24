@@ -43,7 +43,7 @@ def __build_subcircuit():
     circuit_0.initialize([1,0], qbr)
 
     # Squeeze so we can visually see rotation
-    circuit_0.cv_sq(0.5, qmr[0])
+    circuit_0.cv_sq(0.5, qmr[0], qmr.cutoff)
 
     # Now initialize the qumode in a coherent state
     # cutoff = 2**num_qubits_per_qumode
