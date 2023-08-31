@@ -103,20 +103,10 @@ class CVCircuit(QuantumCircuit):
 
         self._calibrations = copy.deepcopy(circuit._calibrations)
         self._metadata = copy.deepcopy(circuit._metadata)
-
-    @property
-    def cutoff(self):
-        """Integer cutoff size."""
-        return self.qmregs[-1].cutoff
     
     def qumode_cutoff(self, qumode_index:int):
         """Return the qumode cutoff at the given index"""
         return self.qmregs[qumode_index].cutoff
-
-    @property
-    def num_qubits_per_qumode(self):
-        """Integer number of qubits to represent a qumode."""
-        return self.qmregs[-1].num_qubits_per_qumode
 
     @property
     def qumode_qubits(self):
