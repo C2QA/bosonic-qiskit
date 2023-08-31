@@ -334,7 +334,7 @@ class CVOperators:
         return scipy.sparse.csr_matrix(gate)
 
     
-    def pnr(self, max):
+    def pnr(self, max, cutoff):
         """Support gate for photon number readout (see Curtis et al., PRA (2021) and Wang et al., PRX (2020))
         
         Args:
@@ -343,12 +343,12 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        ket_n = numpy.zeros(self.cutoff_value)
+        ket_n = numpy.zeros(cutoff)
         projector = numpy.outer(ket_n, ket_n)
         # binary search
         for j in range(int(max / 2)):
-            for i in range(j, self.cutoff_value, max):
-                ket_n = numpy.zeros(self.cutoff_value)
+            for i in range(j, cutoff, max):
+                ket_n = numpy.zeros(cutoff)
                 # fill from right to left
                 ket_n[-(i+1)] = 1
                 projector += numpy.outer(ket_n, ket_n)
@@ -357,7 +357,7 @@ class CVOperators:
         arg = 1j * (-numpy.pi/2) * scipy.sparse.kron(xQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
 
-    def eswap(self, theta):
+    def eswap(self, theta, cutoff_a, cutoff_b):
         """Exponential SWAP operator
 
         Args:
@@ -367,10 +367,11 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        self.mat = numpy.zeros([self.cutoff_value * self.cutoff_value, self.cutoff_value * self.cutoff_value])
-        for j in range(self.cutoff_value):
-            for i in range(self.cutoff_value):
-                self.mat[i + (j * self.cutoff_value)][i * self.cutoff_value + j] = 1
+        # FIXME which cutoff values to use
+        self.mat = numpy.zeros([cutoff_a * cutoff_a, cutoff_a * cutoff_a])
+        for j in range(cutoff_a):
+            for i in range(cutoff_a):
+                self.mat[i + (j * cutoff_a)][i * cutoff_a + j] = 1
         self.sparse_mat = scipy.sparse.csr_matrix(self.mat).tocsc()
 
         arg = 1j * theta * self.sparse_mat
@@ -378,7 +379,7 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
 
-    def csq(self, theta):
+    def csq(self, theta, cutoff):
         """Single-mode squeezing operator
 
         Args:
@@ -387,8 +388,8 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        a_sqr = self.a * self.a
-        a_dag_sqr = self.a_dag * self.a_dag
+        a_sqr = self.get_a(cutoff) * self.get_a(cutoff)
+        a_dag_sqr = self.get_a_dag(cutoff) * self.get_a_dag(cutoff)
         arg = scipy.sparse.kron(zQB, 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))).tocsc()
 
         return scipy.sparse.linalg.expm(arg)

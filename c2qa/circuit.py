@@ -670,7 +670,7 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(
             ParameterizedUnitaryGate(
-                self.ops.pnr, [max], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
+                self.ops.pnr, [max], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -690,6 +690,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.eswap,
                 [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))],
                 num_qubits=len(qumode_a) + len(qumode_b),
                 label="eSWAP",
                 duration=duration,
@@ -711,7 +712,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.csq, [theta], num_qubits=len(qumode) + 1, label="cS", duration=duration, unit=unit
+                self.ops.csq, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cS", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
