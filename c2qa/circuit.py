@@ -104,9 +104,13 @@ class CVCircuit(QuantumCircuit):
         self._calibrations = copy.deepcopy(circuit._calibrations)
         self._metadata = copy.deepcopy(circuit._metadata)
     
-    def qumode_cutoff(self, qumode_index:int):
+    def get_qumode_cutoff(self, qumode_index: int):
         """Return the qumode cutoff at the given index"""
         return self.qmregs[qumode_index].cutoff
+
+    def get_qumode_num_qubits(self, qumode_index: int):
+        """Return the number of qubits in the given qumode index"""
+        return self.qmregs[qumode_index].num_qubits_per_qumode
 
     @property
     def qumode_qubits(self):
@@ -241,10 +245,10 @@ class CVCircuit(QuantumCircuit):
             for qumode in modes:
                 qumode_index = self.get_qubit_qumode_index(qumode[0])
 
-                if params >= self.qumode_cutoff(qumode_index):
+                if params >= self.get_qumode_cutoff(qumode_index):
                     raise ValueError("The given Fock state is greater than the cutoff.")
 
-                value = np.zeros((self.qumode_cutoff(qumode_index),), dtype=np.complex_)
+                value = np.zeros((self.get_qumode_cutoff(qumode_index),), dtype=np.complex_)
                 value[params] = 1 + 0j
 
                 super().initialize(value, qumode)
@@ -252,11 +256,11 @@ class CVCircuit(QuantumCircuit):
             for qumode in modes:
                 qumode_index = self.get_qubit_qumode_index(qumode[0])
 
-                if len(params) > self.qumode_cutoff(qumode_index):
+                if len(params) > self.get_qumode_cutoff(qumode_index):
                     raise ValueError("len(params) exceeds the cutoff.")
 
                 params = np.array(params) / np.linalg.norm(np.array(params))
-                amplitudes = np.zeros((self.qumode_cutoff(qumode_index),), dtype=np.complex_)
+                amplitudes = np.zeros((self.get_qumode_cutoff(qumode_index),), dtype=np.complex_)
                 for ind in range(len(params)):
                     amplitudes[ind] = complex(params[ind])
 
