@@ -400,7 +400,7 @@ class CVOperators:
         arg = 1j * phi * scipy.sparse.kron(xQB, idQB)
         return scipy.sparse.linalg.expm(arg)
 
-    def c_multiboson_sampling(self, max):
+    def c_multiboson_sampling(self, max, cutoff):
         """SNAP gate creation for multiboson sampling purposes.
         
         Args:
@@ -411,7 +411,7 @@ class CVOperators:
         """
         print(max)
 
-        return self.eye
+        return self.get_eye(cutoff)
 
     def gate_from_matrix(self, matrix):
         """Converts matrix into gate. Called using ParameterizedUnitaryGate.

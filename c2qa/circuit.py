@@ -720,7 +720,13 @@ class CVCircuit(QuantumCircuit):
     def cv_testqubitorderf(self, phi, qubit_1, qubit_2, duration=100, unit="ns"):
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.testqubitorderf, [phi], label="testqubitorderf", num_qubits=2, duration=duration, unit=unit
+                self.ops.testqubitorderf, 
+                [phi], 
+                label="testqubitorderf", 
+                cutoffs=[], 
+                num_qubits=2, 
+                duration=duration, 
+                unit=unit
             ),
             qargs=[qubit_1] + [qubit_2],
         )
@@ -828,10 +834,12 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
+        cutoff = QumodeRegister.calculate_cutoff(len(qumode))
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.get_eye(QumodeRegister.calculate_cutoff(len(qumode))), 
-                [], 
+                self.ops.get_eye, 
+                [cutoff], 
+                cutoffs=[], 
                 num_qubits=len(qumode), 
                 label="delay(" + str(duration) + " " + unit +")", 
                 duration=duration, 
@@ -851,7 +859,13 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(
             ParameterizedUnitaryGate(
-                self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
+                self.ops.c_multiboson_sampling, 
+                [max], 
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], 
+                num_qubits=len(qumode) + 1, 
+                label="c_multiboson_sampling", 
+                duration=duration, 
+                unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -900,9 +914,20 @@ class CVCircuit(QuantumCircuit):
         if isinstance(matrix, np.ndarray):
             matrix = matrix.tolist()
 
+        # TODO Is it safe to ignore cutoff, assuming provided matrix is correct?
+        cutoffs = []
+        # for qumode in qumodes:
+        #     cutoffs.append(QumodeRegister.calculate_cutoff(len(qumode)))
+
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.gate_from_matrix, [matrix], num_qubits=len(qumodes) + len(qubits), label="gate_from_matrix", duration=duration, unit=unit
+                self.ops.gate_from_matrix, 
+                [matrix], 
+                cutoffs=cutoffs,
+                num_qubits=len(qumodes) + len(qubits), 
+                label="gate_from_matrix", 
+                duration=duration, 
+                unit=unit
             ),
             qargs=qumodes + qubits,
         )

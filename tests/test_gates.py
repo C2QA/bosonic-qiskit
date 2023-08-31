@@ -190,19 +190,20 @@ def test_cond_displacement_gate_vs_two_separate():
     state_cnd = result.get_statevector(circuit)
 
     # Circuit using two controlled unitaries
+    cutoff = c2qa.QumodeRegister.calculate_cutoff(len(qmr[0]))
     qmr = c2qa.QumodeRegister(1, 2)
     qr = qiskit.QuantumRegister(1)
     cr = qiskit.ClassicalRegister(1)
     circuit = c2qa.CVCircuit(qmr, qr, cr)
     circuit.cv_initialize(0, qmr[0])  # qr[0] and cr[0] will init to zero
     circuit.append(
-        UnitaryGate(circuit.ops.d(alpha).toarray()).control(
+        UnitaryGate(circuit.ops.d(alpha, cutoff).toarray()).control(
             num_ctrl_qubits=1, ctrl_state=0
         ),
         [qr[0]] + qmr[0],
     )
     circuit.append(
-        UnitaryGate(circuit.ops.d(-alpha).toarray()).control(
+        UnitaryGate(circuit.ops.d(-alpha, cutoff).toarray()).control(
             num_ctrl_qubits=1, ctrl_state=1
         ),
         [qr[0]] + qmr[0],
