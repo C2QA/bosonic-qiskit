@@ -830,7 +830,12 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.get_eye(cutoff), [], num_qubits=len(qumode), label="delay(" + str(duration) + " " + unit +")", duration=duration, unit=unit
+                self.ops.get_eye(QumodeRegister.calculate_cutoff(len(qumode))), 
+                [], 
+                num_qubits=len(qumode), 
+                label="delay(" + str(duration) + " " + unit +")", 
+                duration=duration, 
+                unit=unit
             ),
             qargs=qumode,
         )
