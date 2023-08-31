@@ -176,6 +176,7 @@ def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, seg
             ParameterizedUnitaryGate(
                 inst.op_func,
                 params=params,
+                cutoffs=inst.cutoffs,
                 num_qubits=inst.num_qubits,
                 label=inst.label,
                 duration=duration,
