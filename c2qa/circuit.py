@@ -600,20 +600,21 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
+        cutoff = QumodeRegister.calculate_cutoff(len(qumode))
         if isinstance(n,int):
-            if n > self.cutoff:
+            if n > cutoff:
                 ValueError("Fock state specified by n exceeds the cutoff.")
             if qubit is None:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.snap, [theta, n], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                        self.ops.snap, [theta, n], cutoffs=[cutoff], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode,
                 )
             else:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.csnap, [theta, n], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                        self.ops.csnap, [theta, n], cutoffs=[cutoff], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode + [qubit],
                 )
@@ -621,14 +622,14 @@ class CVCircuit(QuantumCircuit):
             if qubit is None:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.multisnap, theta + n, cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                        self.ops.multisnap, theta + n, cutoffs=[cutoff], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode,
                 )
             else:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.multicsnap, theta + n, cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                        self.ops.multicsnap, theta + n, cutoffs=[cutoff], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode + [qubit],
                 )
