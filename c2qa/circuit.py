@@ -829,18 +829,23 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        cutoff = QumodeRegister.calculate_cutoff(len(qumode))
         return self.append(
             ParameterizedUnitaryGate(
                 self.ops.get_eye, 
-                [cutoff], 
-                cutoffs=[], 
+                [], 
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
                 num_qubits=len(qumode), 
                 label="delay(" + str(duration) + " " + unit +")", 
                 duration=duration, 
                 unit=unit
             ),
             qargs=qumode,
+        )
+        return self.cv_gate_from_matrix(
+            matrix=matrix,
+            qumodes=[qumode],
+            duration=duration,
+            unit=unit
         )
 
     def cv_c_multiboson_sampling(self, max, qumode, qubit, duration=1, unit="us"):
@@ -865,7 +870,7 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns"):
+    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns", label:str="gate_from_matrix"):
         """Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically 
         implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may 
         not be applied in a way that is physical.
@@ -920,7 +925,7 @@ class CVCircuit(QuantumCircuit):
                 [matrix], 
                 cutoffs=cutoffs,
                 num_qubits=len(qumodes) + len(qubits), 
-                label="gate_from_matrix", 
+                label=label, 
                 duration=duration, 
                 unit=unit
             ),

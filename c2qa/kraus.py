@@ -135,13 +135,16 @@ class PhotonLossNoisePass(LocalNoisePass):
 
         self._qumode_qubit_indices = circuit.get_qubit_indices(self._qumodes)
 
-        self._qumode_register_indices = {circuit.get_qubit_qumode_index(qubit) for qubit in self._qumodes}
-
-        # TODO
-        # control break on self._qumodes, each change should be multiple of register's num_qubits_per_qumode, sum these to get _num_qumodes
-
-        # FIXME we could have multiple qumodes from the same QumodeRegister
-        self._num_qumodes = len(self._qumode_register_indices)
+        # Calculate the number of qumodes based on the number of times the QumodeRegister index changes for the given qumode qubits
+        self._qumode_register_indices = set()
+        previous_qmr = -1
+        self._num_qumodes = 0
+        for qubit in self._qumodes:
+            qmr_index = circuit.get_qubit_qumode_index(qubit)
+            self._qumode_register_indices.add(qmr_index)
+            if previous_qmr != qmr_index:
+                previous_qmr = qmr_index
+                self._num_qumodes += 1
 
         if isinstance(photon_loss_rates, list):
             self._photon_loss_rates = photon_loss_rates
@@ -180,7 +183,7 @@ class PhotonLossNoisePass(LocalNoisePass):
                 return None
 
             # Qiskit `delay` gates are always for one qubit, see https://qiskit.org/documentation/stubs/qiskit.circuit.QuantumCircuit.delay.html            
-            if op.name == "delay":
+            if op.name.startswith("delay"):
                 warnings.warn("Qiskit applies delays as single qubit gates. Qumode PhotonLossNoisePass will not be applied")
                 return None
 
