@@ -136,15 +136,17 @@ class PhotonLossNoisePass(LocalNoisePass):
         self._qumode_qubit_indices = circuit.get_qubit_indices(self._qumodes)
 
         # Calculate the number of qumodes based on the number of times the QumodeRegister index changes for the given qumode qubits
-        self._qumode_register_indices = set()
-        previous_qmr = -1
-        self._num_qumodes = 0
+        qmr_to_num_qubits = {}
         for qubit in self._qumodes:
             qmr_index = circuit.get_qubit_qumode_index(qubit)
-            self._qumode_register_indices.add(qmr_index)
-            if previous_qmr != qmr_index:
-                previous_qmr = qmr_index
-                self._num_qumodes += 1
+            if qmr_index not in qmr_to_num_qubits:
+                qmr_to_num_qubits[qmr_index] = 0
+            qmr_to_num_qubits[qmr_index] += 1
+        
+        self._num_qumodes = 0
+        for qmr_index, num_qubits in qmr_to_num_qubits.items():
+            num_qubits_per_qumode = circuit.get_qumode_num_qubits(qmr_index)
+            self._num_qumodes += num_qubits // num_qubits_per_qumode
 
         if isinstance(photon_loss_rates, list):
             self._photon_loss_rates = photon_loss_rates
