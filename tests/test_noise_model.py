@@ -43,7 +43,7 @@ def test_noise_model(capsys):
             time=time, 
             circuit=circuit,
             op_qubits=[0, 1, 2],
-            qumode_indices=[0, 1]
+            qumode_qubit_indices=[0, 1]
         )
 
         print("kraus")
@@ -67,7 +67,7 @@ def test_kraus_operators(capsys):
             time=time, 
             circuit=circuit,
             op_qubits=[0, 1, 2],
-            qumode_indices=[0, 1]
+            qumode_qubit_indices=[0, 1]
         )
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
@@ -120,7 +120,7 @@ def test_beamsplitter_kraus_operators(capsys):
             time=time, 
             circuit=circuit,
             op_qubits=[2, 3, 0, 1],
-            qumode_indices=[0, 1, 2, 3]
+            qumode_qubit_indices=[0, 1, 2, 3]
         )
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
