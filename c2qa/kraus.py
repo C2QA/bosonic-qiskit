@@ -46,8 +46,9 @@ def calculate_kraus(
     loss_rate_index = 0
     for op_qubit in op_qubits:
         if qumode_qubit_indices and op_qubit in qumode_qubit_indices:
-            qmr_index = circuit.get_qmr_index(circuit.qubits[op_qubit])
-            qumode_index = circuit.qmregs[qmr_index].get_qumode_index(op_qubit)
+            qubit = circuit.qubits[op_qubit]
+            qmr_index = circuit.get_qmr_index(qubit)
+            qumode_index = circuit.qmregs[qmr_index].get_qumode_index(qubit)
             unique_index = f"{qmr_index}-{qumode_index}"
             
             cutoff = circuit.get_qmr_cutoff(qmr_index)

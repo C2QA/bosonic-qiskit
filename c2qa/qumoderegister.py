@@ -32,8 +32,9 @@ class QumodeRegister:
     def calculate_cutoff(num_qubits_per_qumode: int):
         return 2**num_qubits_per_qumode
 
-    def get_qumode_index(self, qubit_index):
-        """Get the qumode index for the given qubit index in this register"""
+    def get_qumode_index(self, qubit):
+        """Get the qumode index for the given qubit in this register"""
+        qubit_index = self.qreg.index(qubit)
         return qubit_index // self.num_qubits_per_qumode
 
     def __iter__(self):
