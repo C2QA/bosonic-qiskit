@@ -113,7 +113,7 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME which cutoff to use
+        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
         arg = (numpy.conjugate(theta * 1j) * self.get_a12_dag(cutoff_a)) - (theta * 1j * self.get_a12(cutoff_a))
 
         return scipy.sparse.linalg.expm(arg)
@@ -128,7 +128,7 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME which cutoff to use
+        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
         arg = theta * self.get_a1dag2(cutoff_a) - numpy.conj(theta) * self.get_a12dag(cutoff_a)
 
         return scipy.sparse.linalg.expm(arg)
@@ -214,7 +214,7 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        # FIXME which cutoff to use
+        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
         argm = theta * self.get_a1dag2(cutoff_a) - numpy.conjugate(theta) * self.get_a12dag(cutoff_a)
         arg = scipy.sparse.kron(zQB, argm).tocsc()
 
@@ -230,7 +230,7 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME which cutoff to use
+        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
         Sx = (self.get_a1(cutoff_a) * self.get_a2_dag(cutoff_a) + self.get_a1_dag(cutoff_a) * self.get_a2(cutoff_a))/2
         Sy = (self.get_a1(cutoff_a) * self.get_a2_dag(cutoff_a) - self.get_a1_dag(cutoff_a) * self.get_a2(cutoff_a))/(2*1j)
         Sz = (self.get_a2_dag(cutoff_a) * self.get_a2(cutoff_a) - self.get_a1_dag(cutoff_a) * self.get_a1(cutoff_a))/2
