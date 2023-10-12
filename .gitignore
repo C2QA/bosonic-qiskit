@@ -149,3 +149,5 @@ tests/**/*.gif
 tutorials/**/*.gif
 tests/**/*.apng
 tutorials/**/*.apng
+
+apidocs/
