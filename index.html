@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  
+
+  <head>
+    
+    <title>c2qa</title>
+    <meta name="generator" content="pydoctor 23.9.0"> 
+        
+    </meta>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1" />
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="apidocs.css" />
+    <link rel="stylesheet" type="text/css" href="extra.css" />
+</head>
+
+  <body>
+
+    
+
+    <nav class="navbar navbar-default mainnavbar">
+      
+  
+  <div class="container-fluid">
+
+
+    <div class="navbar-header">
+      
+      <div class="navlinks">
+        <span class="navbar-brand">
+          <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a> <a href="index.html">API Documentation</a>
+        </span>
+
+        <a href="moduleIndex.html">
+          Modules
+        </a>
+
+        <a href="classIndex.html">
+          Classes
+        </a>
+
+        <a href="nameIndex.html">
+          Names
+        </a>
+
+        <div id="search-box-container">
+          <div class="input-group">
+            <input id="search-box" type="search" name="search-query" placeholder="Search..." aria-label="Search" minlength="2" class="form-control" autocomplete="off" />
+            
+            <span class="input-group-btn">
+              <a style="display: none;" class="btn btn-default" id="search-clear-button" title="Clear" onclick="clearSearch()"><img src="fonts/x-circle.svg" alt="Clear" /></a>
+              <a class="btn btn-default" id="search-help-button" title="Help" onclick="toggleSearchHelpText()"><img src="fonts/info.svg" alt="Help" /></a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="search-results-container" style="display: none;">
+        
+        <div id="search-buttons">
+          <span class="label label-default" id="search-docstrings-button">
+          <label class="checkbox-inline">
+            <input type="checkbox" id="toggle-search-in-docstrings-checkbox" value="false" onclick="toggleSearchInDocstrings()">
+              search in docstrings
+            </input>
+          </label>
+          </span>
+          
+        </div>
+        
+        <noscript>
+            <h1>Cannot search: JavaScript is not supported/enabled in your browser.</h1>
+        </noscript>
+
+        <div class="hint" id="search-help-box">
+          <p class="rst-last">
+      
+            Search bar offers the following options:
+            <ul>   
+                <li>
+                  <strong>Term presence.</strong> The below example searches for documents that 
+                    must contain “foo”, might contain “bar” and must not contain “baz”: <code>+foo bar -baz</code>
+                </li> 
+
+                <li>
+                  <strong>Wildcards.</strong> The below example searches for documents with words beginning with “foo”: <code>foo*</code>
+                </li> 
+
+                <li>
+                  <strong>Search in specific fields.</strong> The following search matches all objects 
+                  in "twisted.mail" that matches “search”: <code>+qname:twisted.mail.* +search</code>
+
+                  <p>
+                    Possible fields: 'name', 'qname' (fully qualified name), 'docstring', and 'kind'.
+                    Last two fields are only applicable if "search in docstrings" is enabled.
+                  </p>
+                </li>
+
+                <li>
+                  <strong>Fuzzy matches.</strong> The following search matches all documents 
+                  that have a word within 1 edit distance of “foo”: <code>foo~1</code>
+                </li>
+            </ul>
+
+          </p>
+        </div>
+
+        <div id="search-status"> </div>
+
+        <div class="warning" id="search-warn-box" style="display: none;">
+          <p class="rst-last"><span id="search-warn"></span></p>
+        </div>
+
+        <table id="search-results">
+          <!-- Filled dynamically by JS -->
+        </table>
+        
+        <div style="margin-top: 8px;">
+          <p>Results provided by <a href="https://lunrjs.com">Lunr.js</a></p>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</nav>
+    
+    <div class="container-fluid">
+
+      <!-- Side navigation -->
+      <div class="sidebarcontainer" style="display: none;">
+        
+        <div class="sidebar"><nav class="sidebar">
+  
+
+  <div>
+
+      <div class="thingTitle">
+        <span>Package</span>
+        <code class="thisobject"><a href="index.html" class="internal-link" title="This package">c2qa</a></code> 
+      </div>
+      
+      <div>
+        
+
+        <div class="childrenKindTitle">Modules</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.animate.html" class="internal-link" title="c2qa.animate">animate</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.circuit.html" class="internal-link" title="c2qa.circuit">circuit</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.discretize.html" class="internal-link" title="c2qa.discretize">discretize</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.kraus.html" class="internal-link" title="c2qa.kraus">kraus</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.operators.html" class="internal-link" title="c2qa.operators">operators</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.parameterized_unitary_gate.html" class="internal-link" title="c2qa.parameterized_unitary_gate">parameterized<wbr></wbr>_unitary<wbr></wbr>_gate</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.qumoderegister.html" class="internal-link" title="c2qa.qumoderegister">qumoderegister</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.util.html" class="internal-link" title="c2qa.util">util</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.wigner.html" class="internal-link" title="c2qa.wigner">wigner</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+        
+
+        
+         
+
+        
+         
+
+        
+         
+
+        
+         
+        
+      </div>
+  </div>
+
+</nav>
+        </div>
+        <div id="collapseSideBar">
+          <a class="btn btn-link" onclick="toggleSideBarCollapse()" title="Toggle Sidebar Collapse">
+          </a>
+        </div> 
+        <script src="sidebartoggle.js" type="text/javascript"></script>
+       
+      </div>
+
+      <div id="main" class="">
+        
+
+        
+
+        <div class="page-header">
+          <h1 class="package"><code><code><a href="index.html" class="internal-link">c2qa</a></code></code></h1>
+          <div id="showPrivate">
+            <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
+          </div>
+        </div>
+
+        <div class="categoryHeader">
+          package documentation
+        </div>
+
+        <div class="extrasDocstring">
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/__init__.py" class="sourceLink">(source)</a>
+          <p></p>
+        </div>
+
+        <div class="moduleDocstring">
+          <div><p>Top-level package for bosonic-qiskit.</p></div>
+        </div>
+
+        <div id="splitTables">
+          <table class="children sortable" id="id1">
+  
+  
+  <tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.animate.html" class="internal-link" title="c2qa.animate">animate</a></code></td>
+    <td><span class="undocumented">No module docstring; 3/7 functions documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.circuit.html" class="internal-link" title="c2qa.circuit">circuit</a></code></td>
+    <td><span class="undocumented">No module docstring; 1/1 class documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.discretize.html" class="internal-link" title="c2qa.discretize">discretize</a></code></td>
+    <td><span class="undocumented">No module docstring; 7/7 functions documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.kraus.html" class="internal-link" title="c2qa.kraus">kraus</a></code></td>
+    <td><span class="undocumented">No module docstring; 1/3 function, 1/1 class documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.operators.html" class="internal-link" title="c2qa.operators">operators</a></code></td>
+    <td><span class="undocumented">No module docstring; 0/6 variable, 1/1 class documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.parameterized_unitary_gate.html" class="internal-link" title="c2qa.parameterized_unitary_gate">parameterized<wbr></wbr>_unitary<wbr></wbr>_gate</a></code></td>
+    <td><span class="undocumented">No module docstring; 2/2 functions, 1/1 class documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.qumoderegister.html" class="internal-link" title="c2qa.qumoderegister">qumoderegister</a></code></td>
+    <td><span class="undocumented">No module docstring; 2/2 classes documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.util.html" class="internal-link" title="c2qa.util">util</a></code></td>
+    <td><span class="undocumented">No module docstring; 16/17 functions documented</span></td>
+  </tr><tr class="module">
+    
+    <td>Module</td>
+    <td><code><a href="c2qa.wigner.html" class="internal-link" title="c2qa.wigner">wigner</a></code></td>
+    <td><span class="undocumented">No module docstring; 9/11 functions documented</span></td>
+  </tr>
+</table>
+          
+
+            
+        </div>
+
+        <div id="childList">
+          
+        </div>
+      
+      </div>
+    </div>
+
+    <footer class="navbar navbar-default">
+
+  
+  <div class="container">
+    <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
+  generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
+    23.9.0 at 2023-10-12 22:04:03.
+  </div>
+
+  <!-- Search related scripts needs to be loaded at the end of HTML 
+    parsing not to introduce overhead and display HTML data asap -->
+  <script src="ajax.js" type="text/javascript"></script>
+  <script src="searchlib.js" type="text/javascript"></script>
+  <script src="search.js" type="text/javascript"></script>
+
+</footer>
+  
+    <script src="pydoctor.js" type="text/javascript"></script>
+
+  </body>
+</html>

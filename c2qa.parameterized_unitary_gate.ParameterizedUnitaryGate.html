@@ -1,0 +1,779 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  
+
+  <head>
+    
+    <title>c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate</title>
+    <meta name="generator" content="pydoctor 23.9.0"> 
+        
+    </meta>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1" />
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="apidocs.css" />
+    <link rel="stylesheet" type="text/css" href="extra.css" />
+</head>
+
+  <body>
+
+    
+
+    <nav class="navbar navbar-default mainnavbar">
+      
+  
+  <div class="container-fluid">
+
+
+    <div class="navbar-header">
+      
+      <div class="navlinks">
+        <span class="navbar-brand">
+          <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a> <a href="index.html">API Documentation</a>
+        </span>
+
+        <a href="moduleIndex.html">
+          Modules
+        </a>
+
+        <a href="classIndex.html">
+          Classes
+        </a>
+
+        <a href="nameIndex.html">
+          Names
+        </a>
+
+        <div id="search-box-container">
+          <div class="input-group">
+            <input id="search-box" type="search" name="search-query" placeholder="Search..." aria-label="Search" minlength="2" class="form-control" autocomplete="off" />
+            
+            <span class="input-group-btn">
+              <a style="display: none;" class="btn btn-default" id="search-clear-button" title="Clear" onclick="clearSearch()"><img src="fonts/x-circle.svg" alt="Clear" /></a>
+              <a class="btn btn-default" id="search-help-button" title="Help" onclick="toggleSearchHelpText()"><img src="fonts/info.svg" alt="Help" /></a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="search-results-container" style="display: none;">
+        
+        <div id="search-buttons">
+          <span class="label label-default" id="search-docstrings-button">
+          <label class="checkbox-inline">
+            <input type="checkbox" id="toggle-search-in-docstrings-checkbox" value="false" onclick="toggleSearchInDocstrings()">
+              search in docstrings
+            </input>
+          </label>
+          </span>
+          
+        </div>
+        
+        <noscript>
+            <h1>Cannot search: JavaScript is not supported/enabled in your browser.</h1>
+        </noscript>
+
+        <div class="hint" id="search-help-box">
+          <p class="rst-last">
+      
+            Search bar offers the following options:
+            <ul>   
+                <li>
+                  <strong>Term presence.</strong> The below example searches for documents that 
+                    must contain “foo”, might contain “bar” and must not contain “baz”: <code>+foo bar -baz</code>
+                </li> 
+
+                <li>
+                  <strong>Wildcards.</strong> The below example searches for documents with words beginning with “foo”: <code>foo*</code>
+                </li> 
+
+                <li>
+                  <strong>Search in specific fields.</strong> The following search matches all objects 
+                  in "twisted.mail" that matches “search”: <code>+qname:twisted.mail.* +search</code>
+
+                  <p>
+                    Possible fields: 'name', 'qname' (fully qualified name), 'docstring', and 'kind'.
+                    Last two fields are only applicable if "search in docstrings" is enabled.
+                  </p>
+                </li>
+
+                <li>
+                  <strong>Fuzzy matches.</strong> The following search matches all documents 
+                  that have a word within 1 edit distance of “foo”: <code>foo~1</code>
+                </li>
+            </ul>
+
+          </p>
+        </div>
+
+        <div id="search-status"> </div>
+
+        <div class="warning" id="search-warn-box" style="display: none;">
+          <p class="rst-last"><span id="search-warn"></span></p>
+        </div>
+
+        <table id="search-results">
+          <!-- Filled dynamically by JS -->
+        </table>
+        
+        <div style="margin-top: 8px;">
+          <p>Results provided by <a href="https://lunrjs.com">Lunr.js</a></p>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</nav>
+    
+    <div class="container-fluid">
+
+      <!-- Side navigation -->
+      <div class="sidebarcontainer" style="display: none;">
+        
+        <div class="sidebar"><nav class="sidebar">
+  
+
+  <div>
+
+      <div class="thingTitle">
+        <span>Class</span>
+        <code class="thisobject"><a href="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.html" class="internal-link" title="This class"><wbr></wbr>Parameterized<wbr></wbr>Unitary<wbr></wbr>Gate</a></code> 
+      </div>
+      
+      <div>
+        
+
+        
+         
+
+        
+        
+
+        <div class="childrenKindTitle">Methods</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#__array__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__array__">__array__</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#__init__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">__init__</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#calculate_matrix" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.calculate_matrix">calculate<wbr></wbr>_matrix</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#validate_parameter" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.validate_parameter">validate<wbr></wbr>_parameter</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_define" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._define">_define</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+
+        <div class="childrenKindTitle">Attributes</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#definition" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.definition">definition</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#discretized_param_indices" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.discretized_param_indices">discretized<wbr></wbr>_param<wbr></wbr>_indices</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#duration" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.duration">duration</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#op_func" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.op_func">op<wbr></wbr>_func</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#unit" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.unit">unit</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_parameterized" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._parameterized">_parameterized</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+        
+      </div>
+  </div><div>
+
+      <div class="thingTitle">
+        <span>Module</span>
+        <code><a href="c2qa.parameterized_unitary_gate.html" class="internal-link" title="The parent of this class">parameterized<wbr></wbr>_unitary<wbr></wbr>_gate</a></code> 
+      </div>
+      
+      <div>
+        
+
+        
+         
+
+        <div class="childrenKindTitle">Classes</div>
+        <ul>
+    
+    <li class=" thisobject">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.html" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate"><wbr></wbr>Parameterized<wbr></wbr>Unitary<wbr></wbr>Gate</a></code>
+            </div>
+        
+
+    </li>
+</ul>
+
+        <div class="childrenKindTitle">Functions</div>
+        <ul>
+    
+    <li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.parameterized_unitary_gate.html#__calculate_segment_duration" class="internal-link" title="c2qa.parameterized_unitary_gate.__calculate_segment_duration">__calculate<wbr></wbr>_segment<wbr></wbr>_duration</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.parameterized_unitary_gate.html#__calculate_segment_params" class="internal-link" title="c2qa.parameterized_unitary_gate.__calculate_segment_params">__calculate<wbr></wbr>_segment<wbr></wbr>_params</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+
+        
+         
+
+        
+         
+        
+      </div>
+  </div>
+
+</nav>
+        </div>
+        <div id="collapseSideBar">
+          <a class="btn btn-link" onclick="toggleSideBarCollapse()" title="Toggle Sidebar Collapse">
+          </a>
+        </div> 
+        <script src="sidebartoggle.js" type="text/javascript"></script>
+       
+      </div>
+
+      <div id="main" class="">
+        
+
+        
+
+        <div class="page-header">
+          <h1 class="class"><code><code><a href="index.html" class="internal-link">c2qa</a></code><wbr></wbr>.<code><a href="c2qa.parameterized_unitary_gate.html" class="internal-link" title="c2qa.parameterized_unitary_gate">parameterized_unitary_gate</a></code><wbr></wbr>.<code><a href="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.html" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate">ParameterizedUnitaryGate</a></code></code></h1>
+          <div id="showPrivate">
+            <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
+          </div>
+        </div>
+
+        <div class="categoryHeader">
+          class documentation
+        </div>
+
+        <div class="extrasDocstring">
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">ParameterizedUnitaryGate</span>(Gate): <a href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L11" class="sourceLink">(source)</a></code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">ParameterizedUnitaryGate(op_func, params, num_qubits, label, ...)</a></code></p>
+          <p><a href="classIndex.html#c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate">View In Hierarchy</a></p>
+        </div>
+
+        <div class="moduleDocstring">
+          <div><p>UnitaryGate sublcass that stores the operator matrix for later reference by animation utility.</p></div>
+        </div>
+
+        <div id="splitTables">
+          <table class="children sortable" id="id11">
+  
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#__array__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__array__">__array__</a></code></td>
+    <td>Call the operator function to build the array using the bound parameter values.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#__init__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">__init__</a></code></td>
+    <td>Initialize ParameterizedUnitaryGate</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#calculate_matrix" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.calculate_matrix">calculate<wbr></wbr>_matrix</a></code></td>
+    <td>Calculate the operator matrix by executing the selected function. Increment the parameters based upon the current and total steps.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#validate_parameter" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.validate_parameter">validate<wbr></wbr>_parameter</a></code></td>
+    <td>Gate parameters should be int, float, or ParameterExpression</td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#definition" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.definition">definition</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#discretized_param_indices" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.discretized_param_indices">discretized<wbr></wbr>_param<wbr></wbr>_indices</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#duration" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.duration">duration</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#op_func" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.op_func">op<wbr></wbr>_func</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#unit" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.unit">unit</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><code><a href="#_define" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._define">_define</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_parameterized" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._parameterized">_parameterized</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr>
+</table>
+          
+
+            
+        </div>
+
+        <div id="childList">
+          <div class="basemethod">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__array__">
+    
+  </a>
+  <a name="__array__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">__array__</span><span class="function-signature">(self, dtype=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L41">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#__array__" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__array__">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Call the operator function to build the array using the bound parameter values.</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">__init__</span><span class="function-signature">(self, op_func, params, num_qubits, label=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>, discretized_param_indices: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> = [])</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L14">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#__init__" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Initialize ParameterizedUnitaryGate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op<wbr></wbr>_func:</span><code>function</code></td><td class="fieldArgDesc">function to build operator matrix</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params:</span><code>List</code></td><td class="fieldArgDesc">List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">num<wbr></wbr>_qubits:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">label:</span><code><a href="https://docs.python.org/3/library/string.html#module-string" class="intersphinx-link">string</a></code>, <em>optional</em></td><td class="fieldArgDesc">Gate name. Defaults to None.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">Duration of gate used for noise modeling. Defaults to 100.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit:</span><code><a href="https://docs.python.org/3/library/string.html#module-string" class="intersphinx-link">string</a></code>, <em>optional</em></td><td class="fieldArgDesc">Unit of duration (only supports those allowed by Qiskit).</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">discretized<wbr></wbr>_param<wbr></wbr>_indices:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of int indices into self.params for parameters to be discretized. An empty list will discretize all params.</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.calculate_matrix">
+    
+  </a>
+  <a name="calculate_matrix">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">calculate_matrix</span><span class="function-signature">(self, current_step: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, total_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L89">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#calculate_matrix" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.calculate_matrix">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Calculate the operator matrix by executing the selected function.
+Increment the parameters based upon the current and total steps.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">current<wbr></wbr>_step:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">Current step within total_steps. Defaults to 1.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">total<wbr></wbr>_steps:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">Total steps to increment parameters. Defaults to 1.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">keep<wbr></wbr>_state:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>ndarray</code></td><td class="fieldArgDesc">operator matrix</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.validate_parameter">
+    
+  </a>
+  <a name="validate_parameter">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">validate_parameter</span><span class="function-signature">(self, parameter)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L76">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#validate_parameter" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.validate_parameter">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Gate parameters should be int, float, or ParameterExpression</p></div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.definition">
+    
+  </a>
+  <a name="definition">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">definition</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L71">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#definition" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.definition">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.discretized_param_indices">
+    
+  </a>
+  <a name="discretized_param_indices">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">discretized_param_indices</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L39">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#discretized_param_indices" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.discretized_param_indices">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.duration">
+    
+  </a>
+  <a name="duration">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">duration</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L37">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#duration" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.duration">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.op_func">
+    
+  </a>
+  <a name="op_func">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">op_func</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L30">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#op_func" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.op_func">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.unit">
+    
+  </a>
+  <a name="unit">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">unit</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L38">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#unit" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.unit">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="basemethod private">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._define">
+    
+  </a>
+  <a name="_define">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">_define</span><span class="function-signature">(self)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L60">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_define" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._define">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._parameterized">
+    
+  </a>
+  <a name="_parameterized">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_parameterized</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/parameterized_unitary_gate.py#L32">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_parameterized" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate._parameterized">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div>
+        </div>
+      
+      </div>
+    </div>
+
+    <footer class="navbar navbar-default">
+
+  
+  <div class="container">
+    <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
+  generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
+    23.9.0 at 2023-10-12 22:04:03.
+  </div>
+
+  <!-- Search related scripts needs to be loaded at the end of HTML 
+    parsing not to introduce overhead and display HTML data asap -->
+  <script src="ajax.js" type="text/javascript"></script>
+  <script src="searchlib.js" type="text/javascript"></script>
+  <script src="search.js" type="text/javascript"></script>
+
+</footer>
+  
+    <script src="pydoctor.js" type="text/javascript"></script>
+
+  </body>
+</html>

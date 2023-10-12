@@ -1,0 +1,2763 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  
+
+  <head>
+    
+    <title>c2qa.circuit.CVCircuit</title>
+    <meta name="generator" content="pydoctor 23.9.0"> 
+        
+    </meta>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1" />
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="apidocs.css" />
+    <link rel="stylesheet" type="text/css" href="extra.css" />
+</head>
+
+  <body>
+
+    
+
+    <nav class="navbar navbar-default mainnavbar">
+      
+  
+  <div class="container-fluid">
+
+
+    <div class="navbar-header">
+      
+      <div class="navlinks">
+        <span class="navbar-brand">
+          <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a> <a href="index.html">API Documentation</a>
+        </span>
+
+        <a href="moduleIndex.html">
+          Modules
+        </a>
+
+        <a href="classIndex.html">
+          Classes
+        </a>
+
+        <a href="nameIndex.html">
+          Names
+        </a>
+
+        <div id="search-box-container">
+          <div class="input-group">
+            <input id="search-box" type="search" name="search-query" placeholder="Search..." aria-label="Search" minlength="2" class="form-control" autocomplete="off" />
+            
+            <span class="input-group-btn">
+              <a style="display: none;" class="btn btn-default" id="search-clear-button" title="Clear" onclick="clearSearch()"><img src="fonts/x-circle.svg" alt="Clear" /></a>
+              <a class="btn btn-default" id="search-help-button" title="Help" onclick="toggleSearchHelpText()"><img src="fonts/info.svg" alt="Help" /></a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="search-results-container" style="display: none;">
+        
+        <div id="search-buttons">
+          <span class="label label-default" id="search-docstrings-button">
+          <label class="checkbox-inline">
+            <input type="checkbox" id="toggle-search-in-docstrings-checkbox" value="false" onclick="toggleSearchInDocstrings()">
+              search in docstrings
+            </input>
+          </label>
+          </span>
+          
+        </div>
+        
+        <noscript>
+            <h1>Cannot search: JavaScript is not supported/enabled in your browser.</h1>
+        </noscript>
+
+        <div class="hint" id="search-help-box">
+          <p class="rst-last">
+      
+            Search bar offers the following options:
+            <ul>   
+                <li>
+                  <strong>Term presence.</strong> The below example searches for documents that 
+                    must contain “foo”, might contain “bar” and must not contain “baz”: <code>+foo bar -baz</code>
+                </li> 
+
+                <li>
+                  <strong>Wildcards.</strong> The below example searches for documents with words beginning with “foo”: <code>foo*</code>
+                </li> 
+
+                <li>
+                  <strong>Search in specific fields.</strong> The following search matches all objects 
+                  in "twisted.mail" that matches “search”: <code>+qname:twisted.mail.* +search</code>
+
+                  <p>
+                    Possible fields: 'name', 'qname' (fully qualified name), 'docstring', and 'kind'.
+                    Last two fields are only applicable if "search in docstrings" is enabled.
+                  </p>
+                </li>
+
+                <li>
+                  <strong>Fuzzy matches.</strong> The following search matches all documents 
+                  that have a word within 1 edit distance of “foo”: <code>foo~1</code>
+                </li>
+            </ul>
+
+          </p>
+        </div>
+
+        <div id="search-status"> </div>
+
+        <div class="warning" id="search-warn-box" style="display: none;">
+          <p class="rst-last"><span id="search-warn"></span></p>
+        </div>
+
+        <table id="search-results">
+          <!-- Filled dynamically by JS -->
+        </table>
+        
+        <div style="margin-top: 8px;">
+          <p>Results provided by <a href="https://lunrjs.com">Lunr.js</a></p>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</nav>
+    
+    <div class="container-fluid">
+
+      <!-- Side navigation -->
+      <div class="sidebarcontainer" style="display: none;">
+        
+        <div class="sidebar"><nav class="sidebar">
+  
+
+  <div>
+
+      <div class="thingTitle">
+        <span>Class</span>
+        <code class="thisobject"><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="This class"><wbr></wbr>CVCircuit</a></code> 
+      </div>
+      
+      <div>
+        
+
+        
+         
+
+        
+        
+
+        <div class="childrenKindTitle">Methods</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_conditional" class="internal-link" title="c2qa.circuit.CVCircuit.cv_conditional">cv<wbr></wbr>_conditional</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#__init__" class="internal-link" title="c2qa.circuit.CVCircuit.__init__">__init__</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#add_qubit_register" class="internal-link" title="c2qa.circuit.CVCircuit.add_qubit_register">add<wbr></wbr>_qubit<wbr></wbr>_register</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_bs" class="internal-link" title="c2qa.circuit.CVCircuit.cv_bs">cv<wbr></wbr>_bs</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_bs" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_bs">cv<wbr></wbr>_c<wbr></wbr>_bs</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_d" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_d">cv<wbr></wbr>_c<wbr></wbr>_d</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_multiboson_sampling" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_multiboson_sampling">cv<wbr></wbr>_c<wbr></wbr>_multiboson<wbr></wbr>_sampling</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_pnr" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_pnr">cv<wbr></wbr>_c<wbr></wbr>_pnr</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_r" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_r">cv<wbr></wbr>_c<wbr></wbr>_r</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_rx" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_rx">cv<wbr></wbr>_c<wbr></wbr>_rx</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_ry" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_ry">cv<wbr></wbr>_c<wbr></wbr>_ry</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_schwinger" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_schwinger">cv<wbr></wbr>_c<wbr></wbr>_schwinger</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_c_sq" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_sq">cv<wbr></wbr>_c<wbr></wbr>_sq</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_d" class="internal-link" title="c2qa.circuit.CVCircuit.cv_d">cv<wbr></wbr>_d</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_delay" class="internal-link" title="c2qa.circuit.CVCircuit.cv_delay">cv<wbr></wbr>_delay</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_ecd" class="internal-link" title="c2qa.circuit.CVCircuit.cv_ecd">cv<wbr></wbr>_ecd</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_eswap" class="internal-link" title="c2qa.circuit.CVCircuit.cv_eswap">cv<wbr></wbr>_eswap</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_gate_from_matrix" class="internal-link" title="c2qa.circuit.CVCircuit.cv_gate_from_matrix">cv<wbr></wbr>_gate<wbr></wbr>_from<wbr></wbr>_matrix</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_initialize" class="internal-link" title="c2qa.circuit.CVCircuit.cv_initialize">cv<wbr></wbr>_initialize</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_measure" class="internal-link" title="c2qa.circuit.CVCircuit.cv_measure">cv<wbr></wbr>_measure</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_r" class="internal-link" title="c2qa.circuit.CVCircuit.cv_r">cv<wbr></wbr>_r</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_snap" class="internal-link" title="c2qa.circuit.CVCircuit.cv_snap">cv<wbr></wbr>_snap</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_snapshot" class="internal-link" title="c2qa.circuit.CVCircuit.cv_snapshot">cv<wbr></wbr>_snapshot</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_sq" class="internal-link" title="c2qa.circuit.CVCircuit.cv_sq">cv<wbr></wbr>_sq</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_sq2" class="internal-link" title="c2qa.circuit.CVCircuit.cv_sq2">cv<wbr></wbr>_sq2</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_testqubitorderf" class="internal-link" title="c2qa.circuit.CVCircuit.cv_testqubitorderf">cv<wbr></wbr>_testqubitorderf</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#get_qubit_index" class="internal-link" title="c2qa.circuit.CVCircuit.get_qubit_index">get<wbr></wbr>_qubit<wbr></wbr>_index</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#get_qubit_indices" class="internal-link" title="c2qa.circuit.CVCircuit.get_qubit_indices">get<wbr></wbr>_qubit<wbr></wbr>_indices</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#get_qubit_qumode_index" class="internal-link" title="c2qa.circuit.CVCircuit.get_qubit_qumode_index">get<wbr></wbr>_qubit<wbr></wbr>_qumode<wbr></wbr>_index</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#measure_x" class="internal-link" title="c2qa.circuit.CVCircuit.measure_x">measure<wbr></wbr>_x</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#measure_y" class="internal-link" title="c2qa.circuit.CVCircuit.measure_y">measure<wbr></wbr>_y</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#measure_z" class="internal-link" title="c2qa.circuit.CVCircuit.measure_z">measure<wbr></wbr>_z</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#merge" class="internal-link" title="c2qa.circuit.CVCircuit.merge">merge</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#qumode_cutoff" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_cutoff">qumode<wbr></wbr>_cutoff</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#save_circuit" class="internal-link" title="c2qa.circuit.CVCircuit.save_circuit">save<wbr></wbr>_circuit</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+
+        <div class="childrenKindTitle">Attributes</div>
+        <ul>
+    
+    <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cregs" class="internal-link" title="c2qa.circuit.CVCircuit.cregs">cregs</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_snapshot_id" class="internal-link" title="c2qa.circuit.CVCircuit.cv_snapshot_id">cv<wbr></wbr>_snapshot<wbr></wbr>_id</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#ops" class="internal-link" title="c2qa.circuit.CVCircuit.ops">ops</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#probe" class="internal-link" title="c2qa.circuit.CVCircuit.probe">probe</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#probe_measure" class="internal-link" title="c2qa.circuit.CVCircuit.probe_measure">probe<wbr></wbr>_measure</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#qmregs" class="internal-link" title="c2qa.circuit.CVCircuit.qmregs">qmregs</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#qregs" class="internal-link" title="c2qa.circuit.CVCircuit.qregs">qregs</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cutoff" class="internal-link" title="c2qa.circuit.CVCircuit.cutoff">cutoff</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#cv_gate_labels" class="internal-link" title="c2qa.circuit.CVCircuit.cv_gate_labels">cv<wbr></wbr>_gate<wbr></wbr>_labels</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#num_qubits_per_qumode" class="internal-link" title="c2qa.circuit.CVCircuit.num_qubits_per_qumode">num<wbr></wbr>_qubits<wbr></wbr>_per<wbr></wbr>_qumode</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#qumode_qubit_indices" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubit_indices">qumode<wbr></wbr>_qubit<wbr></wbr>_indices</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#qumode_qubits" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubits">qumode<wbr></wbr>_qubits</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#qumode_qubits_indices_grouped" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubits_indices_grouped">qumode<wbr></wbr>_qubits<wbr></wbr>_indices<wbr></wbr>_grouped</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_ancillas" class="internal-link" title="c2qa.circuit.CVCircuit._ancillas">_ancillas</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_calibrations" class="internal-link" title="c2qa.circuit.CVCircuit._calibrations">_calibrations</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_clbit_indices" class="internal-link" title="c2qa.circuit.CVCircuit._clbit_indices">_clbit<wbr></wbr>_indices</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_clbits" class="internal-link" title="c2qa.circuit.CVCircuit._clbits">_clbits</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_data" class="internal-link" title="c2qa.circuit.CVCircuit._data">_data</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_metadata" class="internal-link" title="c2qa.circuit.CVCircuit._metadata">_metadata</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_parameter_table" class="internal-link" title="c2qa.circuit.CVCircuit._parameter_table">_parameter<wbr></wbr>_table</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_qubit_indices" class="internal-link" title="c2qa.circuit.CVCircuit._qubit_indices">_qubit<wbr></wbr>_indices</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_qubit_regs" class="internal-link" title="c2qa.circuit.CVCircuit._qubit_regs">_qubit<wbr></wbr>_regs</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_qubits" class="internal-link" title="c2qa.circuit.CVCircuit._qubits">_qubits</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
+
+        
+         
+        
+      </div>
+  </div><div>
+
+      <div class="thingTitle">
+        <span>Module</span>
+        <code><a href="c2qa.circuit.html" class="internal-link" title="The parent of this class">circuit</a></code> 
+      </div>
+      
+      <div>
+        
+
+        
+         
+
+        <div class="childrenKindTitle">Classes</div>
+        <ul>
+    
+    <li class=" thisobject">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit"><wbr></wbr>CVCircuit</a></code>
+            </div>
+        
+
+    </li>
+</ul>
+
+        
+         
+
+        
+         
+
+        
+         
+
+        
+         
+        
+      </div>
+  </div>
+
+</nav>
+        </div>
+        <div id="collapseSideBar">
+          <a class="btn btn-link" onclick="toggleSideBarCollapse()" title="Toggle Sidebar Collapse">
+          </a>
+        </div> 
+        <script src="sidebartoggle.js" type="text/javascript"></script>
+       
+      </div>
+
+      <div id="main" class="">
+        
+
+        
+
+        <div class="page-header">
+          <h1 class="class"><code><code><a href="index.html" class="internal-link">c2qa</a></code><wbr></wbr>.<code><a href="c2qa.circuit.html" class="internal-link" title="c2qa.circuit">circuit</a></code><wbr></wbr>.<code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></code></h1>
+          <div id="showPrivate">
+            <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
+          </div>
+        </div>
+
+        <div class="categoryHeader">
+          class documentation
+        </div>
+
+        <div class="extrasDocstring">
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">CVCircuit</span>(QuantumCircuit): <a href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L15" class="sourceLink">(source)</a></code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="c2qa.circuit.CVCircuit.__init__">CVCircuit(*regs, name, probe_measure)</a></code></p>
+          <p><a href="classIndex.html#c2qa.circuit.CVCircuit">View In Hierarchy</a></p>
+        </div>
+
+        <div class="moduleDocstring">
+          <div><p>Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations.</p></div>
+        </div>
+
+        <div id="splitTables">
+          <table class="children sortable" id="id4">
+  
+  
+  <tr class="staticmethod">
+    
+    <td>Static Method</td>
+    <td><code><a href="#cv_conditional" class="internal-link" title="c2qa.circuit.CVCircuit.cv_conditional">cv<wbr></wbr>_conditional</a></code></td>
+    <td>Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#__init__" class="internal-link" title="c2qa.circuit.CVCircuit.__init__">__init__</a></code></td>
+    <td>Initialize the registers (at least one must be QumodeRegister) and set the circuit name.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#add_qubit_register" class="internal-link" title="c2qa.circuit.CVCircuit.add_qubit_register">add<wbr></wbr>_qubit<wbr></wbr>_register</a></code></td>
+    <td>Add a qubit register to the circuit.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_bs" class="internal-link" title="c2qa.circuit.CVCircuit.cv_bs">cv<wbr></wbr>_bs</a></code></td>
+    <td>Two-mode beam splitter gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_bs" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_bs">cv<wbr></wbr>_c<wbr></wbr>_bs</a></code></td>
+    <td>Controlled phase two-mode beam splitter</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_d" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_d">cv<wbr></wbr>_c<wbr></wbr>_d</a></code></td>
+    <td>Conditional displacement gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_multiboson_sampling" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_multiboson_sampling">cv<wbr></wbr>_c<wbr></wbr>_multiboson<wbr></wbr>_sampling</a></code></td>
+    <td>SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_pnr" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_pnr">cv<wbr></wbr>_c<wbr></wbr>_pnr</a></code></td>
+    <td>PNR (Photon number readout) TODO: Needs comments/explanation/citation!</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_r" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_r">cv<wbr></wbr>_c<wbr></wbr>_r</a></code></td>
+    <td>Qubit dependent phase-space rotation gate (i.e., dispersive interaction).</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_rx" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_rx">cv<wbr></wbr>_c<wbr></wbr>_rx</a></code></td>
+    <td>Qubit dependent phase-space rotation around sigma^x gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_ry" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_ry">cv<wbr></wbr>_c<wbr></wbr>_ry</a></code></td>
+    <td>Qubit dependent phase-space rotation around sigma^y gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_schwinger" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_schwinger">cv<wbr></wbr>_c<wbr></wbr>_schwinger</a></code></td>
+    <td>General form of a controlled 'Schwinger' gate, containing both the controlled phase beamsplitter and pairs of controlled phase space rotations as special cases.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_c_sq" class="internal-link" title="c2qa.circuit.CVCircuit.cv_c_sq">cv<wbr></wbr>_c<wbr></wbr>_sq</a></code></td>
+    <td>Conditional squeezing gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_d" class="internal-link" title="c2qa.circuit.CVCircuit.cv_d">cv<wbr></wbr>_d</a></code></td>
+    <td>Displacement gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_delay" class="internal-link" title="c2qa.circuit.CVCircuit.cv_delay">cv<wbr></wbr>_delay</a></code></td>
+    <td>CV_delay. Implements an identity gate of the specified duration. This is particularly useful for the implementation of a noise pass.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_ecd" class="internal-link" title="c2qa.circuit.CVCircuit.cv_ecd">cv<wbr></wbr>_ecd</a></code></td>
+    <td>Echoed controlled displacement gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_eswap" class="internal-link" title="c2qa.circuit.CVCircuit.cv_eswap">cv<wbr></wbr>_eswap</a></code></td>
+    <td>Exponential SWAP gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_gate_from_matrix" class="internal-link" title="c2qa.circuit.CVCircuit.cv_gate_from_matrix">cv<wbr></wbr>_gate<wbr></wbr>_from<wbr></wbr>_matrix</a></code></td>
+    <td>Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may not be applied in a way that is physical.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_initialize" class="internal-link" title="c2qa.circuit.CVCircuit.cv_initialize">cv<wbr></wbr>_initialize</a></code></td>
+    <td>Initialize qumode (or qumodes) to a particular state specified by params</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_measure" class="internal-link" title="c2qa.circuit.CVCircuit.cv_measure">cv<wbr></wbr>_measure</a></code></td>
+    <td>Measure Qumodes and Qubits in qubit_qumode_list and map onto classical bits specified in cbit_list.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_r" class="internal-link" title="c2qa.circuit.CVCircuit.cv_r">cv<wbr></wbr>_r</a></code></td>
+    <td>Phase space rotation gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_snap" class="internal-link" title="c2qa.circuit.CVCircuit.cv_snap">cv<wbr></wbr>_snap</a></code></td>
+    <td>SNAP (Selective Number-dependent Arbitrary Phase) gate. If no qubit is passed, then phases are applied to each qumode Fock state specified in theta and n (without explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by sigma_z-dependent geometric phase (akin to the implementation of the SNAP gate as described in Heeres et al, PRL (2015).</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_snapshot" class="internal-link" title="c2qa.circuit.CVCircuit.cv_snapshot">cv<wbr></wbr>_snapshot</a></code></td>
+    <td>Wrap the Qiskit QuantumCircuit Snapshot function, giving it a known label for later Wigner function plot generation</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_sq" class="internal-link" title="c2qa.circuit.CVCircuit.cv_sq">cv<wbr></wbr>_sq</a></code></td>
+    <td>Squeezing gate.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_sq2" class="internal-link" title="c2qa.circuit.CVCircuit.cv_sq2">cv<wbr></wbr>_sq2</a></code></td>
+    <td>Two-mode squeezing gate</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#cv_testqubitorderf" class="internal-link" title="c2qa.circuit.CVCircuit.cv_testqubitorderf">cv<wbr></wbr>_testqubitorderf</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#get_qubit_index" class="internal-link" title="c2qa.circuit.CVCircuit.get_qubit_index">get<wbr></wbr>_qubit<wbr></wbr>_index</a></code></td>
+    <td>Return the index of the given Qubit</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#get_qubit_indices" class="internal-link" title="c2qa.circuit.CVCircuit.get_qubit_indices">get<wbr></wbr>_qubit<wbr></wbr>_indices</a></code></td>
+    <td>Return the indices of the given Qubits</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#get_qubit_qumode_index" class="internal-link" title="c2qa.circuit.CVCircuit.get_qubit_qumode_index">get<wbr></wbr>_qubit<wbr></wbr>_qumode<wbr></wbr>_index</a></code></td>
+    <td>Return the qumode index for the given qubit. If not found, return -1.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#measure_x" class="internal-link" title="c2qa.circuit.CVCircuit.measure_x">measure<wbr></wbr>_x</a></code></td>
+    <td>Measure qubit in x using probe qubits</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#measure_y" class="internal-link" title="c2qa.circuit.CVCircuit.measure_y">measure<wbr></wbr>_y</a></code></td>
+    <td>Measure qubit in y using probe qubits</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#measure_z" class="internal-link" title="c2qa.circuit.CVCircuit.measure_z">measure<wbr></wbr>_z</a></code></td>
+    <td>Measure qubit in z using probe qubits</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#merge" class="internal-link" title="c2qa.circuit.CVCircuit.merge">merge</a></code></td>
+    <td>Merge in properties of QisKit QuantumCircuit into this instance.</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#qumode_cutoff" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_cutoff">qumode<wbr></wbr>_cutoff</a></code></td>
+    <td>Return the qumode cutoff at the given index</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#save_circuit" class="internal-link" title="c2qa.circuit.CVCircuit.save_circuit">save<wbr></wbr>_circuit</a></code></td>
+    <td>Save the simulator statevector using a qiskit class</td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#cregs" class="internal-link" title="c2qa.circuit.CVCircuit.cregs">cregs</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#cv_snapshot_id" class="internal-link" title="c2qa.circuit.CVCircuit.cv_snapshot_id">cv<wbr></wbr>_snapshot<wbr></wbr>_id</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#ops" class="internal-link" title="c2qa.circuit.CVCircuit.ops">ops</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#probe" class="internal-link" title="c2qa.circuit.CVCircuit.probe">probe</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#probe_measure" class="internal-link" title="c2qa.circuit.CVCircuit.probe_measure">probe<wbr></wbr>_measure</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#qmregs" class="internal-link" title="c2qa.circuit.CVCircuit.qmregs">qmregs</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#qregs" class="internal-link" title="c2qa.circuit.CVCircuit.qregs">qregs</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#cutoff" class="internal-link" title="c2qa.circuit.CVCircuit.cutoff">cutoff</a></code></td>
+    <td>Integer cutoff size.</td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#cv_gate_labels" class="internal-link" title="c2qa.circuit.CVCircuit.cv_gate_labels">cv<wbr></wbr>_gate<wbr></wbr>_labels</a></code></td>
+    <td>All the CV gate names on the current circuit. These will either be instances of ParameterizedUnitaryGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate.</td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#num_qubits_per_qumode" class="internal-link" title="c2qa.circuit.CVCircuit.num_qubits_per_qumode">num<wbr></wbr>_qubits<wbr></wbr>_per<wbr></wbr>_qumode</a></code></td>
+    <td>Integer number of qubits to represent a qumode.</td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#qumode_qubit_indices" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubit_indices">qumode<wbr></wbr>_qubit<wbr></wbr>_indices</a></code></td>
+    <td>A qubit index list of the qubits representing the qumode registers on the circuit</td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#qumode_qubits" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubits">qumode<wbr></wbr>_qubits</a></code></td>
+    <td>All the qubits representing the qumode registers on the circuit</td>
+  </tr><tr class="property">
+    
+    <td>Property</td>
+    <td><code><a href="#qumode_qubits_indices_grouped" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubits_indices_grouped">qumode<wbr></wbr>_qubits<wbr></wbr>_indices<wbr></wbr>_grouped</a></code></td>
+    <td>Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list.</td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_ancillas" class="internal-link" title="c2qa.circuit.CVCircuit._ancillas">_ancillas</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_calibrations" class="internal-link" title="c2qa.circuit.CVCircuit._calibrations">_calibrations</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_clbit_indices" class="internal-link" title="c2qa.circuit.CVCircuit._clbit_indices">_clbit<wbr></wbr>_indices</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_clbits" class="internal-link" title="c2qa.circuit.CVCircuit._clbits">_clbits</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_data" class="internal-link" title="c2qa.circuit.CVCircuit._data">_data</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_metadata" class="internal-link" title="c2qa.circuit.CVCircuit._metadata">_metadata</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_parameter_table" class="internal-link" title="c2qa.circuit.CVCircuit._parameter_table">_parameter<wbr></wbr>_table</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_qubit_indices" class="internal-link" title="c2qa.circuit.CVCircuit._qubit_indices">_qubit<wbr></wbr>_indices</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_qubit_regs" class="internal-link" title="c2qa.circuit.CVCircuit._qubit_regs">_qubit<wbr></wbr>_regs</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_qubits" class="internal-link" title="c2qa.circuit.CVCircuit._qubits">_qubits</a></code></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr>
+</table>
+          
+
+            
+        </div>
+
+        <div id="childList">
+          <div class="basestaticmethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_conditional">
+    
+  </a>
+  <a name="cv_conditional">
+    
+  </a>
+  <div class="functionHeader">
+    
+    @<a href="https://docs.python.org/3/library/functions.html#staticmethod" class="intersphinx-link">staticmethod</a><br />
+    <span class="py-keyword">def</span> <span class="py-defname">cv_conditional</span><span class="function-signature">(name, op, params_0, params_1, num_qubits_per_qumode, num_qumodes=1, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L278">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_conditional" title="c2qa.circuit.CVCircuit.cv_conditional">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">name:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code></td><td class="fieldArgDesc">name of conditional gate</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params<wbr></wbr>_0</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params<wbr></wbr>_1</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">num<wbr></wbr>_qubits<wbr></wbr>_per<wbr></wbr>_qumode:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">number of qubits representing a single qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">num<wbr></wbr>_qumodes:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">number of qubodes used in this gate. Defaults to 1.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op<wbr></wbr>_0:</span><code>ndarray</code></td><td class="fieldArgDesc">operator matrix for 0 controlled gate</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op<wbr></wbr>_1:</span><code>ndarray</code></td><td class="fieldArgDesc">operator matrix for 1 controlled gate</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit Instruction appended to the circuit</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">__init__</span><span class="function-signature">(self, *regs, name: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, probe_measure: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L18">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#__init__" title="c2qa.circuit.CVCircuit.__init__">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Initialize the registers (at least one must be QumodeRegister) and set the circuit name.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">*regs</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">name:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code>, <em>optional</em></td><td class="fieldArgDesc">circuit name. Defaults to None.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">probe<wbr></wbr>_measure:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">automatically support measurement with probe qubits. Defaults to False.</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Raises</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/exceptions.html#ValueError" class="intersphinx-link">ValueError</a></code></td><td>If no QumodeRegister is provided.</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.add_qubit_register">
+    
+  </a>
+  <a name="add_qubit_register">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">add_qubit_register</span><span class="function-signature">(self, *regs)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L218">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#add_qubit_register" title="c2qa.circuit.CVCircuit.add_qubit_register">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Add a qubit register to the circuit.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">*regs:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">List of Registers</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_bs">
+    
+  </a>
+  <a name="cv_bs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_bs</span><span class="function-signature">(self, theta, qumode_a, qumode_b, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L411">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_bs" title="c2qa.circuit.CVCircuit.cv_bs">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Two-mode beam splitter gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">beamsplitter phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_bs">
+    
+  </a>
+  <a name="cv_c_bs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_bs</span><span class="function-signature">(self, theta, qumode_a, qumode_b, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L533">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_bs" title="c2qa.circuit.CVCircuit.cv_c_bs">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Controlled phase two-mode beam splitter</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit control Qubit</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_d">
+    
+  </a>
+  <a name="cv_c_d">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_d</span><span class="function-signature">(self, theta, qumode, qubit, beta=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L493">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_d" title="c2qa.circuit.CVCircuit.cv_c_d">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Conditional displacement gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">displacement</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control qubit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">beta:</span><code>real</code></td><td class="fieldArgDesc">By default is None, and qumode will be displaced by alpha and -alpha for qubit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state 0 and 1</span></td><td class="fieldArgDesc"></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">respectively<wbr></wbr>. <wbr></wbr>If specified</span></td><td class="fieldArgDesc"></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode will be displaced by alpha and beta for qubit state 0 and 1<wbr></wbr>.</span></td><td class="fieldArgDesc"></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_multiboson_sampling">
+    
+  </a>
+  <a name="cv_c_multiboson_sampling">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_multiboson_sampling</span><span class="function-signature">(self, max, qumode, qubit, duration=1, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">us</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L834">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_multiboson_sampling" title="c2qa.circuit.CVCircuit.cv_c_multiboson_sampling">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">the period of the mapping</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control qubit.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_pnr">
+    
+  </a>
+  <a name="cv_c_pnr">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_pnr</span><span class="function-signature">(self, max, qumode, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L659">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_pnr" title="c2qa.circuit.CVCircuit.cv_c_pnr">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>PNR (Photon number readout) TODO: Needs comments/explanation/citation!</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">the period of the mapping</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control qubit.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_r">
+    
+  </a>
+  <a name="cv_c_r">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_r</span><span class="function-signature">(self, theta, qumode, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L434">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_r" title="c2qa.circuit.CVCircuit.cv_c_r">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Qubit dependent phase-space rotation gate (i.e., dispersive interaction).</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>qubit</code></td><td class="fieldArgDesc">QisKit control qubit</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_rx">
+    
+  </a>
+  <a name="cv_c_rx">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_rx</span><span class="function-signature">(self, theta, qumode, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L457">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_rx" title="c2qa.circuit.CVCircuit.cv_c_rx">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Qubit dependent phase-space rotation around sigma^x gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>qubit</code></td><td class="fieldArgDesc">QisKit control qubit</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_ry">
+    
+  </a>
+  <a name="cv_c_ry">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_ry</span><span class="function-signature">(self, theta, qumode, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L475">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_ry" title="c2qa.circuit.CVCircuit.cv_c_ry">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Qubit dependent phase-space rotation around sigma^y gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>qubit</code></td><td class="fieldArgDesc">QisKit control qubit</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_schwinger">
+    
+  </a>
+  <a name="cv_c_schwinger">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_schwinger</span><span class="function-signature">(self, params, qumode_a, qumode_b, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L557">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_schwinger" title="c2qa.circuit.CVCircuit.cv_c_schwinger">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>General form of a controlled 'Schwinger' gate, containing both the controlled phase beamsplitter
+and pairs of controlled phase space rotations as special cases.</p>
+<p>It has the form exp(-i*beta*(n1_hat.sigma)(n2_hat.S)),
+where ni_hat = sin(theta_i)*cos(phi_i) + sin(theta_i)*sin(phi_i) + cos(theta_i).
+sigma = [sigmax, sigmay, sigmaz] is the vector of Pauli operators, and
+S = [Sx, Sy, Sz] is a vector of Schwinger boson operators,</p>
+<p>Sx = (a*bdag + adag*b)/2
+Sy = (a*bdag - adag*b)/2i
+Sz = (bdag*b - adag*a)/2,</p>
+<p>obeying the commutation relations [Sj, Sk] = i*epsilon_{ijk}*Sz, where epsilon_{ijk} is the Levi-Civita tensor.</p>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params:</span><code>real</code></td><td class="fieldArgDesc">[beta, theta_1, phi_1, theta_2, phi_2]</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit control Qubit</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_c_sq">
+    
+  </a>
+  <a name="cv_c_sq">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_c_sq</span><span class="function-signature">(self, theta, qumode, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L698">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_c_sq" title="c2qa.circuit.CVCircuit.cv_c_sq">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Conditional squeezing gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeezing ampltiude</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control Qubit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_d">
+    
+  </a>
+  <a name="cv_d">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_d</span><span class="function-signature">(self, alpha, qumode, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L359">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_d" title="c2qa.circuit.CVCircuit.cv_d">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Displacement gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">alpha:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">displacement</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_delay">
+    
+  </a>
+  <a name="cv_delay">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_delay</span><span class="function-signature">(self, duration, qumode, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L816">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_delay" title="c2qa.circuit.CVCircuit.cv_delay">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>CV_delay. Implements an identity gate of the specified duration.
+This is particularly useful for the implementation of a noise pass.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration:</span><code>real</code></td><td class="fieldArgDesc">duration of delay gate</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_ecd">
+    
+  </a>
+  <a name="cv_ecd">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_ecd</span><span class="function-signature">(self, theta, qumode, qubit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L516">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_ecd" title="c2qa.circuit.CVCircuit.cv_ecd">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Echoed controlled displacement gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">displacement</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_eswap">
+    
+  </a>
+  <a name="cv_eswap">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_eswap</span><span class="function-signature">(self, theta, qumode_a, qumode_b, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L675">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_eswap" title="c2qa.circuit.CVCircuit.cv_eswap">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Exponential SWAP gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_gate_from_matrix">
+    
+  </a>
+  <a name="cv_gate_from_matrix">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_gate_from_matrix</span><span class="function-signature">(self, matrix, qumodes=[], qubits=[], duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L850">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_gate_from_matrix" title="c2qa.circuit.CVCircuit.cv_gate_from_matrix">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically
+implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may
+not be applied in a way that is physical.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">matrix:</span>np.array/nested list</td><td class="fieldArgDesc">Matrix for conversion into gate</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumodes:</span>QumodeRegister/list</td><td class="fieldArgDesc">Qumodes initialized by QumodeRegister</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubits:</span>QuantumRegister/list</td><td class="fieldArgDesc">Qubits initialized by QuantumRegister</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_initialize">
+    
+  </a>
+  <a name="cv_initialize">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_initialize</span><span class="function-signature">(self, params, qumodes)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L233">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_initialize" title="c2qa.circuit.CVCircuit.cv_initialize">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Initialize qumode (or qumodes) to a particular state specified by params</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> or <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">If an int, all specified qumodes will be initialized to the Fock state with n=params.
+If a list, all specified qumodes will be initialized to a superposition of Fock states,
+with <tt class="rst-docutils literal">params[n]</tt> the complex amplitude of Fock state <tt class="rst-docutils literal">|n&gt;</tt>. The length of params must be less
+than or equal to the cutoff.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumodes:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing a single qumode, or list of multiple qumodes</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Raises</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/exceptions.html#ValueError" class="intersphinx-link">ValueError</a></code></td><td>If the Fock state is greater than the cutoff.</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_measure">
+    
+  </a>
+  <a name="cv_measure">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_measure</span><span class="function-signature">(self, qubit_qumode_list, cbit_list)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L781">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_measure" title="c2qa.circuit.CVCircuit.cv_measure">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Measure Qumodes and Qubits in qubit_qumode_list and map onto
+classical bits specified in cbit_list.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_qumode<wbr></wbr>_list:</span><code>List</code></td><td class="fieldArgDesc">List of individual Qubits and Qumodes
+(i.e., indexed elements of QubitRegisters and QumodeRegisters)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cbit<wbr></wbr>_list:</span><code>List</code></td><td class="fieldArgDesc">List of classical bits to map measurements onto.
+Note: Measurement of qumodes requires log(c) classical bits,
+where c is the cutoff.
+If len(cbit_list) is greater than the required number of
+classical bits, excess will be ignored. If len(cbit_list) is
+insufficient, an error will be thrown.</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit measure instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_r">
+    
+  </a>
+  <a name="cv_r">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_r</span><span class="function-signature">(self, theta, qumode, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L342">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_r" title="c2qa.circuit.CVCircuit.cv_r">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Phase space rotation gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">rotation</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_snap">
+    
+  </a>
+  <a name="cv_snap">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_snap</span><span class="function-signature">(self, theta, n, qumode, qubit=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L594">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_snap" title="c2qa.circuit.CVCircuit.cv_snap">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>SNAP (Selective Number-dependent Arbitrary Phase) gate. If no qubit is passed,
+then phases are applied to each qumode Fock state specified in theta and n (without
+explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by
+sigma_z-dependent geometric phase (akin to the implementation of the SNAP gate
+as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[real]</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">n:</span><code>integer</code> or <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[integer]</code></td><td class="fieldArgDesc">Fock state in which the mode should acquire the phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control qubit. If no qubit is passed, the gate will implement for sigma^z = +1.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_snapshot">
+    
+  </a>
+  <a name="cv_snapshot">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_snapshot</span><span class="function-signature">(self)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L213">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_snapshot" title="c2qa.circuit.CVCircuit.cv_snapshot">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Wrap the Qiskit QuantumCircuit Snapshot function, giving it a known label for later Wigner function plot generation</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_sq">
+    
+  </a>
+  <a name="cv_sq">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_sq</span><span class="function-signature">(self, theta, qumode, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L376">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_sq" title="c2qa.circuit.CVCircuit.cv_sq">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Squeezing gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_sq2">
+    
+  </a>
+  <a name="cv_sq2">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_sq2</span><span class="function-signature">(self, theta, qumode_a, qumode_b, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L393">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_sq2" title="c2qa.circuit.CVCircuit.cv_sq2">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Two-mode squeezing gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_testqubitorderf">
+    
+  </a>
+  <a name="cv_testqubitorderf">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">cv_testqubitorderf</span><span class="function-signature">(self, phi, qubit_1, qubit_2, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L716">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_testqubitorderf" title="c2qa.circuit.CVCircuit.cv_testqubitorderf">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.get_qubit_index">
+    
+  </a>
+  <a name="get_qubit_index">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">get_qubit_index</span><span class="function-signature">(self, qubit)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L169">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#get_qubit_index" title="c2qa.circuit.CVCircuit.get_qubit_index">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Return the index of the given Qubit</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.get_qubit_indices">
+    
+  </a>
+  <a name="get_qubit_indices">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">get_qubit_indices</span><span class="function-signature">(self, qubits: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L176">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#get_qubit_indices" title="c2qa.circuit.CVCircuit.get_qubit_indices">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Return the indices of the given Qubits</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.get_qubit_qumode_index">
+    
+  </a>
+  <a name="get_qubit_qumode_index">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">get_qubit_qumode_index</span><span class="function-signature">(self, qubit)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L191">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#get_qubit_qumode_index" title="c2qa.circuit.CVCircuit.get_qubit_qumode_index">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Return the qumode index for the given qubit. If not found, return -1.</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.measure_x">
+    
+  </a>
+  <a name="measure_x">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">measure_x</span><span class="function-signature">(self, qubit, cbit)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L762">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#measure_x" title="c2qa.circuit.CVCircuit.measure_x">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Measure qubit in x using probe qubits</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit qubit to measure</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cbit:</span><code>ClassicalBit</code></td><td class="fieldArgDesc">QisKit classical bit to measure into</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit measure instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.measure_y">
+    
+  </a>
+  <a name="measure_y">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">measure_y</span><span class="function-signature">(self, qubit, cbit)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L742">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#measure_y" title="c2qa.circuit.CVCircuit.measure_y">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Measure qubit in y using probe qubits</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit qubit to measure</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cbit:</span><code>ClassicalBit</code></td><td class="fieldArgDesc">QisKit classical bit to measure into</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit measure instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.measure_z">
+    
+  </a>
+  <a name="measure_z">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">measure_z</span><span class="function-signature">(self, qubit, cbit, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L724">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#measure_z" title="c2qa.circuit.CVCircuit.measure_z">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Measure qubit in z using probe qubits</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit qubit to measure</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cbit:</span><code>ClassicalBit</code></td><td class="fieldArgDesc">QisKit classical bit to measure into</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit measure instruction</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.merge">
+    
+  </a>
+  <a name="merge">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">merge</span><span class="function-signature">(self, circuit: <code>QuantumCircuit</code>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L68">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#merge" title="c2qa.circuit.CVCircuit.merge">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Merge in properties of QisKit QuantumCircuit into this instance.</p>
+<p>Useful if QisKit returned a new instance of QuantumCircuit after
+passing in this instance. Calling merge() can merge the two, keeping
+this instance.</p>
+<p>See <a class="rst-reference external" href="https://qiskit.org/documentation/_modules/qiskit/circuit/quantumcircuit.html#QuantumCircuit.copy" target="_top">https://qiskit.org/documentation/_modules/qiskit/circuit/quantumcircuit.html#QuantumCircuit.copy</a></p>
+</div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.qumode_cutoff">
+    
+  </a>
+  <a name="qumode_cutoff">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">qumode_cutoff</span><span class="function-signature">(self, qumode_index: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L114">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#qumode_cutoff" title="c2qa.circuit.CVCircuit.qumode_cutoff">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Return the qumode cutoff at the given index</p></div>
+  </div>
+</div><div class="basemethod">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.save_circuit">
+    
+  </a>
+  <a name="save_circuit">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">save_circuit</span><span class="function-signature">(self, conditional, pershot, label=<span class="rst-variable-quote">'</span><span class="rst-variable-string">statevector</span><span class="rst-variable-quote">'</span>)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L336">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#save_circuit" title="c2qa.circuit.CVCircuit.save_circuit">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Save the simulator statevector using a qiskit class</p></div>
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cregs">
+    
+  </a>
+  <a name="cregs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">cregs</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L80">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cregs" title="c2qa.circuit.CVCircuit.cregs">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_snapshot_id">
+    
+  </a>
+  <a name="cv_snapshot_id">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">cv_snapshot_id</span>: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L66">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_snapshot_id" title="c2qa.circuit.CVCircuit.cv_snapshot_id">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.ops">
+    
+  </a>
+  <a name="ops">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">ops</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L65">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#ops" title="c2qa.circuit.CVCircuit.ops">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.probe">
+    
+  </a>
+  <a name="probe">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">probe</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L60">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#probe" title="c2qa.circuit.CVCircuit.probe">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.probe_measure">
+    
+  </a>
+  <a name="probe_measure">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">probe_measure</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L58">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#probe_measure" title="c2qa.circuit.CVCircuit.probe_measure">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.qmregs">
+    
+  </a>
+  <a name="qmregs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">qmregs</span>: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L28">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#qmregs" title="c2qa.circuit.CVCircuit.qmregs">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.qregs">
+    
+  </a>
+  <a name="qregs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">qregs</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L79">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#qregs" title="c2qa.circuit.CVCircuit.qregs">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cutoff">
+    
+  </a>
+  <a name="cutoff">
+    
+  </a>
+  <div class="functionHeader">
+    @<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br />
+    <span class="py-defname">cutoff</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L109">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cutoff" title="c2qa.circuit.CVCircuit.cutoff">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>Integer cutoff size.</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.cv_gate_labels">
+    
+  </a>
+  <a name="cv_gate_labels">
+    
+  </a>
+  <div class="functionHeader">
+    @<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br />
+    <span class="py-defname">cv_gate_labels</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L198">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#cv_gate_labels" title="c2qa.circuit.CVCircuit.cv_gate_labels">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>All the CV gate names on the current circuit. These will either be
+instances of ParameterizedUnitaryGate or be instances of super
+Intstruction and flagged with 'cv_conditional' if a conditional gate.</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.num_qubits_per_qumode">
+    
+  </a>
+  <a name="num_qubits_per_qumode">
+    
+  </a>
+  <div class="functionHeader">
+    @<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br />
+    <span class="py-defname">num_qubits_per_qumode</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L118">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#num_qubits_per_qumode" title="c2qa.circuit.CVCircuit.num_qubits_per_qumode">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>Integer number of qubits to represent a qumode.</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.qumode_qubit_indices">
+    
+  </a>
+  <a name="qumode_qubit_indices">
+    
+  </a>
+  <div class="functionHeader">
+    @<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br />
+    <span class="py-defname">qumode_qubit_indices</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L131">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#qumode_qubit_indices" title="c2qa.circuit.CVCircuit.qumode_qubit_indices">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>A qubit index list of the qubits representing the qumode registers on the circuit</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.qumode_qubits">
+    
+  </a>
+  <a name="qumode_qubits">
+    
+  </a>
+  <div class="functionHeader">
+    @<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br />
+    <span class="py-defname">qumode_qubits</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L123">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#qumode_qubits" title="c2qa.circuit.CVCircuit.qumode_qubits">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>All the qubits representing the qumode registers on the circuit</p></div>
+    
+  </div>
+</div><div class="baseproperty">
+  
+  
+  <a name="c2qa.circuit.CVCircuit.qumode_qubits_indices_grouped">
+    
+  </a>
+  <a name="qumode_qubits_indices_grouped">
+    
+  </a>
+  <div class="functionHeader">
+    @<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br />
+    <span class="py-defname">qumode_qubits_indices_grouped</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L143">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#qumode_qubits_indices_grouped" title="c2qa.circuit.CVCircuit.qumode_qubits_indices_grouped">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p>Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list.</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._ancillas">
+    
+  </a>
+  <a name="_ancillas">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_ancillas</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L82">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_ancillas" title="c2qa.circuit.CVCircuit._ancillas">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._calibrations">
+    
+  </a>
+  <a name="_calibrations">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_calibrations</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L106">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_calibrations" title="c2qa.circuit.CVCircuit._calibrations">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._clbit_indices">
+    
+  </a>
+  <a name="_clbit_indices">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_clbit_indices</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L85">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_clbit_indices" title="c2qa.circuit.CVCircuit._clbit_indices">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._clbits">
+    
+  </a>
+  <a name="_clbits">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_clbits</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L83">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_clbits" title="c2qa.circuit.CVCircuit._clbits">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._data">
+    
+  </a>
+  <a name="_data">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_data</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L101">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_data" title="c2qa.circuit.CVCircuit._data">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._metadata">
+    
+  </a>
+  <a name="_metadata">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_metadata</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L107">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_metadata" title="c2qa.circuit.CVCircuit._metadata">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._parameter_table">
+    
+  </a>
+  <a name="_parameter_table">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_parameter_table</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L91">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_parameter_table" title="c2qa.circuit.CVCircuit._parameter_table">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._qubit_indices">
+    
+  </a>
+  <a name="_qubit_indices">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_qubit_indices</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L84">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_qubit_indices" title="c2qa.circuit.CVCircuit._qubit_indices">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._qubit_regs">
+    
+  </a>
+  <a name="_qubit_regs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_qubit_regs</span>: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L29">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_qubit_regs" title="c2qa.circuit.CVCircuit._qubit_regs">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._qubits">
+    
+  </a>
+  <a name="_qubits">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_qubits</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/815cde0175e1d3fd6c803bb0bfbe3646a0fd8a78/c2qa/circuit.py#L81">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_qubits" title="c2qa.circuit.CVCircuit._qubits">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div>
+        </div>
+      
+      </div>
+    </div>
+
+    <footer class="navbar navbar-default">
+
+  
+  <div class="container">
+    <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
+  generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
+    23.9.0 at 2023-10-12 22:04:03.
+  </div>
+
+  <!-- Search related scripts needs to be loaded at the end of HTML 
+    parsing not to introduce overhead and display HTML data asap -->
+  <script src="ajax.js" type="text/javascript"></script>
+  <script src="searchlib.js" type="text/javascript"></script>
+  <script src="search.js" type="text/javascript"></script>
+
+</footer>
+  
+    <script src="pydoctor.js" type="text/javascript"></script>
+
+  </body>
+</html>
