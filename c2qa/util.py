@@ -600,17 +600,17 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     Two use cases 
     1) int + list datatype combination (length of amp list must match length of either fock_input or fock_output, whichever is longer): 
     >fockmap(matrix, 1, [0, 1]) 
-    ->> |0><1| + |1><1|
+    ->> ``|0><1| + |1><1|``
 
     >fockmap(matrix, [3, 2], 0, [0.5j, 1])
-    ->> 0.5j|0><3| + |0><2|
+    ->> ``0.5j|0><3| + |0><2|``
 
     2) list datatype
     >fockmap(matrix, [3, 2], [2, 1], [0.1j, 0.8])
-    ->> 0.1j|2><3| + 0.8|1><2| 
+    ->> ``0.1j|2><3| + 0.8|1><2|``
 
     >fockmap(matrix, [1, 1], [2, 4])
-    ->> |2><1| + |4><1| 
+    ->> ``|2><1| + |4><1|``
 
 
     Args:
