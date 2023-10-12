@@ -228,8 +228,9 @@ class CVCircuit(QuantumCircuit):
         Args:
             params (list or int): If an int, all specified qumodes will be initialized to the Fock state with n=params.
                                   If a list, all specified qumodes will be initialized to a superposition of Fock states,
-                                  with params[n] the complex amplitude of Fock state |n>. The length of params must be less
+                                  with ``params[n]`` the complex amplitude of Fock state ``|n>``. The length of params must be less
                                   than or equal to the cutoff.
+
             qumodes (list): list of qubits representing a single qumode, or list of multiple qumodes
 
         Raises:
