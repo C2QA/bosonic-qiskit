@@ -112,8 +112,9 @@ def discretize_single_circuit(
                     break
             
             if epsilon is not None and noise_pass is not None:
-                photon_loss_rate = noise_pass.photon_loss_rates_sec[0]  # FIXME - which of the qumodes' loss rate should we use?
-                num_segments = math.ceil((photon_loss_rate * noise_pass.duration_to_sec(inst) * circuit.cutoff) / epsilon)
+                # FIXME - which of the qumodes' loss rates and QumodeRegister's cutoff should we use?
+                photon_loss_rate = noise_pass.photon_loss_rates_sec[0]
+                num_segments = math.ceil((photon_loss_rate * noise_pass.duration_to_sec(inst) * circuit.get_qmr_cutoff(0)) / epsilon)
 
         segments = __to_segments(inst=inst, segments_per_gate=num_segments, keep_state=True, sequential_subcircuit=sequential_subcircuit)
 
@@ -176,6 +177,7 @@ def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, seg
             ParameterizedUnitaryGate(
                 inst.op_func,
                 params=params,
+                cutoffs=inst.cutoffs,
                 num_qubits=inst.num_qubits,
                 label=inst.label,
                 duration=duration,

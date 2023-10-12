@@ -144,7 +144,7 @@ def test_stateread(capsys):
             state,
             numberofqubits=0,
             numberofmodes=num_qumodes,
-            cutoff=circuit.cutoff,
+            cutoff=qmr.cutoff,
             verbose=True,
         )
 

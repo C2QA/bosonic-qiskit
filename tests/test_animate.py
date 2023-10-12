@@ -30,11 +30,11 @@ def __build_subcircuit():
     U_JC = c2qa.CVCircuit(qmr,qbr)
 
     # Append U_R
-    U_JC.cv_r(-omega_R*total_time,qmr[0])
+    U_JC.cv_r(-omega_R*total_time, qmr[0])
     # Append U_Q
     U_JC.rz(omega_Q*total_time,qbr[0])
     # Append U_\chi -- KS: this needs to be updated to reflect naming conventions in manuscript
-    U_JC.cv_c_r(-chi*total_time/2,qmr[0],qbr[0])
+    U_JC.cv_c_r(-chi*total_time/2, qmr[0], qbr[0])
     # Compile this circuit into a single parameterized gate
     U_JC = U_JC.to_gate(label='U_JC')
 
@@ -52,7 +52,7 @@ def __build_subcircuit():
 
 
     # Append time evolution unitary
-    circuit_0.append(U_JC,qmr[0] + [qbr[0]]);
+    circuit_0.append(U_JC,qmr[0] + [qbr[0]])
     # circuit_0.bind_parameters({dt : total_time})
 
 
@@ -73,7 +73,7 @@ def __build_subcircuit():
     # circuit_1 = c2qa.CVCircuit(qmr,qbr)
     # circuit_1.initialize([0,1], qbr)
     # circuit_1.cv_d(alpha,qmr[0])
-    # circuit_1.append(U_JC,qmr[0] + [qbr[0]]);
+    # circuit_1.append(U_JC,qmr[0] + [qbr[0]])
     # circuit_1 = circuit_1.bind_parameters({dt : total_time})
 
     return circuit_0

@@ -43,7 +43,7 @@ def test_noise_model(capsys):
             time=time, 
             circuit=circuit,
             op_qubits=[0, 1, 2],
-            qumode_indices=[0, 1]
+            qumode_qubit_indices=[0, 1]
         )
 
         print("kraus")
@@ -67,7 +67,7 @@ def test_kraus_operators(capsys):
             time=time, 
             circuit=circuit,
             op_qubits=[0, 1, 2],
-            qumode_indices=[0, 1]
+            qumode_qubit_indices=[0, 1]
         )
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
@@ -120,7 +120,7 @@ def test_beamsplitter_kraus_operators(capsys):
             time=time, 
             circuit=circuit,
             op_qubits=[2, 3, 0, 1],
-            qumode_indices=[0, 1, 2, 3]
+            qumode_qubit_indices=[0, 1, 2, 3]
         )
 
         kraus = qiskit.quantum_info.operators.channel.Kraus(kraus_operators)
@@ -203,6 +203,50 @@ def test_noise_with_beamsplitter(capsys):
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
         state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
+
+def test_noise_with_beamsplitter_diff_cutoff(capsys):
+    with capsys.disabled():
+        qmr1 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr2 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=3)
+        init_circuit = c2qa.CVCircuit(qmr1, qmr2)
+        init_circuit.cv_initialize(2, qmr1[0])
+        init_circuit.cv_initialize(2, qmr2[0])
+        init_circuit.cv_bs(1, qmr1[0], qmr2[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+
+
+@pytest.mark.skip(reason="This test takes nearly 30 minutes to pass on Github...")
+def test_noise_with_cbs_diff_cutoff(capsys):
+    with capsys.disabled():
+        qmr1 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr2 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=3)
+        qbr = qiskit.QuantumRegister(1)
+        init_circuit = c2qa.CVCircuit(qmr1, qmr2, qbr)
+        init_circuit.cv_initialize(2, qmr1[0])
+        init_circuit.cv_initialize(2, qmr2[0])
+        init_circuit.cv_c_bs(1, qmr1[0], qmr2[0], qbr[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+
+
+def test_noise_with_sq2_diff_cutoff(capsys):
+    with capsys.disabled():
+        qmr1 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr2 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=3)
+        init_circuit = c2qa.CVCircuit(qmr1, qmr2)
+        init_circuit.cv_initialize(2, qmr1[0])
+        init_circuit.cv_initialize(2, qmr2[0])
+        init_circuit.cv_sq2(1, qmr1[0], qmr2[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+    
 
 def test_noise_with_cnd_beamsplitter(capsys):
     with capsys.disabled():
@@ -303,7 +347,7 @@ def test_animate_photon_loss_pass(capsys):
         assert Path(wigner_filename).is_file()
 
 
-def test_animate_photon_loss_pas_with_epsilon(capsys):
+def test_animate_photon_loss_pass_with_epsilon(capsys):
     with capsys.disabled():
         num_qumodes = 1
         num_qubits_per_qumode = 4

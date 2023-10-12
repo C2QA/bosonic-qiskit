@@ -28,22 +28,23 @@ class TestUnitary:
     """Verify operators are unitary"""
 
     def setup_method(self, method):
-        self.ops = CVOperators(cutoff=4, num_qumodes=2)
+        self.cutoff = 4
+        self.ops = CVOperators()
 
     def test_bs(self):
-        assert is_unitary_matrix(self.ops.bs(random.random()))
+        assert is_unitary_matrix(self.ops.bs(random.random(), self.cutoff, self.cutoff))
 
     def test_d(self):
-        assert is_unitary_matrix(self.ops.d(random.random()))
+        assert is_unitary_matrix(self.ops.d(random.random(), self.cutoff))
 
     def test_r(self):
-        assert is_unitary_matrix(self.ops.r(random.random()))
+        assert is_unitary_matrix(self.ops.r(random.random(), self.cutoff))
 
     def test_s(self):
-        assert is_unitary_matrix(self.ops.s(random.random()))
+        assert is_unitary_matrix(self.ops.s(random.random(), self.cutoff))
 
     def test_s2(self):
-        assert is_unitary_matrix(self.ops.s2(random.random()))
+        assert is_unitary_matrix(self.ops.s2(random.random(), self.cutoff, self.cutoff))
 
 
 class TestMatrices:
@@ -54,7 +55,7 @@ class TestMatrices:
     def setup_method(self, method):
         self.cutoff = 4
         self.num_qumodes = 2
-        self.ops = CVOperators(cutoff=self.cutoff, num_qumodes=self.num_qumodes)
+        self.ops = CVOperators()
 
     def test_a(self, capsys):
         # From https://github.com/XanaduAI/strawberryfields/blob/master/strawberryfields/backends/fockbackend/ops.py#L208-L215
@@ -63,11 +64,11 @@ class TestMatrices:
         for i in range(1, trunc):
             ret[i - 1][i] = numpy.sqrt(i)
 
-        assert allclose(self.ops.a, ret)
+        assert allclose(self.ops.get_a(self.cutoff), ret)
 
     def test_bs(self):
-        one = self.ops.bs(1)
-        rand = self.ops.bs(random.random())
+        one = self.ops.bs(1, self.cutoff, self.cutoff)
+        rand = self.ops.bs(random.random(), self.cutoff, self.cutoff)
 
         assert not allclose(one, rand)
 
@@ -75,7 +76,7 @@ class TestMatrices:
         """Doesn't actually test anything, but as it is run across platforms by GitHub
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
-            op = self.ops.bs(numpy.pi / 4)
+            op = self.ops.bs(numpy.pi / 4, self.cutoff, self.cutoff)
             # print()
             # print(op)
 
@@ -83,7 +84,7 @@ class TestMatrices:
 
     def test_d(self, capsys):
         with capsys.disabled():
-            one = self.ops.d(1)
+            one = self.ops.d(1, self.cutoff)
             # rand = self.ops.d(random.random())
 
             print()
@@ -94,7 +95,7 @@ class TestMatrices:
             print("1")
             print(one)
 
-            neg_one = self.ops.d(-1)
+            neg_one = self.ops.d(-1, self.cutoff)
             print("-1")
             print(neg_one)
 
@@ -104,26 +105,26 @@ class TestMatrices:
         """Doesn't actually test anything, but as it is run across platforms by GitHub
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
-            op = self.ops.d(numpy.pi / 2)
+            op = self.ops.d(numpy.pi / 2, self.cutoff)
             # print()
             # print(op)
 
             assert op.nnz
 
     def test_r(self):
-        one = self.ops.r(1)
-        rand = self.ops.r(random.random())
+        one = self.ops.r(1, self.cutoff)
+        rand = self.ops.r(random.random(), self.cutoff)
 
         assert not allclose(one, rand)
 
     def test_s(self):
-        one = self.ops.s(1)
-        rand = self.ops.s(random.random())
+        one = self.ops.s(1, self.cutoff)
+        rand = self.ops.s(random.random(), self.cutoff)
 
         assert not allclose(one, rand)
 
     def test_s2(self):
-        one = self.ops.s2(1)
-        rand = self.ops.s2(random.random())
+        one = self.ops.s2(1, self.cutoff, self.cutoff)
+        rand = self.ops.s2(random.random(), self.cutoff, self.cutoff)
 
         assert not allclose(one, rand)
