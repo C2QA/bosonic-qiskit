@@ -218,6 +218,21 @@ def test_noise_with_beamsplitter_diff_cutoff(capsys):
         state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
+def test_noise_with_cbs_diff_cutoff(capsys):
+    with capsys.disabled():
+        qmr1 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr2 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=3)
+        qbr = qiskit.QuantumRegister(1)
+        init_circuit = c2qa.CVCircuit(qmr1, qmr2, qbr)
+        init_circuit.cv_initialize(2, qmr1[0])
+        init_circuit.cv_initialize(2, qmr2[0])
+        init_circuit.cv_bs(1, qmr1[0], qmr2[0], qbr[0], duration=100, unit="ns")
+        photon_loss_rate = 0.01
+        time_unit = "ns"
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
+        state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
+
+
 def test_noise_with_sq2_diff_cutoff(capsys):
     with capsys.disabled():
         qmr1 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
