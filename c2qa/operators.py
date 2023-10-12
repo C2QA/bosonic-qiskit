@@ -21,14 +21,14 @@ class CVOperators:
             data=data, diags=[1], m=len(data), n=len(data)
         ).tocsc()
 
-    def get_a1(self, cutoff: int):
-            return scipy.sparse.kron(self.get_a(cutoff), self.get_eye(cutoff)).tocsc()
+    def get_a1(self, cutoff_a: int, cutoff_b: int):
+            return scipy.sparse.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b)).tocsc()
     
-    def get_a2(self, cutoff: int):
-        return scipy.sparse.kron(self.get_eye(cutoff), self.get_a(cutoff)).tocsc()
+    def get_a2(self, cutoff_a: int, cutoff_b: int):
+        return scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b)).tocsc()
         
-    def get_a12(self, cutoff: int):
-        return self.get_a1(cutoff) * self.get_a2(cutoff)
+    def get_a12(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
     
     def get_a_dag(self, cutoff: int):
         """Creation operator"""
@@ -41,20 +41,20 @@ class CVOperators:
         a_dag = self.get_a_dag(cutoff)
         return a_dag * a
     
-    def get_a1_dag(self, cutoff: int):
-        return self.get_a1(cutoff).conjugate().transpose().tocsc()
+    def get_a1_dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
     
-    def get_a2_dag(self, cutoff: int):
-        return self.get_a2(cutoff).conjugate().transpose().tocsc()
+    def get_a2_dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a2(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
     
-    def get_a12_dag(self, cutoff: int):
-        return self.get_a1_dag(cutoff) * self.get_a2_dag(cutoff)
+    def get_a12_dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
     
-    def get_a12dag(self, cutoff: int):
-        return self.get_a1(cutoff) * self.get_a2_dag(cutoff)
+    def get_a12dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
     
-    def get_a1dag2(self, cutoff: int):
-        return self.get_a1_dag(cutoff) * self.get_a2(cutoff)
+    def get_a1dag2(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
 
     def get_eye(self, cutoff: int):
         """Identity matrix"""
@@ -113,8 +113,7 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
-        arg = (numpy.conjugate(theta * 1j) * self.get_a12_dag(cutoff_a)) - (theta * 1j * self.get_a12(cutoff_a))
+        arg = (numpy.conjugate(theta * 1j) * self.get_a12_dag(cutoff_a, cutoff_b)) - (theta * 1j * self.get_a12(cutoff_a, cutoff_b))
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -128,8 +127,7 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
-        arg = theta * self.get_a1dag2(cutoff_a) - numpy.conj(theta) * self.get_a12dag(cutoff_a)
+        arg = theta * self.get_a1dag2(cutoff_a, cutoff_b) - numpy.conj(theta) * self.get_a12dag(cutoff_a, cutoff_b)
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -214,8 +212,8 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
-        argm = theta * self.get_a1dag2(cutoff_a) - numpy.conjugate(theta) * self.get_a12dag(cutoff_a)
+        
+        argm = theta * self.get_a1dag2(cutoff_a, cutoff_b) - numpy.conjugate(theta) * self.get_a12dag(cutoff_a, cutoff_b)
         arg = scipy.sparse.kron(zQB, argm).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
@@ -230,10 +228,9 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME Using both cutoffs will cause `ValueError: dimension mismatch` between calculated matrices.
-        Sx = (self.get_a1(cutoff_a) * self.get_a2_dag(cutoff_a) + self.get_a1_dag(cutoff_a) * self.get_a2(cutoff_a))/2
-        Sy = (self.get_a1(cutoff_a) * self.get_a2_dag(cutoff_a) - self.get_a1_dag(cutoff_a) * self.get_a2(cutoff_a))/(2*1j)
-        Sz = (self.get_a2_dag(cutoff_a) * self.get_a2(cutoff_a) - self.get_a1_dag(cutoff_a) * self.get_a1(cutoff_a))/2
+        Sx = (self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b) + self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b))/2
+        Sy = (self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b) - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b))/(2*1j)
+        Sz = (self.get_a2_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b) - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a1(cutoff_a, cutoff_b))/2
 
         sigma = numpy.sin(theta_1)*numpy.cos(phi_1)*xQB + numpy.sin(theta_1)*numpy.sin(phi_1)*yQB + numpy.cos(theta_1)*zQB
         S = numpy.sin(theta_2)*numpy.cos(phi_2)*Sx + numpy.sin(theta_2)*numpy.sin(phi_2)*Sy + numpy.cos(theta_2)*Sz
