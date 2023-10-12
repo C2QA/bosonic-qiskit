@@ -23,7 +23,7 @@ jobs:
 
         # Run pydoctor build
         pydoctor \
-            --project-name=bosonig-qiskit \
+            --project-name=bosonic-qiskit \
             --project-url=https://github.com/$GITHUB_REPOSITORY \
             --html-viewsource-base=https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_SHA \
             --make-html \
