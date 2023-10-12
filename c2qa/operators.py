@@ -364,11 +364,10 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        # FIXME which cutoff values to use
-        self.mat = numpy.zeros([cutoff_a * cutoff_a, cutoff_a * cutoff_a])
+        self.mat = numpy.zeros([cutoff_a * cutoff_b, cutoff_a * cutoff_b])
         for j in range(cutoff_a):
-            for i in range(cutoff_a):
-                self.mat[i + (j * cutoff_a)][i * cutoff_a + j] = 1
+            for i in range(cutoff_b):
+                self.mat[i + (j * cutoff_a)][i * cutoff_b + j] = 1
         self.sparse_mat = scipy.sparse.csr_matrix(self.mat).tocsc()
 
         arg = 1j * theta * self.sparse_mat
