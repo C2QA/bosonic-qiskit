@@ -218,6 +218,7 @@ def test_noise_with_beamsplitter_diff_cutoff(capsys):
         state, result, fock_counts = c2qa.util.simulate(init_circuit, noise_passes=noise_pass)
 
 
+@pytest.mark.skip(reason="This test takes nearly 30 minutes to pass on Github...")
 def test_noise_with_cbs_diff_cutoff(capsys):
     with capsys.disabled():
         qmr1 = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
