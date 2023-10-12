@@ -226,7 +226,7 @@ def test_noise_with_cbs_diff_cutoff(capsys):
         init_circuit = c2qa.CVCircuit(qmr1, qmr2, qbr)
         init_circuit.cv_initialize(2, qmr1[0])
         init_circuit.cv_initialize(2, qmr2[0])
-        init_circuit.cv_bs(1, qmr1[0], qmr2[0], qbr[0], duration=100, unit="ns")
+        init_circuit.cv_c_bs(1, qmr1[0], qmr2[0], qbr[0], duration=100, unit="ns")
         photon_loss_rate = 0.01
         time_unit = "ns"
         noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=init_circuit, time_unit=time_unit)
