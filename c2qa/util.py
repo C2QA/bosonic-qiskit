@@ -5,6 +5,7 @@ import numpy as np
 import qiskit
 import qiskit.quantum_info
 from qiskit.quantum_info import Statevector, DensityMatrix
+import qiskit_aer
 
 
 from c2qa import CVCircuit
