@@ -461,7 +461,7 @@ def simulate(
         circuit_compiled = sim_circuit
 
     # Transpile for simulator
-    simulator = qiskit.providers.aer.AerSimulator()
+    simulator = qiskit_aer.AerSimulator()
     circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
     # Run and get statevector

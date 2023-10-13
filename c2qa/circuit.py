@@ -5,7 +5,7 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.parametertable import ParameterTable
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
-import qiskit.providers.aer.library.save_instructions as save
+import qiskit_aer.library.save_instructions as save
 
 from c2qa.operators import CVOperators
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
