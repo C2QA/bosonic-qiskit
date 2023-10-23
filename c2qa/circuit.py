@@ -204,7 +204,7 @@ class CVCircuit(QuantumCircuit):
 
     def cv_snapshot(self):
         """Wrap the Qiskit QuantumCircuit Snapshot function, giving it a known label for later Wigner function plot generation"""
-        self.snapshot(f"cv_snapshot_{self.cv_snapshot_id}")
+        self.save_statevector(f"cv_snapshot_{self.cv_snapshot_id}")
         self.cv_snapshot_id += 1
 
     def add_qubit_register(self, *regs):
