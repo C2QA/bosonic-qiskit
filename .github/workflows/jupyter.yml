@@ -7,7 +7,7 @@ jobs:
   deploy-book:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
@@ -22,6 +22,6 @@ jobs:
       run: |
         shopt -s globstar
         for nb in "tutorials/**/*.ipynb"; do
-            jupyter-book build .
+            jupyter-book build $nb
         done
         
