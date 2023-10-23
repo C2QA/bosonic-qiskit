@@ -1,0 +1,27 @@
+name: jupyter-build
+
+on:
+- push
+
+jobs:
+  deploy-book:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements_dev.txt
+
+    - name: Build the books
+      run: |
+        shopt -s globstar
+        for nb in "tutorials/**/*.ipynb"; do
+            jupyter-book build .
+        done
+        
