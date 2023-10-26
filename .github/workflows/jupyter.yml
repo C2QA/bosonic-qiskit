@@ -24,7 +24,8 @@ jobs:
         TOTAL_ERRORS=0
         for nb in tutorials/**/*.ipynb; do
             jupyter-book build "$nb"
-            grep -q '"output_type": "error"' "$nb"
+            echo "checking for error in notebook"
+            grep '"output_type": "error"' "$nb"
             ERROR_COUNT=$?
             echo "Found $ERROR_COUNT in $nb"
             TOTAL_ERRORS=$(($TOTAL_ERRORS + $ERROR_COUNT))
