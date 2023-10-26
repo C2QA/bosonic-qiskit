@@ -21,7 +21,11 @@ jobs:
     - name: Build the books
       run: |
         shopt -s globstar
+        ERRORS=0
         for nb in tutorials/**/*.ipynb; do
             jupyter-book build "$nb"
+            grep -q '"output_type": "error"' "$nb"
+            ERRORS=$(($ERRORS + $?))
         done
+        exit $ERRORS
         
