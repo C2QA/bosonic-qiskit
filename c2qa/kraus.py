@@ -7,9 +7,9 @@ import warnings
 import c2qa
 import numpy
 from qiskit.circuit import Instruction, Qubit
-from qiskit.providers.aer.noise.passes.local_noise_pass import LocalNoisePass
-from qiskit.providers.aer.noise import kraus_error
-from qiskit.providers.aer.noise.noiseerror import NoiseError
+from qiskit_aer.noise.passes.local_noise_pass import LocalNoisePass
+from qiskit_aer.noise import kraus_error
+from qiskit_aer.noise.noiseerror import NoiseError
 from qiskit.utils.units import apply_prefix
 import scipy
 

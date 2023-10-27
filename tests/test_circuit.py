@@ -3,7 +3,7 @@ import json
 import numpy
 import pytest
 import qiskit
-from qiskit.providers.ibmq.runtime.utils import RuntimeEncoder
+from qiskit_ibm_runtime.utils import RuntimeEncoder
 
 
 def test_no_registers():
@@ -131,8 +131,6 @@ def test_initialize_qubit_values(capsys):
 def test_serialize(capsys):
     with capsys.disabled():
         print()
-
-        from qiskit.providers.ibmq.runtime.utils import RuntimeEncoder
 
         qumodes = c2qa.QumodeRegister(2)
         bosonic_circuit = c2qa.CVCircuit(qumodes)

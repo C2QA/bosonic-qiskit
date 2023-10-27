@@ -9,9 +9,9 @@ import numpy as np
 
 
 import qiskit
-import qiskit.providers.aer.noise as noise
-from qiskit.providers.aer.noise.noiseerror import NoiseError
-from qiskit.providers.aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
+import qiskit_aer.noise as noise
+from qiskit_aer.noise.noiseerror import NoiseError
+from qiskit_aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
 from qiskit.tools.visualization import plot_histogram
 
 
