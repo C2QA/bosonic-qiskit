@@ -13,6 +13,7 @@ jobs:
     needs: list-notebooks
     runs-on: ubuntu-latest
     strategy:
+        fail-fast: false
         matrix:
             manifest: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
     steps:
