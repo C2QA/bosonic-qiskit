@@ -1,0 +1,21 @@
+name: jupyter-matrix
+on: push
+jobs:
+  list-notebooks:
+    runs-on: ubuntu-latest
+    outputs:
+      notebook: ${{ steps.set-notebook.outputs.notebook }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-notebook
+        run: echo "::set-output name=notebook::$(ls tutorials/**/*.ipynb | jq -R -s -c 'split("\n")[:-1]')"
+  check:
+    needs: list-notebooks
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            manifest: ${{ fromJson(needs.list-notebooks.outputs.notebok) }}
+    steps:
+      - uses: actions/checkout@v2   
+      - run: |
+        echo ${{ martix.manifest }}
