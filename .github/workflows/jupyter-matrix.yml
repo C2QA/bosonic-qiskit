@@ -16,5 +16,20 @@ jobs:
         matrix:
             manifest: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v2   
-      - run: echo ${{ matrix.manifest }}
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_dev.txt
+
+      - name: Build the books
+        run: |
+        TOTAL_ERRORS=0
+        jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
+        grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && TOTAL_ERRORS=1
+        exit $TOTAL_ERRORS          
