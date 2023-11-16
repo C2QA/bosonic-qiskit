@@ -4,17 +4,17 @@ jobs:
   list-notebooks:
     runs-on: ubuntu-latest
     outputs:
-      notebook: ${{ steps.set-notebook.outputs.notebook }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v2
-      - id: set-notebook
-        run: echo "::set-output name=notebook::$(ls tutorials/**/*.ipynb | jq -R -s -c 'split("\n")[:-1]')"
+      - id: set-matrix
+        run: echo "::set-output name=matrix::$(ls tutorials/**/*.ipynb | jq -R -s -c 'split("\n")[:-1]')"
   check:
     needs: list-notebooks
     runs-on: ubuntu-latest
     strategy:
         matrix:
-            manifest: ${{ fromJson(needs.list-notebooks.outputs.notebok) }}
+            manifest: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v2   
       - run: |
