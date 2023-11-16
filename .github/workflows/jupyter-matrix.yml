@@ -28,4 +28,4 @@ jobs:
           pip install -r requirements_dev.txt
 
       - run: jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
-      # - run: grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && exit 1      
+      - run: grep -q "\"output_type\": \"error\"" "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && exit 1      
