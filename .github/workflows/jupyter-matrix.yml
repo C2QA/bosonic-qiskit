@@ -22,10 +22,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
 
-      - run: jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
-      - run: grep -q "\"output_type\": \"error\"" "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && exit 1      
+      - name: Build notebook
+        run: |
+          jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
+          grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && exit 1
