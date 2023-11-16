@@ -32,4 +32,6 @@ jobs:
       - name: Build notebook
         run: |
           jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
-          grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && exit 1
+          TOTAL_ERRORS=0
+          grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && TOTAL_ERRORS=1
+          exit TOTAL_ERRORS
