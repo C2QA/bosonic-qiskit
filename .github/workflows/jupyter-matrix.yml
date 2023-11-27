@@ -27,6 +27,11 @@ jobs:
       - name: Setup FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@v2
 
+      - name: Setup TeXLive
+        uses: xu-cheng/texlive-action@v2
+        with:
+          scheme: small
+
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
