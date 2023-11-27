@@ -28,9 +28,10 @@ jobs:
         uses: FedericoCarboni/setup-ffmpeg@v2
 
       - name: Setup TeXLive
-        uses: xu-cheng/texlive-action@v2
+        uses: zauguin/install-texlive@v2
         with:
-          scheme: small
+          packages: >
+            l3build latex latex-bin luatex latex-bin-dev
 
       - name: Install Python dependencies
         run: |
