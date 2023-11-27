@@ -33,6 +33,7 @@ jobs:
           packages: >-
             scheme-basic
             type1cm
+            type1ec
 
       - name: Install Python dependencies
         run: |
