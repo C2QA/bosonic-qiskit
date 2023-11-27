@@ -33,5 +33,5 @@ jobs:
         run: |
           jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
           TOTAL_ERRORS=0
-          grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && TOTAL_ERRORS=1
+          grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && TOTAL_ERRORS=1 && printf '%b\n' | jq -r '.cells[].outputs[]?.traceback[]?' ${{ matrix.manifest }}
           exit $TOTAL_ERRORS
