@@ -12,6 +12,8 @@ jobs:
   notebook:
     needs: list-notebooks
     runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive
     strategy:
         fail-fast: false
         matrix:
@@ -26,12 +28,6 @@ jobs:
 
       - name: Setup FFmpeg
         uses: FedericoCarboni/setup-ffmpeg@v2
-
-      - name: Setup TeXLive
-        uses: zauguin/install-texlive@v2
-        with:
-          packages: >
-            l3build latex latex-bin luatex latex-bin-dev
 
       - name: Install Python dependencies
         run: |
