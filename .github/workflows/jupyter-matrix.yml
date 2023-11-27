@@ -24,7 +24,10 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Setup FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
