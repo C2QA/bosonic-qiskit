@@ -151,3 +151,5 @@ tests/**/*.apng
 tutorials/**/*.apng
 
 apidocs/
+
+_build/

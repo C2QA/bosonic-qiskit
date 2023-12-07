@@ -1,0 +1,45 @@
+name: jupyter-matrix
+on: push
+jobs:
+  list-notebooks:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: echo "::set-output name=matrix::$(ls tutorials/**/*.ipynb | jq -R -s -c 'split("\n")[:-1]')"
+  notebook:
+    needs: list-notebooks
+    runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+            manifest: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Setup FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v2
+
+      - name: Setup TeX Live
+        uses: teatimeguest/setup-texlive-action@v3
+        with:
+          packages: scheme-full
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_dev.txt
+
+      - name: Build notebook
+        run: |
+          jupyter nbconvert --to notebook --inplace --execute --allow-errors "${{ matrix.manifest }}"
+          TOTAL_ERRORS=0
+          grep -q '"output_type": "error"' "${{ matrix.manifest }}" && echo "Found errors in ${{ matrix.manifest }}" && TOTAL_ERRORS=1 && printf '%b\n' | jq -r '.cells[].outputs[]?.traceback[]?' "${{ matrix.manifest }}"
+          exit $TOTAL_ERRORS
