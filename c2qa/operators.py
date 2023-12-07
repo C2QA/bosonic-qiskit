@@ -1,6 +1,7 @@
 import numpy
 import scipy.sparse
 import scipy.sparse.linalg
+import pdb
 
 
 xQB = numpy.array([[0, 1], [1, 0]])
@@ -276,7 +277,7 @@ class CVOperators:
         arg = theta * 1j * scipy.sparse.kron(zQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
         
-    def multisnap(self, *args, cutoff):
+    def multisnap(self, *args):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations.
         
@@ -287,8 +288,10 @@ class CVOperators:
             csr_matrix: operator matrix
         """
         # Divide list in two because thetas and ns must be sent in as a single list
-        thetas = args[:len(args) // 2] # arguments
-        ns = args[len(args) // 2:] # Fock states on which they are applied
+        cutoff = args[-1]
+        theta_ns = args[0:-1]
+        thetas = theta_ns[:len(theta_ns) // 2] # arguments
+        ns = theta_ns[len(theta_ns) // 2:] # Fock states on which they are applied
         if len(thetas)!=len(ns): # one theta per Fock state to apply it to
             raise Exception("len(theta) must be equal to len(n)")
 
@@ -303,7 +306,7 @@ class CVOperators:
             gate = numpy.add(gate, mat)
         return scipy.sparse.csr_matrix(gate)
 
-    def multicsnap(self, *args, cutoff):
+    def multicsnap(self, *args):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations, with the qubit that accrues the geometric phase explicit.
         
@@ -314,8 +317,10 @@ class CVOperators:
             csr_matrix: operator matrix
         """
         # Divide list in two because thetas and ns must be sent in as a single list
-        thetas = args[:len(args) // 2] # arguments
-        ns = args[len(args) // 2:] # Fock states on which they are applied
+        cutoff = args[-1]
+        theta_ns = args[0:-1]
+        thetas = theta_ns[:len(theta_ns) // 2] # arguments
+        ns = theta_ns[len(theta_ns) // 2:] # Fock states on which they are applied
         if len(thetas)!=len(ns): # one theta per Fock state to apply it to
             raise Exception("len(theta) must be equal to len(n)")
 
