@@ -39,8 +39,8 @@ The first step in adding a new gate is to develop software to build a unitary op
 
 Once you've written software to build the operator matrix, a new function is added to the CVCircuit class found in [circuit.py](c2qa/circuit.py). This class extends the QisKit QuantumCircuit class to add the bosonic gates available in this library. The previusly defined operators are parameterized by user input, as needed, and appended to the QuantumCircuit as unitary gates. The CVCircuit class includes functions to easily make your new gates conditional based on a control qubit.
 
+See examples of software building new gates in the previously mentioned [operators.py](c2qa/operators.py) and [circuit.py](c2qa/circuit.py). Examples using the library's gates can be found in both the PyTest [test cases](tests) and Jupyter Notebook [tutorials](tutorials) folders
+
 ## Available Gates
 
 Current gates available for simulation are documented at https://c2qa.github.io/bosonic-qiskit/c2qa.circuit.CVCircuit.html
-
-See examples of software building new gates in the previously mentioned [operators.py](c2qa/operators.py) and [circuit.py](c2qa/circuit.py). Examples using the library's gates can be found in both the PyTest [test cases](tests) and Jupyter Notebook [tutorials](tutorials) folders
