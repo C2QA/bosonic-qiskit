@@ -34,11 +34,6 @@ class CVCircuit(QuantumCircuit):
 
         for reg in regs:
             if isinstance(reg, QumodeRegister):
-                if len(self.qmregs) > 0:
-                    warnings.warn(
-                        "More than one QumodeRegister provided. Using the last one for cutoff.",
-                        UserWarning,
-                    )
                 self.qmregs.append(reg)
                 registers.append(reg.qreg)
                 num_qubits += reg.size
