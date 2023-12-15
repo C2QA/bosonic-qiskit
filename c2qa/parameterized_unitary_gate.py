@@ -78,7 +78,7 @@ class ParameterizedUnitaryGate(Gate):
 
             self.definition = qc
         except:
-            warnings.warn("Unable to define gate")
+            warnings.warn("Unable to define gate, setting definition to None to prevent serialization errors for parameterized unitary gates.")
             self.definition = None
 
     def validate_parameter(self, parameter):
