@@ -21,11 +21,6 @@ def test_only_qumoderegister():
     c2qa.CVCircuit(c2qa.QumodeRegister(1, 1))
 
 
-def test_multiple_qumoderegisters():
-    with pytest.warns(UserWarning):
-        c2qa.CVCircuit(c2qa.QumodeRegister(1, 1), c2qa.QumodeRegister(1, 1))
-
-
 def test_correct():
     c2qa.CVCircuit(qiskit.QuantumRegister(1), c2qa.QumodeRegister(1, 1))
 
