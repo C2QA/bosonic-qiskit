@@ -5,7 +5,7 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.parametertable import ParameterTable
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
-import qiskit.providers.aer.library.save_instructions as save
+import qiskit_aer.library.save_instructions as save
 
 from c2qa.operators import CVOperators
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
@@ -30,17 +30,10 @@ class CVCircuit(QuantumCircuit):
 
         registers = []
 
-        num_qumodes = 0
         num_qubits = 0
 
         for reg in regs:
             if isinstance(reg, QumodeRegister):
-                if len(self.qmregs) > 0:
-                    warnings.warn(
-                        "More than one QumodeRegister provided. Using the last one for cutoff.",
-                        UserWarning,
-                    )
-                num_qumodes += reg.num_qumodes
                 self.qmregs.append(reg)
                 registers.append(reg.qreg)
                 num_qubits += reg.size
@@ -62,7 +55,7 @@ class CVCircuit(QuantumCircuit):
 
         super().__init__(*registers, name=name)
 
-        self.ops = CVOperators(self.cutoff, num_qumodes)
+        self.ops = CVOperators()
         self.cv_snapshot_id = 0
 
     def merge(self, circuit: QuantumCircuit):
@@ -105,20 +98,14 @@ class CVCircuit(QuantumCircuit):
 
         self._calibrations = copy.deepcopy(circuit._calibrations)
         self._metadata = copy.deepcopy(circuit._metadata)
-
-    @property
-    def cutoff(self):
-        """Integer cutoff size."""
-        return self.qmregs[-1].cutoff
     
-    def qumode_cutoff(self, qumode_index:int):
+    def get_qmr_cutoff(self, qmr_index: int):
         """Return the qumode cutoff at the given index"""
-        return self.qmregs[qumode_index].cutoff
+        return self.qmregs[qmr_index].cutoff
 
-    @property
-    def num_qubits_per_qumode(self):
-        """Integer number of qubits to represent a qumode."""
-        return self.qmregs[-1].num_qubits_per_qumode
+    def get_qmr_num_qubits_per_qumode(self, qmr_index: int):
+        """Return the number of qubits in the qumode register at the given index"""
+        return self.qmregs[qmr_index].num_qubits_per_qumode
 
     @property
     def qumode_qubits(self):
@@ -188,7 +175,7 @@ class CVCircuit(QuantumCircuit):
                 indices.append(i)
         return indices
     
-    def get_qubit_qumode_index(self, qubit):
+    def get_qmr_index(self, qubit):
         """Return the qumode index for the given qubit. If not found, return -1."""
         for index, qmr in enumerate(self.qmregs):
             if qubit in qmr:
@@ -212,7 +199,7 @@ class CVCircuit(QuantumCircuit):
 
     def cv_snapshot(self):
         """Wrap the Qiskit QuantumCircuit Snapshot function, giving it a known label for later Wigner function plot generation"""
-        self.snapshot(f"cv_snapshot_{self.cv_snapshot_id}")
+        self.save_statevector(f"cv_snapshot_{self.cv_snapshot_id}")
         self.cv_snapshot_id += 1
 
     def add_qubit_register(self, *regs):
@@ -236,8 +223,9 @@ class CVCircuit(QuantumCircuit):
         Args:
             params (list or int): If an int, all specified qumodes will be initialized to the Fock state with n=params.
                                   If a list, all specified qumodes will be initialized to a superposition of Fock states,
-                                  with params[n] the complex amplitude of Fock state |n>. The length of params must be less
+                                  with ``params[n]`` the complex amplitude of Fock state ``|n>``. The length of params must be less
                                   than or equal to the cutoff.
+
             qumodes (list): list of qubits representing a single qumode, or list of multiple qumodes
 
         Raises:
@@ -251,24 +239,24 @@ class CVCircuit(QuantumCircuit):
 
         if isinstance(params, int):
             for qumode in modes:
-                qumode_index = self.get_qubit_qumode_index(qumode[0])
+                qumode_index = self.get_qmr_index(qumode[0])
 
-                if params >= self.qumode_cutoff(qumode_index):
+                if params >= self.get_qmr_cutoff(qumode_index):
                     raise ValueError("The given Fock state is greater than the cutoff.")
 
-                value = np.zeros((self.qumode_cutoff(qumode_index),), dtype=np.complex_)
+                value = np.zeros((self.get_qmr_cutoff(qumode_index),), dtype=np.complex_)
                 value[params] = 1 + 0j
 
                 super().initialize(value, qumode)
         else:
             for qumode in modes:
-                qumode_index = self.get_qubit_qumode_index(qumode[0])
+                qumode_index = self.get_qmr_index(qumode[0])
 
-                if len(params) > self.qumode_cutoff(qumode_index):
+                if len(params) > self.get_qmr_cutoff(qumode_index):
                     raise ValueError("len(params) exceeds the cutoff.")
 
                 params = np.array(params) / np.linalg.norm(np.array(params))
-                amplitudes = np.zeros((self.qumode_cutoff(qumode_index),), dtype=np.complex_)
+                amplitudes = np.zeros((self.get_qmr_cutoff(qumode_index),), dtype=np.complex_)
                 for ind in range(len(params)):
                     amplitudes[ind] = complex(params[ind])
 
@@ -344,13 +332,14 @@ class CVCircuit(QuantumCircuit):
         Args:
             theta (real): rotation
             qumode (list): list of qubits representing qumode
+            cutoff (int): qumode cutoff
 
         Returns:
             Instruction: QisKit instruction
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.r, [theta], num_qubits=len(qumode), label="R", duration=duration, unit=unit
+                self.ops.r, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="R", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
@@ -361,13 +350,14 @@ class CVCircuit(QuantumCircuit):
         Args:
             alpha (real or complex): displacement
             qumode (list): list of qubits representing qumode
+            cutoff (int): qumode cutoff
 
         Returns:
             Instruction: QisKit instruction
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.d, [alpha], num_qubits=len(qumode), label="D", duration=duration, unit=unit
+                self.ops.d, [alpha], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="D", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
@@ -384,7 +374,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.s, [theta], num_qubits=len(qumode), label="S", duration=duration, unit=unit
+                self.ops.s, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode), label="S", duration=duration, unit=unit
             ),
             qargs=qumode,
         )
@@ -402,7 +392,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.s2, [theta], num_qubits=len(qumode_a) + len(qumode_b), label="S2", duration=duration, unit=unit
+                self.ops.s2, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))], num_qubits=len(qumode_a) + len(qumode_b), label="S2", duration=duration, unit=unit
             ),
             qargs=qumode_a + qumode_b,
         )
@@ -422,6 +412,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.bs,
                 [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))],
                 num_qubits=len(qumode_a) + len(qumode_b),
                 label="BS",
                 duration=duration,
@@ -445,6 +436,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.cr,
                 [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
                 num_qubits=len(qumode) + 1,
                 label="cR",
                 duration=duration,
@@ -466,7 +458,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.crx, [theta], num_qubits=len(qumode) + 1, label="cRX", duration=duration, unit=unit
+                self.ops.crx, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cRX", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -484,7 +476,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.cry, [theta], num_qubits=len(qumode) + 1, label="cRY", duration=duration, unit=unit
+                self.ops.cry, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cRY", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -507,7 +499,7 @@ class CVCircuit(QuantumCircuit):
 
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.cd, [theta, beta], num_qubits=len(qumode) + 1, label="cD", duration=duration, unit=unit
+                self.ops.cd, [theta, beta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cD", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -524,7 +516,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.ecd, [theta], num_qubits=len(qumode) + 1, label="ECD", duration=duration, unit=unit
+                self.ops.ecd, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="ECD", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -545,6 +537,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.cbs,
                 [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))],
                 num_qubits=len(qumode_a) + len(qumode_b) + 1,
                 label="cBS",
                 duration=duration,
@@ -581,6 +574,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.cschwinger,
                 params,
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))],
                 num_qubits=len(qumode_a) + len(qumode_b) + 1,
                 label="cSchw",
                 duration=duration,
@@ -606,20 +600,21 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
+        cutoff = QumodeRegister.calculate_cutoff(len(qumode))
         if isinstance(n,int):
-            if n > self.cutoff:
+            if n > cutoff:
                 ValueError("Fock state specified by n exceeds the cutoff.")
             if qubit is None:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.snap, [theta, n], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                        self.ops.snap, [theta, n], cutoffs=[cutoff], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode,
                 )
             else:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.csnap, [theta, n], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                        self.ops.csnap, [theta, n], cutoffs=[cutoff], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode + [qubit],
                 )
@@ -627,14 +622,14 @@ class CVCircuit(QuantumCircuit):
             if qubit is None:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.multisnap, theta + n, num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
+                        self.ops.multisnap, theta + n, cutoffs=[cutoff], num_qubits=len(qumode), label="SNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode,
                 )
             else:
                 self.append(
                     ParameterizedUnitaryGate(
-                        self.ops.multicsnap, theta + n, num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
+                        self.ops.multicsnap, theta + n, cutoffs=[cutoff], num_qubits=len(qumode) + 1, label="cSNAP", duration=duration, unit=unit
                     ),
                     qargs=qumode + [qubit],
                 )
@@ -666,7 +661,7 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(
             ParameterizedUnitaryGate(
-                self.ops.pnr, [max], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
+                self.ops.pnr, [max], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="c_pnr", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -686,6 +681,7 @@ class CVCircuit(QuantumCircuit):
             ParameterizedUnitaryGate(
                 self.ops.eswap,
                 [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode_a)), QumodeRegister.calculate_cutoff(len(qumode_b))],
                 num_qubits=len(qumode_a) + len(qumode_b),
                 label="eSWAP",
                 duration=duration,
@@ -707,7 +703,7 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.csq, [theta], num_qubits=len(qumode) + 1, label="cS", duration=duration, unit=unit
+                self.ops.csq, [theta], cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], num_qubits=len(qumode) + 1, label="cS", duration=duration, unit=unit
             ),
             qargs=qumode + [qubit],
         )
@@ -715,7 +711,13 @@ class CVCircuit(QuantumCircuit):
     def cv_testqubitorderf(self, phi, qubit_1, qubit_2, duration=100, unit="ns"):
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.testqubitorderf, [phi], label="testqubitorderf", num_qubits=2, duration=duration, unit=unit
+                self.ops.testqubitorderf, 
+                [phi], 
+                label="testqubitorderf", 
+                cutoffs=[], 
+                num_qubits=2, 
+                duration=duration, 
+                unit=unit
             ),
             qargs=[qubit_1] + [qubit_2],
         )
@@ -825,7 +827,13 @@ class CVCircuit(QuantumCircuit):
         """
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.id, [], num_qubits=len(qumode), label="delay(" + str(duration) + " " + unit +")", duration=duration, unit=unit
+                self.ops.get_eye, 
+                [], 
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
+                num_qubits=len(qumode), 
+                label="delay(" + str(duration) + " " + unit +")", 
+                duration=duration, 
+                unit=unit
             ),
             qargs=qumode,
         )
@@ -841,12 +849,18 @@ class CVCircuit(QuantumCircuit):
         """
         self.append(
             ParameterizedUnitaryGate(
-                self.ops.c_multiboson_sampling, [max], num_qubits=len(qumode) + 1, label="c_multiboson_sampling", duration=duration, unit=unit
+                self.ops.c_multiboson_sampling, 
+                [max], 
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))], 
+                num_qubits=len(qumode) + 1, 
+                label="c_multiboson_sampling", 
+                duration=duration, 
+                unit=unit
             ),
             qargs=qumode + [qubit],
         )
 
-    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns", label="gate_from_matrix"):
+    def cv_gate_from_matrix(self, matrix, qumodes=[], qubits=[], duration=100, unit="ns", label:str="gate_from_matrix"):
         """Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically 
         implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may 
         not be applied in a way that is physical.
@@ -890,9 +904,20 @@ class CVCircuit(QuantumCircuit):
         if isinstance(matrix, np.ndarray):
             matrix = matrix.tolist()
 
+        # TODO Is it safe to ignore cutoff, assuming provided matrix is correct?
+        cutoffs = []
+        # for qumode in qumodes:
+        #     cutoffs.append(QumodeRegister.calculate_cutoff(len(qumode)))
+
         return self.append(
             ParameterizedUnitaryGate(
-                self.ops.gate_from_matrix, [matrix], num_qubits=len(qumodes) + len(qubits), label=label, duration=duration, unit=unit
+                self.ops.gate_from_matrix, 
+                [matrix], 
+                cutoffs=cutoffs,
+                num_qubits=len(qumodes) + len(qubits), 
+                label=label, 
+                duration=duration, 
+                unit=unit
             ),
             qargs=qumodes + qubits,
         )

@@ -3,7 +3,7 @@ import json
 import numpy
 import pytest
 import qiskit
-from qiskit.providers.ibmq.runtime.utils import RuntimeEncoder
+from qiskit_ibm_runtime.utils import RuntimeEncoder
 
 
 def test_no_registers():
@@ -19,11 +19,6 @@ def test_only_quantumregister():
 
 def test_only_qumoderegister():
     c2qa.CVCircuit(c2qa.QumodeRegister(1, 1))
-
-
-def test_multiple_qumoderegisters():
-    with pytest.warns(UserWarning):
-        c2qa.CVCircuit(c2qa.QumodeRegister(1, 1), c2qa.QumodeRegister(1, 1))
 
 
 def test_correct():
@@ -132,8 +127,6 @@ def test_serialize(capsys):
     with capsys.disabled():
         print()
 
-        from qiskit.providers.ibmq.runtime.utils import RuntimeEncoder
-
         qumodes = c2qa.QumodeRegister(2)
         bosonic_circuit = c2qa.CVCircuit(qumodes)
 
@@ -142,7 +135,7 @@ def test_serialize(capsys):
             bosonic_circuit.cv_initialize(init_state[i], qumodes[i])
 
         phi = qiskit.circuit.Parameter('phi')
-        bosonic_circuit.cv_bs(phi, qumodes[0], qumodes[1])
+        bosonic_circuit.cv_bs(phi, qumodes[0], qumodes[1], qumodes.cutoff, qumodes.cutoff)
 
         #print(bosonic_circuit.draw())
         print('\nAttempt to serialize an unbound CVCircuit:')
@@ -251,5 +244,5 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr6[0])
 
         # saving a state vector for all the registers takes a considerable amount of time
-        state, result, _ = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
+        state, result, fock_counts = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
         assert result.success

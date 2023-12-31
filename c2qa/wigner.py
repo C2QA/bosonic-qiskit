@@ -387,8 +387,6 @@ def plot_wigner_snapshot(
     axes_steps: int = 200,
     num_colors: int = 100,
 ):
-    snapshots = result.data()['snapshots']['statevector']
-
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
         label = f"cv_snapshot_{cv_snapshot_id}"
 
@@ -397,13 +395,14 @@ def plot_wigner_snapshot(
         else:
             file = f"{label}.png"
         
-        snapshot = snapshots[label]
-        index = 0
-        if len(snapshot) > 1:
-            print(f"Simulation had {len(snapshot)} shots, plotting last one")
-            index = len(snapshot) - 1
+        snapshot = result.data()[label]
+        # index = 0
+        # if len(snapshot) > 1:
+        #     print(f"Simulation had {len(snapshot)} shots, plotting last one")
+        #     index = len(snapshot) - 1
 
-        plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors)
+        # plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors)
+        plot_wigner(circuit, snapshot, trace, file, axes_min, axes_max, axes_steps, num_colors)
 
 
 def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):

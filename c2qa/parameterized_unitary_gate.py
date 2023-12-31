@@ -12,17 +12,14 @@ class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
     def __init__(
-        self, op_func, params, num_qubits, label=None, duration=100, unit="ns", discretized_param_indices: list = []
+        self, op_func, params, num_qubits, cutoffs, label=None, duration=100, unit="ns", discretized_param_indices: list = []
     ):
         """Initialize ParameterizedUnitaryGate
 
         Args:
             op_func (function): function to build operator matrix
-            params (List): List of parameters to pass to op_func to build
-                operator matrix (supports instances of Qiskit Parameter to be
-                bound later)
-            num_qubits (int): Number of qubits in the operator -- this would
-                likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
+            params (List): List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
+            num_qubits (int): Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
             label (string, optional): Gate name. Defaults to None.
             duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
@@ -40,11 +37,14 @@ class ParameterizedUnitaryGate(Gate):
         self.duration = duration
         self.unit = unit
         self.discretized_param_indices = discretized_param_indices
+        self.cutoffs = cutoffs
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
         # return self.op_func(*map(complex, self.params)).toarray()
         values = []
+
+        # Add parameters for op_func call
         for param in self.params:
             if isinstance(param, ParameterExpression):
                 # if param.is_real():
@@ -56,6 +56,11 @@ class ParameterizedUnitaryGate(Gate):
                 )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
             else:
                 values.append(param)
+        
+        # Add cutoff for each parameter
+        values.extend(self.cutoffs)
+
+        # Conver array to tupple
         values = tuple(values)
 
         return self.op_func(*values).toarray()
@@ -73,7 +78,7 @@ class ParameterizedUnitaryGate(Gate):
 
             self.definition = qc
         except:
-            warnings.warn("Unable to define gate")
+            warnings.warn("Unable to define gate, setting definition to None to prevent serialization errors for parameterized unitary gates.")
             self.definition = None
 
     def validate_parameter(self, parameter):
@@ -94,9 +99,11 @@ class ParameterizedUnitaryGate(Gate):
     ):
         """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
+
         Args:
             current_step (int, optional): Current step within total_steps. Defaults to 1.
             total_steps (int, optional): Total steps to increment parameters. Defaults to 1.
+            
         Returns:
             ndarray: operator matrix
         """

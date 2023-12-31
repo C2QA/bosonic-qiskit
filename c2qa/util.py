@@ -5,6 +5,7 @@ import numpy as np
 import qiskit
 import qiskit.quantum_info
 from qiskit.quantum_info import Statevector, DensityMatrix
+import qiskit_aer
 
 
 from c2qa import CVCircuit
@@ -63,7 +64,7 @@ def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
 ):
     """Print values for states of qubits and qumodes using the result of a
-    simulation of the statevector, e.g. using stateop, _, _ = c2qa.util.simulate(circuit).
+    simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """
@@ -238,7 +239,7 @@ def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
     return newcounts
 
 
-def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
+def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result, counts: dict = None):
     """Convert counts dictionary from Fock-basis binary representation into
     base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
     jobs.result(), along with the entire circuit.
@@ -252,7 +253,8 @@ def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result
         qumodes in circuit in little endian order, with Fock-basis
         qumode measurements reported as a base-10 integer.
     """
-    counts = result.get_counts()
+    if not counts:
+        counts = result.get_counts()
     qumode_bit_mapping = _final_qumode_mapping(circuit)
 
     newcounts = {}
@@ -415,7 +417,7 @@ def simulate(
     noise_model=None,
     noise_passes=None,
     max_parallel_threads: int = 0,
-    discretize: bool = False
+    discretize: bool = False,
 ):
     """Convenience function to simulate using the given backend.
 
@@ -432,93 +434,65 @@ def simulate(
         discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
-        tuple: (state, result, fockcounts) tuple from simulation
+        tuple: (state, result, fock_counts) tuple from [optionally discretized] simulations
     """
 
     if discretize and not noise_passes:
         warnings.warn("Discretization of circuit intended for use with noise passes, but none provided")
 
     if discretize:
-        circuits = discretize_circuits(cvcircuit)
+        sim_circuit = discretize_circuits(cvcircuit)[-1]
     else:
-        circuits = [cvcircuit]
+        sim_circuit = cvcircuit
 
-    results = []
-    previous_state = None
-    for circuit in circuits:
-        if previous_state:
-            # Initialize circuit to simulate with the previous frame's state, then append the last instruction
-            sim_circuit = circuit.copy()
-            sim_circuit.data.clear()  # Is this safe -- could we copy without data?
-            sim_circuit.initialize(previous_state)
-            last_instructions = circuit.data[-1:]  # Get the last instruction
+    # If this is false, the user must have already called save_statevector!
+    if add_save_statevector:
+        sim_circuit.save_statevector(
+            conditional=conditional_state_vector, pershot=per_shot_state_vector
+        )
 
-            for inst in last_instructions:
-                sim_circuit.append(*inst)
-        else:
-            # No previous simulation state, just run the current circuit
-            sim_circuit = circuit
+    # Run noise pass, if provided
+    if noise_passes:
+        if not isinstance(noise_passes, list):
+            noise_passes = [noise_passes]
 
-        # If this is false, the user must have already called save_statevector!
-        if add_save_statevector:
-            sim_circuit.save_statevector(
-                conditional=conditional_state_vector, pershot=per_shot_state_vector
-            )
-
-        # Run noise pass, if provided
-        if noise_passes:
-            if not isinstance(noise_passes, list):
-                noise_passes = [noise_passes]
-
-            for noise_pass in noise_passes:
-                circuit_compiled = noise_pass(sim_circuit)
-        else:
-            circuit_compiled = sim_circuit
-
-        # Transpile for simulator
-        simulator = qiskit.providers.aer.AerSimulator()
-        circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
-
-        # Run and get statevector
-        result = simulator.run(
-            circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
-        ).result()
-
-        # The user may have added their own circuit.save_statevector
-        state = None
-        if len(result.results):
-            try:
-                if conditional_state_vector or per_shot_state_vector:
-                    # Will get a dictionary of state vectors, one for each classical register value
-                    state = result.data()["statevector"]
-                else:
-                    state = Statevector(result.get_statevector(circuit_compiled))
-            except Exception:
-                state = None  # result.get_statevector() will fail if add_save_statevector is false
-
-        if add_save_statevector:
-            sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
-
-        if return_fockcounts:
-            try:
-                fockcounts = counts_to_fockcounts(circuit, result)
-            except:
-                Exception("counts_to_fockcounts() was not able to execute")
-            
-            results.append((state, result, fockcounts))
-        else:
-            results.append((state, result, None))
-        
-        if per_shot_state_vector:
-            # Assume we'll take the first state vector
-            previous_state = state[0]
-        else:
-            previous_state = state
-
-    if discretize:
-        return results
+        for noise_pass in noise_passes:
+            circuit_compiled = noise_pass(sim_circuit)
     else:
-        return results[0]
+        circuit_compiled = sim_circuit
+
+    # Transpile for simulator
+    simulator = qiskit_aer.AerSimulator()
+    circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+
+    # Run and get statevector
+    result = simulator.run(
+        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
+    ).result()
+
+    # The user may have added their own circuit.save_statevector
+    state = None
+    if len(result.results):
+        try:
+            if conditional_state_vector or per_shot_state_vector:
+                # Will get a dictionary of state vectors, one for each classical register value
+                state = result.data()["statevector"]
+            else:
+                state = Statevector(result.get_statevector(circuit_compiled))
+        except Exception:
+            state = None  # result.get_statevector() will fail if add_save_statevector is false
+
+    if add_save_statevector:
+        sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
+
+    if return_fockcounts and add_save_statevector:
+        try:
+            fockcounts = counts_to_fockcounts(sim_circuit, result, result.get_counts())
+            return (state, result, fockcounts)
+        except:
+            raise Exception("counts_to_fockcounts() was not able to execute")
+    else:
+        return (state, result, None)
 
 
 def _find_cavity_indices(circuit: CVCircuit):
@@ -627,17 +601,17 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     Two use cases 
     1) int + list datatype combination (length of amp list must match length of either fock_input or fock_output, whichever is longer): 
     >fockmap(matrix, 1, [0, 1]) 
-    ->> |0><1| + |1><1|
+    ->> ``|0><1| + |1><1|``
 
     >fockmap(matrix, [3, 2], 0, [0.5j, 1])
-    ->> 0.5j|0><3| + |0><2|
+    ->> ``0.5j|0><3| + |0><2|``
 
     2) list datatype
     >fockmap(matrix, [3, 2], [2, 1], [0.1j, 0.8])
-    ->> 0.1j|2><3| + 0.8|1><2| 
+    ->> ``0.1j|2><3| + 0.8|1><2|``
 
     >fockmap(matrix, [1, 1], [2, 4])
-    ->> |2><1| + |4><1| 
+    ->> ``|2><1| + |4><1|``
 
 
     Args:

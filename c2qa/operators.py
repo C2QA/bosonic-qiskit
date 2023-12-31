@@ -1,6 +1,7 @@
 import numpy
 import scipy.sparse
 import scipy.sparse.linalg
+import pdb
 
 
 xQB = numpy.array([[0, 1], [1, 0]])
@@ -14,43 +15,53 @@ sigma_minus = numpy.array([[0, 0], [1, 0]])
 class CVOperators:
     """Build operator matrices for continuously variable bosonic gates."""
 
-    def __init__(self, cutoff: int, num_qumodes: int):
-        """Initialize shared matrices used in building operators.
-
-        Args:
-            cutoff (int): qumode cutoff level
-            num_qumodes (int): number of qumodes being represented
-        """
-        # Annihilation operator
+    def get_a(self, cutoff: int):
+        """Annihilation operator"""
         data = numpy.sqrt(range(cutoff))
-        self.a = scipy.sparse.spdiags(
+        return scipy.sparse.spdiags(
             data=data, diags=[1], m=len(data), n=len(data)
         ).tocsc()
 
-        # Creation operator
-        self.a_dag = self.a.conjugate().transpose().tocsc()
+    def get_a1(self, cutoff_a: int, cutoff_b: int):
+            return scipy.sparse.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b)).tocsc()
+    
+    def get_a2(self, cutoff_a: int, cutoff_b: int):
+        return scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b)).tocsc()
+        
+    def get_a12(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
+    
+    def get_a_dag(self, cutoff: int):
+        """Creation operator"""
+        a = self.get_a(cutoff)
+        return a.conjugate().transpose().tocsc()
 
-        # Number operator for a single qumode.
-        # self.N = scipy.sparse.matmul(self.a_dag, self.a)
-        self.N = self.a_dag * self.a
+    def get_N(self, cutoff: int):
+        """Number operator"""
+        a = self.get_a(cutoff)
+        a_dag = self.get_a_dag(cutoff)
+        return a_dag * a
+    
+    def get_a1_dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
+    
+    def get_a2_dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a2(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
+    
+    def get_a12_dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
+    
+    def get_a12dag(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
+    
+    def get_a1dag2(self, cutoff_a: int, cutoff_b: int):
+        return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
 
-        self.eye = scipy.sparse.eye(cutoff)
+    def get_eye(self, cutoff: int):
+        """Identity matrix"""
+        return scipy.sparse.eye(cutoff)
 
-        self.cutoff_value = cutoff
-
-    def id(self):
-        """Identity gate (used by cv_delay)
-
-        Args:
-            None
-
-        Returns:
-            dia_matrix: operator matrix
-        """
-
-        return self.eye
-
-    def r(self, theta):
+    def r(self, theta, cutoff):
         """Phase space rotation operator
 
         Args:
@@ -59,11 +70,11 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = 1j * theta * self.N
+        arg = 1j * theta * self.get_N(cutoff)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def d(self, alpha):
+    def d(self, alpha, cutoff):
         """Displacement operator
 
         Args:
@@ -72,11 +83,11 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = (alpha * self.a_dag) - (numpy.conjugate(alpha) * self.a)
+        arg = (alpha * self.get_a_dag(cutoff)) - (numpy.conjugate(alpha) * self.get_a(cutoff))
 
         return scipy.sparse.linalg.expm(arg)
 
-    def s(self, theta):
+    def s(self, theta, cutoff):
         """Single-mode squeezing operator
 
         Args:
@@ -85,13 +96,15 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        a_sqr = self.a * self.a
-        a_dag_sqr = self.a_dag * self.a_dag
+        a = self.get_a(cutoff)
+        a_dag = self.get_a_dag(cutoff)
+        a_sqr = a * a
+        a_dag_sqr = a_dag * a_dag
         arg = 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))
 
         return scipy.sparse.linalg.expm(arg)
 
-    def s2(self, theta):
+    def s2(self, theta, cutoff_a, cutoff_b):
         """Two-mode squeezing operator
 
         Args:
@@ -101,19 +114,11 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
-        a12_dag = self.a1_dag * self.a2_dag
-        a12 = self.a1 * self.a2
-
-        arg = (numpy.conjugate(theta * 1j) * a12_dag) - (theta * 1j * a12)
+        arg = (numpy.conjugate(theta * 1j) * self.get_a12_dag(cutoff_a, cutoff_b)) - (theta * 1j * self.get_a12(cutoff_a, cutoff_b))
 
         return scipy.sparse.linalg.expm(arg)
 
-    def bs(self, theta):
+    def bs(self, theta, cutoff_a, cutoff_b):
         """Two-mode beam splitter operator
 
         Args:
@@ -123,19 +128,11 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        arg = theta * a1dag2 - numpy.conj(theta) * a12dag
+        arg = theta * self.get_a1dag2(cutoff_a, cutoff_b) - numpy.conj(theta) * self.get_a12dag(cutoff_a, cutoff_b)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cr(self, theta):
+    def cr(self, theta, cutoff):
         """Controlled phase space rotation operator
 
         Args:
@@ -144,11 +141,11 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(zQB, self.N).tocsc()
+        arg = theta * 1j * scipy.sparse.kron(zQB, self.get_N(cutoff)).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
-    def crx(self, theta):
+    def crx(self, theta, cutoff):
         """Controlled phase space rotation operator around sigma^x
 
         Args:
@@ -157,11 +154,11 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(xQB, self.N).tocsc()
+        arg = theta * 1j * scipy.sparse.kron(xQB, self.get_N(cutoff)).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cry(self, theta):
+    def cry(self, theta, cutoff):
         """Controlled phase space rotation operator around sigma^x
 
         Args:
@@ -170,11 +167,11 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        arg = theta * 1j * scipy.sparse.kron(yQB, self.N).tocsc()
+        arg = theta * 1j * scipy.sparse.kron(yQB, self.get_N(cutoff)).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cd(self, theta, beta=None):
+    def cd(self, theta, beta, cutoff):
         """Controlled displacement operator
 
         Args:
@@ -184,16 +181,16 @@ class CVOperators:
         Returns:
             bsr_matrix: operator matrix
         """
-        displace0 = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
+        displace0 = (theta * self.get_a_dag(cutoff)) - (numpy.conjugate(theta) * self.get_a(cutoff))
         if beta is None:
             beta = -theta
-        displace1 = (beta * self.a_dag) - (numpy.conjugate(beta) * self.a)
+        displace1 = (beta * self.get_a_dag(cutoff)) - (numpy.conjugate(beta) * self.get_a(cutoff))
 
         return scipy.sparse.kron(
             (idQB + zQB) / 2, scipy.sparse.linalg.expm(displace0)
         ) + scipy.sparse.kron((idQB - zQB) / 2, scipy.sparse.linalg.expm(displace1))
 
-    def ecd(self, theta):
+    def ecd(self, theta, cutoff):
         """Echoed controlled displacement operator
 
         Args:
@@ -202,12 +199,12 @@ class CVOperators:
         Returns:
             csr_matrix: operator matrix
         """
-        argm = (theta * self.a_dag) - (numpy.conjugate(theta) * self.a)
+        argm = (theta * self.get_a_dag(cutoff)) - (numpy.conjugate(theta) * self.get_a(cutoff))
         arg = scipy.sparse.kron(zQB, argm)
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cbs(self, theta):
+    def cbs(self, theta, cutoff_a, cutoff_b):
         """Controlled phase two-mode beam splitter operator
 
         Args:
@@ -216,20 +213,13 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1_dag = self.a1.conjugate().transpose().tocsc()
-        self.a2_dag = self.a2.conjugate().transpose().tocsc()
-
-        a12dag = self.a1 * self.a2_dag
-        a1dag2 = self.a1_dag * self.a2
-
-        argm = theta*a1dag2 - numpy.conjugate(theta)*a12dag
+        
+        argm = theta * self.get_a1dag2(cutoff_a, cutoff_b) - numpy.conjugate(theta) * self.get_a12dag(cutoff_a, cutoff_b)
         arg = scipy.sparse.kron(zQB, argm).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cschwinger(self, beta, theta_1, phi_1, theta_2, phi_2):
+    def cschwinger(self, beta, theta_1, phi_1, theta_2, phi_2, cutoff_a, cutoff_b):
         """General form of a controlled Schwinger gate
 
         Args:
@@ -238,17 +228,10 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        self.a1 = scipy.sparse.kron(self.a, self.eye).tocsc()
-        self.a2 = scipy.sparse.kron(self.eye, self.a).tocsc()
-        self.a1dag = self.a1.conjugate().transpose().tocsc()
-        self.a2dag = self.a2.conjugate().transpose().tocsc()
 
-        a12dag = self.a1 * self.a2dag
-        a1dag2 = self.a1dag * self.a2
-
-        Sx = (self.a1 * self.a2dag + self.a1dag * self.a2)/2
-        Sy = (self.a1 * self.a2dag - self.a1dag * self.a2)/(2*1j)
-        Sz = (self.a2dag * self.a2 - self.a1dag * self.a1)/2
+        Sx = (self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b) + self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b))/2
+        Sy = (self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b) - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b))/(2*1j)
+        Sz = (self.get_a2_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b) - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a1(cutoff_a, cutoff_b))/2
 
         sigma = numpy.sin(theta_1)*numpy.cos(phi_1)*xQB + numpy.sin(theta_1)*numpy.sin(phi_1)*yQB + numpy.cos(theta_1)*zQB
         S = numpy.sin(theta_2)*numpy.cos(phi_2)*Sx + numpy.sin(theta_2)*numpy.sin(phi_2)*Sy + numpy.cos(theta_2)*Sz
@@ -256,7 +239,7 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(-1j*beta*arg)
 
-    def snap(self, theta, n):
+    def snap(self, theta, n, cutoff):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
 
         Args:
@@ -267,14 +250,14 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        ket_n = numpy.zeros(self.cutoff_value)
+        ket_n = numpy.zeros(cutoff)
         ket_n[n] = 1
         projector = numpy.outer(ket_n, ket_n)
         sparse_projector = scipy.sparse.csr_matrix(projector)
         arg = theta * 1j * sparse_projector.tocsc()
         return scipy.sparse.linalg.expm(arg)
 
-    def csnap(self, theta, n):
+    def csnap(self, theta, n, cutoff):
         """SNAP (Selective Number-dependent Arbitrary Phase) operator,
         with explicit sigma_z in exponential. Can be used to generate
         fock-number selective qubit rotations.
@@ -287,7 +270,7 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        ket_n = numpy.zeros(self.cutoff_value)
+        ket_n = numpy.zeros(cutoff)
         ket_n[n] = 1
         projector = numpy.outer(ket_n, ket_n)
         # sparse_projector = scipy.sparse.csc_matrix(projector)
@@ -305,15 +288,17 @@ class CVOperators:
             csr_matrix: operator matrix
         """
         # Divide list in two because thetas and ns must be sent in as a single list
-        thetas = args[:len(args) // 2] # arguments
-        ns = args[len(args) // 2:] # Fock states on which they are applied
+        cutoff = args[-1]
+        theta_ns = args[0:-1]
+        thetas = theta_ns[:len(theta_ns) // 2] # arguments
+        ns = theta_ns[len(theta_ns) // 2:] # Fock states on which they are applied
         if len(thetas)!=len(ns): # one theta per Fock state to apply it to
             raise Exception("len(theta) must be equal to len(n)")
 
-        id = numpy.eye(self.cutoff_value)
+        id = numpy.eye(cutoff)
         gate = scipy.sparse.csr_matrix(id)
         for i in range(len(ns)):
-            ket_n = numpy.zeros(self.cutoff_value)
+            ket_n = numpy.zeros(cutoff)
             ket_n[ns[i]] = 1
             projector = numpy.outer(ket_n, ket_n)
             coeff = numpy.exp(1j * thetas[i]) - 1
@@ -332,15 +317,17 @@ class CVOperators:
             csr_matrix: operator matrix
         """
         # Divide list in two because thetas and ns must be sent in as a single list
-        thetas = args[:len(args) // 2] # arguments
-        ns = args[len(args) // 2:] # Fock states on which they are applied
+        cutoff = args[-1]
+        theta_ns = args[0:-1]
+        thetas = theta_ns[:len(theta_ns) // 2] # arguments
+        ns = theta_ns[len(theta_ns) // 2:] # Fock states on which they are applied
         if len(thetas)!=len(ns): # one theta per Fock state to apply it to
             raise Exception("len(theta) must be equal to len(n)")
 
-        id = numpy.eye(self.cutoff_value)
+        id = numpy.eye(cutoff)
         gate = scipy.sparse.csr_matrix(scipy.sparse.kron(idQB,id))
         for i in range(len(ns)):
-            ket_n = numpy.zeros(self.cutoff_value)
+            ket_n = numpy.zeros(cutoff)
             ket_n[ns[i]] = 1
             projector = numpy.outer(ket_n, ket_n)
             coeff = scipy.sparse.linalg.expm(1j * thetas[i] * zQB) - idQB
@@ -349,7 +336,7 @@ class CVOperators:
         return scipy.sparse.csr_matrix(gate)
 
     
-    def pnr(self, max):
+    def pnr(self, max, cutoff):
         """Support gate for photon number readout (see Curtis et al., PRA (2021) and Wang et al., PRX (2020))
         
         Args:
@@ -358,12 +345,12 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        ket_n = numpy.zeros(self.cutoff_value)
+        ket_n = numpy.zeros(cutoff)
         projector = numpy.outer(ket_n, ket_n)
         # binary search
         for j in range(int(max / 2)):
-            for i in range(j, self.cutoff_value, max):
-                ket_n = numpy.zeros(self.cutoff_value)
+            for i in range(j, cutoff, max):
+                ket_n = numpy.zeros(cutoff)
                 # fill from right to left
                 ket_n[-(i+1)] = 1
                 projector += numpy.outer(ket_n, ket_n)
@@ -372,7 +359,7 @@ class CVOperators:
         arg = 1j * (-numpy.pi/2) * scipy.sparse.kron(xQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
 
-    def eswap(self, theta):
+    def eswap(self, theta, cutoff_a, cutoff_b):
         """Exponential SWAP operator
 
         Args:
@@ -382,10 +369,10 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        self.mat = numpy.zeros([self.cutoff_value * self.cutoff_value, self.cutoff_value * self.cutoff_value])
-        for j in range(self.cutoff_value):
-            for i in range(self.cutoff_value):
-                self.mat[i + (j * self.cutoff_value)][i * self.cutoff_value + j] = 1
+        self.mat = numpy.zeros([cutoff_a * cutoff_b, cutoff_a * cutoff_b])
+        for j in range(cutoff_a):
+            for i in range(cutoff_b):
+                self.mat[i + (j * cutoff_a)][i * cutoff_b + j] = 1
         self.sparse_mat = scipy.sparse.csr_matrix(self.mat).tocsc()
 
         arg = 1j * theta * self.sparse_mat
@@ -393,7 +380,7 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
 
-    def csq(self, theta):
+    def csq(self, theta, cutoff):
         """Single-mode squeezing operator
 
         Args:
@@ -402,8 +389,8 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        a_sqr = self.a * self.a
-        a_dag_sqr = self.a_dag * self.a_dag
+        a_sqr = self.get_a(cutoff) * self.get_a(cutoff)
+        a_dag_sqr = self.get_a_dag(cutoff) * self.get_a_dag(cutoff)
         arg = scipy.sparse.kron(zQB, 0.5 * ((numpy.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))).tocsc()
 
         return scipy.sparse.linalg.expm(arg)
@@ -414,7 +401,7 @@ class CVOperators:
         arg = 1j * phi * scipy.sparse.kron(xQB, idQB)
         return scipy.sparse.linalg.expm(arg)
 
-    def c_multiboson_sampling(self, max):
+    def c_multiboson_sampling(self, max, cutoff):
         """SNAP gate creation for multiboson sampling purposes.
         
         Args:
@@ -425,12 +412,14 @@ class CVOperators:
         """
         print(max)
 
-        return self.eye
+        return self.get_eye(cutoff)
 
     def gate_from_matrix(self, matrix):
         """Converts matrix into gate. Called using ParameterizedUnitaryGate.
+
         Args:
             matrix (list): the (unitary) matrix that you wish to convert into a gate
+            
         Returns:
             csc_matrix: operator matrix
         """ 
