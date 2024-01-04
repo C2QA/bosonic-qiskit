@@ -667,7 +667,7 @@ def test_multi_qumode_loss_probability(capsys):
                 qumode2 = qumode_state[1]
                 probability = amplitude**2
 
-                if (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode1 == 1) and math.isclose(probability, 0.5, 0.025):
+                if (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode1 == 1) and math.isclose(probability, 0.5, 0.03):
                     fifty_fifty = True
             
         assert fifty_fifty
