@@ -637,12 +637,14 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     
     if isinstance(amplitude, (int, float, complex)):
         amplitude = [amplitude]
+    elif isinstance(amplitude, np.ndarray):
+        amplitude = list(amplitude)
 
     # If user inputs python list instead of np array
     matrix = np.array(matrix, dtype=complex)
 
     # Default amplitude is 1 for all states, unless otherwise specified
-    if amplitude == []:
+    if not amplitude: # Empty lists evaluate as False
         amplitude = [1 for i in range(max(len(fock_input), len(fock_output)))]
 
     ## Error flags
