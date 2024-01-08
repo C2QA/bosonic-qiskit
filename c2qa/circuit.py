@@ -831,7 +831,7 @@ class CVCircuit(QuantumCircuit):
                 [], 
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
                 num_qubits=len(qumode), 
-                label="delay(" + str(duration) + " " + unit +")", 
+                label="cv_delay(" + str(duration) + " " + unit +")", 
                 duration=duration, 
                 unit=unit
             ),
