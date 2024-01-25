@@ -41,7 +41,7 @@ def animate_wigner(
     act as the frames of the generated movie.
 
     The ffmpeg binary must be on your system PATH in order to execute this
-    function.
+    function. See https://ffmpeg.org/download.html to download and install on your system.
 
     Args:
         circuit (CVCircuit): circuit to simulate and plot
