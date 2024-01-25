@@ -431,6 +431,12 @@ def simulate(
                                                should be added to the end of the circuit. Defaults to True.
         conditional_state_vector (bool, optional): Set to True if the saved state vector should be contional
                                                    (each state value gets its own state vector). Defaults to False.
+        per_shot_state_vector (bool, optional): Set to Ture if the simulation should return a separate state vector for
+                                                every simulation shot.
+        noise_model (NoiseModel, optional): Custom noise model to pass into AerSimulator to use on each simulation shot
+        noise_passes (list of LocalNoisePass, optional): Custom noise pass to apply on each gate.
+        max_parallel_threads (int, opational): Sets the maximum number of CPU cores used by OpenMP for parallelization.
+                                               If set to 0 the maximum will be set to the number of CPU cores (Default: 0).
         discretize (bool, optional): Set to True if circuit should be discretized to apply noise passes. Defaults to False.
 
     Returns:
