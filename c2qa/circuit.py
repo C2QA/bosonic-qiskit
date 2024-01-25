@@ -909,15 +909,16 @@ class CVCircuit(QuantumCircuit):
         # for qumode in qumodes:
         #     cutoffs.append(QumodeRegister.calculate_cutoff(len(qumode)))
 
-        return self.append(
-            ParameterizedUnitaryGate(
-                self.ops.gate_from_matrix, 
-                [matrix], 
-                cutoffs=cutoffs,
-                num_qubits=len(qumodes) + len(qubits), 
-                label=label, 
-                duration=duration, 
-                unit=unit
-            ),
-            qargs=qumodes + qubits,
-        )
+        # return self.append(
+        #     ParameterizedUnitaryGate(
+        #         self.ops.gate_from_matrix, 
+        #         [matrix], 
+        #         cutoffs=cutoffs,
+        #         num_qubits=len(qumodes) + len(qubits), 
+        #         label=label, 
+        #         duration=duration, 
+        #         unit=unit
+        #     ),
+        #     qargs=qumodes + qubits,
+        # )
+        return self.unitary(matrix, qubits=qumodes + qubits, label=label)
