@@ -724,9 +724,15 @@ def avg_photon_num(circuit: CVCircuit, state, decimals: int=2):
     Returns:
         float: Average photon number to specified precision
     """
+
+    qumode_qubits = circuit.qumode_qubits_indices_grouped
     averages = []
-    for qumode_qubits in circuit.qumode_qubits_indices_grouped:
-        traced_state = qiskit.quantum_info.partial_trace(state, qumode_qubits)
+    for qumode in range(len(qumode_qubits)):
+        traced_qubits = []
+        for traced_qumode in range(len(qumode_qubits)):
+            if traced_qumode != qumode:
+                traced_qubits.extend(qumode_qubits[traced_qumode])
+        traced_state = qiskit.quantum_info.partial_trace(state, traced_qubits)
         averages.append(qumode_avg_photon_num(traced_state, decimals))
     
     return averages
