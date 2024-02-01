@@ -266,7 +266,7 @@ def test_counts_to_fockcounts(capsys):
             assert(fock_counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
             
             
-def test_avg_photon_num(capsys):
+def test_qumode_avg_photon_num(capsys):
     with capsys.disabled():
         for _ in range(5): # Repeat test 5 times
             # Decimals
@@ -284,6 +284,6 @@ def test_avg_photon_num(capsys):
             avg_num = numpy.mean(numpy.dot(element_norm, numpy.array(range(dim))))/norm
             
             # Average photon number of statevector, density matrix, and random vector must all match
-            assert(c2qa.util.avg_photon_num(Statevector(vector), decimals) == c2qa.util.avg_photon_num(DensityMatrix(vector), decimals) == round(avg_num.real, decimals))
+            assert(c2qa.util.qumode_avg_photon_num(Statevector(vector), decimals) == c2qa.util.qumode_avg_photon_num(DensityMatrix(vector), decimals) == round(avg_num.real, decimals))
             
             

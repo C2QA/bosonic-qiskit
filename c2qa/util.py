@@ -713,17 +713,35 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
         raise ValueError("Please ensure that your args are correctly defined.")
     
 
-def avg_photon_num(state, decimals: int=2):
-    """Returns average photon number of state using the number operator.
+def avg_photon_num(circuit: CVCircuit, state, decimals: int=2):
+    """Returns average photon number of state for each qumode within the circuit using the number operator.
 
     Args:
-        state (Statevector or DensityMatrix): State to operate on
+        circuit (CVCircuit): Circuit definine qumodes present in given state
+        state (Statevector or DensityMatrix): full state to operate on
         decimals: Determines precision of calculation
 
     Returns:
         float: Average photon number to specified precision
     """
+    averages = []
+    for qumode_qubits in circuit.qumode_qubits_indices_grouped:
+        traced_state = qiskit.quantum_info.partial_trace(state, qumode_qubits)
+        averages.append(qumode_avg_photon_num(traced_state, decimals))
     
+    return averages
+
+def qumode_avg_photon_num(state, decimals: int=2):
+    """Returns average photon number of an individual qumode's state using the number operator.
+
+    Args:
+        state (Statevector or DensityMatrix): State to operate on for an individual qumode
+        decimals: Determines precision of calculation
+
+    Returns:
+        float: Average photon number to specified precision
+    """
+
     # Generate number operator based on dimension of state
     dim = state.dim
     N = np.diag(range(dim))
