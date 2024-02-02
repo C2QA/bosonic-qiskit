@@ -264,9 +264,33 @@ def test_counts_to_fockcounts(capsys):
             _, result, fock_counts = c2qa.util.simulate(circuit, return_fockcounts=True)
 #            print(result.get_counts(), c2qa.util._final_qumode_mapping(circuit))
             assert(fock_counts == c2qa.util.cv_fockcounts(result.get_counts(), regs))
-            
-            
-def test_avg_photon_num(capsys):
+
+        
+def test_circuit_avg_photon_num(capsys):
+    with capsys.disabled():
+        # Create two qumode registers containing 2 qumodes and 1 qumode respectively.
+        qmr1 = c2qa.QumodeRegister(2, 3)
+        qmr2 = c2qa.QumodeRegister(1, 3)
+        circ = c2qa.CVCircuit(qmr1, qmr2)
+
+        # Initialize the three qumodes to |3>, |4>, |5> Fock states.
+        circ.cv_initialize(3, qmr1[0]) # Qumode in |3>
+        circ.cv_initialize(4, qmr1[1]) # Qumode in |4>
+        circ.cv_initialize(5, qmr2[0]) # Qumode in |5>
+
+        # Print out the indices of qubits in qumodes, grouped by qumode
+        print(circ.qumode_qubits_indices_grouped)
+        ## >> [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+
+        # Obtain state
+        state, _, _ = c2qa.util.simulate(circ)
+
+        avg_photon_num = c2qa.util.avg_photon_num(circ, state)
+        print(avg_photon_num)
+        assert([3.0, 4.0, 5.0] == avg_photon_num)
+
+
+def test_qumode_avg_photon_num(capsys):
     with capsys.disabled():
         for _ in range(5): # Repeat test 5 times
             # Decimals
@@ -284,6 +308,6 @@ def test_avg_photon_num(capsys):
             avg_num = numpy.mean(numpy.dot(element_norm, numpy.array(range(dim))))/norm
             
             # Average photon number of statevector, density matrix, and random vector must all match
-            assert(c2qa.util.avg_photon_num(Statevector(vector), decimals) == c2qa.util.avg_photon_num(DensityMatrix(vector), decimals) == round(avg_num.real, decimals))
+            assert(c2qa.util.qumode_avg_photon_num(Statevector(vector), decimals) == c2qa.util.qumode_avg_photon_num(DensityMatrix(vector), decimals) == round(avg_num.real, decimals))
             
             
