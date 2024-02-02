@@ -4,5 +4,4 @@ qiskit-ibm-runtime==0.12.2
 
 # For drawing circuits, state vectors, Wigner function plots
 matplotlib==3.7.3
-wheel==0.41.2
 pylatexenc==2.10
