@@ -174,7 +174,7 @@ def test_displacement_twice():
 
 
 def test_cond_displacement_gate_vs_two_separate():
-    from qiskit.extensions import UnitaryGate
+    from qiskit.circuit.library import UnitaryGate
 
     alpha = numpy.sqrt(numpy.pi)
 
