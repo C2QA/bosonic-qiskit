@@ -140,11 +140,11 @@ def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gat
         segments = __discretize_conditional(inst, segments_per_gate, keep_state)
 
     # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
-    elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
+    elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and inst.label != "cv_gate_from_matrix" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
         # print(f"Discretizing QuantumCircuit {inst.name}")
         segments = __discretize_subcircuit(inst.definition, segments_per_gate, keep_state, sequential_subcircuit)
 
-    elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name not in ["initialize"] and len(inst.params) > 0:  # Don't animate instructions initializing system state
+    elif isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name != "initialize" and inst.label != "cv_gate_from_matrix" and len(inst.params) > 0:  # Don't animate instructions initializing system state
         # print(f"Discretizing Instruction {inst.name}")
         segments = __discretize_instruction(inst, segments_per_gate, keep_state)
 

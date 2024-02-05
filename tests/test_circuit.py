@@ -226,6 +226,33 @@ def test_cv_gate_from_matrix(capsys):
                 raise Exception
 
 
+def test_discretize_cv_gate_from_matrix(capsys):
+    with capsys.disabled():
+        # This test picks random qumode/qubit to initialize xgate on, does fockcounts, and checks that results match expected values.
+        xgate = [[0, 1],[1, 0]]
+
+        num_qumode_registers = 2
+        num_qumodes_per_register = 2
+        num_qubits_per_qumode = 1
+
+        num_qubits = 3
+
+        total_qubits = num_qumode_registers * num_qumodes_per_register * num_qubits_per_qumode + num_qubits
+
+        # Two qumode registers, One quantum register, One classical register. Hilbert space dimension = 2**(2 * 2 * 1 + 3) = 128
+        qmr1 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+        qmr2 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+        q = qiskit.QuantumRegister(num_qubits)
+        creg = qiskit.ClassicalRegister(total_qubits)
+
+        # Initialize all qumodes to fock |1> and all qubits to |1> state
+        circuit = c2qa.CVCircuit(qmr1, qmr2, q, creg)
+
+        circuit.cv_gate_from_matrix(xgate, qumodes=qmr1[0])
+
+        discretized = c2qa.discretize.discretize_circuits(circuit)
+        assert len(circuit.data) == len(discretized)
+
 def test_cv_initialize(capsys):
     with capsys.disabled():
         qmr1 = c2qa.QumodeRegister(1, 2)
