@@ -1,5 +1,6 @@
 qiskit==0.46.0
 qiskit-aer==0.13.2
+qiskit-ibm-runtime==0.18.0
 
 # For drawing circuits, state vectors, Wigner function plots
 matplotlib==3.7.3
