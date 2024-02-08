@@ -188,57 +188,6 @@ def stateread(
     return [occupation_cv, occupation_qb], state
 
 
-def cv_fockcounts(counts, qubit_qumode_list, reverse_endianness=False):
-    """Convert counts dictionary from Fock-basis binary representation into
-    base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts
-    dict() as returned by job.result().get_counts() along with qubit_qumode_list,
-    a list of Qubits and Qumodes passed into cv_measure(...).
-
-     Returns counts dict()
-
-     Args:
-         counts: dict() of counts, as returned by job.result().get_counts() for
-            a circuit which used cv_measure()
-         qubit_qumode_list: List of qubits and qumodes measured. This list should
-            be identical to that passed into cv_measure()
-
-     Returns:
-         A new counts dict() which lists measurement results for the qubits and
-         qumodes in qubit_qumode_list in little endian order, with Fock-basis
-         qumode measurements reported as a base-10 integer.
-    """
-    warnings.warn("The function ``c2qa.util.cv_fockcounts()`` is deprecated as of bosonic-qiskit v8.2. The function is replaced by counts_to_fockcounts(), which can be called using util.simulate().")
-
-    flat_list = []
-    for el in qubit_qumode_list:
-        if isinstance(el, list):
-            flat_list += el
-        else:
-            flat_list += [el]
-
-    newcounts = {}
-    for key in counts:
-        counter = len(key) - len(flat_list)
-        if counter > 0:
-            newkey = ("{0:0" + str(counter) + "}").format(0)
-        else:
-            newkey = ""
-        for registerType in qubit_qumode_list[::-1]:
-            if isinstance(registerType, list):
-                newkey += str(int(key[counter:counter + len(registerType)], base=2))
-                # newkey += str(key[counter:counter+len(registerType)])
-                counter += len(registerType)
-            else:
-                newkey += key[counter]
-                counter += 1
-        if reverse_endianness:
-            newcounts[newkey[::-1]] = counts[key]
-        else:
-            newcounts[newkey] = counts[key]
-
-    return newcounts
-
-
 def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result, counts: dict = None):
     """Convert counts dictionary from Fock-basis binary representation into
     base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
