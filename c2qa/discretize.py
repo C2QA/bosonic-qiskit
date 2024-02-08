@@ -135,10 +135,6 @@ def __to_segments(inst: qiskit.circuit.instruction.Instruction, segments_per_gat
         # print(f"Discretizing ParameterizedUnitaryGate {inst.name}")
         segments = __discretize_parameterized(inst, segments_per_gate, keep_state)
 
-    elif hasattr(inst, "cv_conditional") and inst.cv_conditional:
-        # print(f"Discretizing cv_conditional {inst.name}")
-        segments = __discretize_conditional(inst, segments_per_gate, keep_state)
-
     # FIXME -- how to identify a gate that was made with QuantumCircuit.to_gate()?
     elif isinstance(inst.definition, qiskit.QuantumCircuit) and inst.name != "initialize" and inst.label != "cv_gate_from_matrix" and len(inst.decompositions) == 0:  # Don't animate subcircuits initializing system state
         # print(f"Discretizing QuantumCircuit {inst.name}")
@@ -180,44 +176,6 @@ def __discretize_parameterized(inst: qiskit.circuit.instruction.Instruction, seg
                 cutoffs=inst.cutoffs,
                 num_qubits=inst.num_qubits,
                 label=inst.label,
-                duration=duration,
-                unit=unit,
-            )
-        )
-
-    return segments
-
-
-def __discretize_conditional(inst: qiskit.circuit.instruction.Instruction, segments_per_gate: int, keep_state: bool):
-    """Split Qiskit conditional gates into multiple segments"""
-    segments = []
-    inst_0, qargs_0, cargs_0 = inst.definition.data[0]
-    inst_1, qargs_1, cargs_1 = inst.definition.data[1]
-
-    for index in range(1, segments_per_gate + 1):
-        params_0 = inst_0.base_gate.calculate_segment_params(
-            current_step=index,
-            total_steps=segments_per_gate,
-            keep_state=keep_state,
-        )
-        params_1 = inst_1.base_gate.calculate_segment_params(
-            current_step=index,
-            total_steps=segments_per_gate,
-            keep_state=keep_state,
-        )
-
-        duration, unit = inst_0.base_gate.calculate_segment_duration(
-            current_step=index, total_steps=segments_per_gate
-        )
-
-        segments.append(
-            CVCircuit.cv_conditional(
-                name=inst.name,
-                op=inst_0.base_gate.op_func,
-                params_0=params_0,
-                params_1=params_1,
-                num_qubits_per_qumode=inst.num_qubits_per_qumode,
-                num_qumodes=inst.num_qumodes,
                 duration=duration,
                 unit=unit,
             )

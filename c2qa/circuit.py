@@ -185,15 +185,12 @@ class CVCircuit(QuantumCircuit):
     @property
     def cv_gate_labels(self):
         """
-        All the CV gate names on the current circuit. These will either be
-        instances of ParameterizedUnitaryGate or be instances of super
-        Intstruction and flagged with 'cv_conditional' if a conditional gate.
+        All the CV gate names on the current circuit. These will be
+        instances of ParameterizedUnitaryGate.
         """
         cv_gates = set()
         for instruction, qargs, cargs in self.data:
             if isinstance(instruction, ParameterizedUnitaryGate):
-                cv_gates.add(instruction.label)
-            elif hasattr(instruction, "cv_conditional") and instruction.cv_conditional:
                 cv_gates.add(instruction.label)
         return list(cv_gates)
 
@@ -261,64 +258,6 @@ class CVCircuit(QuantumCircuit):
                     amplitudes[ind] = complex(params[ind])
 
                 super().initialize(amplitudes, qumode)
-
-    @staticmethod
-    def cv_conditional(
-        name,
-        op,
-        params_0,
-        params_1,
-        num_qubits_per_qumode,
-        num_qumodes=1,
-        duration=100,
-        unit="ns",
-    ):
-        """Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)
-
-        Args:
-            name (str): name of conditional gate
-            op_0 (ndarray): operator matrix for 0 controlled gate
-            op_1 (ndarray): operator matrix for 1 controlled gate
-            num_qubits_per_qumode (int): number of qubits representing a single qumode
-            num_qumodes (int, optional): number of qubodes used in this gate. Defaults to 1.
-
-        Returns:
-            Instruction: QisKit Instruction appended to the circuit
-        """
-        sub_qr = QuantumRegister(1)
-        sub_qmr = QumodeRegister(num_qumodes, num_qubits_per_qumode)
-        sub_circ = QuantumCircuit(sub_qr, sub_qmr.qreg, name=name)
-
-        # TODO Use size of op_0 and op_1 to calculate the number of qumodes instead of using parameter
-        qargs = [sub_qr[0]]
-        for i in range(num_qumodes):
-            qargs += sub_qmr[i]
-
-        gate_0 = ParameterizedUnitaryGate(
-            op,
-            params_0,
-            num_qubits=num_qubits_per_qumode * num_qumodes,
-            duration=duration,
-            unit=unit,
-        )
-        gate_1 = ParameterizedUnitaryGate(
-            op,
-            params_1,
-            num_qubits=num_qubits_per_qumode * num_qumodes,
-            duration=duration,
-            unit=unit,
-        )
-
-        sub_circ.append(gate_0.control(num_ctrl_qubits=1, ctrl_state=0), qargs)
-        sub_circ.append(gate_1.control(num_ctrl_qubits=1, ctrl_state=1), qargs)
-
-        # Create a single instruction for the conditional gate, flag it for later processing
-        inst = sub_circ.to_instruction(label=name)
-        inst.cv_conditional = True
-        inst.num_qubits_per_qumode = num_qubits_per_qumode
-        inst.num_qumodes = num_qumodes
-
-        return inst
 
     def save_circuit(self, conditional, pershot, label="statevector"):
         """Save the simulator statevector using a qiskit class"""
