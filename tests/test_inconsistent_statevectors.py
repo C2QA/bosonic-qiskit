@@ -20,6 +20,23 @@ def displacemnt_gate(circuit, arg, qumode):
     circuit.unitary(displacement_operator(arg), qumode)
 
 
+def conditional_displacement_gate(circuit, arg_0, arg_1, qbit, qumode):
+    """Append a conditional displacement to the circuit
+    Displace by arg_0 if qbit is 0, by arg_1 if qbit is 1."""
+
+    op_0 = displacement_operator(arg_0)
+    op_1 = displacement_operator(arg_1)
+
+    circuit.append(
+        qiskit.circuit.library.UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
+        [qbit] + qumode,
+    )
+    circuit.append(
+        qiskit.circuit.library.UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
+        [qbit] + qumode,
+    )
+
+
 def qumode_initialize(circuit, fock_state, qumode):
     """Initialize the qumode to a Fock state."""
 
