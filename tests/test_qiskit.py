@@ -1,5 +1,5 @@
 import qiskit
-from qiskit import Aer
+import qiskit_aer
 
 
 def test_qiskit():
@@ -10,7 +10,7 @@ def test_qiskit():
     circuit.cx(qr[0:1], qr[2])
     circuit.save_statevector()
 
-    backend = Aer.get_backend("aer_simulator")
+    backend = qiskit_aer.AerSimulator()
     job = backend.run(circuit)
     result = job.result()
     state = result.get_statevector(circuit)
