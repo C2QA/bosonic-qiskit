@@ -53,7 +53,7 @@ def __build_subcircuit():
 
     # Append time evolution unitary
     circuit_0.append(U_JC,qmr[0] + [qbr[0]])
-    # circuit_0.bind_parameters({dt : total_time})
+    # circuit_0.assign_parameters({dt : total_time})
 
 
     # dt = total_time
@@ -74,7 +74,7 @@ def __build_subcircuit():
     # circuit_1.initialize([0,1], qbr)
     # circuit_1.cv_d(alpha,qmr[0])
     # circuit_1.append(U_JC,qmr[0] + [qbr[0]])
-    # circuit_1 = circuit_1.bind_parameters({dt : total_time})
+    # circuit_1 = circuit_1.assign_parameters({dt : total_time})
 
     return circuit_0
 
@@ -115,7 +115,7 @@ def test_animate_parameterized(capsys):
 
         minimal_circuit.cv_c_d(1j * a, qmr[0], qbr[0])
 
-        bound_circuit = minimal_circuit.bind_parameters({a: 2})
+        bound_circuit = minimal_circuit.assign_parameters({a: 2})
         
         wigner_filename = "tests/animate_parameterized.apng"
         c2qa.animate.animate_wigner(

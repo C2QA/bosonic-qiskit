@@ -102,7 +102,7 @@ def discretize_single_circuit(
     segment_count = 0
     for inst, qargs, cargs in circuit.data:
         num_segments = segments_per_gate
-        qargs_indices = [qubit.index for qubit in qargs]
+        qargs_indices = [qubit._index for qubit in qargs]  # FIXME -- is there a public API to get the qubit's index in Qiskit v1.0+?
 
         if noise_passes and not (isinstance(inst, qiskit.circuit.instruction.Instruction) and inst.name == "initialize"):  # Don't discretize instructions initializing system state:
             noise_pass = None
