@@ -3,6 +3,10 @@ import qiskit
 import qiskit_aer
 import scipy.linalg
 
+
+import c2qa
+
+
 # Define parameters
 num_qubits_per_qumode = 2
 cutoff = 2**num_qubits_per_qumode
@@ -78,10 +82,7 @@ def run_displacement_calibration(enable_measure):
     if enable_measure:
         circuit.measure(qr[0], cr[0])
 
-    backend = qiskit_aer.AerSimulator()
-    job = qiskit.execute(circuit, backend)
-    result = job.result()
-    state = result.get_statevector(circuit)
+    state, result, fock_counts = c2qa.util.simulate(circuit)
     counts = result.get_counts(circuit)
 
     assert state.dim > 0
