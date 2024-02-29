@@ -82,7 +82,11 @@ def run_displacement_calibration(enable_measure):
     if enable_measure:
         circuit.measure(qr[0], cr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    backend = qiskit_aer.AerSimulator()
+    circuit = qiskit.transpile(circuit, backend)
+    job = backend.run(circuit)
+    result = job.result()
+    state = result.get_statevector(circuit)
     counts = result.get_counts(circuit)
 
     assert state.dim > 0
