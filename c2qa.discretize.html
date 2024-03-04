@@ -183,16 +183,6 @@
         
 
         
-            <div class="itemName"><code><a href="#__discretize_conditional" class="internal-link" title="c2qa.discretize.__discretize_conditional">__discretize<wbr></wbr>_conditional</a></code>
-            </div>
-        
-
-    </li><li class="private">
-        
-        
-        
-
-        
             <div class="itemName"><code><a href="#__discretize_instruction" class="internal-link" title="c2qa.discretize.__discretize_instruction">__discretize<wbr></wbr>_instruction</a></code>
             </div>
         
@@ -391,7 +381,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py" class="sourceLink">(source)</a>
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py" class="sourceLink">(source)</a>
           <p></p>
         </div>
 
@@ -413,11 +403,6 @@
     <td>Function</td>
     <td><code><a href="#discretize_single_circuit" class="internal-link" title="c2qa.discretize.discretize_single_circuit">discretize<wbr></wbr>_single<wbr></wbr>_circuit</a></code></td>
     <td>Discretize gates into a circuit into segments within a single output circuit. Useful for incrementally applying noise or animating the circuit.</td>
-  </tr><tr class="function private">
-    
-    <td>Function</td>
-    <td><code><a href="#__discretize_conditional" class="internal-link" title="c2qa.discretize.__discretize_conditional">__discretize<wbr></wbr>_conditional</a></code></td>
-    <td>Split Qiskit conditional gates into multiple segments</td>
   </tr><tr class="function private">
     
     <td>Function</td>
@@ -459,7 +444,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">discretize_circuits</span><span class="function-signature">(circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, qubit: <code>qiskit.circuit.quantumcircuit.QubitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, cbit: <code>qiskit.circuit.quantumcircuit.QubitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L9">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py#L9">
       
       (source)
     </a>
@@ -489,7 +474,7 @@ gates (True). Defautls to False.</td></tr><tr class="fieldStart"><td class="fiel
     
     
     <span class="py-keyword">def</span> <span class="py-defname">discretize_single_circuit</span><span class="function-signature">(circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, epsilon: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, statevector_per_segment: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, statevector_label: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <span class="rst-variable-quote">'</span><span class="rst-variable-string">segment_</span><span class="rst-variable-quote">'</span>, noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L65">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py#L65">
       
       (source)
     </a>
@@ -509,33 +494,6 @@ save_statevector after each segment is simulated, creating statevectors labeled
 </div><div class="basefunction private">
   
   
-  <a name="c2qa.discretize.__discretize_conditional">
-    
-  </a>
-  <a name="__discretize_conditional">
-    
-  </a>
-  <div class="functionHeader">
-    
-    
-    <span class="py-keyword">def</span> <span class="py-defname">__discretize_conditional</span><span class="function-signature">(inst: <code>qiskit.circuit.instruction.Instruction</code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L191">
-      
-      (source)
-    </a>
-    <a class="headerLink" href="#__discretize_conditional" title="c2qa.discretize.__discretize_conditional">
-      
-      
-      ¶
-    </a>
-  </div>
-  <div class="docstring functionBody">
-    
-    <div><p>Split Qiskit conditional gates into multiple segments</p></div>
-  </div>
-</div><div class="basefunction private">
-  
-  
   <a name="c2qa.discretize.__discretize_instruction">
     
   </a>
@@ -546,7 +504,7 @@ save_statevector after each segment is simulated, creating statevectors labeled
     
     
     <span class="py-keyword">def</span> <span class="py-defname">__discretize_instruction</span><span class="function-signature">(inst: <code>qiskit.circuit.instruction.Instruction</code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L263">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py#L221">
       
       (source)
     </a>
@@ -573,7 +531,7 @@ save_statevector after each segment is simulated, creating statevectors labeled
     
     
     <span class="py-keyword">def</span> <span class="py-defname">__discretize_parameterized</span><span class="function-signature">(inst: <code>qiskit.circuit.instruction.Instruction</code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, discretized_param_indices: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> = [])</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L159">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py#L155">
       
       (source)
     </a>
@@ -600,7 +558,7 @@ save_statevector after each segment is simulated, creating statevectors labeled
     
     
     <span class="py-keyword">def</span> <span class="py-defname">__discretize_subcircuit</span><span class="function-signature">(subcircuit: <code>qiskit.QuantumCircuit</code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L229">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py#L187">
       
       (source)
     </a>
@@ -627,7 +585,7 @@ save_statevector after each segment is simulated, creating statevectors labeled
     
     
     <span class="py-keyword">def</span> <span class="py-defname">__to_segments</span><span class="function-signature">(inst: <code>qiskit.circuit.instruction.Instruction</code>, segments_per_gate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/19ef5354688de96771f19de1745f169870e63ed3/c2qa/discretize.py#L131">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/02f588905a04fb8a21b928cc5f409bfbc76dd7d2/c2qa/discretize.py#L131">
       
       (source)
     </a>
@@ -653,7 +611,7 @@ save_statevector after each segment is simulated, creating statevectors labeled
   <div class="container">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    23.9.1 at 2024-02-05 13:56:00.
+    23.9.1 at 2024-03-04 18:46:56.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 

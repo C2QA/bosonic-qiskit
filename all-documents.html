@@ -163,7 +163,7 @@
             <div class="type">Module</div>
             <div class="kind">Module</div>
             <div class="privacy">PUBLIC</div>
-            <div class="summary"><span class="undocumented">No module docstring; 7/7 functions documented</span></div>
+            <div class="summary"><span class="undocumented">No module docstring; 6/6 functions documented</span></div>
           </li><li id="c2qa.kraus">
             
             <div class="fullName">c2qa<wbr></wbr>.kraus</div>
@@ -203,7 +203,7 @@
             <div class="type">Module</div>
             <div class="kind">Module</div>
             <div class="privacy">PUBLIC</div>
-            <div class="summary"><span class="undocumented">No module docstring; 17/18 functions documented</span></div>
+            <div class="summary"><span class="undocumented">No module docstring; 16/17 functions documented</span></div>
           </li><li id="c2qa.wigner">
             
             <div class="fullName">c2qa<wbr></wbr>.wigner</div>
@@ -1059,7 +1059,7 @@
             <div class="type">Attribute</div>
             <div class="kind">Property</div>
             <div class="privacy">PUBLIC</div>
-            <div class="summary">All the CV gate names on the current circuit. These will either be instances of ParameterizedUnitaryGate or be instances of super Intstruction and flagged with 'cv_conditional' if a conditional gate.</div>
+            <div class="summary">All the CV gate names on the current circuit. These will be instances of ParameterizedUnitaryGate.</div>
           </li><li id="c2qa.circuit.CVCircuit.cv_snapshot">
             
             <div class="fullName">c2qa<wbr></wbr>.circuit<wbr></wbr>.<wbr></wbr>CVCircuit<wbr></wbr>.cv<wbr></wbr>_snapshot</div>
@@ -1084,14 +1084,6 @@
             <div class="kind">Method</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Initialize qumode (or qumodes) to a particular state specified by params</div>
-          </li><li id="c2qa.circuit.CVCircuit.cv_conditional">
-            
-            <div class="fullName">c2qa<wbr></wbr>.circuit<wbr></wbr>.<wbr></wbr>CVCircuit<wbr></wbr>.cv<wbr></wbr>_conditional</div>
-            <div class="url">c2qa.circuit.CVCircuit.html#cv_conditional</div>
-            <div class="type">Function</div>
-            <div class="kind">Static Method</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Make two operators conditional (i.e., controlled by qubit in either the 0 or 1 state)</div>
           </li><li id="c2qa.circuit.CVCircuit.save_circuit">
             
             <div class="fullName">c2qa<wbr></wbr>.circuit<wbr></wbr>.<wbr></wbr>CVCircuit<wbr></wbr>.save<wbr></wbr>_circuit</div>
@@ -1460,14 +1452,6 @@
             <div class="kind">Function</div>
             <div class="privacy">PRIVATE</div>
             <div class="summary">Split ParameterizedUnitaryGate into multiple segments</div>
-          </li><li id="c2qa.discretize.__discretize_conditional">
-            
-            <div class="fullName">c2qa<wbr></wbr>.discretize<wbr></wbr>.__discretize<wbr></wbr>_conditional</div>
-            <div class="url">c2qa.discretize.html#__discretize_conditional</div>
-            <div class="type">Function</div>
-            <div class="kind">Function</div>
-            <div class="privacy">PRIVATE</div>
-            <div class="summary">Split Qiskit conditional gates into multiple segments</div>
           </li><li id="c2qa.discretize.__discretize_subcircuit">
             
             <div class="fullName">c2qa<wbr></wbr>.discretize<wbr></wbr>.__discretize<wbr></wbr>_subcircuit</div>
@@ -1508,14 +1492,6 @@
             <div class="kind">Function</div>
             <div class="privacy">PUBLIC</div>
             <div class="summary">Print values for states of qubits and qumodes using the result of a simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(circuit).</div>
-          </li><li id="c2qa.util.cv_fockcounts">
-            
-            <div class="fullName">c2qa<wbr></wbr>.util<wbr></wbr>.cv<wbr></wbr>_fockcounts</div>
-            <div class="url">c2qa.util.html#cv_fockcounts</div>
-            <div class="type">Function</div>
-            <div class="kind">Function</div>
-            <div class="privacy">PUBLIC</div>
-            <div class="summary">Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts a counts dict() as returned by job.result().get_counts() along with qubit_qumode_list, a list of Qubits and Qumodes passed into cv_measure(...</div>
           </li><li id="c2qa.util.counts_to_fockcounts">
             
             <div class="fullName">c2qa<wbr></wbr>.util<wbr></wbr>.counts<wbr></wbr>_to<wbr></wbr>_fockcounts</div>
