@@ -4,8 +4,8 @@ import warnings
 import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
+from qiskit.circuit.library import UnitaryGate
 from qiskit.circuit.parameter import ParameterExpression
-from qiskit.extensions.unitary import UnitaryGate
 
 
 class ParameterizedUnitaryGate(Gate):
@@ -78,7 +78,7 @@ class ParameterizedUnitaryGate(Gate):
 
             self.definition = qc
         except:
-            warnings.warn("Unable to define gate, setting definition to None to prevent serialization errors for parameterized unitary gates.")
+            # warnings.warn("Unable to define gate, setting definition to None to prevent serialization errors for parameterized unitary gates.")
             self.definition = None
 
     def validate_parameter(self, parameter):

@@ -1,7 +1,11 @@
 import numpy
 import qiskit
-from qiskit import Aer
+import qiskit_aer
 import scipy.linalg
+
+
+import c2qa
+
 
 # Define parameters
 num_qubits_per_qumode = 2
@@ -28,11 +32,11 @@ def conditional_displacement_gate(circuit, arg_0, arg_1, qbit, qumode):
     op_1 = displacement_operator(arg_1)
 
     circuit.append(
-        qiskit.extensions.UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
+        qiskit.circuit.library.UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
         [qbit] + qumode,
     )
     circuit.append(
-        qiskit.extensions.UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
+        qiskit.circuit.library.UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
         [qbit] + qumode,
     )
 
@@ -78,8 +82,9 @@ def run_displacement_calibration(enable_measure):
     if enable_measure:
         circuit.measure(qr[0], cr[0])
 
-    backend = Aer.get_backend("aer_simulator")
-    job = qiskit.execute(circuit, backend)
+    backend = qiskit_aer.AerSimulator()
+    circuit = qiskit.transpile(circuit, backend)
+    job = backend.run(circuit)
     result = job.result()
     state = result.get_statevector(circuit)
     counts = result.get_counts(circuit)

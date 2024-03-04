@@ -46,7 +46,7 @@ def test_parameterized_displacement(capsys):
         alpha = qiskit.circuit.Parameter("alpha")
         circuit.cv_d(alpha, qmr[0])
 
-        bound_circuit = circuit.bind_parameters({alpha: 3.14})
+        bound_circuit = circuit.assign_parameters({alpha: 3.14})
 
         state, result, fock_counts = c2qa.util.simulate(bound_circuit)
         assert_changed(state, result)
@@ -65,7 +65,7 @@ def test_complex_literals(capsys):
 
         minimal_circuit.cv_c_d(1j * 1, qmr[0], qbr[0])
 
-        # bound_circuit = minimal_circuit.bind_parameters({a: 1})
+        # bound_circuit = minimal_circuit.assign_parameters({a: 1})
 
         c2qa.util.simulate(minimal_circuit)
 
@@ -83,7 +83,7 @@ def test_complex_parameters(capsys):
 
         minimal_circuit.cv_c_d(1j * a, qmr[0], qbr[0])
 
-        bound_circuit = minimal_circuit.bind_parameters({a: 1})
+        bound_circuit = minimal_circuit.assign_parameters({a: 1})
         c2qa.util.simulate(bound_circuit)
 
 
@@ -100,5 +100,5 @@ def test_complex_parameters_float(capsys):
 
         minimal_circuit.cv_c_d(1j * a, qmr[0], qbr[0])
 
-        bound_circuit = minimal_circuit.bind_parameters({a: 2})
+        bound_circuit = minimal_circuit.assign_parameters({a: 2})
         c2qa.util.simulate(bound_circuit)

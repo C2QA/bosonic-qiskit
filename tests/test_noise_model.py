@@ -12,7 +12,7 @@ import qiskit
 import qiskit_aer.noise as noise
 from qiskit_aer.noise.noiseerror import NoiseError
 from qiskit_aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
-from qiskit.tools.visualization import plot_histogram
+from qiskit.visualization import plot_histogram
 
 
 def test_noise_model(capsys):

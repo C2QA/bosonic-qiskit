@@ -1,6 +1,6 @@
 -r requirements.txt
 jupyter==1.0.0
-pytest==7.4.2
-pylint==3.0.1
-black==23.9.1
-flake8==6.1.0
+pytest==8.0.2
+pylint==3.1.0
+black==24.2.0
+flake8==7.0.0
