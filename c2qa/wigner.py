@@ -23,6 +23,7 @@ def simulate_wigner(
     noise_passes = None,
     conditional: bool = True,
     trace: bool = False,
+    g = sqrt(2),
     method: str = "clenshaw"
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
@@ -45,7 +46,7 @@ def simulate_wigner(
         else:
             density_matrix = state
 
-        wigner_result = _wigner(density_matrix, xvec, method=method)
+        wigner_result = _wigner(density_matrix, xvec, g=g, method=method)
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
@@ -64,7 +65,8 @@ def simulate_wigner_multiple_statevectors(
     num_statevectors:int,
     noise_passes=None,
     trace: bool = False,
-    method="clenshaw"
+    g = sqrt(2),
+    method: str = "clenshaw"
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
     state, result, _ = simulate(
@@ -82,7 +84,7 @@ def simulate_wigner_multiple_statevectors(
             else:
                 density_matrix = state
 
-            wigner_results.append(_wigner(density_matrix, xvec, method=method))
+            wigner_results.append(_wigner(density_matrix, xvec, g=g, method=method))
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
@@ -96,6 +98,7 @@ def wigner(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
+    g = sqrt(2),
     method: str = "clenshaw"
 ):
     """
@@ -113,7 +116,7 @@ def wigner(
         array-like: Results of Wigner function calculation
     """
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return _wigner(state, xvec, method=method)
+    return _wigner(state, xvec, g=g, method=method)
 
 
 def wigner_mle(
@@ -121,7 +124,8 @@ def wigner_mle(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    method="clenshaw"
+    g = sqrt(2),
+    method: str ="clenshaw"
 ):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
@@ -150,10 +154,10 @@ def wigner_mle(
 
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
-    return wigner(mle_normalized, axes_min, axes_max, axes_steps, method=method)
+    return wigner(mle_normalized, axes_min, axes_max, axes_steps, g=g, method=method)
 
 
-def _wigner(state, xvec, yvec = None, method: str = "clenshaw"):
+def _wigner(state, xvec, yvec = None, g = sqrt(2), g = sqrt(2), method: str = "clenshaw"):
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
@@ -162,7 +166,7 @@ def _wigner(state, xvec, yvec = None, method: str = "clenshaw"):
     if not yvec:
         yvec = xvec
 
-    return qutip.wigner(psi=qutip.Qobj(rho), xvec=xvec, yvec=yvec, method=method)
+    return qutip.wigner(psi=qutip.Qobj(rho), xvec=xvec, yvec=yvec, g=g, method=method)
 
 
 def plot_wigner(
@@ -176,6 +180,7 @@ def plot_wigner(
     num_colors: int = 100,
     draw_grid: bool = False,
     dpi: int = 100,
+    g = sqrt(2),
     method: str = "clenshaw"
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
@@ -198,7 +203,7 @@ def plot_wigner(
     else:
         state = state_vector
 
-    w_fock = wigner(state, axes_min, axes_max, axes_steps, method=method)
+    w_fock = wigner(state, axes_min, axes_max, axes_steps, g=g, method=method)
 
     plot(
         data=w_fock,
@@ -256,7 +261,7 @@ def plot(
         plt.show()
 
 
-def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_grid: bool = False, method: str = "clenshaw"):
+def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_grid: bool = False, g = sqrt(2), method: str = "clenshaw"):
     """Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
@@ -315,10 +320,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
 
     # Calculate Wigner functions
     xvec = np.linspace(-6, 6, 200)
-    wigner_zero = _wigner(projection_zero, xvec, method=method)
-    wigner_one = _wigner(projection_one, xvec, method=method)
-    wigner_plus = _wigner(projection_plus, xvec, method=method)
-    wigner_minus = _wigner(projection_minus, xvec, method=method)
+    wigner_zero = _wigner(projection_zero, xvec, g=g, method=method)
+    wigner_one = _wigner(projection_one, xvec, g=g, method=method)
+    wigner_plus = _wigner(projection_plus, xvec, g=g, method=method)
+    wigner_minus = _wigner(projection_minus, xvec, g=g, method=method)
 
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
@@ -344,6 +349,7 @@ def plot_wigner_snapshot(
     axes_max: int = 6,
     axes_steps: int = 200,
     num_colors: int = 100,
+    g = sqrt(2),
     method: str = "clenshaw"
 ):
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
@@ -360,8 +366,8 @@ def plot_wigner_snapshot(
         #     print(f"Simulation had {len(snapshot)} shots, plotting last one")
         #     index = len(snapshot) - 1
 
-        # plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors, method=method)
-        plot_wigner(circuit, snapshot, trace, file, axes_min, axes_max, axes_steps, num_colors, method=method)
+        # plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors, g=g, method=method)
+        plot_wigner(circuit, snapshot, trace, file, axes_min, axes_max, axes_steps, num_colors, g=g, method=method)
 
 
 def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
