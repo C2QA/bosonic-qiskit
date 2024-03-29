@@ -157,7 +157,7 @@ def wigner_mle(
     return wigner(mle_normalized, axes_min, axes_max, axes_steps, g=g, method=method)
 
 
-def _wigner(state, xvec, yvec = None, g = sqrt(2), g = sqrt(2), method: str = "clenshaw"):
+def _wigner(state, xvec, yvec = None, g = sqrt(2), method: str = "clenshaw"):
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
