@@ -203,7 +203,14 @@ def plot_wigner(
     else:
         state = state_vector
 
-    w_fock = wigner(state, axes_min, axes_max, axes_steps, g=g, method=method)
+    w_fock = wigner(
+        state=state,
+        axes_min=axes_min, 
+        axes_max=axes_max,
+        axes_steps=axes_steps,
+        g=g,
+        method=method
+    )
 
     plot(
         data=w_fock,
