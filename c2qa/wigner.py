@@ -7,28 +7,31 @@ from c2qa.util import trace_out_qubits, simulate
 
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tick
 import numpy as np
 from numpy import array, zeros, real, meshgrid, exp, pi, conj, sqrt
 from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
+import qutip
 import scipy.stats
-import matplotlib.ticker as tick
 
 
 def simulate_wigner(
     circuit: CVCircuit,
     xvec: np.ndarray,
     shots: int,
-    noise_passes=None,
+    noise_passes = None,
     conditional: bool = True,
     trace: bool = False,
+    g = sqrt(2),
+    method: str = "clenshaw"
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
     states, _, _ = simulate(
         circuit,
         shots=shots,
         noise_passes=noise_passes,
-        conditional_state_vector=conditional,
+        conditional_state_vector=conditional
     )
 
     if states:
@@ -43,7 +46,7 @@ def simulate_wigner(
         else:
             density_matrix = state
 
-        wigner_result = _wigner(density_matrix, xvec)
+        wigner_result = _wigner(density_matrix, xvec, g=g, method=method)
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
@@ -62,6 +65,8 @@ def simulate_wigner_multiple_statevectors(
     num_statevectors:int,
     noise_passes=None,
     trace: bool = False,
+    g = sqrt(2),
+    method: str = "clenshaw"
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
     state, result, _ = simulate(
@@ -79,7 +84,7 @@ def simulate_wigner_multiple_statevectors(
             else:
                 density_matrix = state
 
-            wigner_results.append(_wigner(density_matrix, xvec))
+            wigner_results.append(_wigner(density_matrix, xvec, g=g, method=method))
     else:
         print(
             "WARN: No state vector returned by simulation -- unable to calculate Wigner function!"
@@ -93,6 +98,8 @@ def wigner(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
+    g = sqrt(2),
+    method: str = "clenshaw"
 ):
     """
     Calculate the Wigner function on the given state vector.
@@ -109,7 +116,7 @@ def wigner(
         array-like: Results of Wigner function calculation
     """
     xvec = np.linspace(axes_min, axes_max, axes_steps)
-    return _wigner(state, xvec)
+    return _wigner(state, xvec, g=g, method=method)
 
 
 def wigner_mle(
@@ -117,6 +124,8 @@ def wigner_mle(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
+    g = sqrt(2),
+    method: str ="clenshaw"
 ):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
@@ -145,10 +154,10 @@ def wigner_mle(
 
     mle_normalized = mle_state / np.linalg.norm(mle_state)
 
-    return wigner(mle_normalized, axes_min, axes_max, axes_steps)
+    return wigner(mle_normalized, axes_min, axes_max, axes_steps, g=g, method=method)
 
 
-def _wigner(state, xvec, yvec = None):
+def _wigner(state, xvec, yvec = None, g = sqrt(2), method: str = "clenshaw"):
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
@@ -157,55 +166,7 @@ def _wigner(state, xvec, yvec = None):
     if not yvec:
         yvec = xvec
 
-    return _wigner_iterative(rho, xvec, yvec)
-
-
-def _wigner_iterative(rho, xvec, yvec, g=sqrt(2)):
-    r"""
-    Wigner function as implemented in QuTiP (i.e., copy/paste). QuTiP is released under the BSD 3-clause license: https://github.com/qutip/qutip/blob/master/LICENSE.txt
-
-    See https://github.com/qutip/qutip/blob/master/qutip/wigner.py#L257-L300
-    
-    Using an iterative method to evaluate the wigner functions for the Fock
-    state :math:`|m><n|`.
-    The Wigner function is calculated as
-    :math:`W = \sum_{mn} \rho_{mn} W_{mn}` where :math:`W_{mn}` is the Wigner
-    function for the density matrix :math:`|m><n|`.
-    In this implementation, for each row m, Wlist contains the Wigner functions
-    Wlist = [0, ..., W_mm, ..., W_mN]. As soon as one W_mn Wigner function is
-    calculated, the corresponding contribution is added to the total Wigner
-    function, weighted by the corresponding element in the density matrix
-    :math:`rho_{mn}`.
-    """
-
-    M = np.prod(rho.shape[0])
-    X, Y = meshgrid(xvec, yvec)
-    A = 0.5 * g * (X + 1.0j * Y)
-
-    Wlist = array([zeros(np.shape(A), dtype=complex) for k in range(M)])
-    Wlist[0] = exp(-2.0 * abs(A) ** 2) / pi
-
-    W = real(rho[0, 0]) * real(Wlist[0])
-    for n in range(1, M):
-        Wlist[n] = (2.0 * A * Wlist[n - 1]) / sqrt(n)
-        W += 2 * real(rho[0, n] * Wlist[n])
-
-    for m in range(1, M):
-        temp = copy(Wlist[m])
-        Wlist[m] = (2 * conj(A) * temp - sqrt(m) * Wlist[m - 1]) / sqrt(m)
-
-        # Wlist[m] = Wigner function for |m><m|
-        W += real(rho[m, m] * Wlist[m])
-
-        for n in range(m + 1, M):
-            temp2 = (2 * A * Wlist[n - 1] - sqrt(m) * temp) / sqrt(n)
-            temp = copy(Wlist[n])
-            Wlist[n] = temp2
-
-            # Wlist[n] = Wigner function for |m><n|
-            W += 2 * real(rho[m, n] * Wlist[n])
-
-    return 0.5 * W * g ** 2
+    return qutip.wigner(psi=qutip.Qobj(rho), xvec=xvec, yvec=yvec, g=g, method=method)
 
 
 def plot_wigner(
@@ -218,7 +179,9 @@ def plot_wigner(
     axes_steps: int = 200,
     num_colors: int = 100,
     draw_grid: bool = False,
-    dpi: int = 100
+    dpi: int = 100,
+    g = sqrt(2),
+    method: str = "clenshaw"
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -240,7 +203,14 @@ def plot_wigner(
     else:
         state = state_vector
 
-    w_fock = wigner(state, axes_min, axes_max, axes_steps)
+    w_fock = wigner(
+        state=state,
+        axes_min=axes_min, 
+        axes_max=axes_max,
+        axes_steps=axes_steps,
+        g=g,
+        method=method
+    )
 
     plot(
         data=w_fock,
@@ -298,7 +268,7 @@ def plot(
         plt.show()
 
 
-def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_grid: bool = False):
+def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_grid: bool = False, g = sqrt(2), method: str = "clenshaw"):
     """Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
@@ -357,10 +327,10 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
 
     # Calculate Wigner functions
     xvec = np.linspace(-6, 6, 200)
-    wigner_zero = _wigner(projection_zero, xvec)
-    wigner_one = _wigner(projection_one, xvec)
-    wigner_plus = _wigner(projection_plus, xvec)
-    wigner_minus = _wigner(projection_minus, xvec)
+    wigner_zero = _wigner(projection_zero, xvec, g=g, method=method)
+    wigner_one = _wigner(projection_one, xvec, g=g, method=method)
+    wigner_plus = _wigner(projection_plus, xvec, g=g, method=method)
+    wigner_minus = _wigner(projection_minus, xvec, g=g, method=method)
 
     # Plot using matplotlib on four subplots, at double the default width & height
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2, 2, figsize=(12.8, 12.8))
@@ -386,6 +356,8 @@ def plot_wigner_snapshot(
     axes_max: int = 6,
     axes_steps: int = 200,
     num_colors: int = 100,
+    g = sqrt(2),
+    method: str = "clenshaw"
 ):
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
         label = f"cv_snapshot_{cv_snapshot_id}"
@@ -401,8 +373,8 @@ def plot_wigner_snapshot(
         #     print(f"Simulation had {len(snapshot)} shots, plotting last one")
         #     index = len(snapshot) - 1
 
-        # plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors)
-        plot_wigner(circuit, snapshot, trace, file, axes_min, axes_max, axes_steps, num_colors)
+        # plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors, g=g, method=method)
+        plot_wigner(circuit, snapshot, trace, file, axes_min, axes_max, axes_steps, num_colors, g=g, method=method)
 
 
 def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
