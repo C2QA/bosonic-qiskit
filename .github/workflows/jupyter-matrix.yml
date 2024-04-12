@@ -6,7 +6,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - id: set-matrix
         run: echo "::set-output name=matrix::$(ls tutorials/**/*.ipynb | jq -R -s -c 'split("\n")[:-1]')"
   notebook:
@@ -17,15 +17,15 @@ jobs:
         matrix:
             manifest: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       - name: Setup FFmpeg
-        uses: FedericoCarboni/setup-ffmpeg@v2
+        uses: FedericoCarboni/setup-ffmpeg@v3
 
       - name: Setup TeX Live
         uses: teatimeguest/setup-texlive-action@v3
