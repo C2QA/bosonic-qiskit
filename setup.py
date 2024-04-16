@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="bosonic-qiskit",
-    version_config=True,
+    setuptools_git_versioning=True,
     setup_requires=["setuptools-git-versioning"],
     url="https://github.com/C2QA/bosonic-qiskit",
     author="Tim Stavenger",
