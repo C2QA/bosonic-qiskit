@@ -26,7 +26,7 @@ Homepage = "https://github.com/C2QA/bosonic-qiskit"
 Issues = "https://github.com/C2QA/bosonic-qiskit/issues"
 
 [build-system]
-requires = ["setuptools >= 61.0"]
+requires = ["setuptools >= 61.0", "setuptools-git-versioning"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
