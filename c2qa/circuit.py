@@ -3,7 +3,7 @@ import warnings
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit.parametertable import ParameterTable
+from qiskit.circuit.parametertable import ParameterView
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import qiskit_aer.library.save_instructions as save
 
