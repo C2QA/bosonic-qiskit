@@ -12,7 +12,15 @@ class ParameterizedUnitaryGate(Gate):
     """UnitaryGate sublcass that stores the operator matrix for later reference by animation utility."""
 
     def __init__(
-        self, op_func, params, num_qubits, cutoffs, label=None, duration=100, unit="ns", discretized_param_indices: list = []
+        self,
+        op_func,
+        params,
+        num_qubits,
+        cutoffs,
+        label=None,
+        duration=100,
+        unit="ns",
+        discretized_param_indices: list = [],
     ):
         """Initialize ParameterizedUnitaryGate
 
@@ -56,7 +64,7 @@ class ParameterizedUnitaryGate(Gate):
                 )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
             else:
                 values.append(param)
-        
+
         # Add cutoff for each parameter
         values.extend(self.cutoffs)
 
@@ -103,7 +111,7 @@ class ParameterizedUnitaryGate(Gate):
         Args:
             current_step (int, optional): Current step within total_steps. Defaults to 1.
             total_steps (int, optional): Total steps to increment parameters. Defaults to 1.
-            
+
         Returns:
             ndarray: operator matrix
         """
@@ -131,12 +139,12 @@ def __calculate_segment_params(
 ):
     """
     Calculate the parameters at the current step. Return a tuples of the values.
-    
+
      Args:
         current_step (int): 0-based current step index of the discretization
         total_steps (int): total number of discretization steps
         keep_state (bool): true if the state should be kept between discretization steps (i.e., if the discretization value should be 1/total_steps vs current_step/total_steps)
-        
+
     Returns:
         discretized parameter values as tuple
     """
@@ -147,7 +155,11 @@ def __calculate_segment_params(
 
     values = []
     for index, param in enumerate(self.params):
-        if not hasattr(self, "discretized_param_indices") or len(self.discretized_param_indices) == 0 or index in self.discretized_param_indices:
+        if (
+            not hasattr(self, "discretized_param_indices")
+            or len(self.discretized_param_indices) == 0
+            or index in self.discretized_param_indices
+        ):
             values.append(param * param_fraction)
         else:
             values.append(param)
@@ -168,10 +180,14 @@ def __calculate_segment_duration(
             fraction = current_step / total_steps
 
         frame_duration = self.duration * fraction
-    
+
     return frame_duration, self.unit
 
 
 # Monkey patch Qiskit Instruction to support animating base Qiskit Instruction
-qiskit.circuit.instruction.Instruction.calculate_segment_params = __calculate_segment_params
-qiskit.circuit.instruction.Instruction.calculate_segment_duration = __calculate_segment_duration
+qiskit.circuit.instruction.Instruction.calculate_segment_params = (
+    __calculate_segment_params
+)
+qiskit.circuit.instruction.Instruction.calculate_segment_duration = (
+    __calculate_segment_duration
+)

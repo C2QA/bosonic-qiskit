@@ -15,10 +15,11 @@ from c2qa.discretize import discretize_circuits
 def flatten(l):
     return [item for sublist in l for item in sublist]
 
-def cv_ancilla_fock_measure(circuit,list_qumodes_to_sample:list, qmr_number:int=0):
+
+def cv_ancilla_fock_measure(circuit, list_qumodes_to_sample: list, qmr_number: int = 0):
     """Simulate a circuit with an appended binary search for boson number, and determine the Fock state of a set of qumodes using
     phase kickback on the qubit. For more information, see Curtis et al., PRA (2021) and Wang et al., PRX (2020).
-    
+
     Returns the Fock state of the qumodes in list_qumodes_to_sample, in qumode register qmr_number.
     """
     # Count number of qubits in circuit so far
@@ -26,39 +27,54 @@ def cv_ancilla_fock_measure(circuit,list_qumodes_to_sample:list, qmr_number:int=
     # Collect qumode register from circuit
     qmr = circuit.qmregs[qmr_number]
     # Add one ancilla qubits to the circuit per qumode to measure
-    qbr_extra = qiskit.QuantumRegister(size=len(list_qumodes_to_sample), name="qbr_sampling")
+    qbr_extra = qiskit.QuantumRegister(
+        size=len(list_qumodes_to_sample), name="qbr_sampling"
+    )
     # Add classical bits to readout measurement results
-    cbr_extra = qiskit.ClassicalRegister(len(list_qumodes_to_sample)*circuit.num_qubits_per_qumode, name="cbr_sampling")
-    circuit.add_register(qbr_extra,cbr_extra)
+    cbr_extra = qiskit.ClassicalRegister(
+        len(list_qumodes_to_sample) * circuit.num_qubits_per_qumode, name="cbr_sampling"
+    )
+    circuit.add_register(qbr_extra, cbr_extra)
     # Iterate over the qumodes
-    qumode_counter=0
+    qumode_counter = 0
     for j in list_qumodes_to_sample:
         # Set the initial maximum Fock state
         max = circuit.cutoff
         # Iterate a number of time corresponding to the number of bits required to represent the maximum Fock state in binary (remove useless characters at the front)
-        for iteration in range(len(bin(circuit.cutoff))-3):
+        for iteration in range(len(bin(circuit.cutoff)) - 3):
             # Make sure the ancilla qubit is always reset to 0
-            circuit.initialize('0',qbr_extra[qumode_counter])
+            circuit.initialize("0", qbr_extra[qumode_counter])
             # Apply a circuit which flips the ancilla if the qumode occupation is odd etc. see (Curtis et al., PRA, 2021 and Wang et al.,  PRX, 2020)
-            circuit.cv_c_pnr(max,qmr[list_qumodes_to_sample[j]],qbr_extra[qumode_counter])
+            circuit.cv_c_pnr(
+                max, qmr[list_qumodes_to_sample[j]], qbr_extra[qumode_counter]
+            )
             # Measure the qubit onto the classical bits (from left to right)
-            classical_bit=circuit.num_qubits_per_qumode-1-iteration+(qumode_counter*circuit.num_qubits_per_qumode)
-            circuit.measure(qbr_extra[qumode_counter],classical_bit)
+            classical_bit = (
+                circuit.num_qubits_per_qumode
+                - 1
+                - iteration
+                + (qumode_counter * circuit.num_qubits_per_qumode)
+            )
+            circuit.measure(qbr_extra[qumode_counter], classical_bit)
             # Update the maximum value for the SNAP gate creation
-            max = int(max/2)
+            max = int(max / 2)
         circuit.barrier()
-        qumode_counter+=1
+        qumode_counter += 1
     # Simulate circuit with a single shot
     _, result, _ = simulate(circuit, shots=1)
     # Return integer value of boson number occupation, converted from the bits which make up a binary number
     print(result.get_counts())
-    full_set_of_binary = list(result.get_counts().keys())[0].encode('ascii')
+    full_set_of_binary = list(result.get_counts().keys())[0].encode("ascii")
     results_integers = np.zeros([len(list_qumodes_to_sample)])
     for j in range(len(list_qumodes_to_sample)):
-        binary_number = full_set_of_binary[j*circuit.num_qubits_per_qumode:((j+1)*circuit.num_qubits_per_qumode)]
+        binary_number = full_set_of_binary[
+            j
+            * circuit.num_qubits_per_qumode : ((j + 1) * circuit.num_qubits_per_qumode)
+        ]
         print(binary_number)
-        results_integers[-(j+1)] = int(binary_number,2)
+        results_integers[-(j + 1)] = int(binary_number, 2)
     return results_integers
+
 
 def stateread(
     stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
@@ -73,7 +89,9 @@ def stateread(
     amp_qb = []
     state = []
 
-    cutoff = 2**int(np.ceil(np.log2(cutoff))) # The cutoff needs to be a power of 2 for this code to work
+    cutoff = 2 ** int(
+        np.ceil(np.log2(cutoff))
+    )  # The cutoff needs to be a power of 2 for this code to work
 
     for i in range(len(st)):
         res = st[
@@ -92,7 +110,7 @@ def stateread(
             # first qubit because of how the kronecker product is made
             while iqb < numberofqubits:
                 # if the amplitude is in the first half of the state vector or remaining statevector
-                if (pos < sln / 2):
+                if pos < sln / 2:
                     qbst[iqb] = int(0)  # then the qubit is in 0
                 else:
                     # if the amplitude is in the second half then it is in 1
@@ -106,10 +124,10 @@ def stateread(
                     # print("pos (sln/2)", pos, "sln ",sln)
 
                 # only consider the part of the statevector corresponding to the qubit state which has just been discovered
-                sln = (sln / 2)
+                sln = sln / 2
 
                 # up the qubit counter to start finding out the state of the next qubit
-                iqb = (iqb + 1)
+                iqb = iqb + 1
             amp_qb.append((qbst * (np.abs(res) ** 2)).tolist())
 
             # Find the qumode states
@@ -127,7 +145,7 @@ def stateread(
                 # length of a division is the length of the statevector divided
                 # by the cutoff of the hilbert space (which corresponds to the
                 # number of fock states which a mode can have)
-                lendiv = (sln / cutoff)
+                lendiv = sln / cutoff
                 # print("lendiv (sln/cutoff)", lendiv)
                 val = pos / lendiv
                 # print("rough estimate of the position of the non-zero element: val (pos/lendiv) ", val)
@@ -188,7 +206,9 @@ def stateread(
     return [occupation_cv, occupation_qb], state
 
 
-def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result, counts: dict = None):
+def counts_to_fockcounts(
+    circuit: CVCircuit, result: qiskit.result.result.Result, counts: dict = None
+):
     """Convert counts dictionary from Fock-basis binary representation into
     base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
     jobs.result(), along with the entire circuit.
@@ -211,13 +231,27 @@ def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result
         max_iter_index = len(key) - 1
         newkey = key
 
-        # Using the nested list of qumode bit mappings, convert the relevant bits to base-10 integer and 
+        # Using the nested list of qumode bit mappings, convert the relevant bits to base-10 integer and
         # form new key by concatenating the unchanged bits of key around the decimal value.
         for index in range(len(key)):
             for qumode in qumode_bit_mapping:
                 if index == min(qumode):
-                    fock_decimal = str(int(key[max_iter_index - max(qumode) : max_iter_index - min(qumode) + 1], base=2))
-                    newkey = newkey[: max_iter_index - max(qumode)] + fock_decimal + newkey[max_iter_index - min(qumode) + 1: ]
+                    fock_decimal = str(
+                        int(
+                            key[
+                                max_iter_index
+                                - max(qumode) : max_iter_index
+                                - min(qumode)
+                                + 1
+                            ],
+                            base=2,
+                        )
+                    )
+                    newkey = (
+                        newkey[: max_iter_index - max(qumode)]
+                        + fock_decimal
+                        + newkey[max_iter_index - min(qumode) + 1 :]
+                    )
 
         newcounts[newkey] = counts[key]
 
@@ -233,17 +267,24 @@ def _final_qumode_mapping(circuit):
 
     # For each qumode qubit group, extract list of bits that map to qubits in group. Append list only if list is not empty
     for qumode_qubit_group in circuit.qumode_qubits_indices_grouped:
-        qumode_bit_group = [key for key, val in final_measurement_mapping.items() for qubit in qumode_qubit_group if val == qubit]
-        
+        qumode_bit_group = [
+            key
+            for key, val in final_measurement_mapping.items()
+            for qubit in qumode_qubit_group
+            if val == qubit
+        ]
+
         if qumode_bit_group != []:
             active_qumode_bit_indices_grouped.append(qumode_bit_group)
 
     # Sort nested list by first item in each sublist
-    active_qumode_bit_indices_grouped = sorted(active_qumode_bit_indices_grouped, key = lambda l: l[0])
+    active_qumode_bit_indices_grouped = sorted(
+        active_qumode_bit_indices_grouped, key=lambda l: l[0]
+    )
 
     return active_qumode_bit_indices_grouped
 
-    
+
 # This code is part of Mthree.
 #
 # (C) Copyright IBM 2021.
@@ -333,7 +374,11 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     circuit_y.measure_all()  # Add measure gates in-place
     state_y, result_y, fockcounts_y = simulate(circuit_y)
 
-    return (state_x, result_x, fockcounts_x), (state_y, result_y, fockcounts_y), (state_z, result_z, fockcounts_z)
+    return (
+        (state_x, result_x, fockcounts_x),
+        (state_y, result_y, fockcounts_y),
+        (state_z, result_z, fockcounts_z),
+    )
 
 
 def get_probabilities(result: qiskit.result.Result):
@@ -393,7 +438,9 @@ def simulate(
     """
 
     if discretize and not noise_passes:
-        warnings.warn("Discretization of circuit intended for use with noise passes, but none provided")
+        warnings.warn(
+            "Discretization of circuit intended for use with noise passes, but none provided"
+        )
 
     if discretize:
         sim_circuit = discretize_circuits(cvcircuit)[-1]
@@ -422,7 +469,10 @@ def simulate(
 
     # Run and get statevector
     result = simulator.run(
-        circuit_compiled, shots=shots, max_parallel_threads=max_parallel_threads, noise_model=noise_model
+        circuit_compiled,
+        shots=shots,
+        max_parallel_threads=max_parallel_threads,
+        noise_model=noise_model,
     ).result()
 
     # The user may have added their own circuit.save_statevector
@@ -529,10 +579,10 @@ def trace_out_qubits(circuit: CVCircuit, state_vector):
 
 
 def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
-    """Return reduced density matrix over the given Qiskit Qubits. 
-    
+    """Return reduced density matrix over the given Qiskit Qubits.
+
     First find the indices of the given Qubits, then call qiskit.quantum_info.partial_trace
-    
+
     Args:
         circuit (CVCircuit): circuit with results to trace (to find Qubit index)
         state_vector (Statevector or DensityMatrix): simulation results to trace over
@@ -540,12 +590,13 @@ def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
 
     Returns:
         DensityMatrix: partial trace"""
-    
+
     if not isinstance(qubits, list):
         qubits = [qubits]
     indices = circuit.get_qubit_indices(qubits)
 
     return qiskit.quantum_info.partial_trace(state_vector, indices)
+
 
 def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     """Generates matrix corresponding to some specified mapping of Fock states for a single qumode.
@@ -553,9 +604,9 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     Maps ith element in fock_input to ith element in fock_output with amplitude specified by ith element in amplitude.
     If amplitude is left blank, function assumes amp = 1 for all mappings.
 
-    Two use cases 
-    1) int + list datatype combination (length of amp list must match length of either fock_input or fock_output, whichever is longer): 
-    >fockmap(matrix, 1, [0, 1]) 
+    Two use cases
+    1) int + list datatype combination (length of amp list must match length of either fock_input or fock_output, whichever is longer):
+    >fockmap(matrix, 1, [0, 1])
     ->> ``|0><1| + |1><1|``
 
     >fockmap(matrix, [3, 2], 0, [0.5j, 1])
@@ -577,19 +628,18 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
 
     Returns:
         np.array: Edited matrix"""
-    
 
     # Convert args to lists for convenience of computation
     if isinstance(fock_input, int):
         fock_input = [fock_input]
     elif isinstance(fock_input, (float, complex, str, bool)):
         raise TypeError("Please ensure that your fock_input value is an int")
-    
+
     if isinstance(fock_output, int):
         fock_output = [fock_output]
     elif isinstance(fock_output, (float, complex, str, bool)):
         raise TypeError("Please ensure that your fock_output value is an int")
-    
+
     if isinstance(amplitude, (int, float, complex)):
         amplitude = [amplitude]
     elif isinstance(amplitude, np.ndarray):
@@ -599,31 +649,45 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     matrix = np.array(matrix, dtype=complex)
 
     # Default amplitude is 1 for all states, unless otherwise specified
-    if not amplitude: # Empty lists evaluate as False
+    if not amplitude:  # Empty lists evaluate as False
         amplitude = [1 for i in range(max(len(fock_input), len(fock_output)))]
 
     ## Error flags
     # Length of amplitude list must match the greater of either input or output
     if not (len(amplitude) == max(len(fock_input), len(fock_output))):
-            raise ValueError("Please ensure that that length of amplitude arg matches length of either input or output list.")
+        raise ValueError(
+            "Please ensure that that length of amplitude arg matches length of either input or output list."
+        )
     # Datatype of args check
-    if not (isinstance(fock_input, list) & isinstance(fock_output, list) & isinstance(amplitude, (list, np.ndarray))):
-        raise TypeError("Please ensure that datatypes of input and output states are either int or list.")
+    if not (
+        isinstance(fock_input, list)
+        & isinstance(fock_output, list)
+        & isinstance(amplitude, (list, np.ndarray))
+    ):
+        raise TypeError(
+            "Please ensure that datatypes of input and output states are either int or list."
+        )
     # Check for cutoff
     n, m = matrix.shape
     if n != m:
         raise ValueError("Matrix given is not square")
-    if any(i >= n for i in fock_input) or any(j >= n for j in fock_output): 
+    if any(i >= n for i in fock_input) or any(j >= n for j in fock_output):
         raise ValueError("Fock state(s) greater than cutoff.")
 
     ## Use cases
     # 1. Int + int datatype for input/output args.
-    if ((len(fock_input) == 1) & (len(fock_output) == 1)):
+    if (len(fock_input) == 1) & (len(fock_output) == 1):
         if len(amplitude) > 1:
-            raise ValueError("Please ensure that only a single amplitude value is provided, as there is only 1 mapping provided")
+            raise ValueError(
+                "Please ensure that only a single amplitude value is provided, as there is only 1 mapping provided"
+            )
         if matrix[fock_output[0], fock_input[0]] != 0:
-            print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[0], fock_input[0]))
-                
+            print(
+                "Warning: Existing element for |{}><{}| will be overwritten".format(
+                    fock_output[0], fock_input[0]
+                )
+            )
+
         matrix[fock_output[0], fock_input[0]] = amplitude[0]
 
         return matrix
@@ -632,37 +696,49 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
     elif (len(fock_input) == 1) & (len(fock_output) > 1):
         for i in range(len(fock_output)):
             if matrix[fock_output[i], fock_input[0]] != 0:
-                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[i], fock_input[0]))
+                print(
+                    "Warning: Existing element for |{}><{}| will be overwritten".format(
+                        fock_output[i], fock_input[0]
+                    )
+                )
 
             matrix[fock_output[i], fock_input[0]] = amplitude[i]
 
         return matrix
-    
+
     elif (len(fock_output) == 1) & (len(fock_input) > 1):
         for i in range(len(fock_input)):
             if matrix[fock_output[0], fock_input[i]] != 0:
-                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[0], fock_input[i]))
+                print(
+                    "Warning: Existing element for |{}><{}| will be overwritten".format(
+                        fock_output[0], fock_input[i]
+                    )
+                )
 
             matrix[fock_output[0], fock_input[i]] = amplitude[i]
 
-        return matrix        
+        return matrix
 
     # 3. List datatype input/output/amp args. Lengths of all must match
-    elif (len(fock_input) == len(fock_output) == len(amplitude)):
+    elif len(fock_input) == len(fock_output) == len(amplitude):
 
         for i in range(len(fock_input)):
             if matrix[fock_output[i], fock_input[i]] != 0:
-                print("Warning: Existing element for |{}><{}| will be overwritten".format(fock_output[i], fock_input[i]))
-                
+                print(
+                    "Warning: Existing element for |{}><{}| will be overwritten".format(
+                        fock_output[i], fock_input[i]
+                    )
+                )
+
             matrix[fock_output[i], fock_input[i]] = amplitude[i]
 
         return matrix
-    
+
     else:
         raise ValueError("Please ensure that your args are correctly defined.")
-    
 
-def avg_photon_num(circuit: CVCircuit, state, decimals: int=2):
+
+def avg_photon_num(circuit: CVCircuit, state, decimals: int = 2):
     """Returns average photon number of state for each qumode within the circuit using the number operator.
 
     Args:
@@ -683,10 +759,11 @@ def avg_photon_num(circuit: CVCircuit, state, decimals: int=2):
                 traced_qubits.extend(qumode_qubits[traced_qumode])
         traced_state = qiskit.quantum_info.partial_trace(state, traced_qubits)
         averages.append(qumode_avg_photon_num(traced_state, decimals))
-    
+
     return averages
 
-def qumode_avg_photon_num(state, decimals: int=2):
+
+def qumode_avg_photon_num(state, decimals: int = 2):
     """Returns average photon number of an individual qumode's state using the number operator.
 
     Args:
@@ -700,19 +777,25 @@ def qumode_avg_photon_num(state, decimals: int=2):
     # Generate number operator based on dimension of state
     dim = state.dim
     N = np.diag(range(dim))
-    
+
     # Normalise state
     if isinstance(state, Statevector):
         for_norm = state.inner(state)
     elif isinstance(state, DensityMatrix):
-        for_norm = state.trace()  
+        for_norm = state.trace()
     else:
-        raise TypeError("Only Statevector or DensityMatrix are accepted as valid types.")
-    
+        raise TypeError(
+            "Only Statevector or DensityMatrix are accepted as valid types."
+        )
+
     # Calculate average photon number
-    avg_photon = state.expectation_value(N)/for_norm
-    
+    avg_photon = state.expectation_value(N) / for_norm
+
     if round(avg_photon.imag, 6) != 0:
-        raise Exception("Magnitude of average photon is complex, check inputs. Imaginary portion = {}".format(avg_photon.imag))
-    
+        raise Exception(
+            "Magnitude of average photon is complex, check inputs. Imaginary portion = {}".format(
+                avg_photon.imag
+            )
+        )
+
     return np.round(avg_photon.real, decimals)
