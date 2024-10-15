@@ -32,11 +32,15 @@ def conditional_displacement_gate(circuit, arg_0, arg_1, qbit, qumode):
     op_1 = displacement_operator(arg_1)
 
     circuit.append(
-        qiskit.circuit.library.UnitaryGate(op_0).control(num_ctrl_qubits=1, ctrl_state=0),
+        qiskit.circuit.library.UnitaryGate(op_0).control(
+            num_ctrl_qubits=1, ctrl_state=0
+        ),
         [qbit] + qumode,
     )
     circuit.append(
-        qiskit.circuit.library.UnitaryGate(op_1).control(num_ctrl_qubits=1, ctrl_state=1),
+        qiskit.circuit.library.UnitaryGate(op_1).control(
+            num_ctrl_qubits=1, ctrl_state=1
+        ),
         [qbit] + qumode,
     )
 
