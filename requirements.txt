@@ -1,4 +1,4 @@
-qiskit==1.0.1
+qiskit==1.2.4
 qiskit-aer==0.13.3
 qiskit-ibm-runtime==0.20.0
 qutip==5.0.0
