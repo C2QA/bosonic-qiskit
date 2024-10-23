@@ -372,7 +372,6 @@ def test_animate_photon_loss_pass_with_epsilon(capsys):
         assert Path(wigner_filename).is_file()
 
 
-@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_photon_loss_pass_no_displacement(capsys):
     with capsys.disabled():
         num_qumodes = 1
@@ -390,7 +389,7 @@ def test_photon_loss_pass_no_displacement(capsys):
 
         # state, result, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
-        wigner_filename = "tests/test_photon_loss_pass_no_displacement.mp4"
+        wigner_filename = "tests/test_photon_loss_pass_no_displacement.gif"
         c2qa.animate.animate_wigner(
             circuit,
             animation_segments=200,
@@ -399,7 +398,6 @@ def test_photon_loss_pass_no_displacement(capsys):
         )
 
 
-@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_photon_loss_pass_slow_displacement(capsys):
     with capsys.disabled():
         num_qumodes = 1
@@ -417,7 +415,7 @@ def test_photon_loss_pass_slow_displacement(capsys):
 
         # state, result, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
-        wigner_filename = "tests/test_photon_loss_pass_slow_displacement.mp4"
+        wigner_filename = "tests/test_photon_loss_pass_slow_displacement.gif"
         c2qa.animate.animate_wigner(
             circuit,
             animation_segments=200,
@@ -427,7 +425,6 @@ def test_photon_loss_pass_slow_displacement(capsys):
         )
 
 
-@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_photon_loss_pass_slow_conditional_displacement(capsys):
     with capsys.disabled():
         num_qumodes = 1
@@ -448,7 +445,7 @@ def test_photon_loss_pass_slow_conditional_displacement(capsys):
 
         # state, result, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass)
 
-        wigner_filename = "tests/test_photon_loss_pass_slow_conditional_displacement.mp4"
+        wigner_filename = "tests/test_photon_loss_pass_slow_conditional_displacement.gif"
         c2qa.animate.animate_wigner(
             circuit,
             animation_segments=200,
