@@ -58,7 +58,10 @@ def test_plot_wigner_projection(capsys):
         circuit.cv_c_d(dist, qmr[0], qr[0])
         # circuit.cv_d(dist, qmr[0])
 
-        c2qa.wigner.plot_wigner_projection(circuit, qr[0], file="tests/interference.png")
+        c2qa.wigner.plot_wigner_projection(
+            circuit, qr[0], file="tests/interference.png"
+        )
+
 
 def test_cat_state_wigner_plot(capsys):
     with capsys.disabled():
@@ -81,7 +84,9 @@ def test_cat_state_wigner_plot(capsys):
         circuit.measure(qr[0], cr[0])
 
         # conditional_state_vector=True will return two state vectors, one for 0 and 1 classical register value
-        state, result, fock_counts = c2qa.util.simulate(circuit, conditional_state_vector=True)
+        state, result, fock_counts = c2qa.util.simulate(
+            circuit, conditional_state_vector=True
+        )
         even_state = state["0x0"]
         odd_state = state["0x1"]
 
@@ -138,7 +143,9 @@ def test_wigner_mle(capsys):
         circuit.cv_c_d(dist, qmr[0], qr[0])
         circuit.h(qr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit, per_shot_state_vector=True)
+        state, result, fock_counts = c2qa.util.simulate(
+            circuit, per_shot_state_vector=True
+        )
         wigner = c2qa.wigner.wigner_mle(state)
         assert wigner is not None
         print(wigner)

@@ -13,12 +13,13 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "qiskit==1.0.1",
-    "qiskit_aer==0.13.3",
-    "qiskit-ibm-runtime==0.20.0",
-    "qutip==5.0.0",
-    "matplotlib==3.7.3",
-    "pylatexenc==2.10"
+    "qiskit==1.2.4",
+    "qiskit_aer==0.15.1",
+    "qiskit-ibm-runtime==0.31.0",
+    "qutip==5.0.4",
+    "matplotlib==3.9.2",
+    "pylatexenc==2.10",
+    "numpy<2.0.0"
 ]
 
 [project.urls]

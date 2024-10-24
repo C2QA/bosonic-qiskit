@@ -89,6 +89,7 @@ def test_conditional_beamsplitter():
     # assert_changed(state, result)
     assert_unchanged(state, result)
 
+
 def test_conditional_schwinger():
     circuit, qmr, qr = create_conditional()
 
@@ -97,7 +98,9 @@ def test_conditional_schwinger():
     phi_1 = random.random()
     theta_2 = random.random()
     phi_2 = random.random()
-    circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
+    circuit.cv_c_schwinger(
+        [beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0]
+    )
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
 
@@ -154,10 +157,11 @@ def test_displacement_once(capsys):
         state, result, fock_counts = c2qa.util.simulate(circuit)
         assert_changed(state, result)
 
+
 def test_cv_delay():
     circuit, qmr = create_unconditional()
 
-    circuit.cv_delay(100,qmr[0])
+    circuit.cv_delay(100, qmr[0])
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
 
@@ -321,16 +325,25 @@ def test_eswap():
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
 
+
 def test_multiboson_sampling(capsys):
     with capsys.disabled():
-        num_qubits=1
-        num_qumodes=2
-        num_qubits_per_qumode=2
-        qmrA = c2qa.QumodeRegister(num_qumodes = num_qumodes, num_qubits_per_qumode = num_qubits_per_qumode,name="qmrA_initial")
-        qmrB = c2qa.QumodeRegister(num_qumodes = num_qumodes, num_qubits_per_qumode = num_qubits_per_qumode,name="qmrB_initial")
-        qbr = qiskit.QuantumRegister(size=num_qubits,name='qbr_initial')
+        num_qubits = 1
+        num_qumodes = 2
+        num_qubits_per_qumode = 2
+        qmrA = c2qa.QumodeRegister(
+            num_qumodes=num_qumodes,
+            num_qubits_per_qumode=num_qubits_per_qumode,
+            name="qmrA_initial",
+        )
+        qmrB = c2qa.QumodeRegister(
+            num_qumodes=num_qumodes,
+            num_qubits_per_qumode=num_qubits_per_qumode,
+            name="qmrB_initial",
+        )
+        qbr = qiskit.QuantumRegister(size=num_qubits, name="qbr_initial")
         circuit = c2qa.CVCircuit(qmrA, qmrB, qbr)
-        circuit.cv_c_multiboson_sampling([0,1,2,3], qmrA[0], qbr[0])
+        circuit.cv_c_multiboson_sampling([0, 1, 2, 3], qmrA[0], qbr[0])
 
         state, result, fock_counts = c2qa.util.simulate(circuit)
         assert result.success

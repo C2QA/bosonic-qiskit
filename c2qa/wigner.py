@@ -20,18 +20,18 @@ def simulate_wigner(
     circuit: CVCircuit,
     xvec: np.ndarray,
     shots: int,
-    noise_passes = None,
+    noise_passes=None,
     conditional: bool = True,
     trace: bool = False,
-    g = sqrt(2),
-    method: str = "clenshaw"
+    g=sqrt(2),
+    method: str = "clenshaw",
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
     states, _, _ = simulate(
         circuit,
         shots=shots,
         noise_passes=noise_passes,
-        conditional_state_vector=conditional
+        conditional_state_vector=conditional,
     )
 
     if states:
@@ -62,18 +62,14 @@ def simulate_wigner_multiple_statevectors(
     xvec: np.ndarray,
     shots: int,
     statevector_label: str,
-    num_statevectors:int,
+    num_statevectors: int,
     noise_passes=None,
     trace: bool = False,
-    g = sqrt(2),
-    method: str = "clenshaw"
+    g=sqrt(2),
+    method: str = "clenshaw",
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
-    state, result, _ = simulate(
-        circuit,
-        shots=shots,
-        noise_passes=noise_passes
-    )
+    state, result, _ = simulate(circuit, shots=shots, noise_passes=noise_passes)
 
     if len(result.results):
         wigner_results = []
@@ -93,13 +89,14 @@ def simulate_wigner_multiple_statevectors(
 
     return wigner_results
 
+
 def wigner(
     state,
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    g = sqrt(2),
-    method: str = "clenshaw"
+    g=sqrt(2),
+    method: str = "clenshaw",
 ):
     """
     Calculate the Wigner function on the given state vector.
@@ -124,8 +121,8 @@ def wigner_mle(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    g = sqrt(2),
-    method: str ="clenshaw"
+    g=sqrt(2),
+    method: str = "clenshaw",
 ):
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
@@ -157,7 +154,7 @@ def wigner_mle(
     return wigner(mle_normalized, axes_min, axes_max, axes_steps, g=g, method=method)
 
 
-def _wigner(state, xvec, yvec = None, g = sqrt(2), method: str = "clenshaw"):
+def _wigner(state, xvec, yvec=None, g=sqrt(2), method: str = "clenshaw"):
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
@@ -180,8 +177,8 @@ def plot_wigner(
     num_colors: int = 100,
     draw_grid: bool = False,
     dpi: int = 100,
-    g = sqrt(2),
-    method: str = "clenshaw"
+    g=sqrt(2),
+    method: str = "clenshaw",
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
@@ -205,11 +202,11 @@ def plot_wigner(
 
     w_fock = wigner(
         state=state,
-        axes_min=axes_min, 
+        axes_min=axes_min,
         axes_max=axes_max,
         axes_steps=axes_steps,
         g=g,
-        method=method
+        method=method,
     )
 
     plot(
@@ -220,7 +217,7 @@ def plot_wigner(
         file=file,
         num_colors=num_colors,
         draw_grid=draw_grid,
-        dpi = dpi
+        dpi=dpi,
     )
 
 
@@ -232,7 +229,7 @@ def plot(
     file: str = None,
     num_colors: int = 100,
     draw_grid: bool = False,
-    dpi = 100
+    dpi=100,
 ):
     """Contour plot the given data array"""
     xvec = np.linspace(axes_min, axes_max, axes_steps)
@@ -254,13 +251,12 @@ def plot(
     # ax.set_xticks(xvec_int)
     ax.set_ylabel(r"$p$")
     # ax.set_yticks(xvec_int)
-    ax.set_aspect('equal', 'box')
+    ax.set_aspect("equal", "box")
     if draw_grid:
         ax.grid()
 
-
-    cb = fig.colorbar(cont, ax=ax, format=tick.FormatStrFormatter('%.2f'))
-    cb.set_label(r"$W(x,p)$",rotation=270,labelpad=25)
+    cb = fig.colorbar(cont, ax=ax, format=tick.FormatStrFormatter("%.2f"))
+    cb.set_label(r"$W(x,p)$", rotation=270, labelpad=25)
 
     if file:
         plt.savefig(file, dpi=dpi)
@@ -268,7 +264,14 @@ def plot(
         plt.show()
 
 
-def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_grid: bool = False, g = sqrt(2), method: str = "clenshaw"):
+def plot_wigner_projection(
+    circuit: CVCircuit,
+    qubit,
+    file: str = None,
+    draw_grid: bool = False,
+    g=sqrt(2),
+    method: str = "clenshaw",
+):
     """Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
@@ -338,7 +341,9 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
     _add_contourf(ax0, fig, "Projection onto zero", xvec, xvec, wigner_zero, draw_grid)
     _add_contourf(ax1, fig, "Projection onto one", xvec, xvec, wigner_one, draw_grid)
     _add_contourf(ax2, fig, "Projection onto plus", xvec, xvec, wigner_plus, draw_grid)
-    _add_contourf(ax3, fig, "Projection onto minus", xvec, xvec, wigner_minus, draw_grid)
+    _add_contourf(
+        ax3, fig, "Projection onto minus", xvec, xvec, wigner_minus, draw_grid
+    )
 
     # Save to file or display
     if file:
@@ -349,15 +354,15 @@ def plot_wigner_projection(circuit: CVCircuit, qubit, file: str = None, draw_gri
 
 def plot_wigner_snapshot(
     circuit: CVCircuit,
-    result: Result, 
+    result: Result,
     folder: Path = None,
     trace: bool = True,
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
     num_colors: int = 100,
-    g = sqrt(2),
-    method: str = "clenshaw"
+    g=sqrt(2),
+    method: str = "clenshaw",
 ):
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
         label = f"cv_snapshot_{cv_snapshot_id}"
@@ -366,7 +371,7 @@ def plot_wigner_snapshot(
             file = Path(folder, f"{label}.png")
         else:
             file = f"{label}.png"
-        
+
         snapshot = result.data()[label]
         # index = 0
         # if len(snapshot) > 1:
@@ -374,7 +379,18 @@ def plot_wigner_snapshot(
         #     index = len(snapshot) - 1
 
         # plot_wigner(circuit, snapshot[index], trace, file, axes_min, axes_max, axes_steps, num_colors, g=g, method=method)
-        plot_wigner(circuit, snapshot, trace, file, axes_min, axes_max, axes_steps, num_colors, g=g, method=method)
+        plot_wigner(
+            circuit,
+            snapshot,
+            trace,
+            file,
+            axes_min,
+            axes_max,
+            axes_steps,
+            num_colors,
+            g=g,
+            method=method,
+        )
 
 
 def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
