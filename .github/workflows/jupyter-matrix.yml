@@ -24,8 +24,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Setup FFmpeg
-        uses: FedericoCarboni/setup-ffmpeg@v3
+      - name: Setup ffmpeg (with retries)
+        uses: ./.github/actions/setup-ffmpeg
 
       - name: Setup TeX Live
         uses: teatimeguest/setup-texlive-action@v3
