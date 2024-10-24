@@ -235,7 +235,7 @@ class CVCircuit(QuantumCircuit):
                     raise ValueError("The given Fock state is greater than the cutoff.")
 
                 value = np.zeros(
-                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex_
+                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex128
                 )
                 value[params] = 1 + 0j
 
@@ -249,7 +249,7 @@ class CVCircuit(QuantumCircuit):
 
                 params = np.array(params) / np.linalg.norm(np.array(params))
                 amplitudes = np.zeros(
-                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex_
+                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex128
                 )
                 for ind in range(len(params)):
                     amplitudes[ind] = complex(params[ind])
