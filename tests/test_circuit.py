@@ -137,9 +137,7 @@ def test_serialize(capsys):
             bosonic_circuit.cv_initialize(init_state[i], qumodes[i])
 
         phi = qiskit.circuit.Parameter("phi")
-        bosonic_circuit.cv_bs(
-            phi, qumodes[0], qumodes[1], qumodes.cutoff, qumodes.cutoff
-        )
+        bosonic_circuit.cv_bs(phi, qumodes[0], qumodes[1])
 
         # print(bosonic_circuit.draw())
         print("\nAttempt to serialize an unbound CVCircuit:")
