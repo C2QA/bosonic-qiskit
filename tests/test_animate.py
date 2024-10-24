@@ -207,7 +207,6 @@ def test_animate_without_trace(capsys):
         __animate_without_cbit("tests/animate_without_trace.gif", False)
 
 
-@pytest.mark.skip(reason="GitHub actions build environments do not have ffmpeg")
 def test_calibration_animate_mp4(capsys):
     with capsys.disabled():
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
@@ -230,7 +229,7 @@ def test_calibration_animate_mp4(capsys):
             circuit,
             qubit=qr[0],
             cbit=cr[0],
-            file="tests/displacement.mp4",
+            file="tests/displacement.gif",
             axes_min=-8,
             axes_max=8,
             animation_segments=48,
