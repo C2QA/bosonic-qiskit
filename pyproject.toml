@@ -18,7 +18,8 @@ dependencies = [
     "qiskit-ibm-runtime==0.31.0",
     "qutip==5.0.4",
     "matplotlib==3.9.2",
-    "pylatexenc==2.10"
+    "pylatexenc==2.10",
+    "numpy<2.0.0"
 ]
 
 [project.urls]
