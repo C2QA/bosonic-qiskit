@@ -21,7 +21,9 @@ def test_cv_c_d(capsys):
 
         gate = circuit.data[0].operation
         total_steps = 2
-        discretized_params = gate.calculate_segment_params(current_step=1, total_steps=total_steps, keep_state=True)
+        discretized_params = gate.calculate_segment_params(
+            current_step=1, total_steps=total_steps, keep_state=True
+        )
 
         print(f"Original theta={theta}")
         print(f"Discretized params {discretized_params}")
@@ -44,11 +46,15 @@ def test_cv_c_schwinger(capsys):
         phi_1 = random.random()
         theta_2 = random.random()
         phi_2 = random.random()
-        circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
+        circuit.cv_c_schwinger(
+            [beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0]
+        )
 
         gate = circuit.data[0].operation
         total_steps = 2
-        discretized_params = gate.calculate_segment_params(current_step=1, total_steps=total_steps, keep_state=True)
+        discretized_params = gate.calculate_segment_params(
+            current_step=1, total_steps=total_steps, keep_state=True
+        )
 
         print(f"Original params {(beta, theta_1, phi_1, theta_2, phi_2)}")
         print(f"Discretized params {discretized_params}")
@@ -60,7 +66,9 @@ def test_cv_c_schwinger(capsys):
         assert discretized_params[4] == phi_2
 
 
-@pytest.mark.skip(reason="Enable and test manually with debug breakpoint in__calculate_segment_params to ensure only first param is discretized")
+@pytest.mark.skip(
+    reason="Enable and test manually with debug breakpoint in__calculate_segment_params to ensure only first param is discretized"
+)
 def test_cv_c_schwinger_animate(capsys):
     """The cv_c_schwinger gate should discretize the first param, but the others not"""
     with capsys.disabled():
@@ -75,7 +83,9 @@ def test_cv_c_schwinger_animate(capsys):
         phi_1 = random.random()
         theta_2 = random.random()
         phi_2 = random.random()
-        circuit.cv_c_schwinger([beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0])
+        circuit.cv_c_schwinger(
+            [beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0]
+        )
 
         c2qa.animate.animate_wigner(
             circuit,
@@ -97,8 +107,16 @@ def test_discretize_with_pershot_statevector(capsys):
         circ.cv_delay(duration=100, qumode=qmr[0], unit="ns")
         circ.cv_measure(qmr[0], creg)
 
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.02, circuit=circ, time_unit="ns")
-        state, result, fock_counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=True, shots=2, per_shot_state_vector=True)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+            photon_loss_rates=0.02, circuit=circ, time_unit="ns"
+        )
+        state, result, fock_counts = c2qa.util.simulate(
+            circ,
+            noise_passes=noise_pass,
+            discretize=True,
+            shots=2,
+            per_shot_state_vector=True,
+        )
 
         assert result.success
 
@@ -110,8 +128,8 @@ def test_accumulated_counts_cv_c_r(capsys):
         cr = qiskit.circuit.ClassicalRegister(1)
         circ = c2qa.CVCircuit(qmr, anc, cr)
 
-        circ.initialize([1, 0], anc[0]) # Ancilla in |g>
-        circ.cv_initialize(3, qmr[0]) # Qumode in |3>
+        circ.initialize([1, 0], anc[0])  # Ancilla in |g>
+        circ.cv_initialize(3, qmr[0])  # Qumode in |3>
 
         # Photon number parity circuit
         circ.h(anc[0])
@@ -120,9 +138,13 @@ def test_accumulated_counts_cv_c_r(capsys):
         circ.measure(anc[0], cr[0])
 
         # Simulate
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.1, circuit=circ, time_unit="µs")
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+            photon_loss_rates=0.1, circuit=circ, time_unit="µs"
+        )
 
-        state, result, fock_counts = c2qa.util.simulate(circ, noise_passes=noise_pass, discretize=discretize, shots=3000)
+        state, result, fock_counts = c2qa.util.simulate(
+            circ, noise_passes=noise_pass, discretize=discretize, shots=3000
+        )
         print("##############")
         print(f"Result counts: {result.get_counts()}")
         print(f"Fock counts: {fock_counts}")
@@ -150,9 +172,13 @@ def test_accumulated_counts_cv_d(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit)
-    
-        state, result, fock_counts = c2qa.util.simulate(circuit, noise_passes=noise_pass, discretize=discretize, shots=200)
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+            photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit
+        )
+
+        state, result, fock_counts = c2qa.util.simulate(
+            circuit, noise_passes=noise_pass, discretize=discretize, shots=200
+        )
         print("##############")
         print(f"Result counts: {result.get_counts()}")
         print(f"Fock counts: {fock_counts}")
@@ -166,6 +192,7 @@ def test_accumulated_counts_cv_d(capsys):
         print("DISCRETIZED")
         simulate_test(discretize=True)
 
+
 def test_manual_vs_auto_discretize(capsys):
     def simulate_test(manually_discretize: bool):
         qmr = c2qa.QumodeRegister(1, 3)
@@ -173,23 +200,30 @@ def test_manual_vs_auto_discretize(capsys):
         cr = qiskit.circuit.ClassicalRegister(1)
         circ = c2qa.CVCircuit(qmr, anc, cr)
 
-        circ.initialize([1, 0], anc[0]) # Ancilla in |g>
-        circ.cv_initialize(3, qmr[0]) # Qumode in |3>
+        circ.initialize([1, 0], anc[0])  # Ancilla in |g>
+        circ.cv_initialize(3, qmr[0])  # Qumode in |3>
 
         # Photon number parity circuit
         circ.h(anc[0])
         if manually_discretize:
-            for _ in range(10): # Manually discretize cv_c_r gate
-                circ.cv_c_r(numpy.pi/20, qmr[0], anc[0], duration=0.1, unit="µs")
+            for _ in range(10):  # Manually discretize cv_c_r gate
+                circ.cv_c_r(numpy.pi / 20, qmr[0], anc[0], duration=0.1, unit="µs")
         else:
-            circ.cv_c_r(numpy.pi/2, qmr[0], anc[0], duration=1, unit="µs")
+            circ.cv_c_r(numpy.pi / 2, qmr[0], anc[0], duration=1, unit="µs")
         circ.h(anc[0])
         circ.measure(anc[0], cr[0])
 
         # Simulate
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(photon_loss_rates=0.1, circuit=circ, time_unit="µs")
-        return c2qa.util.simulate(circ, noise_passes=noise_pass, shots=3000, discretize=(not manually_discretize))
-    
+        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+            photon_loss_rates=0.1, circuit=circ, time_unit="µs"
+        )
+        return c2qa.util.simulate(
+            circ,
+            noise_passes=noise_pass,
+            shots=3000,
+            discretize=(not manually_discretize),
+        )
+
     with capsys.disabled():
         min_percent_diff = 99999
         max_percent_diff = 0
@@ -219,6 +253,6 @@ def test_manual_vs_auto_discretize(capsys):
                 max_percent_diff = max(percent_diff, max_percent_diff)
                 print(f"Key '{key}' percent difference {percent_diff}")
                 assert math.isclose(counts_man[key], counts_auto[key], rel_tol=0.25)
-        
+
         print(f"Min percent diff {min_percent_diff}")
         print(f"Max percent diff {max_percent_diff}")

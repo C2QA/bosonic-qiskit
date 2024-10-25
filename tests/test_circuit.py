@@ -85,7 +85,7 @@ def test_get_qubit_indices(capsys):
         )
         qbr = qiskit.QuantumRegister(size=number_of_qubits)
         cbr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qbr, cbr)  
+        circuit = c2qa.CVCircuit(qmr, qbr, cbr)
 
         indices = circuit.get_qubit_indices([qmr[1]])
         print(f"qmr[1] indices = {indices}")
@@ -103,6 +103,7 @@ def test_get_qubit_indices(capsys):
         print(f"qbr[0] indices = {indices}")
         assert indices == [4]
 
+
 def test_initialize_qubit_values(capsys):
     with capsys.disabled():
         print()
@@ -112,7 +113,8 @@ def test_initialize_qubit_values(capsys):
 
         for fock in range(pow(2, number_of_qubits_per_mode)):
             qmr = c2qa.QumodeRegister(
-                num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
+                num_qumodes=number_of_modes,
+                num_qubits_per_qumode=number_of_qubits_per_mode,
             )
             circuit = c2qa.CVCircuit(qmr)
             circuit.cv_initialize(fock, qmr[0])
@@ -130,15 +132,15 @@ def test_serialize(capsys):
         qumodes = c2qa.QumodeRegister(2)
         bosonic_circuit = c2qa.CVCircuit(qumodes)
 
-        init_state = [0,2]
+        init_state = [0, 2]
         for i in range(qumodes.num_qumodes):
             bosonic_circuit.cv_initialize(init_state[i], qumodes[i])
 
-        phi = qiskit.circuit.Parameter('phi')
-        bosonic_circuit.cv_bs(phi, qumodes[0], qumodes[1], qumodes.cutoff, qumodes.cutoff)
+        phi = qiskit.circuit.Parameter("phi")
+        bosonic_circuit.cv_bs(phi, qumodes[0], qumodes[1])
 
-        #print(bosonic_circuit.draw())
-        print('\nAttempt to serialize an unbound CVCircuit:')
+        # print(bosonic_circuit.draw())
+        print("\nAttempt to serialize an unbound CVCircuit:")
         bosonic_serial = json.dumps(bosonic_circuit, cls=RuntimeEncoder)
         print(bosonic_serial)
 
@@ -146,16 +148,22 @@ def test_serialize(capsys):
 def test_cv_gate_from_matrix(capsys):
     with capsys.disabled():
         # This test picks random qumode/qubit to initialize xgate on, does fockcounts, and checks that results match expected values.
-        xgate = [[0, 1],[1, 0]] # For qubit, flips |1> to |0> and vice versa. For qumode, flips fock |1> to fock |0> and vice versa
-        
+        xgate = [
+            [0, 1],
+            [1, 0],
+        ]  # For qubit, flips |1> to |0> and vice versa. For qumode, flips fock |1> to fock |0> and vice versa
+
         num_qumode_registers = 2
         num_qumodes_per_register = 2
         num_qubits_per_qumode = 1
 
         num_qubits = 3
 
-        total_qubits = num_qumode_registers * num_qumodes_per_register * num_qubits_per_qumode + num_qubits
-        for i in range(10): # Repeat test 10 times
+        total_qubits = (
+            num_qumode_registers * num_qumodes_per_register * num_qubits_per_qumode
+            + num_qubits
+        )
+        for i in range(10):  # Repeat test 10 times
             # Two qumode registers, One quantum register, One classical register. Hilbert space dimension = 2**(2 * 2 * 1 + 3) = 128
             qmr1 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
             qmr2 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
@@ -169,7 +177,7 @@ def test_cv_gate_from_matrix(capsys):
 
             for i in range(num_qubits):
                 circuit.initialize([0, 1], q[i])
-            
+
             # Pick one of the qumode registers to act on
             register = numpy.random.randint(1, 3)
 
@@ -180,16 +188,16 @@ def test_cv_gate_from_matrix(capsys):
             qubit_no = numpy.random.randint(0, 3)
 
             # Create string corresponding to expected results
-            expect = ['1' for _ in range(total_qubits)]
+            expect = ["1" for _ in range(total_qubits)]
 
             if register == 1:
-                expect[qumode_no] = '0'
+                expect[qumode_no] = "0"
             elif register == 2:
-                expect[qumode_no + 2] = '0'
+                expect[qumode_no + 2] = "0"
 
-            expect[4 + qubit_no] = '0' 
+            expect[4 + qubit_no] = "0"
 
-            expect = ''.join(reversed(expect))
+            expect = "".join(reversed(expect))
 
             # Depending on quantum register chosen, assert result to be true
             if register == 1:
@@ -204,7 +212,7 @@ def test_cv_gate_from_matrix(capsys):
                 if len(list(fock_counts.keys())) > 1:
                     raise Exception
 
-                assert(list(fock_counts.keys())[0] == expect)
+                assert list(fock_counts.keys())[0] == expect
 
             elif register == 2:
                 circuit.cv_gate_from_matrix(xgate, qmr2[qumode_no])
@@ -218,7 +226,7 @@ def test_cv_gate_from_matrix(capsys):
                 if len(list(fock_counts.keys())) > 1:
                     raise Exception
 
-                assert(list(fock_counts.keys())[0] == expect)
+                assert list(fock_counts.keys())[0] == expect
 
             else:
                 raise Exception
@@ -227,7 +235,7 @@ def test_cv_gate_from_matrix(capsys):
 def test_discretize_cv_gate_from_matrix(capsys):
     with capsys.disabled():
         # This test picks random qumode/qubit to initialize xgate on, does fockcounts, and checks that results match expected values.
-        xgate = [[0, 1],[1, 0]]
+        xgate = [[0, 1], [1, 0]]
 
         num_qumode_registers = 2
         num_qumodes_per_register = 2
@@ -235,7 +243,10 @@ def test_discretize_cv_gate_from_matrix(capsys):
 
         num_qubits = 3
 
-        total_qubits = num_qumode_registers * num_qumodes_per_register * num_qubits_per_qumode + num_qubits
+        total_qubits = (
+            num_qumode_registers * num_qumodes_per_register * num_qubits_per_qumode
+            + num_qubits
+        )
 
         # Two qumode registers, One quantum register, One classical register. Hilbert space dimension = 2**(2 * 2 * 1 + 3) = 128
         qmr1 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
@@ -251,11 +262,12 @@ def test_discretize_cv_gate_from_matrix(capsys):
         discretized = c2qa.discretize.discretize_circuits(circuit)
         assert len(circuit.data) == len(discretized)
 
+
 def test_cv_initialize(capsys):
     with capsys.disabled():
         qmr1 = c2qa.QumodeRegister(1, 2)
         qmr2 = c2qa.QumodeRegister(2, 2)
-        qmr3 = c2qa.QumodeRegister(2, 3) # <----- change to (2, 2) for no error
+        qmr3 = c2qa.QumodeRegister(2, 3)  # <----- change to (2, 2) for no error
         qmr4 = c2qa.QumodeRegister(1, 2)
         qmr5 = c2qa.QumodeRegister(3, 2)
         qmr6 = c2qa.QumodeRegister(3, 2)
@@ -269,5 +281,7 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr6[0])
 
         # saving a state vector for all the registers takes a considerable amount of time
-        state, result, fock_counts = c2qa.util.simulate(circuit, add_save_statevector=False, return_fockcounts=False)
+        state, result, fock_counts = c2qa.util.simulate(
+            circuit, add_save_statevector=False, return_fockcounts=False
+        )
         assert result.success

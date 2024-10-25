@@ -148,31 +148,43 @@ def test_stateread(capsys):
             verbose=True,
         )
 
+
 def test_fockmap(capsys):
     with capsys.disabled():
 
         # Build rand array of rand dim between 1 and 100, use fockmap to populate initally empty array, and assert that final array is equal to rand array
-        for _ in range(10): # Repeat test 10 times
+        for _ in range(10):  # Repeat test 10 times
             dim = numpy.random.randint(low=1, high=101)
             randarray = numpy.random.uniform(low=0, high=1, size=(dim, dim))
 
             testmatrix = numpy.zeros((dim, dim))
             for i in range(dim):
-                for j in range (dim):
+                for j in range(dim):
                     testmatrix = c2qa.util.fockmap(testmatrix, j, i, randarray[i, j])
-                     
-            assert((testmatrix == randarray).all())
+
+            assert (testmatrix == randarray).all()
 
         # Check fockmap using numpy.outer
         matrix = numpy.zeros((4, 4))
-        assert((c2qa.util.fockmap(matrix, 0, 0) == numpy.outer([1, 0, 0 ,0], [1, 0, 0, 0])).all()) # |0><0|
-        assert((c2qa.util.fockmap(matrix, 1, [3, 2], [1, 0.5]) == (numpy.outer([0, 0, 0 ,1], [0, 1, 0, 0]) + 0.5 * numpy.outer([0, 0, 1 ,0], [0, 1, 0, 0]))).all()) # |3><1| + 0.5|2><1|
-        assert((c2qa.util.fockmap(matrix, 1, [3, 2, 1]) == c2qa.util.fockmap(matrix, [1, 1, 1], [3, 2, 1])).all()) # |3><1| + |2><1| + |1><1|
+        assert (
+            c2qa.util.fockmap(matrix, 0, 0) == numpy.outer([1, 0, 0, 0], [1, 0, 0, 0])
+        ).all()  # |0><0|
+        assert (
+            c2qa.util.fockmap(matrix, 1, [3, 2], [1, 0.5])
+            == (
+                numpy.outer([0, 0, 0, 1], [0, 1, 0, 0])
+                + 0.5 * numpy.outer([0, 0, 1, 0], [0, 1, 0, 0])
+            )
+        ).all()  # |3><1| + 0.5|2><1|
+        assert (
+            c2qa.util.fockmap(matrix, 1, [3, 2, 1])
+            == c2qa.util.fockmap(matrix, [1, 1, 1], [3, 2, 1])
+        ).all()  # |3><1| + |2><1| + |1><1|
 
         # Check the types which are accepted for each arg.
         for i in range(10):
             # Nested list, numpy.ndarray
-            m_types = [[[0, 0],[0 ,0]], numpy.zeros((2, 2))] 
+            m_types = [[[0, 0], [0, 0]], numpy.zeros((2, 2))]
 
             # int, list
             fi_types = [0, [1, 0]]
@@ -180,7 +192,7 @@ def test_fockmap(capsys):
             # int, list
             fo_types = [1, [1, 0]]
 
-            #int, float, complex, empty list, list, numpy.ndarray
+            # int, float, complex, empty list, list, numpy.ndarray
             amp_types = [1, 1.0, 1j, [], [1, 1], numpy.array([1, 1])]
 
             # Generate random indices to test for
@@ -192,11 +204,21 @@ def test_fockmap(capsys):
                 amp_index = numpy.random.randint(0, 4)
             else:
                 amp_index = numpy.random.randint(3, 5)
-            
-            # Assert that output is a numpy.ndarray
-            assert(type(c2qa.util.fockmap(m_types[m_index], fi_types[fi_index], fo_types[fo_index], amp_types[amp_index])) == numpy.ndarray)
 
-        
+            # Assert that output is a numpy.ndarray
+            assert (
+                type(
+                    c2qa.util.fockmap(
+                        m_types[m_index],
+                        fi_types[fi_index],
+                        fo_types[fo_index],
+                        amp_types[amp_index],
+                    )
+                )
+                == numpy.ndarray
+            )
+
+
 def test_circuit_avg_photon_num(capsys):
     with capsys.disabled():
         # Create two qumode registers containing 2 qumodes and 1 qumode respectively.
@@ -205,9 +227,9 @@ def test_circuit_avg_photon_num(capsys):
         circ = c2qa.CVCircuit(qmr1, qmr2)
 
         # Initialize the three qumodes to |3>, |4>, |5> Fock states.
-        circ.cv_initialize(3, qmr1[0]) # Qumode in |3>
-        circ.cv_initialize(4, qmr1[1]) # Qumode in |4>
-        circ.cv_initialize(5, qmr2[0]) # Qumode in |5>
+        circ.cv_initialize(3, qmr1[0])  # Qumode in |3>
+        circ.cv_initialize(4, qmr1[1])  # Qumode in |4>
+        circ.cv_initialize(5, qmr2[0])  # Qumode in |5>
 
         # Print out the indices of qubits in qumodes, grouped by qumode
         print(circ.qumode_qubits_indices_grouped)
@@ -218,27 +240,33 @@ def test_circuit_avg_photon_num(capsys):
 
         avg_photon_num = c2qa.util.avg_photon_num(circ, state)
         print(avg_photon_num)
-        assert([3.0, 4.0, 5.0] == avg_photon_num)
+        assert [3.0, 4.0, 5.0] == avg_photon_num
 
 
 def test_qumode_avg_photon_num(capsys):
     with capsys.disabled():
-        for _ in range(5): # Repeat test 5 times
+        for _ in range(5):  # Repeat test 5 times
             # Decimals
             decimals = numpy.random.randint(1, 6)
-            
+
             # Generate random vector
             dim = numpy.random.randint(1, 11)
-            vector = numpy.random.uniform(-1, 1, dim) + 1.j * numpy.random.uniform(-1, 1, dim)
-            
+            vector = numpy.random.uniform(-1, 1, dim) + 1.0j * numpy.random.uniform(
+                -1, 1, dim
+            )
+
             # Compute magnitude of each element within vector, and norm of vector
             element_norm = numpy.multiply(vector, numpy.conjugate(vector))
             norm = numpy.sum(element_norm)
 
             # Dot product between number operator and magnitude
-            avg_num = numpy.mean(numpy.dot(element_norm, numpy.array(range(dim))))/norm
-            
+            avg_num = (
+                numpy.mean(numpy.dot(element_norm, numpy.array(range(dim)))) / norm
+            )
+
             # Average photon number of statevector, density matrix, and random vector must all match
-            assert(c2qa.util.qumode_avg_photon_num(Statevector(vector), decimals) == c2qa.util.qumode_avg_photon_num(DensityMatrix(vector), decimals) == round(avg_num.real, decimals))
-            
-            
+            assert (
+                c2qa.util.qumode_avg_photon_num(Statevector(vector), decimals)
+                == c2qa.util.qumode_avg_photon_num(DensityMatrix(vector), decimals)
+                == round(avg_num.real, decimals)
+            )
