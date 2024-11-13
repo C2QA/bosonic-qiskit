@@ -122,6 +122,22 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
+    def s3(self, theta, cutoff_a, cutoff_b, cutoff_c):
+        """Three-mode squeezing operator
+
+        Args:
+            g (real): multiplied by 1j to yield imaginary phase
+
+        Returns:
+            csc_matrix: operator matrix
+        """
+
+        arg = (numpy.conjugate(theta * 1j) * self.get_b123_dag(cutoff_a, cutoff_b, cutoff_c)) - (
+            theta * 1j * self.get_b123(cutoff_a, cutoff_b, cutoff_c)
+        )
+
+        return scipy.sparse.linalg.expm(arg)
+
     def bs(self, theta, cutoff_a, cutoff_b):
         """Two-mode beam splitter operator
 
