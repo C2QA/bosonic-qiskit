@@ -279,6 +279,16 @@ def test_two_mode_squeezing_twice():
     assert_unchanged(state, result)
 
 
+def test_three_mode_squeezing_once():
+    circuit, qmr = create_unconditional(num_qumodes=3)
+
+    z = random.random()
+    circuit.cv_sq3(z, qmr[0], qmr[1], qmr[2])
+
+    state, result, fock_counts = c2qa.util.simulate(circuit)
+    assert_changed(state, result)
+
+
 def test_gates():
     """Verify that we can use the gates, not that they are actually working."""
 

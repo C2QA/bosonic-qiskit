@@ -359,6 +359,35 @@ class CVCircuit(QuantumCircuit):
             ),
             qargs=qumode_a + qumode_b,
         )
+    
+    def cv_sq3(self, theta, qumode_a, qumode_b, qumode_c, duration=100, unit="ns"):
+        """Three-mode squeezing gate
+
+        Args:
+            theta (real or complex): squeeze
+            qumode_a (list): list of qubits representing first qumode
+            qumode_b (list): list of qubits representing second qumode
+            qumode_c (list): list of qubits representing third qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.s3,
+                [theta],
+                cutoffs=[
+                    QumodeRegister.calculate_cutoff(len(qumode_a)),
+                    QumodeRegister.calculate_cutoff(len(qumode_b)),
+                    QumodeRegister.calculate_cutoff(len(qumode_c)),
+                ],
+                num_qubits=len(qumode_a) + len(qumode_b) + len(qumode_c),
+                label="S3",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=qumode_a + qumode_b + qumode_c,
+        )
 
     def cv_bs(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
         """Two-mode beam splitter gate.
