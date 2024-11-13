@@ -60,8 +60,20 @@ class CVOperators:
     def get_a2_dag(self, cutoff_a: int, cutoff_b: int):
         return self.get_a2(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
 
+    def get_b1_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
+        return self.get_b1(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
+    
+    def get_b2_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
+        return self.get_b2(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
+    
+    def get_b3_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
+        return self.get_b3(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
+
     def get_a12_dag(self, cutoff_a: int, cutoff_b: int):
         return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
+    
+    def get_b123_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
+        return self.get_b1_dag(cutoff_a, cutoff_b, cutoff_c) * self.get_b2_dag(cutoff_a, cutoff_b, cutoff_c) * self.get_b3_dag(cutoff_a, cutoff_b, cutoff_c)
 
     def get_a12dag(self, cutoff_a: int, cutoff_b: int):
         return self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
