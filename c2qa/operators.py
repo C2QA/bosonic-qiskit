@@ -29,13 +29,16 @@ class CVOperators:
         return scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b)).tocsc()
 
     def get_b1(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
-        return scipy.sparse.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b), self.get_eye(cutoff_c)).tocsc()
+        kron_ab = scipy.sparse.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b))
+        return scipy.sparse.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
     
     def get_b2(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
-        return scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b), self.get_eye(cutoff_c)).tocsc()
+        kron_ab = scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b))
+        return scipy.sparse.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
     
     def get_b3(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
-        return scipy.sparse.kron(self.get_eye(cutoff_a), self.get_eye(cutoff_b), self.get_a(cutoff_c)).tocsc()
+        kron_ab = scipy.sparse.kron(self.get_eye(cutoff_a), self.get_eye(cutoff_b))
+        return scipy.sparse.kron(kron_ab, self.get_a(cutoff_c)).tocsc()
 
     def get_a12(self, cutoff_a: int, cutoff_b: int):
         return self.get_a1(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
