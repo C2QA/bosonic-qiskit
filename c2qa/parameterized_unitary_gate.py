@@ -1,6 +1,7 @@
+from typing import Iterable
 import warnings
 
-
+import numpy
 import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate
@@ -90,14 +91,17 @@ class ParameterizedUnitaryGate(Gate):
             self.definition = None
 
     def validate_parameter(self, parameter):
-        """Gate parameters should be int, float, or ParameterExpression"""
-        if isinstance(parameter, complex) or (
-            isinstance(parameter, ParameterExpression) and not parameter.is_real()
-        ):
+        """Gate parameters should be int, float, complex, or ParameterExpression"""
+        if numpy.iscomplexobj(parameter):
+            # Turn all numpy complex values into native python complex objects so that
+            # they can't be cast to float without raising an error.
+            if isinstance(parameter, Iterable):
+                return [complex(p) for p in parameter]
+
+            return complex(parameter)
+        elif isinstance(parameter, ParameterExpression) and not parameter.is_real():
             return parameter
-        elif isinstance(parameter, str):  # accept strings as-is
-            return parameter
-        elif isinstance(parameter, list):
+        elif isinstance(parameter, (str, list)):  # accept strings as-is
             return parameter
         else:
             return super().validate_parameter(parameter)
