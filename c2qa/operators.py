@@ -511,7 +511,7 @@ class CVOperators:
         """Two-qumode sum gate
 
         Args:
-            scale (real): arbitrary scal factor
+            scale (real): arbitrary scale factor
 
         Returns:
             csc_matrix: operator matrix
@@ -519,8 +519,8 @@ class CVOperators:
 
         arg = (
             (scale / 2)
-            * (self.get_a(cutoff_a) + self.get_adag(cutoff_a))
-            * (self.get_adag(cutoff_b) - self.get_a(cutoff_b))
+            * (self.get_a(cutoff_a) + self.get_a_dag(cutoff_a))
+            * (self.get_a_dag(cutoff_b) - self.get_a(cutoff_b))
         )
 
         return scipy.sparse.linalg.expm(arg)
