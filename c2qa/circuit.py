@@ -799,7 +799,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             ParameterizedUnitaryGate(
                 self.ops.sum,
                 [scale],
