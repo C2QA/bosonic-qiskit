@@ -516,11 +516,12 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
+        a = self.get_a1(cutoff_a, cutoff_b)
+        a_dag = self.get_a1_dag(cutoff_a, cutoff_b)
 
-        arg = (
-            (scale / 2)
-            * (self.get_a(cutoff_a) + self.get_a_dag(cutoff_a))
-            * (self.get_a_dag(cutoff_b) - self.get_a(cutoff_b))
-        )
+        b = self.get_a1(cutoff_b, cutoff_a)
+        b_dag = self.get_a1_dag(cutoff_b, cutoff_a)
+
+        arg = (scale / 2) * (a + a_dag) * (b_dag - b)
 
         return scipy.sparse.linalg.expm(arg)
