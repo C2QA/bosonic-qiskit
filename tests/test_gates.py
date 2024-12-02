@@ -357,3 +357,13 @@ def test_multiboson_sampling(capsys):
 
         state, result, fock_counts = c2qa.util.simulate(circuit)
         assert result.success
+
+
+def test_two_mode_sum():
+    circuit, qmr = create_unconditional()
+
+    z = random.random()
+    circuit.cv_sum(z, qmr[0], qmr[1])
+
+    state, result, fock_counts = c2qa.util.simulate(circuit)
+    assert_changed(state, result)

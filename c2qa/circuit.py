@@ -359,7 +359,7 @@ class CVCircuit(QuantumCircuit):
             ),
             qargs=qumode_a + qumode_b,
         )
-    
+
     def cv_sq3(self, theta, qumode_a, qumode_b, qumode_c, duration=100, unit="ns"):
         """Three-mode squeezing gate
 
@@ -786,6 +786,33 @@ class CVCircuit(QuantumCircuit):
                 unit=unit,
             ),
             qargs=[qubit_1] + [qubit_2],
+        )
+
+    def cv_sum(self, scale, qumode_a, qumode_b, duration=100, unit="ns"):
+        """Two-mode sum gate.
+
+        Args:
+            scale (real): arbitrary real scale factor
+            qumode_a (list): list of qubits representing qumode
+            qumode_b (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        self.append(
+            ParameterizedUnitaryGate(
+                self.ops.sum,
+                [scale],
+                cutoffs=[
+                    QumodeRegister.calculate_cutoff(len(qumode_a)),
+                    QumodeRegister.calculate_cutoff(len(qumode_b)),
+                ],
+                num_qubits=len(qumode_a) + len(qumode_b),
+                label="sum",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=qumode_a + qumode_b,
         )
 
     def measure_z(self, qubit, cbit, duration=100, unit="ns"):

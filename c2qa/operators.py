@@ -31,11 +31,11 @@ class CVOperators:
     def get_b1(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
         kron_ab = scipy.sparse.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b))
         return scipy.sparse.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
-    
+
     def get_b2(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
         kron_ab = scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b))
         return scipy.sparse.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
-    
+
     def get_b3(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
         kron_ab = scipy.sparse.kron(self.get_eye(cutoff_a), self.get_eye(cutoff_b))
         return scipy.sparse.kron(kron_ab, self.get_a(cutoff_c)).tocsc()
@@ -44,7 +44,11 @@ class CVOperators:
         return self.get_a1(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
 
     def get_b123(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
-        return self.get_b1(cutoff_a, cutoff_b, cutoff_c) * self.get_b2(cutoff_a, cutoff_b, cutoff_c) * self.get_b3(cutoff_a, cutoff_b, cutoff_c)
+        return (
+            self.get_b1(cutoff_a, cutoff_b, cutoff_c)
+            * self.get_b2(cutoff_a, cutoff_b, cutoff_c)
+            * self.get_b3(cutoff_a, cutoff_b, cutoff_c)
+        )
 
     def get_a_dag(self, cutoff: int):
         """Creation operator"""
@@ -65,18 +69,22 @@ class CVOperators:
 
     def get_b1_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
         return self.get_b1(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
-    
+
     def get_b2_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
         return self.get_b2(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
-    
+
     def get_b3_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
         return self.get_b3(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
 
     def get_a12_dag(self, cutoff_a: int, cutoff_b: int):
         return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
-    
+
     def get_b123_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int):
-        return self.get_b1_dag(cutoff_a, cutoff_b, cutoff_c) * self.get_b2_dag(cutoff_a, cutoff_b, cutoff_c) * self.get_b3_dag(cutoff_a, cutoff_b, cutoff_c)
+        return (
+            self.get_b1_dag(cutoff_a, cutoff_b, cutoff_c)
+            * self.get_b2_dag(cutoff_a, cutoff_b, cutoff_c)
+            * self.get_b3_dag(cutoff_a, cutoff_b, cutoff_c)
+        )
 
     def get_a12dag(self, cutoff_a: int, cutoff_b: int):
         return self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
@@ -159,9 +167,10 @@ class CVOperators:
             csc_matrix: operator matrix
         """
 
-        arg = (numpy.conjugate(theta * 1j) * self.get_b123_dag(cutoff_a, cutoff_b, cutoff_c)) - (
-            theta * 1j * self.get_b123(cutoff_a, cutoff_b, cutoff_c)
-        )
+        arg = (
+            numpy.conjugate(theta * 1j)
+            * self.get_b123_dag(cutoff_a, cutoff_b, cutoff_c)
+        ) - (theta * 1j * self.get_b123(cutoff_a, cutoff_b, cutoff_c))
 
         return scipy.sparse.linalg.expm(arg)
 
@@ -497,3 +506,21 @@ class CVOperators:
             csc_matrix: operator matrix
         """
         return scipy.sparse.csc_matrix(matrix)
+
+    def sum(self, scale, cutoff_a, cutoff_b):
+        """Two-qumode sum gate
+
+        Args:
+            scale (real): arbitrary scal factor
+
+        Returns:
+            csc_matrix: operator matrix
+        """
+
+        arg = (
+            (scale / 2 * 1j)
+            * (self.get_a(cutoff_a) + self.get_adag(cutoff_a))
+            * (self.get_a(cutoff_b) - self.get_adag(cutoff_b))
+        )
+
+        return scipy.sparse.linalg.expm(arg)
