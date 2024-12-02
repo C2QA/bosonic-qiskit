@@ -518,9 +518,9 @@ class CVOperators:
         """
 
         arg = (
-            (scale / 2 * 1j)
+            (scale / 2)
             * (self.get_a(cutoff_a) + self.get_adag(cutoff_a))
-            * (self.get_a(cutoff_b) - self.get_adag(cutoff_b))
+            * (self.get_adag(cutoff_b) - self.get_a(cutoff_b))
         )
 
         return scipy.sparse.linalg.expm(arg)
