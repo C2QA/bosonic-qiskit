@@ -47,7 +47,10 @@ class TestUnitary:
         assert is_unitary_matrix(self.ops.s2(random.random(), self.cutoff, self.cutoff))
         
     def test_sum(self):
-        assert is_unitary_matrix(self.ops.sum(random.random(), self.cutoff, self.cutoff))
+        mat = self.ops.sum(random.random(), self.cutoff, self.cutoff)
+        print(mat.toarray())
+        assert is_unitary_matrix(mat)
+
 
 
 class TestMatrices:

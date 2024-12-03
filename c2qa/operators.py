@@ -516,12 +516,9 @@ class CVOperators:
         Returns:
             csc_matrix: operator matrix
         """
-        a = self.get_a1(cutoff_a, cutoff_b)
-        a_dag = self.get_a1_dag(cutoff_a, cutoff_b)
-
-        b = self.get_a1(cutoff_b, cutoff_a)
-        b_dag = self.get_a1_dag(cutoff_b, cutoff_a)
-
-        arg = (scale / 2) * (a + a_dag) * (b_dag - b)
+        # TODO verify below implementaiton of equation 205 from https://arxiv.org/pdf/2407.10381
+        a_mat = self.get_a(cutoff_a) + self.get_a_dag(cutoff_a)
+        b_mat = self.get_a_dag(cutoff_b) - self.get_a(cutoff_b)
+        arg = (scale / 2) * (scipy.sparse.kron(a_mat, b_mat))
 
         return scipy.sparse.linalg.expm(arg)
