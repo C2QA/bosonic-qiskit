@@ -325,7 +325,7 @@ def _final_measurement_mapping(circuit):
     qmap = []
     cmap = []
     for item in circuit._data[::-1]:
-        if item[0].name == "measure":
+        if item.name == "measure":
             cbit = cint_map[item[2][0]]
             qbit = qint_map[item[1][0]]
             if cbit in active_cbits and qbit in active_qubits:
