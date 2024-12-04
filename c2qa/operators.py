@@ -525,3 +525,23 @@ class CVOperators:
         arg = (scale / 2) * (scipy.sparse.kron(a_mat, b_mat))
 
         return scipy.sparse.linalg.expm(arg)
+
+    def csum(self, scale, cutoff_a, cutoff_b):
+        """Conditional two-qumode sum gate
+
+        Args:
+            scale (real): arbitrary scale factor
+
+        Returns:
+            csc_matrix: operator matrix
+        """
+        # TODO verify below implementation
+        #     equation 205 from https://arxiv.org/pdf/2407.10381
+        #     vs equation 4 from https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.88.097904
+        #   Equation 205 with matrix multiplication is not unitary, how to handle different cutoffs
+        a_mat = self.get_a(cutoff_a) + self.get_a_dag(cutoff_a)
+        b_mat = self.get_a_dag(cutoff_b) - self.get_a(cutoff_b)
+        arg = (scale / 2) * (scipy.sparse.kron(a_mat, b_mat))
+        arg = scipy.sparse.kron(zQB, arg)
+
+        return scipy.sparse.linalg.expm(arg)

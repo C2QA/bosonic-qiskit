@@ -815,6 +815,34 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b,
         )
 
+    def cv_c_sum(self, scale, qumode_a, qumode_b, qubit, duration=100, unit="ns"):
+        """Conditional two-mode sum gate.
+
+        Args:
+            scale (real): arbitrary real scale factor
+            qumode_a (list): list of qubits representing qumode
+            qumode_b (list): list of qubits representing qumode
+            qubit (Qubit): control Qubit
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.csum,
+                [scale],
+                cutoffs=[
+                    QumodeRegister.calculate_cutoff(len(qumode_a)),
+                    QumodeRegister.calculate_cutoff(len(qumode_b)),
+                ],
+                num_qubits=len(qumode_a) + len(qumode_b) + 1,
+                label="cSum",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=qumode_a + qumode_b + [qubit],
+        )
+
     def measure_z(self, qubit, cbit, duration=100, unit="ns"):
         """Measure qubit in z using probe qubits
 

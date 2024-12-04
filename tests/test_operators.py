@@ -45,12 +45,16 @@ class TestUnitary:
 
     def test_s2(self):
         assert is_unitary_matrix(self.ops.s2(random.random(), self.cutoff, self.cutoff))
-        
-    def test_sum(self):
-        mat = self.ops.sum(random.random(), self.cutoff, self.cutoff)
-        print(mat.toarray())
-        assert is_unitary_matrix(mat)
 
+    def test_sum(self):
+        assert is_unitary_matrix(
+            self.ops.sum(random.random(), self.cutoff, self.cutoff)
+        )
+
+    def test_csum(self):
+        assert is_unitary_matrix(
+            self.ops.csum(random.random(), self.cutoff, self.cutoff)
+        )
 
 
 class TestMatrices:
@@ -138,5 +142,11 @@ class TestMatrices:
     def test_sum(self):
         one = self.ops.sum(1, self.cutoff, self.cutoff)
         rand = self.ops.sum(random.random(), self.cutoff, self.cutoff)
+
+        assert not allclose(one, rand)
+
+    def test_csum(self):
+        one = self.ops.csum(1, self.cutoff, self.cutoff)
+        rand = self.ops.csum(random.random(), self.cutoff, self.cutoff)
 
         assert not allclose(one, rand)
