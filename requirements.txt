@@ -2,6 +2,7 @@ qiskit==1.2.4
 qiskit-aer==0.15.1
 qiskit-ibm-runtime==0.31.0
 qutip==5.0.4
+numpy==2.0.2
 
 # QuTiP install failing without setuptools
 setuptools
@@ -9,7 +10,3 @@ setuptools
 # For drawing circuits, state vectors, Wigner function plots
 matplotlib==3.9.2
 pylatexenc==2.10
-
-# tutorials/medium_artical/examples.ipynb not compatible with NumPy >2.0.0
-#   It causes type & casting validation errors in Qiskit Gate
-numpy<2.0.0

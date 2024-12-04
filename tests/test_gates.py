@@ -110,40 +110,40 @@ def test_conditional_schwinger():
 def test_beamsplitter_twice():
     circuit, qmr = create_unconditional()
 
-    phi = random.random()
-    circuit.cv_bs(phi, qmr[0], qmr[1])
-    circuit.cv_bs(-phi, qmr[0], qmr[1])
+    for phi in random_real_and_complex():
+        circuit.cv_bs(phi, qmr[0], qmr[1])
+        circuit.cv_bs(-phi, qmr[0], qmr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_unchanged(state, result)
 
 
 def test_conditonal_displacement():
     circuit, qmr, qr = create_conditional()
 
-    alpha = random.random()
-    circuit.cv_c_d(alpha, qmr[0], qr[0])
-    circuit.cv_c_d(-alpha, qmr[0], qr[0])
+    for alpha in random_real_and_complex():
+        circuit.cv_c_d(alpha, qmr[0], qr[0])
+        circuit.cv_c_d(-alpha, qmr[0], qr[0])
 
-    circuit.cv_c_d(-alpha, qmr[0], qr[1])
-    circuit.cv_c_d(alpha, qmr[0], qr[1])
+        circuit.cv_c_d(-alpha, qmr[0], qr[1])
+        circuit.cv_c_d(alpha, qmr[0], qr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_unchanged(state, result)
 
 
 def test_conditonal_squeezing():
     circuit, qmr, qr = create_conditional()
 
-    alpha = random.random()
-    circuit.cv_c_sq(alpha, qmr[0], qr[0])
-    circuit.cv_c_sq(-alpha, qmr[0], qr[0])
+    for alpha in random_real_and_complex():
+        circuit.cv_c_sq(alpha, qmr[0], qr[0])
+        circuit.cv_c_sq(-alpha, qmr[0], qr[0])
 
-    circuit.cv_c_sq(-alpha, qmr[0], qr[1])
-    circuit.cv_c_sq(alpha, qmr[0], qr[1])
+        circuit.cv_c_sq(-alpha, qmr[0], qr[1])
+        circuit.cv_c_sq(alpha, qmr[0], qr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_unchanged(state, result)
 
 
 def test_displacement_once(capsys):
@@ -240,53 +240,53 @@ def test_rotation_twice():
 def test_squeezing_once():
     circuit, qmr = create_unconditional()
 
-    z = random.random()
-    circuit.cv_sq(z, qmr[0])
+    for z in random_real_and_complex():
+        circuit.cv_sq(z, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_changed(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_changed(state, result)
 
 
 def test_squeezing_twice():
     circuit, qmr = create_unconditional()
 
-    z = random.random()
-    circuit.cv_sq(z, qmr[0])
-    circuit.cv_sq(-z, qmr[0])
+    for z in random_real_and_complex():
+        circuit.cv_sq(z, qmr[0])
+        circuit.cv_sq(-z, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_unchanged(state, result)
 
 
 def test_two_mode_squeezing_once():
     circuit, qmr = create_unconditional()
 
-    z = random.random()
-    circuit.cv_sq2(z, qmr[0], qmr[1])
+    for z in random_real_and_complex():
+        circuit.cv_sq2(z, qmr[0], qmr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_changed(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_changed(state, result)
 
 
 def test_two_mode_squeezing_twice():
     circuit, qmr = create_unconditional()
 
-    z = random.random()
-    circuit.cv_sq2(z, qmr[0], qmr[1])
-    circuit.cv_sq2(-z, qmr[0], qmr[1])
+    for z in random_real_and_complex():
+        circuit.cv_sq2(z, qmr[0], qmr[1])
+        circuit.cv_sq2(-z, qmr[0], qmr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_unchanged(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_unchanged(state, result)
 
 
 def test_three_mode_squeezing_once():
     circuit, qmr = create_unconditional(num_qumodes=3)
 
-    z = random.random()
-    circuit.cv_sq3(z, qmr[0], qmr[1], qmr[2])
+    for z in random_real_and_complex():
+        circuit.cv_sq3(z, qmr[0], qmr[1], qmr[2])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_changed(state, result)
+        state, result, fock_counts = c2qa.util.simulate(circuit)
+        assert_changed(state, result)
 
 
 def test_gates():
@@ -367,3 +367,12 @@ def test_two_mode_sum():
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
     assert_changed(state, result)
+
+
+def random_real_and_complex():
+    return [
+        random.random(),
+        numpy.float64(random.random()),
+        random.random() + 1j * random.random(),
+        numpy.complex128(random.random() + 1j * random.random()),
+    ]
