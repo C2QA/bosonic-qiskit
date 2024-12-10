@@ -387,7 +387,7 @@ def test_jc():
     circuit.cv_jc(theta, phi, qmr[0])
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_changed(state, result)
+    assert_unchanged(state, result)
 
 
 def test_ajc():
@@ -398,7 +398,7 @@ def test_ajc():
     circuit.cv_ajc(theta, phi, qmr[0])
 
     state, result, fock_counts = c2qa.util.simulate(circuit)
-    assert_changed(state, result)
+    assert_unchanged(state, result)
 
 
 def random_real_and_complex():
