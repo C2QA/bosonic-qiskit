@@ -843,7 +843,7 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + [qubit],
         )
 
-    def cv_jc(self, theta, phi, qumode, duration=100, unit="ns"):
+    def cv_jc(self, theta, phi, qumode, qubit, duration=100, unit="ns"):
         """Jaynes-Cummings gate
 
         Args:
@@ -861,15 +861,15 @@ class CVCircuit(QuantumCircuit):
                 cutoffs=[
                     QumodeRegister.calculate_cutoff(len(qumode)),
                 ],
-                num_qubits=len(qumode),
+                num_qubits=len(qumode) + 1,
                 label="jc",
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode,
+            qargs=qumode + [qubit],
         ) 
 
-    def cv_ajc(self, theta, phi, qumode, duration=100, unit="ns"):
+    def cv_ajc(self, theta, phi, qumode, qubit, duration=100, unit="ns"):
         """Anti-Jaynes-Cummings gate
 
         Args:
@@ -887,12 +887,12 @@ class CVCircuit(QuantumCircuit):
                 cutoffs=[
                     QumodeRegister.calculate_cutoff(len(qumode)),
                 ],
-                num_qubits=len(qumode),
+                num_qubits=len(qumode) + 1,
                 label="ajc",
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode,
+            qargs=qumode + [qubit],
         ) 
 
     def measure_z(self, qubit, cbit, duration=100, unit="ns"):
