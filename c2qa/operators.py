@@ -545,3 +545,35 @@ class CVOperators:
         arg = scipy.sparse.kron(zQB, arg)
 
         return scipy.sparse.linalg.expm(arg)
+
+    def jc(self, theta, phi, cutoff):
+        """Jaynes-Cummings gate
+        
+        Args:
+            theta (real): [0, 2pi)
+            phi (real): [0, 2pi)
+            
+        Returns:
+            csc_matrix: operator matrix
+        """
+        arg = numpy.exp(1j * phi) * scipy.sparse.kron(sigma_minus, self.get_a_dag(cutoff))
+        arg += numpy.exp(-1j * phi) * scipy.sparse.kron(sigma_plus, self.get_a(cutoff))
+        arg = -1j * theta * arg
+
+        return scipy.sparse.linalg.expm(arg)
+    
+    def ajc(self, theta, phi, cutoff):
+        """Anti-Jaynes-Cummings gate
+        
+        Args:
+            theta (real): [0, 2pi)
+            phi (real): [0, 2pi)
+            
+        Returns:
+            csc_matrix: operator matrix
+        """
+        arg = numpy.exp(1j * phi) * scipy.sparse.kron(sigma_plus, self.get_a_dag(cutoff))
+        arg += numpy.exp(-1j * phi) * scipy.sparse.kron(sigma_minus, self.get_a(cutoff))
+        arg = -1j * theta * arg
+
+        return scipy.sparse.linalg.expm(arg)
