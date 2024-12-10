@@ -545,3 +545,23 @@ class CVOperators:
         arg = scipy.sparse.kron(zQB, arg)
 
         return scipy.sparse.linalg.expm(arg)
+
+    def rb(self, theta, cutoff):
+        """Rabi interaction gate
+
+        Args:
+            theta (real): arbitrary scale factor
+
+        Returns:
+            csc_matrix: operator matrix
+        """
+        # TODO -- verify use of scipy.sparse.kron vs Table III.3 from https://arxiv.org/pdf/2407.10381
+        arg = -1j * scipy.sparse.kron(
+            xQB,
+            (
+                theta * self.get_a_dag(cutoff)
+                + numpy.conjugate(theta) * self.get_a(cutoff)
+            ),
+        )
+
+        return scipy.sparse.linalg.expm(arg)

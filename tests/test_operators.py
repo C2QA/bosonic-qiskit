@@ -56,6 +56,11 @@ class TestUnitary:
             self.ops.csum(random.random(), self.cutoff, self.cutoff)
         )
 
+    def test_rb(self):
+        assert is_unitary_matrix(
+            self.ops.rb(random.random(), self.cutoff)
+        )
+
 
 class TestMatrices:
     """Test that the operators produce the values we expect.
@@ -148,5 +153,11 @@ class TestMatrices:
     def test_csum(self):
         one = self.ops.csum(1, self.cutoff, self.cutoff)
         rand = self.ops.csum(random.random(), self.cutoff, self.cutoff)
+
+        assert not allclose(one, rand)
+
+    def test_rb(self):
+        one = self.ops.rb(1, self.cutoff)
+        rand = self.ops.rb(random.random(), self.cutoff)
 
         assert not allclose(one, rand)
