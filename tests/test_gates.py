@@ -379,6 +379,28 @@ def test_conditional_two_mode_sum():
     assert_changed(state, result)
 
 
+def test_jc():
+    circuit, qmr = create_unconditional()
+
+    theta = random.random()
+    phi = random.random()
+    circuit.cv_jc(theta, phi, qmr[0])
+
+    state, result, fock_counts = c2qa.util.simulate(circuit)
+    assert_changed(state, result)
+
+
+def test_ajc():
+    circuit, qmr = create_unconditional()
+
+    theta = random.random()
+    phi = random.random()
+    circuit.cv_ajc(theta, phi, qmr[0])
+
+    state, result, fock_counts = c2qa.util.simulate(circuit)
+    assert_changed(state, result)
+
+
 def random_real_and_complex():
     return [
         random.random(),
