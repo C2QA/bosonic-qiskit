@@ -56,10 +56,18 @@ class TestUnitary:
             self.ops.csum(random.random(), self.cutoff, self.cutoff)
         )
 
-    def test_rb(self):
+    def test_jc(self):
         assert is_unitary_matrix(
-            self.ops.rb(random.random(), self.cutoff)
+            self.ops.jc(random.random(), random.random(), self.cutoff)
         )
+
+    def test_ajc(self):
+        assert is_unitary_matrix(
+            self.ops.ajc(random.random(), random.random(), self.cutoff)
+        )
+
+    def test_rb(self):
+        assert is_unitary_matrix(self.ops.rb(random.random(), self.cutoff))
 
 
 class TestMatrices:
@@ -153,6 +161,18 @@ class TestMatrices:
     def test_csum(self):
         one = self.ops.csum(1, self.cutoff, self.cutoff)
         rand = self.ops.csum(random.random(), self.cutoff, self.cutoff)
+
+        assert not allclose(one, rand)
+
+    def test_jc(self):
+        one = self.ops.jc(1, 1, self.cutoff)
+        rand = self.ops.jc(random.random(), random.random(), self.cutoff)
+
+        assert not allclose(one, rand)
+
+    def test_ajc(self):
+        one = self.ops.ajc(1, 1, self.cutoff)
+        rand = self.ops.ajc(random.random(), random.random(), self.cutoff)
 
         assert not allclose(one, rand)
 

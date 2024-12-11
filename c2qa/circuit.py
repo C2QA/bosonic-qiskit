@@ -843,6 +843,58 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + [qubit],
         )
 
+    def cv_jc(self, theta, phi, qumode, qubit, duration=100, unit="ns"):
+        """Jaynes-Cummings gate
+
+        Args:
+            theta (real): [0, 2pi)
+            phi (real): [0, 2pi)
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.jc,
+                [theta, phi],
+                cutoffs=[
+                    QumodeRegister.calculate_cutoff(len(qumode)),
+                ],
+                num_qubits=len(qumode) + 1,
+                label="jc",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=qumode + [qubit],
+        )
+
+    def cv_ajc(self, theta, phi, qumode, qubit, duration=100, unit="ns"):
+        """Anti-Jaynes-Cummings gate
+
+        Args:
+            theta (real): [0, 2pi)
+            phi (real): [0, 2pi)
+            qumode (list): list of qubits representing qumode
+
+        Returns:
+            Instruction: QisKit instruction
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.ajc,
+                [theta, phi],
+                cutoffs=[
+                    QumodeRegister.calculate_cutoff(len(qumode)),
+                ],
+                num_qubits=len(qumode) + 1,
+                label="ajc",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=qumode + [qubit],
+        )
+
     def cv_rb(self, theta, qumode, qubit, duration=100, unit="ns"):
         """Rabi interaction gate
 
