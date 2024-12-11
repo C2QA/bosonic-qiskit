@@ -379,6 +379,16 @@ def test_conditional_two_mode_sum():
     assert_changed(state, result)
 
 
+def test_rb():
+    circuit, qmr, qbr = create_conditional()
+
+    z = random.random()
+    circuit.cv_rb(z, qmr[0], qbr[0])
+
+    state, result, fock_counts = c2qa.util.simulate(circuit)
+    assert_changed(state, result)
+
+
 def random_real_and_complex():
     return [
         random.random(),

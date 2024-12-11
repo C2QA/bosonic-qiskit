@@ -843,6 +843,28 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + [qubit],
         )
 
+    def cv_rb(self, theta, qumode, qubit, duration=100, unit="ns"):
+        """Rabi interaction gate
+
+        Args:
+            theta (real): arbitrary scale factor
+
+        Returns:
+            csc_matrix: operator matrix
+        """
+        return self.append(
+            ParameterizedUnitaryGate(
+                self.ops.rb,
+                [theta],
+                cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
+                num_qubits=len(qumode) + 1,
+                label="rb",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=qumode + [qubit],
+        )
+
     def measure_z(self, qubit, cbit, duration=100, unit="ns"):
         """Measure qubit in z using probe qubits
 
