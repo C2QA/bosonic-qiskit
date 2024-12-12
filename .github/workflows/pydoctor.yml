@@ -14,6 +14,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
+        check-latest: true
 
     - name: Install requirements for documentation generation
       run: |

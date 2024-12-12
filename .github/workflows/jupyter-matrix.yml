@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+          check-latest: true
 
       - name: Setup ffmpeg (with retries)
         uses: ./.github/actions/setup-ffmpeg
