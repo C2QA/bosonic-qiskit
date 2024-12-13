@@ -26,6 +26,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install Python dependencies
+      uses: ilammy/msvc-dev-cmd@v1
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
