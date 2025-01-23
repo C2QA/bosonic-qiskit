@@ -22,7 +22,7 @@ dependencies = [
     "qutip==5.0.4",
     "matplotlib==3.9.4",
     "pylatexenc==2.10",
-    "numpy==2.0.2",
+    "numpy==2.2.2",
 ]
 
 [project.urls]
