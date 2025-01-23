@@ -8,5 +8,5 @@ numpy==2.0.2
 setuptools==75.8.0
 
 # For drawing circuits, state vectors, Wigner function plots
-matplotlib==3.10.0
+matplotlib==3.9.4
 pylatexenc==2.10

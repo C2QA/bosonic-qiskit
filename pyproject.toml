@@ -20,7 +20,7 @@ dependencies = [
     "qiskit-aer==0.16.0",
     "qiskit-ibm-runtime==0.34.0",
     "qutip==5.0.4",
-    "matplotlib==3.10.0",
+    "matplotlib==3.9.4",
     "pylatexenc==2.10",
     "numpy==2.0.2",
 ]
