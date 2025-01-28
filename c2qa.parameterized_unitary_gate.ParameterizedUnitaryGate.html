@@ -7,7 +7,7 @@
   <head>
     
     <title>c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate</title>
-    <meta name="generator" content="pydoctor 24.3.3"> 
+    <meta name="generator" content="pydoctor 24.11.2"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="apidocs.css" />
     <link rel="stylesheet" type="text/css" href="extra.css" />
+    
 </head>
 
   <body>
@@ -52,7 +53,7 @@
             
             <span class="input-group-btn">
               <a style="display: none;" class="btn btn-default" id="search-clear-button" title="Clear" onclick="clearSearch()"><img src="fonts/x-circle.svg" alt="Clear" /></a>
-              <a class="btn btn-default" id="search-help-button" title="Help" onclick="toggleSearchHelpText()"><img src="fonts/info.svg" alt="Help" /></a>
+              <a class="btn btn-default" id="apidocs-help-button" title="Help" href="apidocs-help.html"><img src="fonts/info.svg" alt="Help" /></a>
             </span>
           </div>
         </div>
@@ -76,39 +77,6 @@
             <h1>Cannot search: JavaScript is not supported/enabled in your browser.</h1>
         </noscript>
 
-        <div class="hint" id="search-help-box">
-          <p class="rst-last">
-      
-            Search bar offers the following options:
-            <ul>   
-                <li>
-                  <strong>Term presence.</strong> The below example searches for documents that 
-                    must contain “foo”, might contain “bar” and must not contain “baz”: <code>+foo bar -baz</code>
-                </li> 
-
-                <li>
-                  <strong>Wildcards.</strong> The below example searches for documents with words beginning with “foo”: <code>foo*</code>
-                </li> 
-
-                <li>
-                  <strong>Search in specific fields.</strong> The following search matches all objects 
-                  in "twisted.mail" that matches “search”: <code>+qname:twisted.mail.* +search</code>
-
-                  <p>
-                    Possible fields: 'name', 'qname' (fully qualified name), 'docstring', and 'kind'.
-                    Last two fields are only applicable if "search in docstrings" is enabled.
-                  </p>
-                </li>
-
-                <li>
-                  <strong>Fuzzy matches.</strong> The following search matches all documents 
-                  that have a word within 1 edit distance of “foo”: <code>foo~1</code>
-                </li>
-            </ul>
-
-          </p>
-        </div>
-
         <div id="search-status"> </div>
 
         <div class="warning" id="search-warn-box" style="display: none;">
@@ -119,8 +87,8 @@
           <!-- Filled dynamically by JS -->
         </table>
         
-        <div style="margin-top: 8px;">
-          <p>Results provided by <a href="https://lunrjs.com">Lunr.js</a></p>
+        <div style="margin-top: 10px;">
+          <p>For more information on the search, visit the <a href="apidocs-help.html#rst-search">help page</a>.</p>
         </div>
       </div>
 
@@ -387,7 +355,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">ParameterizedUnitaryGate</span>(Gate): <a href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L11" class="sourceLink">(source)</a></code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">ParameterizedUnitaryGate(op_func, params, num_qubits, cutoffs, ...)</a></code></p>
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">ParameterizedUnitaryGate</span>(Gate): <a href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L12" class="sourceLink">(source)</a></code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.__init__">ParameterizedUnitaryGate(op_func, params, num_qubits, cutoffs, ...)</a></code></p>
           <p><a href="classIndex.html#c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate">View In Hierarchy</a></p>
         </div>
 
@@ -418,7 +386,7 @@
     
     <td>Method</td>
     <td><code><a href="#validate_parameter" class="internal-link" title="c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate.validate_parameter">validate<wbr></wbr>_parameter</a></code></td>
-    <td>Gate parameters should be int, float, or ParameterExpression</td>
+    <td>Gate parameters should be int, float, complex, or ParameterExpression</td>
   </tr><tr class="instancevariable">
     
     <td>Instance Variable</td>
@@ -480,7 +448,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">__array__</span><span class="function-signature">(self, dtype=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L50">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L51">
       
       (source)
     </a>
@@ -507,7 +475,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">__init__</span><span class="function-signature">(self, op_func, params, num_qubits, cutoffs, label=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, duration=100, unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>, discretized_param_indices: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> = [])</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L14">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L15">
       
       (source)
     </a>
@@ -534,7 +502,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">calculate_matrix</span><span class="function-signature">(self, current_step: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, total_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L105">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L109">
       
       (source)
     </a>
@@ -562,7 +530,7 @@ Increment the parameters based upon the current and total steps.</p><table class
     
     
     <span class="py-keyword">def</span> <span class="py-defname">validate_parameter</span><span class="function-signature">(self, parameter)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L92">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L93">
       
       (source)
     </a>
@@ -574,7 +542,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Gate parameters should be int, float, or ParameterExpression</p></div>
+    <div><p>Gate parameters should be int, float, complex, or ParameterExpression</p></div>
   </div>
 </div><div class="baseinstancevariable">
   
@@ -588,7 +556,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">cutoffs</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L48">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L49">
       
       (source)
     </a>
@@ -615,7 +583,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">definition</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L87">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L88">
       
       (source)
     </a>
@@ -642,7 +610,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">discretized_param_indices</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L47">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L48">
       
       (source)
     </a>
@@ -669,7 +637,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">duration</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L45">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L46">
       
       (source)
     </a>
@@ -696,7 +664,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">op_func</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L38">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L39">
       
       (source)
     </a>
@@ -723,7 +691,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">unit</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L46">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L47">
       
       (source)
     </a>
@@ -751,7 +719,7 @@ Increment the parameters based upon the current and total steps.</p><table class
     
     
     <span class="py-keyword">def</span> <span class="py-defname">_define</span><span class="function-signature">(self)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L76">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L77">
       
       (source)
     </a>
@@ -777,7 +745,7 @@ Increment the parameters based upon the current and total steps.</p><table class
   <div class="functionHeader">
     
     <span class="py-defname">_parameterized</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/parameterized_unitary_gate.py#L40">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/parameterized_unitary_gate.py#L41">
       
       (source)
     </a>
@@ -801,10 +769,10 @@ Increment the parameters based upon the current and total steps.</p><table class
     <footer class="navbar navbar-default">
 
   
-  <div class="container">
+  <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.3.3 at 2024-11-13 23:34:40.
+    24.11.2 at 2025-01-28 03:44:20.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 

@@ -7,7 +7,7 @@
   <head>
     
     <title>c2qa.util</title>
-    <meta name="generator" content="pydoctor 24.3.3"> 
+    <meta name="generator" content="pydoctor 24.11.2"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="apidocs.css" />
     <link rel="stylesheet" type="text/css" href="extra.css" />
+    
 </head>
 
   <body>
@@ -52,7 +53,7 @@
             
             <span class="input-group-btn">
               <a style="display: none;" class="btn btn-default" id="search-clear-button" title="Clear" onclick="clearSearch()"><img src="fonts/x-circle.svg" alt="Clear" /></a>
-              <a class="btn btn-default" id="search-help-button" title="Help" onclick="toggleSearchHelpText()"><img src="fonts/info.svg" alt="Help" /></a>
+              <a class="btn btn-default" id="apidocs-help-button" title="Help" href="apidocs-help.html"><img src="fonts/info.svg" alt="Help" /></a>
             </span>
           </div>
         </div>
@@ -76,39 +77,6 @@
             <h1>Cannot search: JavaScript is not supported/enabled in your browser.</h1>
         </noscript>
 
-        <div class="hint" id="search-help-box">
-          <p class="rst-last">
-      
-            Search bar offers the following options:
-            <ul>   
-                <li>
-                  <strong>Term presence.</strong> The below example searches for documents that 
-                    must contain “foo”, might contain “bar” and must not contain “baz”: <code>+foo bar -baz</code>
-                </li> 
-
-                <li>
-                  <strong>Wildcards.</strong> The below example searches for documents with words beginning with “foo”: <code>foo*</code>
-                </li> 
-
-                <li>
-                  <strong>Search in specific fields.</strong> The following search matches all objects 
-                  in "twisted.mail" that matches “search”: <code>+qname:twisted.mail.* +search</code>
-
-                  <p>
-                    Possible fields: 'name', 'qname' (fully qualified name), 'docstring', and 'kind'.
-                    Last two fields are only applicable if "search in docstrings" is enabled.
-                  </p>
-                </li>
-
-                <li>
-                  <strong>Fuzzy matches.</strong> The following search matches all documents 
-                  that have a word within 1 edit distance of “foo”: <code>foo~1</code>
-                </li>
-            </ul>
-
-          </p>
-        </div>
-
         <div id="search-status"> </div>
 
         <div class="warning" id="search-warn-box" style="display: none;">
@@ -119,8 +87,8 @@
           <!-- Filled dynamically by JS -->
         </table>
         
-        <div style="margin-top: 8px;">
-          <p>Results provided by <a href="https://lunrjs.com">Lunr.js</a></p>
+        <div style="margin-top: 10px;">
+          <p>For more information on the search, visit the <a href="apidocs-help.html#rst-search">help page</a>.</p>
         </div>
       </div>
 
@@ -491,7 +459,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py" class="sourceLink">(source)</a>
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py" class="sourceLink">(source)</a>
           <p></p>
         </div>
 
@@ -609,7 +577,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">avg_photon_num</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state, decimals: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 2)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L741">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L741">
       
       (source)
     </a>
@@ -636,7 +604,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">counts_to_fockcounts</span><span class="function-signature">(circuit: <code>CVCircuit</code>, result: <code>qiskit.result.result.Result</code>, counts: <code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L209">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L209">
       
       (source)
     </a>
@@ -667,7 +635,7 @@ qumode measurements reported as a base-10 integer.</td></tr></table></div>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cv_ancilla_fock_measure</span><span class="function-signature">(circuit, list_qumodes_to_sample: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>, qmr_number: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 0)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L19">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L19">
       
       (source)
     </a>
@@ -697,7 +665,7 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cv_partial_trace</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state_vector, qubits: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L581">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L581">
       
       (source)
     </a>
@@ -726,7 +694,7 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
     
     
     <span class="py-keyword">def</span> <span class="py-defname">flatten</span><span class="function-signature">(l)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L15">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L15">
       
       (source)
     </a>
@@ -753,7 +721,7 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
     
     
     <span class="py-keyword">def</span> <span class="py-defname">fockmap</span><span class="function-signature">(matrix, fock_input, fock_output, amplitude=[])</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L601">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L601">
       
       (source)
     </a>
@@ -795,7 +763,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_probabilities</span><span class="function-signature">(result: <code>qiskit.result.Result</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L384">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L384">
       
       (source)
     </a>
@@ -822,7 +790,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">measure_all_xyz</span><span class="function-signature">(circuit: <code>qiskit.QuantumCircuit</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L348">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L348">
       
       (source)
     </a>
@@ -851,7 +819,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">qumode_avg_photon_num</span><span class="function-signature">(state, decimals: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 2)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L766">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L766">
       
       (source)
     </a>
@@ -878,7 +846,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">simulate</span><span class="function-signature">(cvcircuit: <code>CVCircuit</code>, shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1024, return_fockcounts: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, add_save_statevector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, conditional_state_vector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, per_shot_state_vector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, noise_model=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, max_parallel_threads: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 0, discretize: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L404">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L404">
       
       (source)
     </a>
@@ -911,7 +879,7 @@ If set to 0 the maximum will be set to the number of CPU cores (Default: 0).</td
     
     
     <span class="py-keyword">def</span> <span class="py-defname">stateread</span><span class="function-signature">(stateop, numberofqubits, numberofmodes, cutoff, verbose=<a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, little_endian=<a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L79">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L79">
       
       (source)
     </a>
@@ -941,7 +909,7 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
     
     
     <span class="py-keyword">def</span> <span class="py-defname">trace_out_qubits</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state_vector)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L565">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L565">
       
       (source)
     </a>
@@ -968,7 +936,7 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
     
     
     <span class="py-keyword">def</span> <span class="py-defname">trace_out_qumodes</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state_vector)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L549">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L549">
       
       (source)
     </a>
@@ -995,7 +963,7 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
     
     
     <span class="py-keyword">def</span> <span class="py-defname">_final_measurement_mapping</span><span class="function-signature">(circuit)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L300">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L300">
       
       (source)
     </a>
@@ -1025,7 +993,7 @@ physical qubits that are measured to produce those bit values.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">_final_qumode_mapping</span><span class="function-signature">(circuit)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L261">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L261">
       
       (source)
     </a>
@@ -1052,7 +1020,7 @@ physical qubits that are measured to produce those bit values.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">_find_cavity_indices</span><span class="function-signature">(circuit: <code>CVCircuit</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L503">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L503">
       
       (source)
     </a>
@@ -1081,7 +1049,7 @@ physical qubits that are measured to produce those bit values.</p>
     
     
     <span class="py-keyword">def</span> <span class="py-defname">_find_qubit_indices</span><span class="function-signature">(circuit: <code>CVCircuit</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/util.py#L526">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L526">
       
       (source)
     </a>
@@ -1106,10 +1074,10 @@ physical qubits that are measured to produce those bit values.</p>
     <footer class="navbar navbar-default">
 
   
-  <div class="container">
+  <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.3.3 at 2024-11-13 23:34:40.
+    24.11.2 at 2025-01-28 03:44:20.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 

@@ -7,7 +7,7 @@
   <head>
     
     <title>c2qa.operators.CVOperators</title>
-    <meta name="generator" content="pydoctor 24.3.3"> 
+    <meta name="generator" content="pydoctor 24.11.2"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="apidocs.css" />
     <link rel="stylesheet" type="text/css" href="extra.css" />
+    
 </head>
 
   <body>
@@ -52,7 +53,7 @@
             
             <span class="input-group-btn">
               <a style="display: none;" class="btn btn-default" id="search-clear-button" title="Clear" onclick="clearSearch()"><img src="fonts/x-circle.svg" alt="Clear" /></a>
-              <a class="btn btn-default" id="search-help-button" title="Help" onclick="toggleSearchHelpText()"><img src="fonts/info.svg" alt="Help" /></a>
+              <a class="btn btn-default" id="apidocs-help-button" title="Help" href="apidocs-help.html"><img src="fonts/info.svg" alt="Help" /></a>
             </span>
           </div>
         </div>
@@ -76,39 +77,6 @@
             <h1>Cannot search: JavaScript is not supported/enabled in your browser.</h1>
         </noscript>
 
-        <div class="hint" id="search-help-box">
-          <p class="rst-last">
-      
-            Search bar offers the following options:
-            <ul>   
-                <li>
-                  <strong>Term presence.</strong> The below example searches for documents that 
-                    must contain “foo”, might contain “bar” and must not contain “baz”: <code>+foo bar -baz</code>
-                </li> 
-
-                <li>
-                  <strong>Wildcards.</strong> The below example searches for documents with words beginning with “foo”: <code>foo*</code>
-                </li> 
-
-                <li>
-                  <strong>Search in specific fields.</strong> The following search matches all objects 
-                  in "twisted.mail" that matches “search”: <code>+qname:twisted.mail.* +search</code>
-
-                  <p>
-                    Possible fields: 'name', 'qname' (fully qualified name), 'docstring', and 'kind'.
-                    Last two fields are only applicable if "search in docstrings" is enabled.
-                  </p>
-                </li>
-
-                <li>
-                  <strong>Fuzzy matches.</strong> The following search matches all documents 
-                  that have a word within 1 edit distance of “foo”: <code>foo~1</code>
-                </li>
-            </ul>
-
-          </p>
-        </div>
-
         <div id="search-status"> </div>
 
         <div class="warning" id="search-warn-box" style="display: none;">
@@ -119,8 +87,8 @@
           <!-- Filled dynamically by JS -->
         </table>
         
-        <div style="margin-top: 8px;">
-          <p>Results provided by <a href="https://lunrjs.com">Lunr.js</a></p>
+        <div style="margin-top: 10px;">
+          <p>For more information on the search, visit the <a href="apidocs-help.html#rst-search">help page</a>.</p>
         </div>
       </div>
 
@@ -158,6 +126,16 @@
         <ul>
     
     <li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#ajc" class="internal-link" title="c2qa.operators.CVOperators.ajc">ajc</a></code>
+            </div>
+        
+
+    </li><li class="">
         
         
         
@@ -254,6 +232,16 @@
 
         
             <div class="itemName"><code><a href="#csq" class="internal-link" title="c2qa.operators.CVOperators.csq">csq</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#csum" class="internal-link" title="c2qa.operators.CVOperators.csum">csum</a></code>
             </div>
         
 
@@ -503,6 +491,16 @@
         
 
         
+            <div class="itemName"><code><a href="#jc" class="internal-link" title="c2qa.operators.CVOperators.jc">jc</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
             <div class="itemName"><code><a href="#multicsnap" class="internal-link" title="c2qa.operators.CVOperators.multicsnap">multicsnap</a></code>
             </div>
         
@@ -543,6 +541,16 @@
         
 
         
+            <div class="itemName"><code><a href="#rb" class="internal-link" title="c2qa.operators.CVOperators.rb">rb</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
             <div class="itemName"><code><a href="#s" class="internal-link" title="c2qa.operators.CVOperators.s">s</a></code>
             </div>
         
@@ -574,6 +582,16 @@
 
         
             <div class="itemName"><code><a href="#snap" class="internal-link" title="c2qa.operators.CVOperators.snap">snap</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#sum" class="internal-link" title="c2qa.operators.CVOperators.sum">sum</a></code>
             </div>
         
 
@@ -757,7 +775,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">CVOperators</span>: <a href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L15" class="sourceLink">(source)</a></code></p>
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">CVOperators</span>: <a href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L15" class="sourceLink">(source)</a></code></p>
           <p><a href="classIndex.html#c2qa.operators.CVOperators">View In Hierarchy</a></p>
         </div>
 
@@ -770,6 +788,11 @@
   
   
   <tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#ajc" class="internal-link" title="c2qa.operators.CVOperators.ajc">ajc</a></code></td>
+    <td>Anti-Jaynes-Cummings gate</td>
+  </tr><tr class="method">
     
     <td>Method</td>
     <td><code><a href="#bs" class="internal-link" title="c2qa.operators.CVOperators.bs">bs</a></code></td>
@@ -819,6 +842,11 @@
     <td>Method</td>
     <td><code><a href="#csq" class="internal-link" title="c2qa.operators.CVOperators.csq">csq</a></code></td>
     <td>Single-mode squeezing operator</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#csum" class="internal-link" title="c2qa.operators.CVOperators.csum">csum</a></code></td>
+    <td>Conditional two-qumode sum gate</td>
   </tr><tr class="method">
     
     <td>Method</td>
@@ -942,6 +970,11 @@
   </tr><tr class="method">
     
     <td>Method</td>
+    <td><code><a href="#jc" class="internal-link" title="c2qa.operators.CVOperators.jc">jc</a></code></td>
+    <td>Jaynes-Cummings gate</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
     <td><code><a href="#multicsnap" class="internal-link" title="c2qa.operators.CVOperators.multicsnap">multicsnap</a></code></td>
     <td>SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states. Generates an arbitrary number of fock-number selective qubit rotations, with the qubit that accrues the geometric phase explicit.</td>
   </tr><tr class="method">
@@ -962,6 +995,11 @@
   </tr><tr class="method">
     
     <td>Method</td>
+    <td><code><a href="#rb" class="internal-link" title="c2qa.operators.CVOperators.rb">rb</a></code></td>
+    <td>Rabi interaction gate</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
     <td><code><a href="#s" class="internal-link" title="c2qa.operators.CVOperators.s">s</a></code></td>
     <td>Single-mode squeezing operator</td>
   </tr><tr class="method">
@@ -979,6 +1017,11 @@
     <td>Method</td>
     <td><code><a href="#snap" class="internal-link" title="c2qa.operators.CVOperators.snap">snap</a></code></td>
     <td>SNAP (Selective Number-dependent Arbitrary Phase) operator</td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><code><a href="#sum" class="internal-link" title="c2qa.operators.CVOperators.sum">sum</a></code></td>
+    <td>Two-qumode sum gate</td>
   </tr><tr class="method">
     
     <td>Method</td>
@@ -1005,6 +1048,33 @@
           <div class="basemethod">
   
   
+  <a name="c2qa.operators.CVOperators.ajc">
+    
+  </a>
+  <a name="ajc">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">ajc</span><span class="function-signature">(self, theta, phi, cutoff)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L568">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#ajc" title="c2qa.operators.CVOperators.ajc">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Anti-Jaynes-Cummings gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">[0, 2pi)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">phi:</span><code>real</code></td><td class="fieldArgDesc">[0, 2pi)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>csc_matrix</code></td><td class="fieldArgDesc">operator matrix</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
   <a name="c2qa.operators.CVOperators.bs">
     
   </a>
@@ -1015,7 +1085,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">bs</span><span class="function-signature">(self, theta, cutoff_a, cutoff_b)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L168">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L177">
       
       (source)
     </a>
@@ -1042,7 +1112,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">c_multiboson_sampling</span><span class="function-signature">(self, max, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L477">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L486">
       
       (source)
     </a>
@@ -1069,7 +1139,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cbs</span><span class="function-signature">(self, theta, cutoff_a, cutoff_b)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L262">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L271">
       
       (source)
     </a>
@@ -1096,7 +1166,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cd</span><span class="function-signature">(self, theta, beta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L223">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L232">
       
       (source)
     </a>
@@ -1123,7 +1193,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cr</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L184">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L193">
       
       (source)
     </a>
@@ -1150,7 +1220,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">crx</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L197">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L206">
       
       (source)
     </a>
@@ -1177,7 +1247,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cry</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L210">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L219">
       
       (source)
     </a>
@@ -1204,7 +1274,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">cschwinger</span><span class="function-signature">(self, beta, theta_1, phi_1, theta_2, phi_2, cutoff_a, cutoff_b)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L279">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L288">
       
       (source)
     </a>
@@ -1231,7 +1301,7 @@
     
     
     <span class="py-keyword">def</span> <span class="py-defname">csnap</span><span class="function-signature">(self, theta, n, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L334">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L343">
       
       (source)
     </a>
@@ -1260,7 +1330,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">csq</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L455">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L464">
       
       (source)
     </a>
@@ -1277,6 +1347,33 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
 </div><div class="basemethod">
   
   
+  <a name="c2qa.operators.CVOperators.csum">
+    
+  </a>
+  <a name="csum">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">csum</span><span class="function-signature">(self, scale, cutoff_a, cutoff_b)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L529">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#csum" title="c2qa.operators.CVOperators.csum">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Conditional two-qumode sum gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">scale:</span><code>real</code></td><td class="fieldArgDesc">arbitrary scale factor</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff<wbr></wbr>_a</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff<wbr></wbr>_b</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>csc_matrix</code></td><td class="fieldArgDesc">operator matrix</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
   <a name="c2qa.operators.CVOperators.d">
     
   </a>
@@ -1287,7 +1384,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">d</span><span class="function-signature">(self, alpha, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L104">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L112">
       
       (source)
     </a>
@@ -1314,7 +1411,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">ecd</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L246">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L255">
       
       (source)
     </a>
@@ -1341,7 +1438,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">eswap</span><span class="function-signature">(self, theta, cutoff_a, cutoff_b)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L435">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L444">
       
       (source)
     </a>
@@ -1368,7 +1465,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">gate_from_matrix</span><span class="function-signature">(self, matrix)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L490">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L499">
       
       (source)
     </a>
@@ -1395,7 +1492,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a</span><span class="function-signature">(self, cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L18">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L18">
       
       (source)
     </a>
@@ -1422,7 +1519,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a1</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L25">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L25">
       
       (source)
     </a>
@@ -1449,7 +1546,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a12</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L43">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L43">
       
       (source)
     </a>
@@ -1476,7 +1573,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a12_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L75">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L79">
       
       (source)
     </a>
@@ -1503,7 +1600,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a12dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L81">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L89">
       
       (source)
     </a>
@@ -1530,7 +1627,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a1_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L60">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L64">
       
       (source)
     </a>
@@ -1557,7 +1654,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a1dag2</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L84">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L92">
       
       (source)
     </a>
@@ -1584,7 +1681,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a2</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L28">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L28">
       
       (source)
     </a>
@@ -1611,7 +1708,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a2_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L63">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L67">
       
       (source)
     </a>
@@ -1638,7 +1735,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_a_dag</span><span class="function-signature">(self, cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L49">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L53">
       
       (source)
     </a>
@@ -1665,7 +1762,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b1</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L31">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L31">
       
       (source)
     </a>
@@ -1692,7 +1789,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b123</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L46">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L46">
       
       (source)
     </a>
@@ -1719,7 +1816,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b123_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L78">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L82">
       
       (source)
     </a>
@@ -1746,7 +1843,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b1_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L66">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L70">
       
       (source)
     </a>
@@ -1773,7 +1870,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b2</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L35">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L35">
       
       (source)
     </a>
@@ -1800,7 +1897,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b2_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L69">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L73">
       
       (source)
     </a>
@@ -1827,7 +1924,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b3</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L39">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L39">
       
       (source)
     </a>
@@ -1854,7 +1951,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_b3_dag</span><span class="function-signature">(self, cutoff_a: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_b: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, cutoff_c: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L72">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L76">
       
       (source)
     </a>
@@ -1881,7 +1978,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_eye</span><span class="function-signature">(self, cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L87">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L95">
       
       (source)
     </a>
@@ -1908,7 +2005,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">get_N</span><span class="function-signature">(self, cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L54">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L58">
       
       (source)
     </a>
@@ -1925,6 +2022,33 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
 </div><div class="basemethod">
   
   
+  <a name="c2qa.operators.CVOperators.jc">
+    
+  </a>
+  <a name="jc">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">jc</span><span class="function-signature">(self, theta, phi, cutoff)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L549">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#jc" title="c2qa.operators.CVOperators.jc">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Jaynes-Cummings gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">[0, 2pi)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">phi:</span><code>real</code></td><td class="fieldArgDesc">[0, 2pi)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>csc_matrix</code></td><td class="fieldArgDesc">operator matrix</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
   <a name="c2qa.operators.CVOperators.multicsnap">
     
   </a>
@@ -1935,7 +2059,7 @@ fock-number selective qubit rotations.</p><table class="fieldTable"><tr class="f
     
     
     <span class="py-keyword">def</span> <span class="py-defname">multicsnap</span><span class="function-signature">(self, *args)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L383">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L392">
       
       (source)
     </a>
@@ -1963,7 +2087,7 @@ Generates an arbitrary number of fock-number selective qubit rotations, with the
     
     
     <span class="py-keyword">def</span> <span class="py-defname">multisnap</span><span class="function-signature">(self, *args)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L354">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L363">
       
       (source)
     </a>
@@ -1991,7 +2115,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">pnr</span><span class="function-signature">(self, max, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L412">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L421">
       
       (source)
     </a>
@@ -2018,7 +2142,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">r</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L91">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L99">
       
       (source)
     </a>
@@ -2035,6 +2159,33 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
 </div><div class="basemethod">
   
   
+  <a name="c2qa.operators.CVOperators.rb">
+    
+  </a>
+  <a name="rb">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">rb</span><span class="function-signature">(self, theta, cutoff)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L587">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#rb" title="c2qa.operators.CVOperators.rb">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Rabi interaction gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code></td><td class="fieldArgDesc">arbitrary scale factor</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>csc_matrix</code></td><td class="fieldArgDesc">operator matrix</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
   <a name="c2qa.operators.CVOperators.s">
     
   </a>
@@ -2045,7 +2196,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">s</span><span class="function-signature">(self, theta, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L119">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L127">
       
       (source)
     </a>
@@ -2072,7 +2223,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">s2</span><span class="function-signature">(self, theta, cutoff_a, cutoff_b)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L136">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L144">
       
       (source)
     </a>
@@ -2099,7 +2250,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">s3</span><span class="function-signature">(self, theta, cutoff_a, cutoff_b, cutoff_c)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L152">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L160">
       
       (source)
     </a>
@@ -2126,7 +2277,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">snap</span><span class="function-signature">(self, theta, n, cutoff)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L316">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L325">
       
       (source)
     </a>
@@ -2143,6 +2294,33 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
 </div><div class="basemethod">
   
   
+  <a name="c2qa.operators.CVOperators.sum">
+    
+  </a>
+  <a name="sum">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span> <span class="py-defname">sum</span><span class="function-signature">(self, scale, cutoff_a, cutoff_b)</span>:
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L510">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#sum" title="c2qa.operators.CVOperators.sum">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p>Two-qumode sum gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">scale:</span><code>real</code></td><td class="fieldArgDesc">arbitrary scale factor</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff<wbr></wbr>_a</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff<wbr></wbr>_b</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>csc_matrix</code></td><td class="fieldArgDesc">operator matrix</td></tr></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  
   <a name="c2qa.operators.CVOperators.testqubitorderf">
     
   </a>
@@ -2153,7 +2331,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     
     
     <span class="py-keyword">def</span> <span class="py-defname">testqubitorderf</span><span class="function-signature">(self, phi)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L472">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L481">
       
       (source)
     </a>
@@ -2179,7 +2357,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
   <div class="functionHeader">
     
     <span class="py-defname">mat</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L445">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L454">
       
       (source)
     </a>
@@ -2206,7 +2384,7 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
   <div class="functionHeader">
     
     <span class="py-defname">sparse_mat</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/6e69bed624279483f1aa0c63971e884954b25aa3/c2qa/operators.py#L449">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/operators.py#L458">
       
       (source)
     </a>
@@ -2230,10 +2408,10 @@ Generates an arbitrary number of fock-number selective qubit rotations.</p><tabl
     <footer class="navbar navbar-default">
 
   
-  <div class="container">
+  <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.3.3 at 2024-11-13 23:34:40.
+    24.11.2 at 2025-01-28 03:44:20.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
