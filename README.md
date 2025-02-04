@@ -24,6 +24,17 @@ Before using Bosonic Qiskit, first install the depencies (as above) and then act
 cd <path/to/bosonic-qiskit>
 source venv/bin/activate
 ```
+## Development
+
+When making changes to `bosonic-qiskit`, it is recommended to install developer requirements from `requirements_dev.txt` and use [pre-commit](https://pre-commit.com/#intro) to automatically apply [flake8](https://flake8.pycqa.org/en/latest/) and [black](https://black.readthedocs.io/en/stable/) upon committing code to comply with formatting and style guidelines.
+
+Use script `install-dependencies-dev.sh` to create a virtual environment called `bosonic-qiskit` and install developer requirements along with `pre-commit`.
+
+```bash
+git clone https://github.com/C2QA/bosonic-qiskit.git
+cd bosonic-qiskit
+./install-dependencies-dev.sh
+``` 
 
 ## Tutorials
 
