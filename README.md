@@ -34,6 +34,7 @@ Use script `install-dependencies-dev.sh` to create a virtual environment called 
 git clone https://github.com/C2QA/bosonic-qiskit.git
 cd bosonic-qiskit
 ./install-dependencies-dev.sh
+source ./bosonic-qiskit/bin/activate
 ``` 
 
 ## Tutorials
