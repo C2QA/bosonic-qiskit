@@ -28,14 +28,20 @@ source venv/bin/activate
 
 When making changes to `bosonic-qiskit`, it is recommended to install developer requirements from `requirements_dev.txt` and use [pre-commit](https://pre-commit.com/#intro) to automatically apply [flake8](https://flake8.pycqa.org/en/latest/) and [black](https://black.readthedocs.io/en/stable/) upon committing code to comply with formatting and style guidelines.
 
-Use script `install-dependencies-dev.sh` to create a virtual environment called `bosonic-qiskit` and install developer requirements along with `pre-commit`.
+Use script `install-dependencies-dev.sh` to create a virtual environment and install developer requirements along with `pre-commit`.
 
 ```bash
 git clone https://github.com/C2QA/bosonic-qiskit.git
 cd bosonic-qiskit
 ./install-dependencies-dev.sh
-source ./bosonic-qiskit/bin/activate
+source ./venv/bin/activate
 ``` 
+
+Two methods for using `pre-commit`:
+1. Run `pre-commit run --all-files` to apply `flake8` and `black` before staging code for committing.
+2. Let `pre-commit` automatically be applied upon `git commit`. If something fails, fix code to comply with `flake8` and `black`, `git add` the changed files and recommit.
+
+**Note**: `pre-commit` does not automatically add changes to a commit. Any file changes resulting from `pre-commit` need to be added for the changes to be committed.
 
 ## Tutorials
 
