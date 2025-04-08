@@ -1,9 +1,11 @@
-import c2qa
 import json
+
 import numpy
 import pytest
 import qiskit
 from qiskit_ibm_runtime.utils import RuntimeEncoder
+
+import c2qa
 
 
 def test_no_registers():
@@ -263,25 +265,63 @@ def test_discretize_cv_gate_from_matrix(capsys):
         assert len(circuit.data) == len(discretized)
 
 
-def test_cv_initialize(capsys):
-    with capsys.disabled():
-        qmr1 = c2qa.QumodeRegister(1, 2)
-        qmr2 = c2qa.QumodeRegister(2, 2)
-        qmr3 = c2qa.QumodeRegister(2, 3)  # <----- change to (2, 2) for no error
-        qmr4 = c2qa.QumodeRegister(1, 2)
-        qmr5 = c2qa.QumodeRegister(3, 2)
-        qmr6 = c2qa.QumodeRegister(3, 2)
-        circuit = c2qa.CVCircuit(qmr1, qmr2, qmr3, qmr4, qmr5, qmr6)
+class TestCVInitialize:
+    def test_cv_initialize1(self, capsys):
+        with capsys.disabled():
+            # This test puts one qumode of each register in the |1> state
+            qmr1 = c2qa.QumodeRegister(1, 2)
+            qmr2 = c2qa.QumodeRegister(2, 2)
+            qmr3 = c2qa.QumodeRegister(2, 3)  # <----- change to (2, 2) for no error
+            qmr4 = c2qa.QumodeRegister(1, 2)
+            qmr5 = c2qa.QumodeRegister(3, 2)
+            qmr6 = c2qa.QumodeRegister(3, 2)
+            circuit = c2qa.CVCircuit(qmr1, qmr2, qmr3, qmr4, qmr5, qmr6)
 
-        circuit.cv_initialize([0, 1], qmr1[0])
-        circuit.cv_initialize([0, 1], qmr2[0])
-        circuit.cv_initialize([0, 1], qmr3[0])
-        circuit.cv_initialize([0, 1], qmr4[0])
-        circuit.cv_initialize([0, 1], qmr5[0])
-        circuit.cv_initialize([0, 1], qmr6[0])
+            for qmr in circuit.qmregs:
+                circuit.cv_initialize([0, 1], qmr[0])
 
-        # saving a state vector for all the registers takes a considerable amount of time
-        state, result, fock_counts = c2qa.util.simulate(
-            circuit, add_save_statevector=False, return_fockcounts=False
-        )
-        assert result.success
+            # saving a state vector for all the registers takes a considerable amount of time
+            state, result, fock_counts = c2qa.util.simulate(
+                circuit, add_save_statevector=False, return_fockcounts=False
+            )
+            assert result.success
+
+    def test_cv_initialize2(self, capsys):
+        with capsys.disabled():
+            # This test puts one qumode of each register in the |1> state,
+            # meaning that we should have a total of |qmregs| quanta.
+            # This time we use fewer registers so we can check the counts
+            qmr1 = c2qa.QumodeRegister(1, 2)
+            qmr2 = c2qa.QumodeRegister(2, 2)
+            qmr3 = c2qa.QumodeRegister(1, 3)
+            circuit = c2qa.CVCircuit(qmr1, qmr2, qmr3)
+
+            for qmr in circuit.qmregs:
+                circuit.cv_initialize([0, 1], qmr[0])
+
+            circuit.cv_measure_all()
+
+            state, result, _ = c2qa.util.simulate(
+                circuit, add_save_statevector=True, return_fockcounts=False
+            )
+            assert result.success
+            assert len(numpy.nonzero(state)[0]) == 1
+            assert numpy.allclose(state[69], 1)
+
+    def test_initialize_bellstate(self, capsys):
+        # Initialize the state |0>|0> + |2>|2>, which means we use full
+        # instead of tensor mode
+        with capsys.disabled():
+            qmr = c2qa.QumodeRegister(2, 2)
+            circuit = c2qa.CVCircuit(qmr)
+
+            statevec = numpy.zeros(2**qmr.size, dtype=numpy.complex128)
+            statevec[0] = 1 / numpy.sqrt(2)
+            statevec[10] = 1 / numpy.sqrt(2)
+            circuit.cv_initialize(statevec, qmr, mode="full")
+
+            state, result, fock_counts = c2qa.util.simulate(
+                circuit, add_save_statevector=True, return_fockcounts=False
+            )
+            assert result.success
+            assert numpy.allclose(state, statevec)

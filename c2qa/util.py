@@ -1,12 +1,13 @@
 import math
 import warnings
+from collections import OrderedDict
+from typing import Dict
 
 import numpy as np
 import qiskit
 import qiskit.quantum_info
-from qiskit.quantum_info import Statevector, DensityMatrix
 import qiskit_aer
-
+from qiskit.quantum_info import DensityMatrix, Statevector
 
 from c2qa import CVCircuit
 from c2qa.discretize import discretize_circuits
@@ -274,7 +275,7 @@ def _final_qumode_mapping(circuit):
             if val == qubit
         ]
 
-        if qumode_bit_group != []:
+        if qumode_bit_group:
             active_qumode_bit_indices_grouped.append(qumode_bit_group)
 
     # Sort nested list by first item in each sublist
@@ -297,7 +298,7 @@ def _final_qumode_mapping(circuit):
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # pylint: disable=no-name-in-module
-def _final_measurement_mapping(circuit):
+def _final_measurement_mapping(circuit) -> Dict[int, int]:
     """Return the measurement mapping for the circuit.
 
     Dict keys label classical bits, whereas the values indicate the
@@ -313,21 +314,16 @@ def _final_measurement_mapping(circuit):
     active_cbits = list(range(circuit.num_clbits))
 
     # Map registers to ints
-    qint_map = {}
-    for idx, qq in enumerate(circuit.qubits):
-        qint_map[qq] = idx
-
-    cint_map = {}
-    for idx, qq in enumerate(circuit.clbits):
-        cint_map[qq] = idx
+    qint_map = {qq: idx for idx, qq in enumerate(circuit.qubits)}
+    cint_map = {qq: idx for idx, qq in enumerate(circuit.clbits)}
 
     # Find final measurements starting in back
     qmap = []
     cmap = []
-    for item in circuit._data[::-1]:
+    for item in reversed(circuit._data):
         if item.name == "measure":
-            cbit = cint_map[item[2][0]]
-            qbit = qint_map[item[1][0]]
+            cbit = cint_map[item.clbits[0]]
+            qbit = qint_map[item.qubits[0]]
             if cbit in active_cbits and qbit in active_qubits:
                 qmap.append(qbit)
                 cmap.append(cbit)
@@ -341,7 +337,7 @@ def _final_measurement_mapping(circuit):
             mapping[cmap[idx]] = qubit
 
     # Sort so that classical bits are in numeric order low->high.
-    mapping = dict(sorted(mapping.items(), key=lambda item: item[0]))
+    mapping = OrderedDict(sorted(mapping.items(), key=lambda item: item[0]))
     return mapping
 
 
@@ -490,14 +486,16 @@ def simulate(
     if add_save_statevector:
         sim_circuit.data.pop()  # Clean up by popping off the SaveStatevector instruction
 
-    if return_fockcounts and add_save_statevector:
-        try:
-            fockcounts = counts_to_fockcounts(sim_circuit, result, result.get_counts())
-            return (state, result, fockcounts)
-        except:
-            raise Exception("counts_to_fockcounts() was not able to execute")
-    else:
-        return (state, result, None)
+    fockcounts = None
+    if return_fockcounts:
+        if state is None:
+            raise ValueError(
+                "Unable to get counts without saving statevector. Consider setting `add_save_statevector` to True"
+            )
+
+        fockcounts = counts_to_fockcounts(sim_circuit, result, result.get_counts())
+
+    return (state, result, fockcounts)
 
 
 def _find_cavity_indices(circuit: CVCircuit):

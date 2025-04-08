@@ -38,10 +38,11 @@ def discretize_circuits(
     base_circuit = circuit.copy()
     base_circuit.data.clear()  # Is this safe -- could we copy without data?
 
-    for inst, qargs, cargs in circuit.data:
+    for op in circuit.data:
         # TODO - get qubit & cbit for measure instead of using parameters
         # qubit = xxx
         # cbit = yyy
+        inst, qargs, cargs = op.operation, op.qubits, op.clbits
 
         segments = __to_segments(
             inst, segments_per_gate, keep_state, sequential_subcircuit

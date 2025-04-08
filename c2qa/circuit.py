@@ -1,10 +1,12 @@
 import copy
+import itertools
+from typing import List
 import warnings
 
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import qiskit_aer.library.save_instructions as save
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 
 from c2qa.operators import CVOperators
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
@@ -13,6 +15,8 @@ from c2qa.qumoderegister import QumodeRegister
 
 class CVCircuit(QuantumCircuit):
     """Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations."""
+
+    metadata_key = "cv_data"
 
     def __init__(self, *regs, name: str = None, probe_measure: bool = False):
         """Initialize the registers (at least one must be QumodeRegister) and set the circuit name.
@@ -24,8 +28,10 @@ class CVCircuit(QuantumCircuit):
         Raises:
             ValueError: If no QumodeRegister is provided.
         """
-        self.qmregs = []
-        self._qubit_regs = []  # This needs to be unique from qregs[] in the superclass
+        self.qmregs: List[QumodeRegister] = []
+        self._qubit_regs: List[QuantumRegister] = (
+            []
+        )  # This needs to be unique from qregs[] in the superclass
 
         registers = []
 
@@ -56,6 +62,11 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators()
         self.cv_snapshot_id = 0
+
+        # Add metadata for the circuit to be preserved through transpile() calls
+        self.metadata[self.metadata_key] = {
+            "qumode_registers": {qmr.name for qmr in self.qmregs}
+        }
 
     def merge(self, circuit: QuantumCircuit):
         """
@@ -88,7 +99,7 @@ class CVCircuit(QuantumCircuit):
         self._calibrations = copy.deepcopy(circuit._calibrations)
         self._metadata = copy.deepcopy(circuit._metadata)
 
-    def get_qmr_cutoff(self, qmr_index: int):
+    def get_qmr_cutoff(self, qmr_index: int) -> int:
         """Return the qumode cutoff at the given index"""
         return self.qmregs[qmr_index].cutoff
 
@@ -207,7 +218,7 @@ class CVCircuit(QuantumCircuit):
                 )
         super().add_register(*regs)
 
-    def cv_initialize(self, params, qumodes):
+    def cv_initialize(self, params, qumodes, mode: str = "tensor"):
         """Initialize qumode (or qumodes) to a particular state specified by params
 
         Args:
@@ -217,10 +228,16 @@ class CVCircuit(QuantumCircuit):
                                   than or equal to the cutoff.
 
             qumodes (list): list of qubits representing a single qumode, or list of multiple qumodes
+            mode (str): the method used to map the statevector to the qumodes
+                        if `tensor` (default), the statevector will be applied independently to each qumode
+                        if `full`, the statevector will be assumed to act on the full set of qumodes
 
         Raises:
             ValueError: If the Fock state is greater than the cutoff.
         """
+        if mode not in {"tensor", "full"}:
+            raise ValueError(f"Unsupported mode `{mode}` given")
+
         # Qumodes are already represented as arrays of qubits,
         # but if this is an array of arrays, then we are initializing multiple qumodes.
         modes = qumodes
@@ -241,20 +258,38 @@ class CVCircuit(QuantumCircuit):
 
                 super().initialize(value, qumode)
         else:
-            for qumode in modes:
-                qumode_index = self.get_qmr_index(qumode[0])
+            if mode == "tensor":
+                for qumode in modes:
+                    qumode_index = self.get_qmr_index(qumode[0])
 
-                if len(params) > self.get_qmr_cutoff(qumode_index):
-                    raise ValueError("len(params) exceeds the cutoff.")
+                    if len(params) > self.get_qmr_cutoff(qumode_index):
+                        raise ValueError("len(params) exceeds the cutoff.")
 
-                params = np.array(params) / np.linalg.norm(np.array(params))
-                amplitudes = np.zeros(
-                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex128
-                )
-                for ind in range(len(params)):
-                    amplitudes[ind] = complex(params[ind])
+                    params = np.array(params)
+                    amplitudes = np.zeros(
+                        (self.get_qmr_cutoff(qumode_index),), dtype=np.complex128
+                    )
+                    amplitudes[np.arange(params.size)] = params
 
-                super().initialize(amplitudes, qumode)
+                    super().initialize(amplitudes, qumode, normalize=True)
+            elif mode == "full":
+                params = np.array(params)
+                qumode_indices = list(map(lambda qm: self.get_qmr_index(qm[0]), modes))
+                target_shape = tuple(map(self.get_qmr_cutoff, qumode_indices))
+
+                try:
+                    params = params.reshape(target_shape)
+                except ValueError as e:
+                    delta = params.size - np.cumprod(target_shape)
+                    raise ValueError(
+                        f"Expected a statevector compatible with shape {target_shape}, but got one with {params.size} ({delta}) elements"
+                    ) from e
+
+                # At this point, our statevector has shape (n1, n2, ..) where n_i is the cutoff
+                # of qumode i. This process ensures that our statevector fills the qumode space
+                # completely and we should be able to broadcast this state over all the qubits
+                qubits = list(itertools.chain.from_iterable(modes))
+                super().initialize(params.flat, qubits, normalize=True)
 
     def save_circuit(self, conditional, pershot, label="statevector"):
         """Save the simulator statevector using a qiskit class"""
@@ -992,22 +1027,40 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit measure instruction
         """
 
+        def _flatten(vals: list):
+            result = []
+            for el in vals:
+                if hasattr(
+                    el, "__getitem__"
+                ):  # support registers and general iterables
+                    result.extend(_flatten(el))
+                else:
+                    result.append(el)
+            return result
+
         # Flattens the list (if necessary)
-        flat_list = []
-        for el in qubit_qumode_list:
-            if isinstance(el, list):
-                flat_list += el
-            else:
-                flat_list += [el]
+        qubit_list = _flatten(qubit_qumode_list)
+        cbit_list = _flatten(cbit_list)
 
         # Check to see if too many classical registers were passed in.
         # If not, only use those needed (starting with least significant bit).
         # This piece is useful so that the user doesn't need to think about
         # how many bits are needed to read out a list of qumodes, qubits, etc.
-        if len(flat_list) < len(cbit_list):
-            self.measure(flat_list, cbit_list[0 : len(flat_list)])
-        else:
-            self.measure(flat_list, cbit_list)
+        if len(qubit_list) > len(cbit_list):
+            raise ValueError(
+                "Not enough classical bits to measure the provided qumodes/qubits"
+            )
+
+        self.measure(qubit_list, cbit_list[0 : len(qubit_list)])
+
+    def cv_measure_all(self):
+        """Measures all qumodes, creating classical registers if necessary"""
+
+        if not self.cregs:
+            for qmr in self.qmregs:
+                self.add_register(ClassicalRegister(qmr.size))
+
+        self.cv_measure(self.qmregs, self.cregs)
 
     def cv_delay(self, duration, qumode, unit="ns"):
         """CV_delay. Implements an identity gate of the specified duration.

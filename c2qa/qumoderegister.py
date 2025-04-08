@@ -37,6 +37,10 @@ class QumodeRegister:
         qubit_index = self.qreg.index(qubit)
         return qubit_index // self.num_qubits_per_qumode
 
+    @property
+    def name(self):
+        return self.qreg.name
+
     def __iter__(self):
         """Iterate over the list of lists representing the qubits for each qumode in the register"""
         return QumodeIterator(self)
@@ -51,7 +55,7 @@ class QumodeRegister:
             ValueError: if slice or int not provided
 
         Returns:
-            list: ;ost pf qubits from QuantumRegister representing qumode
+            list: list of qubits from QuantumRegister representing qumode
         """
         start = None
         stop = self.size
