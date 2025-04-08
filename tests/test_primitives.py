@@ -15,7 +15,7 @@ from c2qa.primitives import FockSampler as Sampler
 
 @pytest.fixture()
 def reset_classical_reg():
-    # Reset so each classical register will st|0>|0> + |2>|3>,art from c0. If this is not used,
+    # Reset so each classical register will start from c0. If this is not used,
     # sometimes the `test_large_qumode_register` test has a c1 register instead of c0
     # because the `test_bellstate` test ran first. This is why global variables can be bad, kids!
     qk.ClassicalRegister.instances_counter = itertools.count()
@@ -24,7 +24,7 @@ def reset_classical_reg():
 
 class TestFockSampler:
     def test_bellstate(self, reset_classical_reg):
-        # This test checks the bell state
+        # This test checks the bell state |0>|0> + |2>|3>,
         # which allows us to test endianness of the resulting samples
         # (since the |2>|3> component has differing energy levels)
         qmr = bq.QumodeRegister(2, 2)

@@ -1,4 +1,4 @@
-from typing import Iterable, Set
+from typing import Iterable, Optional, Set
 
 import numpy as np
 from qiskit import ClassicalRegister, QuantumCircuit
@@ -132,7 +132,7 @@ class FockSampler(BaseSamplerV2):
         self.base_sampler = base_sampler
 
     def run(
-        self, pubs: Iterable[SamplerPubLike], *, shots: int | None = None
+        self, pubs: Iterable[SamplerPubLike], *, shots: Optional[int] = None
     ) -> FockJob:
         cv_pubs = [SamplerPub.coerce(pub, shots=shots) for pub in pubs]
 
