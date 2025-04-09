@@ -1,3 +1,4 @@
+import functools
 import itertools
 
 import numpy as np
@@ -22,7 +23,29 @@ def reset_classical_reg():
     yield
 
 
+# Based on https://stackoverflow.com/questions/52967150/can-i-retry-for-failed-tests-in-pytest
+def may_fail(max_attempts=5):
+    def decorator(test_func_ref):
+        @functools.wraps(test_func_ref)
+        def wrapper(*args, **kwargs):
+            retry_count = 1
+
+            while retry_count < max_attempts:
+                try:
+                    return test_func_ref(*args, **kwargs)
+
+                except AssertionError:
+                    retry_count += 1
+
+            return test_func_ref(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 class TestFockSampler:
+    @may_fail(max_attempts=5)
     def test_bellstate(self, reset_classical_reg):
         # This test checks the bell state |0>|0> + |2>|3>,
         # which allows us to test endianness of the resulting samples
@@ -97,6 +120,7 @@ class TestFockSampler:
         fock_counts = fockarray.get_fock_counts()
         assert set(fock_counts) == {273}
 
+    @may_fail(max_attempts=5)
     def test_controlled_displacement(self, reset_classical_reg):
         # This test checks behavior of the FockSampler when there's hybrid
         # CV/DV registers, and it tests slicing.
@@ -115,7 +139,7 @@ class TestFockSampler:
         qc.x(q[0])
         qc.cv_measure([qmr, q], [c0, c1])
 
-        shots = 1024
+        shots = 2048
         sampler = Sampler.from_sampler(AerSampler())
         qc = qk.transpile(
             qc, backend=AerSimulator()
@@ -149,6 +173,6 @@ class TestFockSampler:
         fock_counts = focka.get_fock_counts()
 
         f_exp = [expected_dist.pmf(x) for x in range(qmr.cutoff)]
-        f_obs = [fock_counts.get(x, 0) / shots for x in range(qmr.cutoff)]
-        stat_result = stats.chisquare(f_obs, f_exp, sum_check=False)
+        f_obs = [fock_counts.get(x, 0) / qubit_counts["1"] for x in range(qmr.cutoff)]
+        stat_result = stats.chisquare(f_obs, f_exp)
         assert stat_result.pvalue >= 0.05

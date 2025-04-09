@@ -348,6 +348,7 @@ def plot_wigner_projection(
     # Save to file or display
     if file:
         plt.savefig(file)
+        plt.close()
     else:
         plt.show()
 
