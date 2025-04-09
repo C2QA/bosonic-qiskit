@@ -14,13 +14,11 @@ from c2qa.primitives import FockArray
 from c2qa.primitives import FockSampler as Sampler
 
 
-@pytest.fixture()
 def reset_classical_reg():
     # Reset so each classical register will start from c0. If this is not used,
     # sometimes the `test_large_qumode_register` test has a c1 register instead of c0
     # because the `test_bellstate` test ran first. This is why global variables can be bad, kids!
     qk.ClassicalRegister.instances_counter = itertools.count()
-    yield
 
 
 # Based on https://stackoverflow.com/questions/52967150/can-i-retry-for-failed-tests-in-pytest
@@ -46,7 +44,8 @@ def may_fail(max_attempts=5):
 
 class TestFockSampler:
     @may_fail(max_attempts=5)
-    def test_bellstate(self, reset_classical_reg):
+    def test_bellstate(self):
+        reset_classical_reg()
         # This test checks the bell state |0>|0> + |2>|3>,
         # which allows us to test endianness of the resulting samples
         # (since the |2>|3> component has differing energy levels)
@@ -87,7 +86,8 @@ class TestFockSampler:
         result = stats.binomtest(fock_counts[0], 1024, p=0.5)
         assert result.pvalue >= 0.05
 
-    def test_large_qumode_register(self, reset_classical_reg):
+    def test_large_qumode_register(self):
+        reset_classical_reg()
         # We want to test that we can properly interpret multiple
         # bytes in the original BitArray as a single integer in the
         # FockArray. This means we'll need a statevector with more than 2^8 elements
@@ -121,7 +121,8 @@ class TestFockSampler:
         assert set(fock_counts) == {273}
 
     @may_fail(max_attempts=5)
-    def test_controlled_displacement(self, reset_classical_reg):
+    def test_controlled_displacement(self):
+        reset_classical_reg()
         # This test checks behavior of the FockSampler when there's hybrid
         # CV/DV registers, and it tests slicing.
         qmr = bq.QumodeRegister(1, 6)
