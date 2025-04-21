@@ -281,16 +281,16 @@ def test_counts_to_fockcounts(capsys):
         _, result, fock_counts = c2qa.util.simulate(circuit)
 
         assert len(fock_counts) == 8
-        
-        fock_keys = fock_counts.keys()
-        assert "00" in fock_keys
-        assert "11" in fock_keys
-        assert "22" in fock_keys
-        assert "33" in fock_keys
-        assert "44" in fock_keys
-        assert "55" in fock_keys
-        assert "66" in fock_keys
-        assert "77" in fock_keys
+
+        fock_keys = list(fock_counts.keys())
+        assert "00" == fock_keys[0]
+        assert "11" == fock_keys[1]
+        assert "22" == fock_keys[2]
+        assert "33" == fock_keys[3]
+        assert "44" == fock_keys[4]
+        assert "55" == fock_keys[5]
+        assert "66" == fock_keys[6]
+        assert "77" == fock_keys[7]
 
         fock_values = list(fock_counts.values())
         qubit_values = list(result.get_counts().values())
