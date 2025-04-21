@@ -270,3 +270,29 @@ def test_qumode_avg_photon_num(capsys):
                 == c2qa.util.qumode_avg_photon_num(DensityMatrix(vector), decimals)
                 == round(avg_num.real, decimals)
             )
+
+def test_counts_to_fockcounts(capsys):
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode = 3)
+        circuit = c2qa.CVCircuit(qmr)
+
+        circuit.cv_sq2(1, qmr[0], qmr[1])
+
+        _, result, fock_counts = c2qa.util.simulate(circuit)
+
+        assert len(fock_counts) == 8
+        
+        fock_keys = fock_counts.keys()
+        assert "00" in fock_keys
+        assert "11" in fock_keys
+        assert "22" in fock_keys
+        assert "33" in fock_keys
+        assert "44" in fock_keys
+        assert "55" in fock_keys
+        assert "66" in fock_keys
+        assert "77" in fock_keys
+
+        fock_values = list(fock_counts.values())
+        qubit_values = list(result.get_counts().values())
+        assert fock_values == qubit_values
+        
