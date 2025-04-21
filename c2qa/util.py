@@ -207,38 +207,42 @@ def stateread(
 
 
 def counts_to_fockcounts(
-    circuit: CVCircuit, result: qiskit.result.result.Result, counts: dict = None
+    circuit: CVCircuit, result: qiskit.result.result.Result
 ):
-    """Convert counts dictionary from Fock-basis binary representation into
-    base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
-    jobs.result(), along with the entire circuit.
+    """Convert Qiskit simulation counts dictionary it to a Fock-basis counts dictionary.
+    
+    The Qiskit counts dictionary key is a string representing the Little Endian ordering classical bit values 
+    for each qubit and the value is the total count of simulated shots (runs) that had those values. 
 
+    See https://docs.quantum.ibm.com/api/qiskit/qiskit.result.Result#get_counts for Qiskit documentation on its
+    counts histogram data structure.
+
+    The returned value is the Fock-basis state key to the total count of simulated shots (runs) that had that value.
+    
     Args:
-        result: dict() of results, as returned by job.result(), for a circuit which used cv_measure()
-        circuit: CVCircuit
+        circuit (CVCircuit): simulated circuit
+        result (Result): Qiskit simulation results with simulation counts
 
     Returns:
-        A new counts dict() which lists measurement results for the qubits and
-        qumodes in circuit in little endian order, with Fock-basis
-        qumode measurements reported as a base-10 integer.
+        New dict with Fock-basis key and total simulation counts value
     """
-    if not counts:
-        counts = result.get_counts()
+    
+    qubit_counts = result.get_counts()
     qumode_bit_mapping = _final_qumode_mapping(circuit)
 
-    newcounts = {}
-    for key in counts:
-        max_iter_index = len(key) - 1
-        newkey = key
+    fock_counts = {}
+    for qubit_key in qubit_counts:
+        max_iter_index = len(qubit_key) - 1
+        fock_basis_key = qubit_key
 
         # Using the nested list of qumode bit mappings, convert the relevant bits to base-10 integer and
         # form new key by concatenating the unchanged bits of key around the decimal value.
-        for index in range(len(key)):
+        for index in range(len(qubit_key)):
             for qumode in qumode_bit_mapping:
                 if index == min(qumode):
                     fock_decimal = str(
                         int(
-                            key[
+                            qubit_key[
                                 max_iter_index
                                 - max(qumode) : max_iter_index
                                 - min(qumode)
@@ -247,23 +251,29 @@ def counts_to_fockcounts(
                             base=2,
                         )
                     )
-                    newkey = (
-                        newkey[: max_iter_index - max(qumode)]
+                    fock_basis_key = (
+                        fock_basis_key[: max_iter_index - max(qumode)]
                         + fock_decimal
-                        + newkey[max_iter_index - min(qumode) + 1 :]
+                        + fock_basis_key[max_iter_index - min(qumode) + 1 :]
                     )
 
-        newcounts[newkey] = counts[key]
+        fock_counts[fock_basis_key] = qubit_counts[qubit_key]
 
-    return newcounts
+    return fock_counts
 
 
 def _final_qumode_mapping(circuit):
     """
     Return the classical bits that active qumode qubits are mapped onto. Bits corresponding to distinct qumodes are grouped together
     """
-    final_measurement_mapping = _final_measurement_mapping(circuit)
     active_qumode_bit_indices_grouped = []
+    
+    final_measurement_mapping = _final_measurement_mapping(circuit)
+
+    # If no explicit measurements are in the circuit, just assume all qumode qbits were "measured"
+    if len(final_measurement_mapping) == 0:
+        for qubit_index in circuit.qumode_qubit_indices:
+            final_measurement_mapping[qubit_index] = qubit_index
 
     # For each qumode qubit group, extract list of bits that map to qubits in group. Append list only if list is not empty
     for qumode_qubit_group in circuit.qumode_qubits_indices_grouped:
@@ -492,7 +502,7 @@ def simulate(
 
     if return_fockcounts and add_save_statevector:
         try:
-            fockcounts = counts_to_fockcounts(sim_circuit, result, result.get_counts())
+            fockcounts = counts_to_fockcounts(sim_circuit, result)
             return (state, result, fockcounts)
         except:
             raise Exception("counts_to_fockcounts() was not able to execute")
