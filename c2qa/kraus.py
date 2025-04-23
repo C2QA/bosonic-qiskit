@@ -13,6 +13,8 @@ from qiskit_aer.noise.noiseerror import NoiseError
 from qiskit.utils.units import apply_prefix
 import scipy
 
+IGNORE_INSTRUCTIONS = ["measure"]
+
 
 def calculate_kraus(
     photon_loss_rates: Sequence[float],
@@ -226,9 +228,14 @@ class PhotonLossNoisePass(LocalNoisePass):
 
     def applies_to_instruction(self, op: Instruction, qubits: Sequence[int]):
         """Test if this PhotonLossNoisePass applies to the given instruction based on its name and qumodes (qubits)"""
-        return (self._instructions is None or op.name in self._instructions) and (
-            self._qumode_qubit_indices is None
-            or any(x in qubits for x in self._qumode_qubit_indices)
+        return (
+            op.name
+            not in IGNORE_INSTRUCTIONS  # FIXME Qiskit v2.0 measure fails in PhotonLossNoisePass, but not in <v1.x?
+            and (self._instructions is None or op.name in self._instructions)
+            and (
+                self._qumode_qubit_indices is None
+                or any(x in qubits for x in self._qumode_qubit_indices)
+            )
         )
 
     def duration_to_sec(self, op: Instruction):
@@ -246,6 +253,6 @@ class PhotonLossNoisePass(LocalNoisePass):
             else:
                 duration = apply_prefix(op.duration, op.unit)
         else:
-            duration = 100
+            duration = 0.0000001  # 100ns
 
         return duration
