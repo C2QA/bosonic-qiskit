@@ -37,6 +37,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
+          pip install .
 
       - name: Build notebook
         run: |
