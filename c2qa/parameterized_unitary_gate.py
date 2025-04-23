@@ -177,7 +177,8 @@ def __calculate_segment_duration(
     """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
     frame_duration = None
 
-    if self.duration:
+    # FIXME - Qiskit v2.0 removed Instruction duration & unit!
+    if hasattr(self, "duration") and self.duration:
         if keep_state:
             fraction = 1 / total_steps
         else:
@@ -185,7 +186,13 @@ def __calculate_segment_duration(
 
         frame_duration = self.duration * fraction
 
-    return frame_duration, self.unit
+    # FIXME - Qiskit v2.0 removed Instruction duration & unit!
+    if hasattr(self, "unit"):
+        unit = self.unit
+    else:
+        unit = "s"
+    
+    return frame_duration, unit
 
 
 # Monkey patch Qiskit Instruction to support animating base Qiskit Instruction

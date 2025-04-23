@@ -303,8 +303,8 @@ def __discretize_instruction(
                 num_qubits=inst.num_qubits,
                 num_clbits=inst.num_clbits,
                 params=params,
-                duration=duration,
-                unit=unit,
+                # duration=duration,  # FIXME - Qiskit v2.0 removed Instruction duration & unit!
+                # unit=unit,
                 label=inst.label,
             )
         )
