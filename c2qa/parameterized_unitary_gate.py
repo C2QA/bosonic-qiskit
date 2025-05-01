@@ -1,5 +1,4 @@
 from typing import Iterable
-import warnings
 
 import numpy
 import qiskit

@@ -1,4 +1,3 @@
-from copy import copy
 from pathlib import Path
 
 
@@ -8,8 +7,7 @@ from c2qa.util import trace_out_qubits, simulate
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
-import numpy as np
-from numpy import array, zeros, real, meshgrid, exp, pi, conj, sqrt
+import numpy
 from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
 import qutip
@@ -18,12 +16,12 @@ import scipy.stats
 
 def simulate_wigner(
     circuit: CVCircuit,
-    xvec: np.ndarray,
+    xvec: numpy.ndarray,
     shots: int,
     noise_passes=None,
     conditional: bool = True,
     trace: bool = False,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
@@ -59,13 +57,13 @@ def simulate_wigner(
 
 def simulate_wigner_multiple_statevectors(
     circuit: CVCircuit,
-    xvec: np.ndarray,
+    xvec: numpy.ndarray,
     shots: int,
     statevector_label: str,
     num_statevectors: int,
     noise_passes=None,
     trace: bool = False,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
@@ -95,7 +93,7 @@ def wigner(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     """
@@ -112,7 +110,7 @@ def wigner(
     Returns:
         array-like: Results of Wigner function calculation
     """
-    xvec = np.linspace(axes_min, axes_max, axes_steps)
+    xvec = numpy.linspace(axes_min, axes_max, axes_steps)
     return _wigner(state, xvec, g=g, method=method)
 
 
@@ -121,7 +119,7 @@ def wigner_mle(
     axes_min: int = -6,
     axes_max: int = 6,
     axes_steps: int = 200,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     """
@@ -149,12 +147,12 @@ def wigner_mle(
         mle = scipy.stats.norm.fit(qubit_states)
         mle_state.append(mle[0])
 
-    mle_normalized = mle_state / np.linalg.norm(mle_state)
+    mle_normalized = mle_state / numpy.linalg.norm(mle_state)
 
     return wigner(mle_normalized, axes_min, axes_max, axes_steps, g=g, method=method)
 
 
-def _wigner(state, xvec, yvec=None, g=sqrt(2), method: str = "clenshaw"):
+def _wigner(state, xvec, yvec=None, g=numpy.sqrt(2), method: str = "clenshaw"):
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
@@ -177,7 +175,7 @@ def plot_wigner(
     num_colors: int = 100,
     draw_grid: bool = False,
     dpi: int = 100,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
@@ -232,15 +230,15 @@ def plot(
     dpi=100,
 ):
     """Contour plot the given data array"""
-    xvec = np.linspace(axes_min, axes_max, axes_steps)
+    xvec = numpy.linspace(axes_min, axes_max, axes_steps)
 
-    amax = np.amax(data)
-    amin = np.amin(data)
+    amax = numpy.amax(data)
+    amin = numpy.amin(data)
     if amax == 0 and amin == 0:
         amax = 1
         amin = -1
     abs_max = max(amax, abs(amin))
-    color_levels = np.linspace(-abs_max, abs_max, num_colors)
+    color_levels = numpy.linspace(-abs_max, abs_max, num_colors)
 
     fig, ax = plt.subplots(constrained_layout=True)
     cont = ax.contourf(xvec, xvec, data, color_levels, cmap="RdBu")
@@ -269,7 +267,7 @@ def plot_wigner_projection(
     qubit,
     file: str = None,
     draw_grid: bool = False,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     """Plot the projection onto 0, 1, +, - for the given circuit.
@@ -329,7 +327,7 @@ def plot_wigner_projection(
     circuit.data.pop()
 
     # Calculate Wigner functions
-    xvec = np.linspace(-6, 6, 200)
+    xvec = numpy.linspace(-6, 6, 200)
     wigner_zero = _wigner(projection_zero, xvec, g=g, method=method)
     wigner_one = _wigner(projection_one, xvec, g=g, method=method)
     wigner_plus = _wigner(projection_plus, xvec, g=g, method=method)
@@ -361,7 +359,7 @@ def plot_wigner_snapshot(
     axes_max: int = 6,
     axes_steps: int = 200,
     num_colors: int = 100,
-    g=sqrt(2),
+    g=numpy.sqrt(2),
     method: str = "clenshaw",
 ):
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
@@ -395,10 +393,10 @@ def plot_wigner_snapshot(
 
 def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
     """Add a matplotlib contourf plot with color levels based on min/max values in z."""
-    amax = np.amax(z)
-    amin = abs(np.amin(z))
+    amax = numpy.amax(z)
+    amin = abs(numpy.amin(z))
     max_value = max(amax, amin, 0.0001)  # Force a range if amin/amax are equal
-    color_levels = np.linspace(-max_value, max_value, 100)
+    color_levels = numpy.linspace(-max_value, max_value, 100)
 
     cont = ax.contourf(x, y, z, color_levels, cmap="RdBu")
 
