@@ -1,7 +1,6 @@
 import numpy
 import scipy.sparse
 import scipy.sparse.linalg
-import pdb
 
 
 xQB = numpy.array([[0, 1], [1, 0]])
