@@ -2,9 +2,19 @@
 
 NQI C2QA project to simulate hybrid boson-qubit systems within QisKit.
 
-## Install
+## Installation
 
-Use a Python virtual environment to install compatible version of QisKit.
+Bosonic-qiskit can be installed from PyPI:
+
+```bash
+pip install bosonic-qiskit
+```
+
+We recommend the use of a virtual environment.
+
+### Development
+
+First, checkout the code from Github and use the provided script to create a virtual environment with the necessary dependencies:
 
 ```bash
 git clone https://github.com/C2QA/bosonic-qiskit.git
@@ -12,18 +22,17 @@ cd bosonic-qiskit
 ./install-dependencies.sh
 ```
 
-### Dependency Version Compatibility
-
-The Bosonic Qiskit software has not been extensively tested with different versions of its [dependencies](requirements.txt); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoudError` at runtime.
-
-## Activate Virtual Environment
-
-Before using Bosonic Qiskit, first install the depencies (as above) and then activate the Python virtual environment.
+Then, install development dependencies and bosonic-qiskit in editable mode (after activating the newly-created virtual environment)
 
 ```bash
-cd <path/to/bosonic-qiskit>
 source venv/bin/activate
+pip install -r requirements_dev.txt
+pip install -e .
 ```
+
+### Dependency Version Compatibility
+
+The Bosonic Qiskit software has not been extensively tested with different versions of its [dependencies](requirements.txt); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoundError` at runtime.
 
 ## Tutorials
 
