@@ -473,18 +473,14 @@ def simulate(
 
     # Transpile for simulator
     simulator = qiskit_aer.AerSimulator()
-    circuit_compiled = qiskit.transpile(
-        circuit_compiled, simulator, optimization_level=0
-    )
 
-    # TODO Can we define our own pass manager that supports unrolling our custom gates, parameterizing gates, and discretizing gates?
-    #      Would this make it any faster (is the unrolling what takes so long since place & route is off by default anyway)?
-    # pm = qiskit.transpiler.PassManager(
-    # [
-    #     qiskit.transpiler.passes.UnrollCustomDefinitions(),
-    # ]
+    # TODO do we need more than the translation pass manager?
+    # circuit_compiled = qiskit.transpile(
+    #     circuit_compiled, simulator, optimization_level=0
     # )
-    # circuit_compiled = pm.run(circuit_compiled)
+
+    pm = qiskit.transpiler.preset_passmanagers.common.generate_translation_passmanager(target=simulator.target)
+    circuit_compiled = pm.run(circuit_compiled)
 
     # Run and get statevector
     result = simulator.run(
