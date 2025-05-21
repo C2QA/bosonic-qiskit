@@ -127,9 +127,14 @@ def test_cvcircuit_util_simulate(capsys):
         circuit.cv_c_d(-dist, qmr[0], qr[0])
         circuit.cv_d(-1j * dist, qmr[0])
 
-        start = time.perf_counter()
-        _, result, _ = c2qa.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
-        end = time.perf_counter()
-        print(f"[test_cvcircuit_util_simulate] {end - start}")
+        count = 10
+        avg = 0
+        for _ in range(count):
+            start = time.perf_counter()
+            _, result, _ = c2qa.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
+            end = time.perf_counter()
+            print(f"[test_cvcircuit_util_simulate] {end - start}")
+            avg += (end - start)
+        print(f"[test_cvcircuit_util_simulate] average {avg / count}")
 
         assert result.success
