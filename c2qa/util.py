@@ -476,10 +476,12 @@ def simulate(
 
     if circuit_compiled.is_parameterized():
         # TODO do we need more than the translation pass manager?
-        circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+        # circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
-        # pm = qiskit.transpiler.preset_passmanagers.common.generate_translation_passmanager(target=simulator.target)
-        # circuit_compiled = pm.run(circuit_compiled)
+        pm = qiskit.transpiler.preset_passmanagers.common.generate_translation_passmanager(
+            target=simulator.target
+        )
+        circuit_compiled = pm.run(circuit_compiled)
 
     # Run and get statevector
     result = simulator.run(

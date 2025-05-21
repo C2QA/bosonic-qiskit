@@ -128,7 +128,7 @@ def test_cvcircuit_util_simulate(capsys):
         circuit.cv_d(-1j * dist, qmr[0])
 
         start = time.perf_counter()
-        _, result, _ = c2qa.util.simulate(circuit)
+        _, result, _ = c2qa.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
         end = time.perf_counter()
         print(f"[test_cvcircuit_util_simulate] {end - start}")
 
