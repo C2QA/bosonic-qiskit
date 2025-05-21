@@ -33,7 +33,7 @@ class ParameterizedUnitaryGate(Gate):
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
             discretized_param_indices (list): list of int indices into self.params for parameters to be discretized. An empty list will discretize all params.
         """
-        super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
+        super().__init__(name="unitary", num_qubits=num_qubits, params=params, label=label)
 
         self.op_func = op_func
 
@@ -46,6 +46,11 @@ class ParameterizedUnitaryGate(Gate):
         self.unit = unit
         self.discretized_param_indices = discretized_param_indices
         self.cutoffs = cutoffs
+
+        if self.is_parameterized():
+            super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
+        else:
+            super().__init__(name="unitary", num_qubits=num_qubits, params=[self.to_matrix()], label=label)
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
@@ -101,6 +106,8 @@ class ParameterizedUnitaryGate(Gate):
         elif isinstance(parameter, ParameterExpression) and not parameter.is_real():
             return parameter
         elif isinstance(parameter, (str, list)):  # accept strings as-is
+            return parameter
+        elif isinstance(parameter, numpy.ndarray):
             return parameter
         else:
             return super().validate_parameter(parameter)

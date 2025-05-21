@@ -1,7 +1,7 @@
 import time
 
 import c2qa
-
+import scipy
 import qiskit
 import qiskit_aer
 
@@ -16,6 +16,7 @@ def test_custom_unitary(capsys):
         # Fails with `AerError: unknown instruction: foo`
         gate = c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate(_matrix, [0,1], 2, [], label="foo")
 
+        print("gate name", gate.name, "label", gate.label)
         circuit.append(gate, [0, 1])
 
 
@@ -67,11 +68,11 @@ def test_custom_unitary(capsys):
         print(job.done())
         print(job.result())
 
-def _matrix():
-    return [[0, 0, 0, 1],
+def _matrix(q1 = None, q2 = None):
+    return scipy.sparse.csr_matrix([[0, 0, 0, 1],
             [0, 0, 1, 0],
             [1, 0, 0, 0],
-            [0, 1, 0, 0]]
+            [0, 1, 0, 0]])
 
 
 def test_cvcircuit_wo_transpile(capsys):
