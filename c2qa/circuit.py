@@ -2,6 +2,7 @@ import copy
 import warnings
 
 import numpy as np
+import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import qiskit_aer.library.save_instructions as save
@@ -56,6 +57,7 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators()
         self.cv_snapshot_id = 0
+        self._has_parameterized_gate = False
 
     def merge(self, circuit: QuantumCircuit):
         """
@@ -262,6 +264,42 @@ class CVCircuit(QuantumCircuit):
             label=label, conditional=conditional, pershot=pershot
         )
 
+    def _new_gate(
+        self,
+        op_func,
+        params,
+        num_qubits,
+        cutoffs,
+        label=None,
+        duration=100,
+        unit="ns",
+        discretized_param_indices: list = [],
+    ):
+        # If parameters contain compile-time parameters
+        is_parameterized = any(
+            isinstance(param, qiskit.circuit.parameterexpression.ParameterExpression)
+            and param.parameters
+            for param in params
+        )
+
+        if is_parameterized:
+            self._has_parameterized_gate = True
+            return ParameterizedUnitaryGate(
+                op_func,
+                params,
+                cutoffs=cutoffs,
+                num_qubits=num_qubits,
+                label=label,
+                duration=duration,
+                unit=unit,
+                discretized_param_indices=discretized_param_indices,
+            )
+        else:
+            data = CVOperators.call_op(op_func, params, cutoffs)
+            return qiskit.circuit.library.UnitaryGate(
+                data=data, label=label, num_qubits=num_qubits
+            )
+
     def cv_r(self, theta, qumode, duration=100, unit="ns"):
         """Phase space rotation gate.
 
@@ -274,7 +312,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.r,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -298,7 +336,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.d,
                 [alpha],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -321,7 +359,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.s,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -345,7 +383,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.s2,
                 [theta],
                 cutoffs=[
@@ -373,7 +411,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.s3,
                 [theta],
                 cutoffs=[
@@ -401,7 +439,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.bs,
                 [theta],
                 cutoffs=[
@@ -428,7 +466,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.cr,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -452,7 +490,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.crx,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -476,7 +514,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.cry,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -505,7 +543,7 @@ class CVCircuit(QuantumCircuit):
             beta = -theta
 
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.cd,
                 [theta, beta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -528,7 +566,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.ecd,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -553,7 +591,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.cbs,
                 [theta],
                 cutoffs=[
@@ -595,7 +633,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.cschwinger,
                 params,
                 cutoffs=[
@@ -633,7 +671,7 @@ class CVCircuit(QuantumCircuit):
                 ValueError("Fock state specified by n exceeds the cutoff.")
             if qubit is None:
                 self.append(
-                    ParameterizedUnitaryGate(
+                    self._new_gate(
                         self.ops.snap,
                         [theta, n],
                         cutoffs=[cutoff],
@@ -646,7 +684,7 @@ class CVCircuit(QuantumCircuit):
                 )
             else:
                 self.append(
-                    ParameterizedUnitaryGate(
+                    self._new_gate(
                         self.ops.csnap,
                         [theta, n],
                         cutoffs=[cutoff],
@@ -660,7 +698,7 @@ class CVCircuit(QuantumCircuit):
         elif isinstance(n, list) and isinstance(theta, list):
             if qubit is None:
                 self.append(
-                    ParameterizedUnitaryGate(
+                    self._new_gate(
                         self.ops.multisnap,
                         theta + n,
                         cutoffs=[cutoff],
@@ -673,7 +711,7 @@ class CVCircuit(QuantumCircuit):
                 )
             else:
                 self.append(
-                    ParameterizedUnitaryGate(
+                    self._new_gate(
                         self.ops.multicsnap,
                         theta + n,
                         cutoffs=[cutoff],
@@ -695,7 +733,7 @@ class CVCircuit(QuantumCircuit):
     # def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
     #     params = thetas + ns
     #     self.append(
-    #         ParameterizedUnitaryGate(
+    #         self._new_gate(
     #             self.ops.multisnap, params, num_qubits=len(qumode), label="mSNAP", duration=duration, unit=unit
     #         ),
     #         qargs=qumode,
@@ -711,7 +749,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.pnr,
                 [max],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -735,7 +773,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.eswap,
                 [theta],
                 cutoffs=[
@@ -762,7 +800,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.csq,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -776,7 +814,7 @@ class CVCircuit(QuantumCircuit):
 
     def cv_testqubitorderf(self, phi, qubit_1, qubit_2, duration=100, unit="ns"):
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.testqubitorderf,
                 [phi],
                 label="testqubitorderf",
@@ -800,7 +838,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.sum,
                 [scale],
                 cutoffs=[
@@ -828,7 +866,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.csum,
                 [scale],
                 cutoffs=[
@@ -855,7 +893,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.jc,
                 [theta, phi],
                 cutoffs=[
@@ -881,7 +919,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.ajc,
                 [theta, phi],
                 cutoffs=[
@@ -905,7 +943,7 @@ class CVCircuit(QuantumCircuit):
             csc_matrix: operator matrix
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.rb,
                 [theta],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -1021,7 +1059,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         return self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.get_eye,
                 [],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -1043,7 +1081,7 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         self.append(
-            ParameterizedUnitaryGate(
+            self._new_gate(
                 self.ops.c_multiboson_sampling,
                 [max],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
@@ -1113,7 +1151,7 @@ class CVCircuit(QuantumCircuit):
         #     cutoffs.append(QumodeRegister.calculate_cutoff(len(qumode)))
 
         # return self.append(
-        #     ParameterizedUnitaryGate(
+        #     self._new_gate(
         #         self.ops.gate_from_matrix,
         #         [matrix],
         #         cutoffs=cutoffs,
@@ -1125,3 +1163,16 @@ class CVCircuit(QuantumCircuit):
         #     qargs=qumodes + qubits,
         # )
         return self.unitary(matrix, qubits=qumodes + qubits, label=label)
+
+
+# Monkey patch Qiskit QuantumCircuit to support parameterizing unitary gates
+def __is_parameterized(self):
+    return any(
+        isinstance(gate, ParameterizedUnitaryGate) or gate.is_parameterized()
+        for gate in self.data
+    ) or (hasattr(self, "_has_parameterized_gate") and self._has_parameterized_gate)
+
+
+CVCircuit.is_parameterized = __is_parameterized
+
+qiskit.circuit.QuantumCircuit.is_parameterized = __is_parameterized
