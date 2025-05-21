@@ -106,7 +106,7 @@ def test_cvcircuit_wo_transpile(capsys):
         end = time.perf_counter()
         print(f"[test_cvcircuit_wo_transpile] {end - start}")
 
-        print(job.result())
+        assert job.result().success
 
 
 def test_cvcircuit_util_simulate(capsys):

@@ -57,6 +57,7 @@ class CVCircuit(QuantumCircuit):
 
         self.ops = CVOperators()
         self.cv_snapshot_id = 0
+        self._has_parameterized_gate = False
 
     def merge(self, circuit: QuantumCircuit):
         """
@@ -263,9 +264,6 @@ class CVCircuit(QuantumCircuit):
             label=label, conditional=conditional, pershot=pershot
         )
 
-    def is_parameterized(self):
-        return any(isinstance(gate, ParameterizedUnitaryGate) for gate in self.data)
-
     def _new_gate(
         self,
         op_func,
@@ -285,6 +283,7 @@ class CVCircuit(QuantumCircuit):
         )
 
         if is_parameterized:
+            self._has_parameterized_gate = True
             return ParameterizedUnitaryGate(
                 op_func,
                 params,
@@ -1164,3 +1163,16 @@ class CVCircuit(QuantumCircuit):
         #     qargs=qumodes + qubits,
         # )
         return self.unitary(matrix, qubits=qumodes + qubits, label=label)
+
+
+# Monkey patch Qiskit QuantumCircuit to support parameterizing unitary gates
+def __is_parameterized(self):
+    return any(
+        isinstance(gate, ParameterizedUnitaryGate) or gate.is_parameterized()
+        for gate in self.data
+    ) or (hasattr(self, "_has_parameterized_gate") and self._has_parameterized_gate)
+
+
+CVCircuit.is_parameterized = __is_parameterized
+
+qiskit.circuit.QuantumCircuit.is_parameterized = __is_parameterized
