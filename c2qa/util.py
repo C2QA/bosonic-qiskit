@@ -8,7 +8,7 @@ from qiskit.quantum_info import Statevector, DensityMatrix
 import qiskit_aer
 
 
-from c2qa import CVCircuit
+from c2qa import CVBackend, CVCircuit
 from c2qa.discretize import discretize_circuits
 
 
@@ -472,16 +472,17 @@ def simulate(
         circuit_compiled = sim_circuit
 
     # Transpile for simulator
-    simulator = qiskit_aer.AerSimulator()
+    # simulator = qiskit_aer.AerSimulator()
+    simulator = CVBackend()
 
-    if circuit_compiled.is_parameterized():
-        # TODO do we need more than the translation pass manager?
-        # circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+    # if circuit_compiled.is_parameterized():
+    #     # TODO do we need more than the translation pass manager?
+    #     # circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
-        pm = qiskit.transpiler.preset_passmanagers.common.generate_translation_passmanager(
-            target=simulator.target
-        )
-        circuit_compiled = pm.run(circuit_compiled)
+    #     pm = qiskit.transpiler.preset_passmanagers.common.generate_translation_passmanager(
+    #         target=simulator.target
+    #     )
+    #     circuit_compiled = pm.run(circuit_compiled)
 
     # Run and get statevector
     result = simulator.run(

@@ -2,6 +2,7 @@
 
 # flake8: noqa
 
+from c2qa.backend import CVBackend
 from c2qa.circuit import CVCircuit
 from c2qa.qumoderegister import QumodeRegister
 

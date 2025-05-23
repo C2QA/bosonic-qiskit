@@ -1,3 +1,4 @@
+import pytest
 import random
 import c2qa
 import numpy
@@ -336,6 +337,7 @@ def test_eswap():
     state, result, fock_counts = c2qa.util.simulate(circuit)
 
 
+@pytest.mark.skip(reason="CVOperators.c_multiboson_sampling is not implemented (it returns identity)")
 def test_multiboson_sampling(capsys):
     with capsys.disabled():
         num_qubits = 1

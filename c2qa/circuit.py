@@ -275,12 +275,13 @@ class CVCircuit(QuantumCircuit):
         unit="ns",
         discretized_param_indices: list = [],
     ):
-        # If parameters contain compile-time parameters
+        # If params contain compile-time parameters
         is_parameterized = any(
             isinstance(param, qiskit.circuit.parameterexpression.ParameterExpression)
             and param.parameters
             for param in params
         )
+        is_parameterized = True
 
         if is_parameterized:
             self._has_parameterized_gate = True
