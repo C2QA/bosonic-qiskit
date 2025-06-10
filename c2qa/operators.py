@@ -604,36 +604,36 @@ class CVOperators:
         return scipy.sparse.linalg.expm(arg)
 
     def mh(self, m, de, a, x0, cutoff):
-    """
-    Morse Hamiltonian Gate
-
-    Args:
-        m (real): reduced mass of diatomic system
-        de (real): dissociation energy
-        a (real): widthm parameter
-        x0 (real): equilibrium bond length
-
-    Returns:
-        csc_matrix: operator matrix
-    """
-
-    # Get creation and annihilation operators
-    a = c2qa.operators.CVOperators.get_a(cutoff)
-    a_dag = c2qa.operators.CVOperators.get_a_dag(cutoff)
-
-    # Construct the position and momentum operators
-    x_op = (a + a_dag) / np.sqrt(2)
-    p_op = 1j * (a -a_dag) / np.sqrt(2)
-
-    #build the morse potential operator
-    x_offset = x_op - x0 * np.eye(x_op.shape[0])
-    exp_term = expm(-a * x_offset)
-    pot = de * (np.eye(x_op.shape[0]) - exp_term) @ (np.eye(x_op.shape[0]) - exp_term)
-
-    #build the kinetic energy operator
-    kin = (p_op @ p_op) / (2 * m)
-
-    #build the full morse Hamiltonian
-    ham = pot + kin
-    hamev = -1j * ham
-    return expm(hamev)
+        """
+        Morse Hamiltonian Gate
+    
+        Args:
+            m (real): reduced mass of diatomic system
+            de (real): dissociation energy
+            a (real): widthm parameter
+            x0 (real): equilibrium bond length
+    
+        Returns:
+            csc_matrix: operator matrix
+        """
+    
+        # Get creation and annihilation operators
+        a = c2qa.operators.CVOperators.get_a(cutoff)
+        a_dag = c2qa.operators.CVOperators.get_a_dag(cutoff)
+    
+        # Construct the position and momentum operators
+        x_op = (a + a_dag) / np.sqrt(2)
+        p_op = 1j * (a -a_dag) / np.sqrt(2)
+    
+        #build the morse potential operator
+        x_offset = x_op - x0 * np.eye(x_op.shape[0])
+        exp_term = expm(-a * x_offset)
+        pot = de * (np.eye(x_op.shape[0]) - exp_term) @ (np.eye(x_op.shape[0]) - exp_term)
+    
+        #build the kinetic energy operator
+        kin = (p_op @ p_op) / (2 * m)
+    
+        #build the full morse Hamiltonian
+        ham = pot + kin
+        hamev = -1j * ham
+        return expm(hamev)
