@@ -47,6 +47,7 @@ class ParameterizedUnitaryGate(Gate):
         self.unit = unit
         self.discretized_param_indices = discretized_param_indices
         self.cutoffs = cutoffs
+        self.cv_params = params
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
@@ -137,8 +138,14 @@ def __calculate_segment_params(
     else:
         param_fraction = current_step / total_steps
 
+    params = None
+    if hasattr(self, "cv_params"):
+        params = self.cv_params
+    elif hasattr(self, "params"):
+        params = self.params
+
     values = []
-    for index, param in enumerate(self.params):
+    for index, param in enumerate(params):
         if (
             not hasattr(self, "discretized_param_indices")
             or len(self.discretized_param_indices) == 0
