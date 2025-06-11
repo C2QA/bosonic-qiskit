@@ -281,6 +281,7 @@ class CVCircuit(QuantumCircuit):
             and param.parameters
             for param in params
         )
+        # is_parameterized = True
 
         if is_parameterized:
             self._has_parameterized_gate = True
@@ -296,9 +297,11 @@ class CVCircuit(QuantumCircuit):
             )
         else:
             data = CVOperators.call_op(op_func, params, cutoffs)
-            return qiskit.circuit.library.UnitaryGate(
+            gate = qiskit.circuit.library.UnitaryGate(
                 data=data, label=label, num_qubits=num_qubits
             )
+            gate.cv_params = params
+            return gate
 
     def cv_r(self, theta, qumode, duration=100, unit="ns"):
         """Phase space rotation gate.
