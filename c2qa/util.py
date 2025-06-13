@@ -463,10 +463,11 @@ def simulate(
 
     # Run noise pass, if provided
     if noise_passes:
-        if not isinstance(noise_passes, list):
-            noise_passes = [noise_passes]
+        noise_pass_lst = noise_passes
+        if not isinstance(noise_pass_lst, list):
+            noise_pass_lst = [noise_pass_lst]
 
-        for noise_pass in noise_passes:
+        for noise_pass in noise_pass_lst:
             circuit_compiled = noise_pass(sim_circuit)
     else:
         circuit_compiled = sim_circuit
@@ -475,7 +476,7 @@ def simulate(
     simulator = qiskit_aer.AerSimulator()
 
     # FIXME also need to transpile if discretized?
-    if circuit_compiled.is_parameterized() or noise_passes:
+    if circuit_compiled.is_parameterized() or noise_pass_lst:
         # TODO do we need more than the translation pass manager?
         # circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 

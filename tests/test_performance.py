@@ -86,7 +86,7 @@ def test_cvcircuit_wo_transpile(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = c2qa.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=False)
 
         dist = 3
 
@@ -114,7 +114,7 @@ def test_cvcircuit_util_simulate(capsys):
         qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = c2qa.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=False)
 
         dist = 3
 

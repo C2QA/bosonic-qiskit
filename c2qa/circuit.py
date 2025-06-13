@@ -15,12 +15,13 @@ from c2qa.qumoderegister import QumodeRegister
 class CVCircuit(QuantumCircuit):
     """Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations."""
 
-    def __init__(self, *regs, name: str = None, probe_measure: bool = False):
+    def __init__(self, *regs, name: str = None, probe_measure: bool = False, force_parameterized_unitary_gate: bool = True):
         """Initialize the registers (at least one must be QumodeRegister) and set the circuit name.
 
         Args:
             name (str, optional): circuit name. Defaults to None.
             probe_measure (bool, optional): automatically support measurement with probe qubits. Defaults to False.
+            force_parameterized_unitary_gate (bool, optional): if set to False, improve performance by creating Qiskit UnitaryGate instead of bosonic-qiskit ParamaterizedUnitaryGate and skip transpilation in the util module's simulate() function. Note that bosonic-qiskit ParameterizedUnitaryGate are required for Qiskit parameterized circuits, circuits using photon loss noise passes, and cicruits animated with discretized gates. Defaults to True.
 
         Raises:
             ValueError: If no QumodeRegister is provided.
@@ -58,6 +59,7 @@ class CVCircuit(QuantumCircuit):
         self.ops = CVOperators()
         self.cv_snapshot_id = 0
         self._has_parameterized_gate = False
+        self._force_parameterized_unitary_gate = force_parameterized_unitary_gate
 
     def merge(self, circuit: QuantumCircuit):
         """
@@ -276,7 +278,7 @@ class CVCircuit(QuantumCircuit):
         discretized_param_indices: list = [],
     ):
         # If parameters contain compile-time parameters
-        is_parameterized = any(
+        is_parameterized = self._force_parameterized_unitary_gate or any(
             isinstance(param, qiskit.circuit.parameterexpression.ParameterExpression)
             and param.parameters
             for param in params
