@@ -30,6 +30,7 @@ def simulate_wigner(
         shots=shots,
         noise_passes=noise_passes,
         conditional_state_vector=conditional,
+        return_fockcounts=False,
     )
 
     if states:
