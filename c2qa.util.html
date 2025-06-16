@@ -7,7 +7,7 @@
   <head>
     
     <title>c2qa.util</title>
-    <meta name="generator" content="pydoctor 24.11.2"> 
+    <meta name="generator" content="pydoctor 25.4.0"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -459,7 +459,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py" class="sourceLink">(source)</a>
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py" class="sourceLink">(source)</a>
           <p></p>
         </div>
 
@@ -480,7 +480,7 @@
     
     <td>Function</td>
     <td><code><a href="#counts_to_fockcounts" class="internal-link" title="c2qa.util.counts_to_fockcounts">counts<wbr></wbr>_to<wbr></wbr>_fockcounts</a></code></td>
-    <td>Convert counts dictionary from Fock-basis binary representation into base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by jobs.result(), along with the entire circuit.</td>
+    <td>Convert Qiskit simulation counts dictionary it to a Fock-basis counts dictionary.</td>
   </tr><tr class="function">
     
     <td>Function</td>
@@ -495,7 +495,7 @@
     
     <td>Function</td>
     <td><code><a href="#flatten" class="internal-link" title="c2qa.util.flatten">flatten</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="function">
     
     <td>Function</td>
@@ -576,8 +576,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">avg_photon_num</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state, decimals: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 2)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L741">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">avg_photon_num</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code>, </span><span class="rst-sig-param">state, </span><span class="rst-sig-param">decimals: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 2</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L751">
       
       (source)
     </a>
@@ -589,7 +589,7 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Returns average photon number of state for each qumode within the circuit using the number operator.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">Circuit definine qumodes present in given state</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">full state to operate on</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">decimals:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">Determines precision of calculation</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">Average photon number to specified precision</td></tr></table></div>
+    <div><p>Returns average photon number of state for each qumode within the circuit using the number operator.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">Circuit definine qumodes present in given state</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">full state to operate on</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">decimals:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">Determines precision of calculation</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">Average photon number to specified precision</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -603,8 +603,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">counts_to_fockcounts</span><span class="function-signature">(circuit: <code>CVCircuit</code>, result: <code>qiskit.result.result.Result</code>, counts: <code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L209">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">counts_to_fockcounts</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code>, </span><span class="rst-sig-param">result: <code>qiskit.result.result.Result</code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L209">
       
       (source)
     </a>
@@ -616,11 +616,13 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Convert counts dictionary from Fock-basis binary representation into
-base-10 Fock basis (qubit measurements are left unchanged). Accepts the object returned by
-jobs.result(), along with the entire circuit.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code>CVCircuit</code></td><td class="fieldArgDesc">CVCircuit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">result:</span><code>qiskit.result.result.Result</code></td><td class="fieldArgDesc">dict() of results, as returned by job.result(), for a circuit which used cv_measure()</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">counts:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td colspan="2">A new counts dict() which lists measurement results for the qubits and
-qumodes in circuit in little endian order, with Fock-basis
-qumode measurements reported as a base-10 integer.</td></tr></table></div>
+    <div><p>Convert Qiskit simulation counts dictionary it to a Fock-basis counts dictionary.</p>
+<p>The Qiskit counts dictionary key is a string representing the Little Endian ordering classical bit values
+for each qubit and the value is the total count of simulated shots (runs) that had those values.</p>
+<p>See <a class="rst-external rst-reference" href="https://docs.quantum.ibm.com/api/qiskit/qiskit.result.Result#get_counts" target="_top">https://docs.quantum.ibm.com/api/qiskit/qiskit.result.Result#get_counts</a> for Qiskit documentation on its
+counts histogram data structure.</p>
+<p>The returned value is the Fock-basis state key to the total count of simulated shots (runs) that had that value.</p>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">simulated circuit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">result:</span><code>Result</code></td><td class="fieldArgDesc">Qiskit simulation results with simulation counts</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td colspan="2">New dict with Fock-basis key and total simulation counts value</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -634,8 +636,8 @@ qumode measurements reported as a base-10 integer.</td></tr></table></div>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">cv_ancilla_fock_measure</span><span class="function-signature">(circuit, list_qumodes_to_sample: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>, qmr_number: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 0)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L19">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_ancilla_fock_measure</span><span class="function-signature">(<span class="rst-sig-param">circuit, </span><span class="rst-sig-param">list_qumodes_to_sample: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>, </span><span class="rst-sig-param">qmr_number: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 0</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L19">
       
       (source)
     </a>
@@ -664,8 +666,8 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">cv_partial_trace</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state_vector, qubits: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L581">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_partial_trace</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code>, </span><span class="rst-sig-param">state_vector, </span><span class="rst-sig-param">qubits: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L591">
       
       (source)
     </a>
@@ -679,7 +681,7 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
     
     <div><p>Return reduced density matrix over the given Qiskit Qubits.</p>
 <p>First find the indices of the given Qubits, then call qiskit.quantum_info.partial_trace</p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit with results to trace (to find Qubit index)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state<wbr></wbr>_vector:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">simulation results to trace over</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubits:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of Qiskit Qubit to trace over</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>DensityMatrix</code></td><td class="fieldArgDesc">partial trace</td></tr></table></div>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit with results to trace (to find Qubit index)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state<wbr></wbr>_vector:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">simulation results to trace over</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubits:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of Qiskit Qubit to trace over</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>DensityMatrix</code></td><td class="fieldArgDesc">partial trace</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -693,8 +695,8 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">flatten</span><span class="function-signature">(l)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L15">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">flatten</span><span class="function-signature">(<span class="rst-sig-param">l</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L15">
       
       (source)
     </a>
@@ -720,8 +722,8 @@ phase kickback on the qubit. For more information, see Curtis et al., PRA (2021)
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">fockmap</span><span class="function-signature">(matrix, fock_input, fock_output, amplitude=[])</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L601">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">fockmap</span><span class="function-signature">(<span class="rst-sig-param">matrix, </span><span class="rst-sig-param">fock_input, </span><span class="rst-sig-param">fock_output, </span><span class="rst-sig-param">amplitude=[]</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L611">
       
       (source)
     </a>
@@ -748,7 +750,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
 -&gt;&gt; <tt class="rst-docutils rst-literal"><span class="pre">0.1j|2&gt;&lt;3|</span> + <span class="pre">0.8|1&gt;&lt;2|</span></tt></p>
 <p>&gt;fockmap(matrix, [1, 1], [2, 4])
 -&gt;&gt; <tt class="rst-docutils rst-literal"><span class="pre">|2&gt;&lt;1|</span> + <span class="pre">|4&gt;&lt;1|</span></tt></p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">matrix:</span>nested list/np.array</td><td class="fieldArgDesc">Matrix that you want to change</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">fock<wbr></wbr>_input:</span>int/list</td><td class="fieldArgDesc">Input state(s) for mapping, corresponds to bra</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">fock<wbr></wbr>_output:</span>int/list</td><td class="fieldArgDesc">Output states(s) for mapping, corresponds to ket</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">amplitude:</span>int/float/complex/list/ndarray</td><td class="fieldArgDesc">Amplitudes corresponding to final mapped states</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>np.array</code></td><td class="fieldArgDesc">Edited matrix</td></tr></table></div>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">matrix:</span>nested list/np.array</td><td class="fieldArgDesc">Matrix that you want to change</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">fock<wbr></wbr>_input:</span>int/list</td><td class="fieldArgDesc">Input state(s) for mapping, corresponds to bra</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">fock<wbr></wbr>_output:</span>int/list</td><td class="fieldArgDesc">Output states(s) for mapping, corresponds to ket</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">amplitude:</span>int/float/complex/list/ndarray</td><td class="fieldArgDesc">Amplitudes corresponding to final mapped states</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>np.array</code></td><td class="fieldArgDesc">Edited matrix</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -762,8 +764,8 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">get_probabilities</span><span class="function-signature">(result: <code>qiskit.result.Result</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L384">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">get_probabilities</span><span class="function-signature">(<span class="rst-sig-param">result: <code>qiskit.result.Result</code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L394">
       
       (source)
     </a>
@@ -775,7 +777,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Calculate the probabilities for each of the result's counts.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">result:</span><code>qiskit.result.Result</code></td><td class="fieldArgDesc">QisKit result to calculate probabilities from</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code></td><td class="fieldArgDesc">probablity dictionary of each state</td></tr></table></div>
+    <div><p>Calculate the probabilities for each of the result's counts.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">result:</span><code>qiskit.result.Result</code></td><td class="fieldArgDesc">QisKit result to calculate probabilities from</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code></td><td class="fieldArgDesc">probablity dictionary of each state</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -789,8 +791,8 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">measure_all_xyz</span><span class="function-signature">(circuit: <code>qiskit.QuantumCircuit</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L348">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">measure_all_xyz</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>qiskit.QuantumCircuit</code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L358">
       
       (source)
     </a>
@@ -804,7 +806,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
     
     <div><p>Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.</p>
 <p>Returns state, result, fockcounts tuples each for the X, Y, and Z basis.</p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code>qiskit.QuantumCircuit</code></td><td class="fieldArgDesc">circuit to measure qubits one</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>x</code>, <code>y</code>, z state &amp; result tuples</td><td class="fieldArgDesc">(state, result, fockcounts) tuples for each x,y,z measurements</td></tr></table></div>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code>qiskit.QuantumCircuit</code></td><td class="fieldArgDesc">circuit to measure qubits one</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>x</code>, <code>y</code>, z state &amp; result tuples</td><td class="fieldArgDesc">(state, result, fockcounts) tuples for each x,y,z measurements</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -818,8 +820,8 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">qumode_avg_photon_num</span><span class="function-signature">(state, decimals: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 2)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L766">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">qumode_avg_photon_num</span><span class="function-signature">(<span class="rst-sig-param">state, </span><span class="rst-sig-param">decimals: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 2</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L776">
       
       (source)
     </a>
@@ -831,7 +833,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Returns average photon number of an individual qumode's state using the number operator.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">State to operate on for an individual qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">decimals:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">Determines precision of calculation</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">Average photon number to specified precision</td></tr></table></div>
+    <div><p>Returns average photon number of an individual qumode's state using the number operator.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">State to operate on for an individual qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">decimals:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">Determines precision of calculation</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">Average photon number to specified precision</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -845,8 +847,8 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">simulate</span><span class="function-signature">(cvcircuit: <code>CVCircuit</code>, shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1024, return_fockcounts: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, add_save_statevector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, conditional_state_vector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, per_shot_state_vector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, noise_model=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, max_parallel_threads: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 0, discretize: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L404">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">simulate</span><span class="function-signature long-signature">(<span class="rst-sig-param">cvcircuit: <code>CVCircuit</code>, </span><span class="rst-sig-param">shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1024, </span><span class="rst-sig-param">return_fockcounts: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, </span><span class="rst-sig-param">add_save_statevector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, </span><span class="rst-sig-param">conditional_state_vector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">per_shot_state_vector: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">noise_model=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">max_parallel_threads: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 0, </span><span class="rst-sig-param">discretize: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L414">
       
       (source)
     </a>
@@ -864,7 +866,7 @@ If amplitude is left blank, function assumes amp = 1 for all mappings.</p>
 should be added to the end of the circuit. Defaults to True.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">conditional<wbr></wbr>_state<wbr></wbr>_vector:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">Set to True if the saved state vector should be contional
 (each state value gets its own state vector). Defaults to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">per<wbr></wbr>_shot<wbr></wbr>_state<wbr></wbr>_vector:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">Set to Ture if the simulation should return a separate state vector for
 every simulation shot.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">noise<wbr></wbr>_model:</span><code>NoiseModel</code>, <em>optional</em></td><td class="fieldArgDesc">Custom noise model to pass into AerSimulator to use on each simulation shot</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">noise<wbr></wbr>_passes:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> of <code>LocalNoisePass</code>, <em>optional</em></td><td class="fieldArgDesc">Custom noise pass to apply on each gate.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">max<wbr></wbr>_parallel<wbr></wbr>_threads:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <code>opational</code></td><td class="fieldArgDesc">Sets the maximum number of CPU cores used by OpenMP for parallelization.
-If set to 0 the maximum will be set to the number of CPU cores (Default: 0).</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">discretize:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">Set to True if circuit should be discretized to apply noise passes. Defaults to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit to simulate</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">(state, result, fock_counts) tuple from [optionally discretized] simulations</td></tr></table></div>
+If set to 0 the maximum will be set to the number of CPU cores (Default: 0).</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">discretize:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">Set to True if circuit should be discretized to apply noise passes. Defaults to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit to simulate</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">(state, result, fock_counts) tuple from [optionally discretized] simulations</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -878,8 +880,8 @@ If set to 0 the maximum will be set to the number of CPU cores (Default: 0).</td
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">stateread</span><span class="function-signature">(stateop, numberofqubits, numberofmodes, cutoff, verbose=<a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, little_endian=<a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L79">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">stateread</span><span class="function-signature long-signature">(<span class="rst-sig-param">stateop, </span><span class="rst-sig-param">numberofqubits, </span><span class="rst-sig-param">numberofmodes, </span><span class="rst-sig-param">cutoff, </span><span class="rst-sig-param">verbose=<a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, </span><span class="rst-sig-param">little_endian=<a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L79">
       
       (source)
     </a>
@@ -908,8 +910,8 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">trace_out_qubits</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state_vector)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L565">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">trace_out_qubits</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code>, </span><span class="rst-sig-param">state_vector</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L575">
       
       (source)
     </a>
@@ -921,7 +923,7 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Return reduced density matrix of the cavities by tracing out the all qubits of the CVCircuit from the given Fock state vector.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit with results to trace (to find Qubit index)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state<wbr></wbr>_vector:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">simulation results to trace over</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>DensityMatrix</code></td><td class="fieldArgDesc">partial trace</td></tr></table></div>
+    <div><p>Return reduced density matrix of the cavities by tracing out the all qubits of the CVCircuit from the given Fock state vector.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit with results to trace (to find Qubit index)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state<wbr></wbr>_vector:</span><code>Statevector</code> or <code>DensityMatrix</code></td><td class="fieldArgDesc">simulation results to trace over</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>DensityMatrix</code></td><td class="fieldArgDesc">partial trace</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -935,8 +937,8 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">trace_out_qumodes</span><span class="function-signature">(circuit: <code>CVCircuit</code>, state_vector)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L549">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">trace_out_qumodes</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code>, </span><span class="rst-sig-param">state_vector</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L559">
       
       (source)
     </a>
@@ -948,7 +950,7 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Return reduced density matrix of the qubits by tracing out the cavities of the CVCircuit from the given Fock state vector.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit yielding the results to trace over</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state<wbr></wbr>_vector:</span><code>Statevector</code></td><td class="fieldArgDesc">simulation results to trace over</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>DensityMatrix</code></td><td class="fieldArgDesc">density matrix of the qubits from a partial trace over the cavities</td></tr></table></div>
+    <div><p>Return reduced density matrix of the qubits by tracing out the cavities of the CVCircuit from the given Fock state vector.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">circuit yielding the results to trace over</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">state<wbr></wbr>_vector:</span><code>Statevector</code></td><td class="fieldArgDesc">simulation results to trace over</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>DensityMatrix</code></td><td class="fieldArgDesc">density matrix of the qubits from a partial trace over the cavities</td></tr></table></div>
   </div>
 </div><div class="basefunction private">
   
@@ -962,8 +964,8 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_final_measurement_mapping</span><span class="function-signature">(circuit)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L300">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_final_measurement_mapping</span><span class="function-signature">(<span class="rst-sig-param">circuit</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L310">
       
       (source)
     </a>
@@ -978,7 +980,7 @@ simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(
     <div><p>Return the measurement mapping for the circuit.</p>
 <p>Dict keys label classical bits, whereas the values indicate the
 physical qubits that are measured to produce those bit values.</p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code>QuantumCircuit</code></td><td class="fieldArgDesc">Input Qiskit QuantumCircuit.</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code></td><td class="fieldArgDesc">Mapping of classical bits to qubits for final measurements.</td></tr></table></div>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code>QuantumCircuit</code></td><td class="fieldArgDesc">Input Qiskit QuantumCircuit.</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#dict" class="intersphinx-link">dict</a></code></td><td class="fieldArgDesc">Mapping of classical bits to qubits for final measurements.</td></tr></table></div>
   </div>
 </div><div class="basefunction private">
   
@@ -992,8 +994,8 @@ physical qubits that are measured to produce those bit values.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_final_qumode_mapping</span><span class="function-signature">(circuit)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L261">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_final_qumode_mapping</span><span class="function-signature">(<span class="rst-sig-param">circuit</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L265">
       
       (source)
     </a>
@@ -1019,8 +1021,8 @@ physical qubits that are measured to produce those bit values.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_find_cavity_indices</span><span class="function-signature">(circuit: <code>CVCircuit</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L503">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_find_cavity_indices</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L513">
       
       (source)
     </a>
@@ -1048,8 +1050,8 @@ physical qubits that are measured to produce those bit values.</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_find_qubit_indices</span><span class="function-signature">(circuit: <code>CVCircuit</code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/util.py#L526">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_find_qubit_indices</span><span class="function-signature">(<span class="rst-sig-param">circuit: <code>CVCircuit</code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/util.py#L536">
       
       (source)
     </a>
@@ -1077,7 +1079,7 @@ physical qubits that are measured to produce those bit values.</p>
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.11.2 at 2025-01-28 03:44:20.
+    25.4.0 at 2025-06-16 16:30:49.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 

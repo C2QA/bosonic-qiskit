@@ -7,7 +7,7 @@
   <head>
     
     <title>c2qa.animate</title>
-    <meta name="generator" content="pydoctor 24.11.2"> 
+    <meta name="generator" content="pydoctor 25.4.0"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -359,7 +359,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py" class="sourceLink">(source)</a>
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py" class="sourceLink">(source)</a>
           <p></p>
         </div>
 
@@ -380,17 +380,17 @@
     
     <td>Function</td>
     <td><code><a href="#save_animation" class="internal-link" title="c2qa.animate.save_animation">save<wbr></wbr>_animation</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="function private">
     
     <td>Function</td>
     <td><code><a href="#__discretize_wigner_with_measure" class="internal-link" title="c2qa.animate.__discretize_wigner_with_measure">__discretize<wbr></wbr>_wigner<wbr></wbr>_with<wbr></wbr>_measure</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="function private">
     
     <td>Function</td>
     <td><code><a href="#__discretize_wigner_without_measure" class="internal-link" title="c2qa.animate.__discretize_wigner_without_measure">__discretize<wbr></wbr>_wigner<wbr></wbr>_without<wbr></wbr>_measure</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="function private">
     
     <td>Function</td>
@@ -405,7 +405,7 @@
     
     <td>Function</td>
     <td><code><a href="#_animate_init" class="internal-link" title="c2qa.animate._animate_init">_animate<wbr></wbr>_init</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr>
 </table>
           
@@ -426,8 +426,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">animate_wigner</span><span class="function-signature">(circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, qubit: <code>qiskit.circuit.quantumcircuit.QubitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, cbit: <code>qiskit.circuit.quantumcircuit.ClbitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, animation_segments: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, discretize_epsilon: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, file: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, axes_min: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -6, axes_max: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 6, axes_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 200, processes: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, draw_grid: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, trace: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, bitrate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -1)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L19">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">animate_wigner</span><span class="function-signature long-signature">(<span class="rst-sig-param">circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, </span><span class="rst-sig-param">qubit: <code>qiskit.circuit.quantumcircuit.QubitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">cbit: <code>qiskit.circuit.quantumcircuit.ClbitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">animation_segments: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, </span><span class="rst-sig-param">discretize_epsilon: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, </span><span class="rst-sig-param">file: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">axes_min: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -6, </span><span class="rst-sig-param">axes_max: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 6, </span><span class="rst-sig-param">axes_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 200, </span><span class="rst-sig-param">processes: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, </span><span class="rst-sig-param">noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">draw_grid: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">trace: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, </span><span class="rst-sig-param">bitrate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -1</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L19">
       
       (source)
     </a>
@@ -449,7 +449,7 @@ If None, return plot. Defaults to None.</td></tr><tr><td class="fieldArgContaine
 If None, perform serially in main process. Defaults to None.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">keep<wbr></wbr>_state:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">True if each frame builds on the previous frame's state vector.
 False if each frame starts over from the beginning of the circuit.
 If True, it requires sequential simulation of each frame.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">noise<wbr></wbr>_passes:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> of Qiskit noise passes, <em>optional</em></td><td class="fieldArgDesc">noise passes to apply</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">sequential<wbr></wbr>_subcircuit:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">boolean flag to animate subcircuits as one gate (False) or as sequential
-gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">draw<wbr></wbr>_grid:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">True if grid lines should be drawn on plot. Defaults to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">trace:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">True if qubits should be tracedfor each frame prior to calculating Wigner function. Defaults to True.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">bitrate:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer">[<code><a href="https://docs.python.org/3/library/functions.html#type" class="intersphinx-link">type</a>]</code></td><td class="fieldArgDesc">[description]</td></tr></table></div>
+gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">draw<wbr></wbr>_grid:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">True if grid lines should be drawn on plot. Defaults to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">trace:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">True if qubits should be tracedfor each frame prior to calculating Wigner function. Defaults to True.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">bitrate:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer">[<code><a href="https://docs.python.org/3/library/functions.html#type" class="intersphinx-link">type</a>]</code></td><td class="fieldArgDesc">[description]</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -463,8 +463,8 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">save_animation</span><span class="function-signature">(anim: <code>matplotlib.animation.FuncAnimation</code>, file: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code>, bitrate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L231">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">save_animation</span><span class="function-signature">(<span class="rst-sig-param">anim: <code>matplotlib.animation.FuncAnimation</code>, </span><span class="rst-sig-param">file: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code>, </span><span class="rst-sig-param">bitrate: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L231">
       
       (source)
     </a>
@@ -490,8 +490,8 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">__discretize_wigner_with_measure</span><span class="function-signature">(circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, qubit: <code>qiskit.circuit.quantumcircuit.QubitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, cbit: <code>qiskit.circuit.quantumcircuit.ClbitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, animation_segments: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, axes_min: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -6, axes_max: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 6, axes_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 200, processes: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, trace: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L127">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">__discretize_wigner_with_measure</span><span class="function-signature long-signature">(<span class="rst-sig-param">circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, </span><span class="rst-sig-param">qubit: <code>qiskit.circuit.quantumcircuit.QubitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">cbit: <code>qiskit.circuit.quantumcircuit.ClbitSpecifier</code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">animation_segments: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, </span><span class="rst-sig-param">shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, </span><span class="rst-sig-param">axes_min: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -6, </span><span class="rst-sig-param">axes_max: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 6, </span><span class="rst-sig-param">axes_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 200, </span><span class="rst-sig-param">processes: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">keep_state: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>, </span><span class="rst-sig-param">noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">trace: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L127">
       
       (source)
     </a>
@@ -517,8 +517,8 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">__discretize_wigner_without_measure</span><span class="function-signature">(circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, animation_segments: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, discretize_epsilon: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, axes_min: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -6, axes_max: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 6, axes_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 200, noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, trace: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a>)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L192">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">__discretize_wigner_without_measure</span><span class="function-signature long-signature">(<span class="rst-sig-param">circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code>, </span><span class="rst-sig-param">animation_segments: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 10, </span><span class="rst-sig-param">discretize_epsilon: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">shots: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 1, </span><span class="rst-sig-param">axes_min: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = -6, </span><span class="rst-sig-param">axes_max: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 6, </span><span class="rst-sig-param">axes_steps: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = 200, </span><span class="rst-sig-param">noise_passes=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">sequential_subcircuit: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">trace: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L192">
       
       (source)
     </a>
@@ -544,8 +544,8 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">__simulate_wigner_with_state</span><span class="function-signature">(circuits, qubit, cbit, xvec, shots, noise_passes, trace)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L298">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">__simulate_wigner_with_state</span><span class="function-signature">(<span class="rst-sig-param">circuits, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">cbit, </span><span class="rst-sig-param">xvec, </span><span class="rst-sig-param">shots, </span><span class="rst-sig-param">noise_passes, </span><span class="rst-sig-param">trace</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L298">
       
       (source)
     </a>
@@ -571,8 +571,8 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_animate</span><span class="function-signature">(frame, *fargs)</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L251">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_animate</span><span class="function-signature">(<span class="rst-sig-param">frame, </span><span class="rst-sig-param">*fargs</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L251">
       
       (source)
     </a>
@@ -598,8 +598,8 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">_animate_init</span><span class="function-signature">()</span>:
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f48a03f9edd54fb2c5ddc5b221313dd5677ea427/c2qa/animate.py#L247">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_animate_init</span><span class="function-signature">():</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/animate.py#L247">
       
       (source)
     </a>
@@ -625,7 +625,7 @@ gates (True). Defautls to False.</td></tr><tr><td class="fieldArgContainer"><spa
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    24.11.2 at 2025-01-28 03:44:20.
+    25.4.0 at 2025-06-16 16:30:49.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
