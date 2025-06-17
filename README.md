@@ -4,17 +4,26 @@ NQI C2QA project to simulate hybrid boson-qubit systems within QisKit.
 
 ## Installation
 
-Bosonic-qiskit can be installed from PyPI:
+### Virtual Environment
+
+It is recommended to install bosonic-qiskit in a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### PyPi Installation
+
+The easiest way to install bosonic-qiskit is through PyPi:
 
 ```bash
 pip install bosonic-qiskit
 ```
 
-We recommend the use of a virtual environment.
-
 ### Development
 
-First, checkout the code from Github and use the provided script to create a virtual environment with the necessary dependencies:
+Source code installation of bosonic-qiskit for development is possible with the `install-dependencies.sh` convenience script:
 
 ```bash
 git clone https://github.com/C2QA/bosonic-qiskit.git
@@ -22,13 +31,16 @@ cd bosonic-qiskit
 ./install-dependencies.sh
 ```
 
-Then, install development dependencies and bosonic-qiskit in editable mode (after activating the newly-created virtual environment)
+The above script does the following:
+1. Creates a virtual environment with the name `venv` and activates it.
+2. The bosonic-qiskit library is installed in editable mode with developer requirements from `requirements_dev.txt` which include tools such as `flake8`, `black`, and `pre-commit` to aid in satisfying code style and format requirements.
+3. The tool `pre-commit` is installed which automatically runs `flake8` and `black` upon the `git commit` command.
 
-```bash
-source venv/bin/activate
-pip install -r requirements_dev.txt
-pip install -e .
-```
+#### Code Style Requirements
+
+Any changes or additions to bosonic-qiskit must be `black` and `flake8` compliant. These tools can be run manually, however with `pre-commit` these tools automatically check for code style compliance when commiting code.
+If `black` shows non-compliant code formatting, changes must be be manually made and altered files must be recommitted.
+
 
 ### Dependency Version Compatibility
 
