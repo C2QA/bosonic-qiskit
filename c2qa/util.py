@@ -462,6 +462,7 @@ def simulate(
         )
 
     # Run noise pass, if provided
+    noise_pass_lst = None
     if noise_passes:
         noise_pass_lst = noise_passes
         if not isinstance(noise_pass_lst, list):
