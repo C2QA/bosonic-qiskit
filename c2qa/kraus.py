@@ -13,6 +13,8 @@ from qiskit_aer.noise.noiseerror import NoiseError
 from qiskit.utils.units import apply_prefix
 import scipy
 
+IGNORE_INSTRUCTIONS = ["measure"]
+
 
 def calculate_kraus(
     photon_loss_rates: Sequence[float],
@@ -192,7 +194,9 @@ class PhotonLossNoisePass(LocalNoisePass):
         error = None
 
         if self.applies_to_instruction(op, qubits):
-            if not op.duration:
+
+            # FIXME - Qiskit v2.0 removed Instruction duration & unit!
+            if hasattr(op, "duration") and not op.duration:
                 if op.duration is None:
                     warnings.warn(
                         "PhotonLossNoisePass ignores instructions without duration,"
@@ -224,20 +228,31 @@ class PhotonLossNoisePass(LocalNoisePass):
 
     def applies_to_instruction(self, op: Instruction, qubits: Sequence[int]):
         """Test if this PhotonLossNoisePass applies to the given instruction based on its name and qumodes (qubits)"""
-        return (self._instructions is None or op.name in self._instructions) and (
-            self._qumode_qubit_indices is None
-            or any(x in qubits for x in self._qumode_qubit_indices)
+        return (
+            op.name
+            not in IGNORE_INSTRUCTIONS  # FIXME Qiskit v2.0 measure fails in PhotonLossNoisePass, but not in <v1.x?
+            and (self._instructions is None or op.name in self._instructions)
+            and (
+                self._qumode_qubit_indices is None
+                or any(x in qubits for x in self._qumode_qubit_indices)
+            )
         )
 
     def duration_to_sec(self, op: Instruction):
         """Return the given Instruction's duration in seconds"""
-        if op.unit == "dt":
-            if self._dt is None:
-                raise NoiseError(
-                    "PhotonLossNoisePass cannot apply noise to a 'dt' unit duration without a dt time set."
-                )
-            duration = op.duration * self._dt
+
+        # FIXME - Qiskit v2.0 removed Instruction duration & unit!
+
+        if hasattr(op, "unit") and hasattr(op, "duration"):
+            if op.unit == "dt":
+                if self._dt is None:
+                    raise NoiseError(
+                        "PhotonLossNoisePass cannot apply noise to a 'dt' unit duration without a dt time set."
+                    )
+                duration = op.duration * self._dt
+            else:
+                duration = apply_prefix(op.duration, op.unit)
         else:
-            duration = apply_prefix(op.duration, op.unit)
+            duration = 0.0000001  # 100ns
 
         return duration
