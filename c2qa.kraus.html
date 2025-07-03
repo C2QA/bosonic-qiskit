@@ -174,8 +174,21 @@
         
          
 
+        <div class="childrenKindTitle">Variables</div>
+        <ul>
+    
+    <li class="">
         
-         
+        
+        
+
+        
+            <div class="itemName"><code><a href="#IGNORE_INSTRUCTIONS" class="internal-link" title="c2qa.kraus.IGNORE_INSTRUCTIONS">IGNORE<wbr></wbr>_INSTRUCTIONS</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
 
         
          
@@ -332,7 +345,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/kraus.py" class="sourceLink">(source)</a>
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/kraus.py" class="sourceLink">(source)</a>
           <p></p>
         </div>
 
@@ -354,6 +367,11 @@
     <td>Function</td>
     <td><code><a href="#calculate_kraus" class="internal-link" title="c2qa.kraus.calculate_kraus">calculate<wbr></wbr>_kraus</a></code></td>
     <td>Calculate Kraus operator given number of photons and photon loss rate over specified time.</td>
+  </tr><tr class="constant">
+    
+    <td>Constant</td>
+    <td><code><a href="#IGNORE_INSTRUCTIONS" class="internal-link" title="c2qa.kraus.IGNORE_INSTRUCTIONS">IGNORE<wbr></wbr>_INSTRUCTIONS</a></code></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="function private">
     
     <td>Function</td>
@@ -385,7 +403,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">calculate_kraus</span><span class="function-signature long-signature">(<span class="rst-sig-param">photon_loss_rates: <code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>]</code>, </span><span class="rst-sig-param">time: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">c2qa.CVCircuit</a></code>, </span><span class="rst-sig-param">op_qubits: <code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code>, </span><span class="rst-sig-param">qumode_qubit_indices: <code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/kraus.py#L17">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/kraus.py#L19">
       
       (source)
     </a>
@@ -402,6 +420,33 @@
 <p>Following equation 44 from Bosonic Oprations and Measurements, Girvin</p>
 <table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">photon<wbr></wbr>_loss<wbr></wbr>_rates:</span><code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>]</code></td><td class="fieldArgDesc">kappas, the rate of photon loss per second for each qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">time:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">current duration of time in seconds</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">cq2a.CVCircuit with ops for N and a</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op<wbr></wbr>_qubits:</span><code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></td><td class="fieldArgDesc">qubit int indices in the given CVCircuit used by the current instruction</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_qubit<wbr></wbr>_indices:</span><code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></td><td class="fieldArgDesc">qumode int indices in the given CVCircuit to test if qubits from instruction are a part of a qumode</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td colspan="2">List of Kraus operators</td></tr></table></div>
   </div>
+</div><div class="baseconstant">
+  
+  
+  <a name="c2qa.kraus.IGNORE_INSTRUCTIONS">
+    
+  </a>
+  <a name="IGNORE_INSTRUCTIONS">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">IGNORE_INSTRUCTIONS</span>: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a>]</code> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/kraus.py#L16">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#IGNORE_INSTRUCTIONS" title="c2qa.kraus.IGNORE_INSTRUCTIONS">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    <table class="valueTable"><tr class="fieldStart"><td class="fieldName">Value</td></tr><tr><td><pre class="constant-value"><code>[<wbr></wbr><span class="rst-variable-quote">'</span><span class="rst-variable-string">measure</span><span class="rst-variable-quote">'</span>]</code></pre></td></tr></table>
+  </div>
 </div><div class="basefunction private">
   
   
@@ -415,7 +460,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">__kraus_operators</span><span class="function-signature">(<span class="rst-sig-param">photon_loss_rate: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">time: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, </span><span class="rst-sig-param">a, </span><span class="rst-sig-param">n</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/kraus.py#L90">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/kraus.py#L92">
       
       (source)
     </a>
@@ -442,7 +487,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">__tensor_operators</span><span class="function-signature">(<span class="rst-sig-param">current: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>, </span><span class="rst-sig-param">new: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/43e6ac616152c8c1bde223cdb9784ccdadfdeca6/c2qa/kraus.py#L78">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/kraus.py#L80">
       
       (source)
     </a>
@@ -468,7 +513,7 @@
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    25.4.0 at 2025-06-16 16:30:49.
+    25.4.0 at 2025-07-03 16:55:17.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
