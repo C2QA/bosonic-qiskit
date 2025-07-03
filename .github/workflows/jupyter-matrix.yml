@@ -29,9 +29,9 @@ jobs:
         uses: ./.github/actions/setup-ffmpeg
 
       - name: Setup TeX Live
-        uses: xu-cheng/texlive-action@v2
+        uses: DanySK/setup-texlive-action@master
         with:
-          scheme: full
+          requirements-file: .github/texlive/requirements.txt
 
       - name: Install Python dependencies
         run: |
