@@ -23,6 +23,7 @@ def simulate_wigner(
     trace: bool = False,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
+    preferred_state: bool = True
 ):
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
     states, _, _ = simulate(
@@ -34,8 +35,11 @@ def simulate_wigner(
 
     if states:
         if conditional:
-            state = states["0x0"]  # even state
-            # state = states["0x1"]  # odd state
+            state_keys = list(states.keys())
+            if preferred_state in state_keys:
+                state = states[preferred_state]
+            else:
+                state = states[state_keys[0]]
         else:
             state = states
 
