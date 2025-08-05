@@ -325,7 +325,7 @@ def __simulate_wigner_with_state(
             xvec,
             shots,
             noise_passes=noise_passes,
-            conditional_state="0x0" if cbit else None
+            conditional_state="0x0" if cbit else None,
             trace=trace or cbit is not None,
         )
         w_fock.append(fock)
