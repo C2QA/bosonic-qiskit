@@ -19,7 +19,7 @@ def simulate_wigner(
     xvec: numpy.ndarray,
     shots: int,
     noise_passes=None,
-    conditional: bool = True,
+    conditional_state: str = None,
     trace: bool = False,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
@@ -29,13 +29,12 @@ def simulate_wigner(
         circuit,
         shots=shots,
         noise_passes=noise_passes,
-        conditional_state_vector=conditional,
+        conditional_state_vector=conditional_state is not None,
     )
 
     if states:
-        if conditional:
-            state = states["0x0"]  # even state
-            # state = states["0x1"]  # odd state
+        if conditional_state:
+            state = states[conditional_state]
         else:
             state = states
 

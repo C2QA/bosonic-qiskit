@@ -163,7 +163,7 @@ def __discretize_wigner_with_measure(
                 xvec,
                 shots,
                 noise_passes=noise_passes,
-                conditional=cbit is not None,
+                conditional_state="0x0" if cbit else None,
                 trace=trace or cbit is not None,
             )
             w_fock.append(fock)
@@ -177,7 +177,7 @@ def __discretize_wigner_with_measure(
                     xvec,
                     shots,
                     noise_passes,
-                    cbit is not None,
+                    "0x0" if cbit else None,
                     trace or cbit is not None,
                 )
                 for circuit in circuits
@@ -325,7 +325,7 @@ def __simulate_wigner_with_state(
             xvec,
             shots,
             noise_passes=noise_passes,
-            conditional=cbit is not None,
+            conditional_state="0x0" if cbit else None
             trace=trace or cbit is not None,
         )
         w_fock.append(fock)
