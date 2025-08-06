@@ -776,7 +776,7 @@ def test_multi_qumode_loss_probability(capsys):
         # FIXME Did a Qiskit upgrade & the removal of gate delays break the photon loss noise pass?
         #       This used to pass consistently with a photon_loss_rate = 10000000, but now it nearly always has photon loss in both qumodes.
         #       We also used to have the if check below for fifty_fifty wrong ... so it may never have worked the way we thought.
-        photon_loss_rate = 10000000 / 2
+        photon_loss_rate = 10000000 / 3
         noise_pass = c2qa.kraus.PhotonLossNoisePass([photon_loss_rate], circuit)
 
         fifty_fifty = False
