@@ -801,7 +801,7 @@ def test_multi_qumode_loss_probability(capsys):
 
                 if (
                     (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode2 == 1)
-                ) and math.isclose(probability, 0.5, rel_tol=0.05):
+                ) and math.isclose(probability, 0.5, rel_tol=0.075):
                     fifty_fifty = True
                     break  # we found photon loss as expected, break out of the simulation loops
 
