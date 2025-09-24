@@ -312,7 +312,7 @@ def _final_qumode_mapping(circuit: "CVCircuit") -> list:
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # pylint: disable=no-name-in-module
-def _final_measurement_mapping(circuit: "QuantumCircuit") -> dict:
+def _final_measurement_mapping(circuit: qiskit.QuantumCircuit) -> dict:
     """Return the measurement mapping for the circuit.
 
     Dict keys label classical bits, whereas the values indicate the

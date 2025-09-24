@@ -78,6 +78,7 @@ def calculate_kraus(
 
 
 def __tensor_operators(current: list, new: list) -> list:
+    result = []
     if len(current) > 0:
         for current_op in current:
             for new_op in new:
@@ -89,6 +90,7 @@ def __tensor_operators(current: list, new: list) -> list:
 
 
 def __kraus_operators(photon_loss_rate: float, time: float, cutoff: int, a, n) -> list:
+    operators = []
     for photons in range(cutoff + 1):
         kraus = math.sqrt(
             math.pow((1 - math.exp(-1 * photon_loss_rate * time)), photons)
