@@ -15,19 +15,24 @@ class ParameterizedUnitaryGate(Gate):
         self,
         op_func,
         params,
-        num_qubits,
+        num_qubits: int,
         cutoffs,
-        label=None,
-        duration=100,
-        unit="ns",
+        label: str = None,
+        duration: int = 100,
+        unit: str = "ns",
         discretized_param_indices: list = [],
-    ):
+    ) -> None:
         """Initialize ParameterizedUnitaryGate
 
         Args:
-            op_func (function): function to build operator matrix
-            params (List): List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
-            num_qubits (int): Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
+            op_func: callable, function to build operator matrix
+            params: list, List of parameters to pass to op_func to build operator matrix (supports instances of Qiskit Parameter to be bound later)
+            num_qubits: int, Number of qubits in the operator -- this would likely equate to (num_qubits_per_qumode * num_qumodes + num_ancilla).
+            cutoffs: list, Cutoff values for the parameters
+            label: Optional[str], Gate name. Defaults to None.
+            duration: Optional[int], Duration of gate used for noise modeling. Defaults to 100.
+            unit: Optional[str], Unit of duration (only supports those allowed by Qiskit).
+            discretized_param_indices: list, List of int indices into self.params for parameters to be discretized. An empty list will discretize all params.
             label (string, optional): Gate name. Defaults to None.
             duration (int, optional): Duration of gate used for noise modeling. Defaults to 100.
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
@@ -47,7 +52,7 @@ class ParameterizedUnitaryGate(Gate):
         self.discretized_param_indices = discretized_param_indices
         self.cutoffs = cutoffs
 
-    def __array__(self, dtype=None):
+    def __array__(self, dtype=None) -> numpy.ndarray:
         """Call the operator function to build the array using the bound parameter values."""
         # return self.op_func(*map(complex, self.params)).toarray()
         values = []
@@ -73,7 +78,7 @@ class ParameterizedUnitaryGate(Gate):
 
         return self.op_func(*values).toarray()
 
-    def _define(self):
+    def _define(self) -> None:
         try:
             mat = self.to_matrix()
             q = QuantumRegister(self.num_qubits)
@@ -89,7 +94,7 @@ class ParameterizedUnitaryGate(Gate):
             # warnings.warn("Unable to define gate, setting definition to None to prevent serialization errors for parameterized unitary gates.")
             self.definition = None
 
-    def validate_parameter(self, parameter):
+    def validate_parameter(self, parameter) -> object:
         """Gate parameters should be int, float, complex, or ParameterExpression"""
         if numpy.iscomplexobj(parameter):
             # Turn all numpy complex values into native python complex objects so that
@@ -107,7 +112,7 @@ class ParameterizedUnitaryGate(Gate):
 
     def calculate_matrix(
         self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
-    ):
+    ) -> numpy.ndarray:
         """Calculate the operator matrix by executing the selected function.
         Increment the parameters based upon the current and total steps.
 
@@ -139,7 +144,7 @@ class ParameterizedUnitaryGate(Gate):
 
 def __calculate_segment_params(
     self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
-):
+) -> tuple:
     """
     Calculate the parameters at the current step. Return a tuples of the values.
 
@@ -172,7 +177,7 @@ def __calculate_segment_params(
 
 def __calculate_segment_duration(
     self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
-):
+) -> tuple:
     """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
     frame_duration = None
 

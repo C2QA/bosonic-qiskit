@@ -23,7 +23,7 @@ def simulate_wigner(
     trace: bool = False,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> tuple:
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function."""
     states, _, _ = simulate(
         circuit,
@@ -65,7 +65,7 @@ def simulate_wigner_multiple_statevectors(
     trace: bool = False,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> list:
     """Simulate the circuit, optionally partial trace the results, and calculate the Wigner function on each statevector starting with the given label."""
     state, result, _ = simulate(circuit, shots=shots, noise_passes=noise_passes)
 
@@ -95,7 +95,7 @@ def wigner(
     axes_steps: int = 200,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> numpy.ndarray:
     """
     Calculate the Wigner function on the given state vector.
 
@@ -110,7 +110,7 @@ def wigner(
     Returns:
         array-like: Results of Wigner function calculation
     """
-    xvec = numpy.linspace(axes_min, axes_max, axes_steps)
+        xvec = numpy.linspace(axes_min, axes_max, axes_steps) -> numpy.ndarray:
     return _wigner(state, xvec, g=g, method=method)
 
 
@@ -121,7 +121,7 @@ def wigner_mle(
     axes_steps: int = 200,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> numpy.ndarray:
     """
     Find the maximum likelihood estimation for the given state vectors and calculate the Wigner function on the result.
 
@@ -153,6 +153,7 @@ def wigner_mle(
 
 
 def _wigner(state, xvec, yvec=None, g=numpy.sqrt(2), method: str = "clenshaw"):
+def _wigner(state, xvec: numpy.ndarray, yvec: numpy.ndarray = None, g: float = numpy.sqrt(2), method: str = "clenshaw") -> numpy.ndarray:
     if isinstance(state, DensityMatrix):
         rho = state.data
     else:
@@ -177,7 +178,7 @@ def plot_wigner(
     dpi: int = 100,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> None:
     """Produce a Matplotlib figure for the Wigner function on the given state vector.
 
     Optionally perform partial trace.
@@ -228,7 +229,7 @@ def plot(
     num_colors: int = 100,
     draw_grid: bool = False,
     dpi=100,
-):
+)-> None:
     """Contour plot the given data array"""
     xvec = numpy.linspace(axes_min, axes_max, axes_steps)
 
@@ -269,7 +270,7 @@ def plot_wigner_projection(
     draw_grid: bool = False,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> None:
     """Plot the projection onto 0, 1, +, - for the given circuit.
 
     This is limited to CVCircuit with only one qubit, also provided as a parameter.
@@ -361,7 +362,7 @@ def plot_wigner_snapshot(
     num_colors: int = 100,
     g=numpy.sqrt(2),
     method: str = "clenshaw",
-):
+)-> None:
     for cv_snapshot_id in range(circuit.cv_snapshot_id):
         label = f"cv_snapshot_{cv_snapshot_id}"
 
@@ -392,6 +393,7 @@ def plot_wigner_snapshot(
 
 
 def _add_contourf(ax, fig, title, x, y, z, draw_grid: bool = False):
+def _add_contourf(ax, fig, title: str, x: numpy.ndarray, y: numpy.ndarray, z: numpy.ndarray, draw_grid: bool = False) -> None:
     """Add a matplotlib contourf plot with color levels based on min/max values in z."""
     amax = numpy.amax(z)
     amin = abs(numpy.amin(z))

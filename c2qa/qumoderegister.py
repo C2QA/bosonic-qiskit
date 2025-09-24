@@ -9,7 +9,7 @@ class QumodeRegister:
 
     def __init__(
         self, num_qumodes: int, num_qubits_per_qumode: int = 2, name: str = None
-    ):
+    ) -> None:
         """Initialize QumodeRegister
 
         Args:
@@ -17,7 +17,7 @@ class QumodeRegister:
             num_qubits_per_qumode (int, optional): Number of qubits representing each qumode. Defaults to 2.
             name (str, optional): Name of register. Defaults to None.
         """
-        self.size = num_qumodes * num_qubits_per_qumode
+        self.size: int = num_qumodes * num_qubits_per_qumode
         self.num_qumodes = num_qumodes
         self.num_qubits_per_qumode = num_qubits_per_qumode
         self.cutoff = QumodeRegister.calculate_cutoff(num_qubits_per_qumode)
@@ -29,19 +29,19 @@ class QumodeRegister:
         self.qreg = QuantumRegister(size=self.size, name=name)
 
     @staticmethod
-    def calculate_cutoff(num_qubits_per_qumode: int):
+    def calculate_cutoff(num_qubits_per_qumode: int) -> int:
         return 2**num_qubits_per_qumode
 
-    def get_qumode_index(self, qubit):
+    def get_qumode_index(self, qubit) -> int:
         """Get the qumode index for the given qubit in this register"""
         qubit_index = self.qreg.index(qubit)
         return qubit_index // self.num_qubits_per_qumode
 
-    def __iter__(self):
+    def __iter__(self) -> 'QumodeIterator':
         """Iterate over the list of lists representing the qubits for each qumode in the register"""
         return QumodeIterator(self)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int | slice) -> list:
         """Return a list of QisKit Qubit for each indexed qumode
 
         Args:
@@ -73,11 +73,11 @@ class QumodeRegister:
 
         return self.qreg[start:stop:step]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """The length of a QumodeRegister is the number of qumodes (not the num_qumodes * num_qubits_per_qumode)"""
         return self.num_qumodes
 
-    def __contains__(self, qubit):
+    def __contains__(self, qubit) -> bool:
         """Return true if this QumodeRegister contains the given qubit. This allows callers to use `in` python syntax."""
         return qubit in self.qreg
 
@@ -85,14 +85,14 @@ class QumodeRegister:
 class QumodeIterator:
     """Iterate over the list of lists representing the qubits for each qumode in the register"""
 
-    def __init__(self, register: QumodeRegister):
+    def __init__(self, register: QumodeRegister) -> None:
         self._index = 0
         self._register = register
 
-    def __iter__(self):
+    def __iter__(self) -> 'QumodeIterator':
         return self
 
-    def __next__(self):
+    def __next__(self) -> list:
         if self._index < self._register.num_qumodes:
             next = self._register[self._index]
             self._index += 1
