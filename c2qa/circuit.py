@@ -256,13 +256,17 @@ class CVCircuit(QuantumCircuit):
 
                 super().initialize(amplitudes, qumode)
 
-    def save_circuit(self, conditional: bool, pershot: bool, label: str = "statevector") -> object:
+    def save_circuit(
+        self, conditional: bool, pershot: bool, label: str = "statevector"
+    ) -> object:
         """Save the simulator statevector using a qiskit class"""
         return save.save_statevector(
             label=label, conditional=conditional, pershot=pershot
         )
 
-    def cv_r(self, theta: float, qumode: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_r(
+        self, theta: float, qumode: list, duration: int = 100, unit: str = "ns"
+    ) -> object:
         """Phase space rotation gate.
 
         Args:
@@ -286,7 +290,13 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_d(self, alpha: float | complex, qumode: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_d(
+        self,
+        alpha: float | complex,
+        qumode: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Displacement gate.
 
         Args:
@@ -310,7 +320,13 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_sq(self, theta: float | complex, qumode: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_sq(
+        self,
+        theta: float | complex,
+        qumode: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Squeezing gate.
 
         Args:
@@ -333,7 +349,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_sq2(self, theta: float | complex, qumode_a: list, qumode_b: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_sq2(
+        self,
+        theta: float | complex,
+        qumode_a: list,
+        qumode_b: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Two-mode squeezing gate
 
         Args:
@@ -360,7 +383,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b,
         )
 
-    def cv_sq3(self, theta: float | complex, qumode_a: list, qumode_b: list, qumode_c: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_sq3(
+        self,
+        theta: float | complex,
+        qumode_a: list,
+        qumode_b: list,
+        qumode_c: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Three-mode squeezing gate
 
         Args:
@@ -389,7 +420,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + qumode_c,
         )
 
-    def cv_bs(self, theta: float | complex, qumode_a: list, qumode_b: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_bs(
+        self,
+        theta: float | complex,
+        qumode_a: list,
+        qumode_b: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Two-mode beam splitter gate.
 
         Args:
@@ -416,7 +454,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b,
         )
 
-    def cv_c_r(self, theta: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> None:
+    def cv_c_r(
+        self,
+        theta: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> None:
         """Qubit dependent phase-space rotation gate (i.e., dispersive interaction).
 
         Args:
@@ -440,7 +485,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_c_rx(self, theta: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_c_rx(
+        self,
+        theta: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Qubit dependent phase-space rotation around sigma^x gate.
 
         Args:
@@ -464,7 +516,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_c_ry(self, theta: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_c_ry(
+        self,
+        theta: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Qubit dependent phase-space rotation around sigma^y gate.
 
         Args:
@@ -488,7 +547,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_c_d(self, theta: float, qumode: list, qubit: object, beta: float = None, duration: int = 100, unit: str = "ns") -> object:
+    def cv_c_d(
+        self,
+        theta: float,
+        qumode: list,
+        qubit: object,
+        beta: float = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Conditional displacement gate.
 
         Args:
@@ -517,7 +584,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_ecd(self, theta: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_ecd(
+        self,
+        theta: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Echoed controlled displacement gate.
 
         Args:
@@ -540,7 +614,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_c_bs(self, theta: float | complex, qumode_a: list, qumode_b: list, qubit: object, duration: int = 100, unit: str = "ns") -> None:
+    def cv_c_bs(
+        self,
+        theta: float | complex,
+        qumode_a: list,
+        qumode_b: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> None:
         """Controlled phase two-mode beam splitter
 
         Args:
@@ -569,7 +651,13 @@ class CVCircuit(QuantumCircuit):
         )
 
     def cv_c_schwinger(
-        self, params: list, qumode_a: list, qumode_b: list, qubit: object, duration: int = 100, unit: str = "ns"
+        self,
+        params: list,
+        qumode_a: list,
+        qumode_b: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
     ) -> None:
         """General form of a controlled 'Schwinger' gate, containing both the controlled phase beamsplitter
         and pairs of controlled phase space rotations as special cases.
@@ -611,7 +699,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + [qubit],
         )
 
-    def cv_snap(self, theta: float | list, n: int | list, qumode: list, qubit: object = None, duration: int = 100, unit: str = "ns") -> None:
+    def cv_snap(
+        self,
+        theta: float | list,
+        n: int | list,
+        qumode: list,
+        qubit: object = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> None:
         """SNAP (Selective Number-dependent Arbitrary Phase) gate. If no qubit is passed,
         then phases are applied to each qumode Fock state specified in theta and n (without
         explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by
@@ -701,7 +797,14 @@ class CVCircuit(QuantumCircuit):
     #         qargs=qumode,
     #     )
 
-    def cv_c_pnr(self, max: int, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> None:
+    def cv_c_pnr(
+        self,
+        max: int,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> None:
         """PNR (Photon number readout) TODO: Needs comments/explanation/citation!
         Args:
             max (int): the period of the mapping
@@ -723,7 +826,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_eswap(self, theta: float, qumode_a: list, qumode_b: list, duration: int = 100, unit: str = "ns") -> None:
+    def cv_eswap(
+        self,
+        theta: float,
+        qumode_a: list,
+        qumode_b: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> None:
         """Exponential SWAP gate.
 
         Args:
@@ -750,7 +860,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b,
         )
 
-    def cv_c_sq(self, theta: float | complex, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_c_sq(
+        self,
+        theta: float | complex,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Conditional squeezing gate.
 
         Args:
@@ -774,7 +891,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_testqubitorderf(self, phi: float, qubit_1: object, qubit_2: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_testqubitorderf(
+        self,
+        phi: float,
+        qubit_1: object,
+        qubit_2: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         return self.append(
             ParameterizedUnitaryGate(
                 self.ops.testqubitorderf,
@@ -788,7 +912,14 @@ class CVCircuit(QuantumCircuit):
             qargs=[qubit_1] + [qubit_2],
         )
 
-    def cv_sum(self, scale: float, qumode_a: list, qumode_b: list, duration: int = 100, unit: str = "ns") -> object:
+    def cv_sum(
+        self,
+        scale: float,
+        qumode_a: list,
+        qumode_b: list,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Two-mode sum gate.
 
         Args:
@@ -815,7 +946,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b,
         )
 
-    def cv_c_sum(self, scale: float, qumode_a: list, qumode_b: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_c_sum(
+        self,
+        scale: float,
+        qumode_a: list,
+        qumode_b: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Conditional two-mode sum gate.
 
         Args:
@@ -843,7 +982,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode_a + qumode_b + [qubit],
         )
 
-    def cv_jc(self, theta: float, phi: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_jc(
+        self,
+        theta: float,
+        phi: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Jaynes-Cummings gate
 
         Args:
@@ -869,7 +1016,15 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_ajc(self, theta: float, phi: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_ajc(
+        self,
+        theta: float,
+        phi: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Anti-Jaynes-Cummings gate
 
         Args:
@@ -895,7 +1050,14 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def cv_rb(self, theta: float, qumode: list, qubit: object, duration: int = 100, unit: str = "ns") -> object:
+    def cv_rb(
+        self,
+        theta: float,
+        qumode: list,
+        qubit: object,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> object:
         """Rabi interaction gate
 
         Args:
@@ -917,7 +1079,9 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode + [qubit],
         )
 
-    def measure_z(self, qubit: object, cbit: object, duration: int = 100, unit: str = "ns") -> object:
+    def measure_z(
+        self, qubit: object, cbit: object, duration: int = 100, unit: str = "ns"
+    ) -> object:
         """Measure qubit in z using probe qubits
 
         Args:
@@ -1033,7 +1197,9 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_c_multiboson_sampling(self, max: int, qumode: list, qubit: object, duration: int = 1, unit: str = "us") -> None:
+    def cv_c_multiboson_sampling(
+        self, max: int, qumode: list, qubit: object, duration: int = 1, unit: str = "us"
+    ) -> None:
         """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
         Args:
             max (int): the period of the mapping

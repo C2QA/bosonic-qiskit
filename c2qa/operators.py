@@ -27,22 +27,30 @@ class CVOperators:
     def get_a2(self, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
         return scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b)).tocsc()
 
-    def get_b1(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b1(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         kron_ab = scipy.sparse.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b))
         return scipy.sparse.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
 
-    def get_b2(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b2(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         kron_ab = scipy.sparse.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b))
         return scipy.sparse.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
 
-    def get_b3(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b3(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         kron_ab = scipy.sparse.kron(self.get_eye(cutoff_a), self.get_eye(cutoff_b))
         return scipy.sparse.kron(kron_ab, self.get_a(cutoff_c)).tocsc()
 
     def get_a12(self, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
         return self.get_a1(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
 
-    def get_b123(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b123(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         return (
             self.get_b1(cutoff_a, cutoff_b, cutoff_c)
             * self.get_b2(cutoff_a, cutoff_b, cutoff_c)
@@ -66,19 +74,27 @@ class CVOperators:
     def get_a2_dag(self, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
         return self.get_a2(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
 
-    def get_b1_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b1_dag(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         return self.get_b1(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
 
-    def get_b2_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b2_dag(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         return self.get_b2(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
 
-    def get_b3_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b3_dag(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         return self.get_b3(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
 
     def get_a12_dag(self, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
         return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
 
-    def get_b123_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def get_b123_dag(
+        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         return (
             self.get_b1_dag(cutoff_a, cutoff_b, cutoff_c)
             * self.get_b2_dag(cutoff_a, cutoff_b, cutoff_c)
@@ -156,7 +172,9 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def s3(self, theta: float, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> scipy.sparse.csc_matrix:
+    def s3(
+        self, theta: float, cutoff_a: int, cutoff_b: int, cutoff_c: int
+    ) -> scipy.sparse.csc_matrix:
         """Three-mode squeezing operator
 
         Args:
@@ -267,7 +285,9 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cbs(self, theta: float, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
+    def cbs(
+        self, theta: float, cutoff_a: int, cutoff_b: int
+    ) -> scipy.sparse.csc_matrix:
         """Controlled phase two-mode beam splitter operator
 
         Args:
@@ -284,7 +304,16 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def cschwinger(self, beta: float, theta_1: float, phi_1: float, theta_2: float, phi_2: float, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
+    def cschwinger(
+        self,
+        beta: float,
+        theta_1: float,
+        phi_1: float,
+        theta_2: float,
+        phi_2: float,
+        cutoff_a: int,
+        cutoff_b: int,
+    ) -> scipy.sparse.csc_matrix:
         """General form of a controlled Schwinger gate
 
         Args:
@@ -440,7 +469,9 @@ class CVOperators:
         arg = 1j * (-numpy.pi / 2) * scipy.sparse.kron(xQB, projector).tocsc()
         return scipy.sparse.linalg.expm(arg)
 
-    def eswap(self, theta: float, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
+    def eswap(
+        self, theta: float, cutoff_a: int, cutoff_b: int
+    ) -> scipy.sparse.csc_matrix:
         """Exponential SWAP operator
 
         Args:
@@ -506,7 +537,9 @@ class CVOperators:
         """
         return scipy.sparse.csc_matrix(matrix)
 
-    def sum(self, scale: float, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
+    def sum(
+        self, scale: float, cutoff_a: int, cutoff_b: int
+    ) -> scipy.sparse.csc_matrix:
         """Two-qumode sum gate
 
         Args:
@@ -525,7 +558,9 @@ class CVOperators:
 
         return scipy.sparse.linalg.expm(arg)
 
-    def csum(self, scale: float, cutoff_a: int, cutoff_b: int) -> scipy.sparse.csc_matrix:
+    def csum(
+        self, scale: float, cutoff_a: int, cutoff_b: int
+    ) -> scipy.sparse.csc_matrix:
         """Conditional two-qumode sum gate
 
         Args:

@@ -195,7 +195,7 @@ def __calculate_segment_duration(
         unit = self.unit
     else:
         unit = "s"
-    
+
     return frame_duration, unit
 
 

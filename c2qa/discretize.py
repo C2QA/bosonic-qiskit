@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def discretize_operator(operator: object, cutoff: int) -> np.ndarray:
     """
     Discretize an operator based on the given cutoff.
@@ -13,6 +14,8 @@ def discretize_operator(operator: object, cutoff: int) -> np.ndarray:
     """
     # Implementation of the discretization logic goes here
     pass  # Placeholder for the actual implementation
+
+
 import math
 import qiskit
 
@@ -28,7 +31,7 @@ def discretize_circuits(
     qubit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
     cbit: qiskit.circuit.quantumcircuit.QubitSpecifier = None,
     sequential_subcircuit: bool = False,
-)-> list:
+) -> list:
     """
     Discretize gates into a circuit into segments where each segment ends an indiviudal circuit. Useful for incrementally applying noise or animating the circuit.
 
@@ -88,7 +91,7 @@ def discretize_single_circuit(
     statevector_per_segment: bool = False,
     statevector_label: str = "segment_",
     noise_passes=None,
-)-> tuple:
+) -> tuple:
     """
     Discretize gates into a circuit into segments within a single output circuit. Useful for incrementally applying noise or animating the circuit.
 
@@ -172,7 +175,7 @@ def __to_segments(
     segments_per_gate: int,
     keep_state: bool,
     sequential_subcircuit: bool,
-)-> list:
+) -> list:
     """Split the instruction into segments_per_gate segments"""
 
     if isinstance(inst, ParameterizedUnitaryGate):
@@ -213,7 +216,7 @@ def __discretize_parameterized(
     segments_per_gate: int,
     keep_state: bool,
     discretized_param_indices: list = [],
-)-> list:
+) -> list:
     """Split ParameterizedUnitaryGate into multiple segments"""
     segments = []
     for index in range(1, segments_per_gate + 1):
@@ -250,7 +253,7 @@ def __discretize_subcircuit(
     segments_per_gate: int,
     keep_state: bool,
     sequential_subcircuit: bool,
-)-> list:
+) -> list:
     """Create a list of circuits where the entire subcircuit is converted into segments (vs a single instruction)."""
 
     segments = []
@@ -296,7 +299,7 @@ def __discretize_instruction(
     inst: qiskit.circuit.instruction.Instruction,
     segments_per_gate: int,
     keep_state: bool,
-)-> list:
+) -> list:
     """Split Qiskit Instruction into multiple segments"""
     segments = []
 

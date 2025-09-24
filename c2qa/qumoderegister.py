@@ -37,7 +37,7 @@ class QumodeRegister:
         qubit_index = self.qreg.index(qubit)
         return qubit_index // self.num_qubits_per_qumode
 
-    def __iter__(self) -> 'QumodeIterator':
+    def __iter__(self) -> "QumodeIterator":
         """Iterate over the list of lists representing the qubits for each qumode in the register"""
         return QumodeIterator(self)
 
@@ -89,7 +89,7 @@ class QumodeIterator:
         self._index = 0
         self._register = register
 
-    def __iter__(self) -> 'QumodeIterator':
+    def __iter__(self) -> "QumodeIterator":
         return self
 
     def __next__(self) -> list:
