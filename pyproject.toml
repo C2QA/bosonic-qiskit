@@ -35,6 +35,7 @@ requires = ["setuptools == 79.0.0", "setuptools-git-versioning"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
+package-dir = {"" = "src"}
 packages = ["c2qa"]
 
 [tool.setuptools-git-versioning]
