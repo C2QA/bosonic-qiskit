@@ -34,7 +34,7 @@ def animate_wigner(
     draw_grid: bool = False,
     trace: bool = True,
     bitrate: int = -1,
-):
+) -> matplotlib.animation.FuncAnimation:
     """Animate the Wigner function at each step defined in the given CVCirctuit.
 
     This assumes the CVCircuit was simulated with an animation_segments > 0 to
@@ -138,7 +138,7 @@ def __discretize_wigner_with_measure(
     noise_passes=None,
     sequential_subcircuit: bool = False,
     trace: bool = True,
-):
+) -> tuple:
     circuits = discretize_circuits(
         circuit, animation_segments, keep_state, qubit, cbit, sequential_subcircuit
     )
@@ -200,7 +200,7 @@ def __discretize_wigner_without_measure(
     noise_passes=None,
     sequential_subcircuit: bool = False,
     trace: bool = True,
-):
+) -> tuple:
     statevector_label = "segment_"
 
     discretized, num_statevectors = discretize_single_circuit(
@@ -228,7 +228,9 @@ def __discretize_wigner_without_measure(
     return w_fock, xvec
 
 
-def save_animation(anim: matplotlib.animation.FuncAnimation, file: str, bitrate: int):
+def save_animation(
+    anim: matplotlib.animation.FuncAnimation, file: str, bitrate: int
+) -> None:
     file_path = pathlib.Path(file)
 
     if file_path.suffix == ".mp4":
@@ -244,11 +246,11 @@ def save_animation(anim: matplotlib.animation.FuncAnimation, file: str, bitrate:
     anim.save(file, writer=writer)
 
 
-def _animate_init():
+def _animate_init() -> None:
     pass  # Prevent rendering frame 0 twice (once for init, once for animate)
 
 
-def _animate(frame, *fargs):
+def _animate(frame: int, *fargs) -> None:
     """Generate individual matplotlib frame in animation."""
     fig = fargs[0]
     ax = fargs[1]
@@ -296,8 +298,8 @@ def _animate(frame, *fargs):
 
 
 def __simulate_wigner_with_state(
-    circuits, qubit, cbit, xvec, shots, noise_passes, trace
-):
+    circuits: list, qubit, cbit, xvec, shots: int, noise_passes, trace: bool
+) -> list:
     """Simulate Wigner function, preserving state between iterations"""
     w_fock = []
     previous_state = None

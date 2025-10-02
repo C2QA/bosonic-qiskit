@@ -22,7 +22,7 @@ def calculate_kraus(
     circuit: c2qa.CVCircuit,
     op_qubits: Sequence[int],
     qumode_qubit_indices: Sequence[int],
-):
+) -> list:
     """
     Calculate Kraus operator given number of photons and photon loss rate over specified time.
 
@@ -77,7 +77,7 @@ def calculate_kraus(
     return operators
 
 
-def __tensor_operators(current: list, new: list):
+def __tensor_operators(current: list, new: list) -> list:
     result = []
     if len(current) > 0:
         for current_op in current:
@@ -89,7 +89,7 @@ def __tensor_operators(current: list, new: list):
     return result
 
 
-def __kraus_operators(photon_loss_rate: float, time: float, cutoff: int, a, n):
+def __kraus_operators(photon_loss_rate: float, time: float, cutoff: int, a, n) -> list:
     operators = []
     for photons in range(cutoff + 1):
         kraus = math.sqrt(
@@ -114,7 +114,7 @@ class PhotonLossNoisePass(LocalNoisePass):
         qumodes: Sequence[Qubit] = None,
         time_unit: str = "s",
         dt: float = None,
-    ):
+    ) -> None:
         """
         Initialize the Photon Loss noise pass
 
@@ -189,7 +189,7 @@ class PhotonLossNoisePass(LocalNoisePass):
 
         super().__init__(self._photon_loss_error)
 
-    def _photon_loss_error(self, op: Instruction, qubits: Sequence[int]):
+    def _photon_loss_error(self, op: Instruction, qubits: Sequence[int]) -> object:
         """Return photon loss error on each operand qubit"""
         error = None
 
@@ -226,7 +226,7 @@ class PhotonLossNoisePass(LocalNoisePass):
 
         return error
 
-    def applies_to_instruction(self, op: Instruction, qubits: Sequence[int]):
+    def applies_to_instruction(self, op: Instruction, qubits: Sequence[int]) -> bool:
         """Test if this PhotonLossNoisePass applies to the given instruction based on its name and qumodes (qubits)"""
         return (
             op.name
@@ -238,7 +238,7 @@ class PhotonLossNoisePass(LocalNoisePass):
             )
         )
 
-    def duration_to_sec(self, op: Instruction):
+    def duration_to_sec(self, op: Instruction) -> float:
         """Return the given Instruction's duration in seconds"""
 
         # FIXME - Qiskit v2.0 removed Instruction duration & unit!

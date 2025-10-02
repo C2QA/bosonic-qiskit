@@ -772,7 +772,6 @@ def test_multi_qumode_loss_probability(capsys):
         circuit.cv_bs(np.pi / 4, qmr[0], qmr[1], duration=100, unit="ns")
         circuit.cv_bs(-np.pi / 4, qmr[0], qmr[1], duration=100, unit="ns")
 
-
         # FIXME Did a Qiskit upgrade & the removal of gate delays break the photon loss noise pass?
         #       This used to pass consistently with a photon_loss_rate = 10000000, but now it nearly always has photon loss in both qumodes.
         #       We also used to have the if check below for fifty_fifty wrong ... so it may never have worked the way we thought.
