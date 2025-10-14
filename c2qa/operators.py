@@ -12,6 +12,7 @@ sigma_plus = numpy.array([[0, 1], [0, 0]])
 sigma_minus = numpy.array([[0, 0], [1, 0]])
 
 
+
 class CVOperators:
     """Build operator matrices for continuously variable bosonic gates."""
 
