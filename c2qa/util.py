@@ -12,11 +12,13 @@ from c2qa import CVCircuit
 from c2qa.discretize import discretize_circuits
 
 
-def flatten(l):
+def flatten(l: list) -> list:
     return [item for sublist in l for item in sublist]
 
 
-def cv_ancilla_fock_measure(circuit, list_qumodes_to_sample: list, qmr_number: int = 0):
+def cv_ancilla_fock_measure(
+    circuit: "CVCircuit", list_qumodes_to_sample: list, qmr_number: int = 0
+) -> np.ndarray:
     """Simulate a circuit with an appended binary search for boson number, and determine the Fock state of a set of qumodes using
     phase kickback on the qubit. For more information, see Curtis et al., PRA (2021) and Wang et al., PRX (2020).
 
@@ -77,8 +79,13 @@ def cv_ancilla_fock_measure(circuit, list_qumodes_to_sample: list, qmr_number: i
 
 
 def stateread(
-    stateop, numberofqubits, numberofmodes, cutoff, verbose=True, little_endian=False
-):
+    stateop: np.ndarray,
+    numberofqubits: int,
+    numberofmodes: int,
+    cutoff: int,
+    verbose: bool = True,
+    little_endian: bool = False,
+) -> tuple:
     """Print values for states of qubits and qumodes using the result of a
     simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(circuit).
 
@@ -206,19 +213,17 @@ def stateread(
     return [occupation_cv, occupation_qb], state
 
 
-def counts_to_fockcounts(
-    circuit: CVCircuit, result: qiskit.result.result.Result
-):
+def counts_to_fockcounts(circuit: "CVCircuit", result: "qiskit.result.Result") -> dict:
     """Convert Qiskit simulation counts dictionary it to a Fock-basis counts dictionary.
-    
-    The Qiskit counts dictionary key is a string representing the Little Endian ordering classical bit values 
-    for each qubit and the value is the total count of simulated shots (runs) that had those values. 
+
+    The Qiskit counts dictionary key is a string representing the Little Endian ordering classical bit values
+    for each qubit and the value is the total count of simulated shots (runs) that had those values.
 
     See https://docs.quantum.ibm.com/api/qiskit/qiskit.result.Result#get_counts for Qiskit documentation on its
     counts histogram data structure.
 
     The returned value is the Fock-basis state key to the total count of simulated shots (runs) that had that value.
-    
+
     Args:
         circuit (CVCircuit): simulated circuit
         result (Result): Qiskit simulation results with simulation counts
@@ -226,7 +231,7 @@ def counts_to_fockcounts(
     Returns:
         New dict with Fock-basis key and total simulation counts value
     """
-    
+
     qubit_counts = result.get_counts()
     qumode_bit_mapping = _final_qumode_mapping(circuit)
 
@@ -262,12 +267,12 @@ def counts_to_fockcounts(
     return fock_counts
 
 
-def _final_qumode_mapping(circuit):
+def _final_qumode_mapping(circuit: "CVCircuit") -> list:
     """
     Return the classical bits that active qumode qubits are mapped onto. Bits corresponding to distinct qumodes are grouped together
     """
     active_qumode_bit_indices_grouped = []
-    
+
     final_measurement_mapping = _final_measurement_mapping(circuit)
 
     # If no explicit measurements are in the circuit, just assume all qumode qbits were "measured"
@@ -307,7 +312,7 @@ def _final_qumode_mapping(circuit):
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # pylint: disable=no-name-in-module
-def _final_measurement_mapping(circuit):
+def _final_measurement_mapping(circuit: qiskit.QuantumCircuit) -> dict:
     """Return the measurement mapping for the circuit.
 
     Dict keys label classical bits, whereas the values indicate the
@@ -355,10 +360,8 @@ def _final_measurement_mapping(circuit):
     return mapping
 
 
-def measure_all_xyz(circuit: qiskit.QuantumCircuit):
+def measure_all_xyz(circuit: qiskit.QuantumCircuit) -> tuple:
     """Use QuantumCircuit.measure_all() to measure all qubits in the X, Y, and Z basis.
-
-    Returns state, result, fockcounts tuples each for the X, Y, and Z basis.
 
     Args:
         circuit (qiskit.QuantumCircuit): circuit to measure qubits one
@@ -391,7 +394,7 @@ def measure_all_xyz(circuit: qiskit.QuantumCircuit):
     )
 
 
-def get_probabilities(result: qiskit.result.Result):
+def get_probabilities(result: qiskit.result.Result) -> dict:
     """Calculate the probabilities for each of the result's counts.
 
     Args:
@@ -412,17 +415,17 @@ def get_probabilities(result: qiskit.result.Result):
 
 
 def simulate(
-    cvcircuit: CVCircuit,
+    cvcircuit: "CVCircuit",
     shots: int = 1024,
     return_fockcounts: bool = True,
     add_save_statevector: bool = True,
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
-    noise_model=None,
-    noise_passes=None,
+    noise_model: object = None,
+    noise_passes: object = None,
     max_parallel_threads: int = 0,
     discretize: bool = False,
-):
+) -> tuple:
     """Convenience function to simulate using the given backend.
 
     Handles calling into QisKit to simulate circuit using defined simulator.
@@ -510,7 +513,7 @@ def simulate(
         return (state, result, None)
 
 
-def _find_cavity_indices(circuit: CVCircuit):
+def _find_cavity_indices(circuit: "CVCircuit") -> list:
     """
     Return the indices of the cavities from the circuit
 
@@ -533,7 +536,7 @@ def _find_cavity_indices(circuit: CVCircuit):
     return indices
 
 
-def _find_qubit_indices(circuit: CVCircuit):
+def _find_qubit_indices(circuit: "CVCircuit") -> list:
     """
     Return the indices of the qubits from the circuit that are not in a QumodeRegister
 
@@ -556,7 +559,9 @@ def _find_qubit_indices(circuit: CVCircuit):
     return indices
 
 
-def trace_out_qumodes(circuit: CVCircuit, state_vector):
+def trace_out_qumodes(
+    circuit: "CVCircuit", state_vector: "Statevector"
+) -> "DensityMatrix":
     """Return reduced density matrix of the qubits by tracing out the cavities of the CVCircuit from the given Fock state vector.
 
     Args:
@@ -572,7 +577,9 @@ def trace_out_qumodes(circuit: CVCircuit, state_vector):
     return qiskit.quantum_info.partial_trace(state_vector, indices)
 
 
-def trace_out_qubits(circuit: CVCircuit, state_vector):
+def trace_out_qubits(
+    circuit: "CVCircuit", state_vector: "Statevector"
+) -> "DensityMatrix":
     """Return reduced density matrix of the cavities by tracing out the all qubits of the CVCircuit from the given Fock state vector.
 
     Args:
@@ -588,7 +595,9 @@ def trace_out_qubits(circuit: CVCircuit, state_vector):
     return qiskit.quantum_info.partial_trace(state_vector, indices)
 
 
-def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
+def cv_partial_trace(
+    circuit: "CVCircuit", state_vector: "Statevector", qubits: list
+) -> "DensityMatrix":
     """Return reduced density matrix over the given Qiskit Qubits.
 
     First find the indices of the given Qubits, then call qiskit.quantum_info.partial_trace
@@ -608,7 +617,12 @@ def cv_partial_trace(circuit: CVCircuit, state_vector, qubits: list):
     return qiskit.quantum_info.partial_trace(state_vector, indices)
 
 
-def fockmap(matrix, fock_input, fock_output, amplitude=[]):
+def fockmap(
+    matrix: np.ndarray,
+    fock_input: int | list,
+    fock_output: int | list,
+    amplitude: list = [],
+) -> np.ndarray:
     """Generates matrix corresponding to some specified mapping of Fock states for a single qumode.
     First feed function empty matrix, then call fmap_matrix however many times needed to fully define intended mapping.
     Maps ith element in fock_input to ith element in fock_output with amplitude specified by ith element in amplitude.
@@ -748,7 +762,9 @@ def fockmap(matrix, fock_input, fock_output, amplitude=[]):
         raise ValueError("Please ensure that your args are correctly defined.")
 
 
-def avg_photon_num(circuit: CVCircuit, state, decimals: int = 2):
+def avg_photon_num(
+    circuit: "CVCircuit", state: "Statevector | DensityMatrix", decimals: int = 2
+) -> list:
     """Returns average photon number of state for each qumode within the circuit using the number operator.
 
     Args:
@@ -773,7 +789,9 @@ def avg_photon_num(circuit: CVCircuit, state, decimals: int = 2):
     return averages
 
 
-def qumode_avg_photon_num(state, decimals: int = 2):
+def qumode_avg_photon_num(
+    state: "Statevector | DensityMatrix", decimals: int = 2
+) -> float:
     """Returns average photon number of an individual qumode's state using the number operator.
 
     Args:

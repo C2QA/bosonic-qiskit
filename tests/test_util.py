@@ -271,9 +271,10 @@ def test_qumode_avg_photon_num(capsys):
                 == round(avg_num.real, decimals)
             )
 
+
 def test_counts_to_fockcounts(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode = 3)
+        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode=3)
         circuit = c2qa.CVCircuit(qmr)
 
         circuit.cv_sq2(1, qmr[0], qmr[1])
@@ -295,4 +296,3 @@ def test_counts_to_fockcounts(capsys):
         fock_values = list(fock_counts.values())
         qubit_values = list(result.get_counts().values())
         assert fock_values == qubit_values
-        
