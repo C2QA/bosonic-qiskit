@@ -302,7 +302,6 @@ class CVCircuit(QuantumCircuit):
             gate = qiskit.circuit.library.UnitaryGate(
                 data=data, label=label, num_qubits=num_qubits
             )
-            gate.cv_params = params
             return gate
 
     def cv_r(self, theta, qumode, duration=100, unit="ns"):
