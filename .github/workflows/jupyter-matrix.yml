@@ -22,16 +22,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-          check-latest: true
+          python-version: '3.13'
+          # check-latest: true
 
       - name: Setup ffmpeg (with retries)
         uses: ./.github/actions/setup-ffmpeg
 
       - name: Setup TeX Live
-        uses: teatimeguest/setup-texlive-action@v3
+        uses: DanySK/setup-texlive-action@master
         with:
-          packages: scheme-full
+          requirements-file: .github/texlive/requirements.txt
 
       - name: Install Python dependencies
         run: |

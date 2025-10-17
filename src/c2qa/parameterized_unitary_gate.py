@@ -1,6 +1,5 @@
 from typing import Iterable
 
-import c2qa
 import numpy
 import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
@@ -47,13 +46,32 @@ class ParameterizedUnitaryGate(Gate):
         self.unit = unit
         self.discretized_param_indices = discretized_param_indices
         self.cutoffs = cutoffs
-        self.cv_params = params
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
-        return c2qa.operators.CVOperators.call_op(
-            self.op_func, self.params, self.cutoffs
-        )
+        # return self.op_func(*map(complex, self.params)).toarray()
+        values = []
+
+        # Add parameters for op_func call
+        for param in self.params:
+            if isinstance(param, ParameterExpression):
+                # if param.is_real():
+                #     values.append(float(param))
+                # else:
+                #     values.append(complex(param))
+                values.append(
+                    complex(param)
+                )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
+            else:
+                values.append(param)
+
+        # Add cutoff for each parameter
+        values.extend(self.cutoffs)
+
+        # Conver array to tupple
+        values = tuple(values)
+
+        return self.op_func(*values).toarray()
 
     def _define(self):
         try:
@@ -138,14 +156,8 @@ def __calculate_segment_params(
     else:
         param_fraction = current_step / total_steps
 
-    params = None
-    if hasattr(self, "cv_params"):
-        params = self.cv_params
-    elif hasattr(self, "params"):
-        params = self.params
-
     values = []
-    for index, param in enumerate(params):
+    for index, param in enumerate(self.params):
         if (
             not hasattr(self, "discretized_param_indices")
             or len(self.discretized_param_indices) == 0
