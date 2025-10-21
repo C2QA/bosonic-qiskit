@@ -1,5 +1,6 @@
 from typing import Iterable
 
+import c2qa
 import numpy
 import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
@@ -49,29 +50,9 @@ class ParameterizedUnitaryGate(Gate):
 
     def __array__(self, dtype=None):
         """Call the operator function to build the array using the bound parameter values."""
-        # return self.op_func(*map(complex, self.params)).toarray()
-        values = []
-
-        # Add parameters for op_func call
-        for param in self.params:
-            if isinstance(param, ParameterExpression):
-                # if param.is_real():
-                #     values.append(float(param))
-                # else:
-                #     values.append(complex(param))
-                values.append(
-                    complex(param)
-                )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
-            else:
-                values.append(param)
-
-        # Add cutoff for each parameter
-        values.extend(self.cutoffs)
-
-        # Conver array to tupple
-        values = tuple(values)
-
-        return self.op_func(*values).toarray()
+        return c2qa.operators.CVOperators.call_op(
+            self.op_func, self.params, self.cutoffs
+        )
 
     def _define(self):
         try:

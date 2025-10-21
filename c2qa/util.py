@@ -206,19 +206,17 @@ def stateread(
     return [occupation_cv, occupation_qb], state
 
 
-def counts_to_fockcounts(
-    circuit: CVCircuit, result: qiskit.result.result.Result
-):
+def counts_to_fockcounts(circuit: CVCircuit, result: qiskit.result.result.Result):
     """Convert Qiskit simulation counts dictionary it to a Fock-basis counts dictionary.
-    
-    The Qiskit counts dictionary key is a string representing the Little Endian ordering classical bit values 
-    for each qubit and the value is the total count of simulated shots (runs) that had those values. 
+
+    The Qiskit counts dictionary key is a string representing the Little Endian ordering classical bit values
+    for each qubit and the value is the total count of simulated shots (runs) that had those values.
 
     See https://docs.quantum.ibm.com/api/qiskit/qiskit.result.Result#get_counts for Qiskit documentation on its
     counts histogram data structure.
 
     The returned value is the Fock-basis state key to the total count of simulated shots (runs) that had that value.
-    
+
     Args:
         circuit (CVCircuit): simulated circuit
         result (Result): Qiskit simulation results with simulation counts
@@ -226,7 +224,7 @@ def counts_to_fockcounts(
     Returns:
         New dict with Fock-basis key and total simulation counts value
     """
-    
+
     qubit_counts = result.get_counts()
     qumode_bit_mapping = _final_qumode_mapping(circuit)
 
@@ -267,7 +265,7 @@ def _final_qumode_mapping(circuit):
     Return the classical bits that active qumode qubits are mapped onto. Bits corresponding to distinct qumodes are grouped together
     """
     active_qumode_bit_indices_grouped = []
-    
+
     final_measurement_mapping = _final_measurement_mapping(circuit)
 
     # If no explicit measurements are in the circuit, just assume all qumode qbits were "measured"
@@ -464,18 +462,29 @@ def simulate(
         )
 
     # Run noise pass, if provided
+    noise_pass_lst = None
     if noise_passes:
-        if not isinstance(noise_passes, list):
-            noise_passes = [noise_passes]
+        noise_pass_lst = noise_passes
+        if not isinstance(noise_pass_lst, list):
+            noise_pass_lst = [noise_pass_lst]
 
-        for noise_pass in noise_passes:
+        for noise_pass in noise_pass_lst:
             circuit_compiled = noise_pass(sim_circuit)
     else:
         circuit_compiled = sim_circuit
 
     # Transpile for simulator
     simulator = qiskit_aer.AerSimulator()
-    circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+
+    # FIXME also need to transpile if discretized?
+    if circuit_compiled.is_parameterized() or noise_pass_lst:
+        # TODO do we need more than the translation pass manager?
+        # circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
+
+        pm = qiskit.transpiler.preset_passmanagers.common.generate_translation_passmanager(
+            target=simulator.target
+        )
+        circuit_compiled = pm.run(circuit_compiled)
 
     # Run and get statevector
     result = simulator.run(

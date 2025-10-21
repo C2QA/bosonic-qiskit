@@ -1,4 +1,5 @@
 import numpy
+import qiskit
 import scipy.sparse
 import scipy.sparse.linalg
 
@@ -11,8 +12,36 @@ sigma_plus = numpy.array([[0, 1], [0, 0]])
 sigma_minus = numpy.array([[0, 0], [1, 0]])
 
 
+
 class CVOperators:
     """Build operator matrices for continuously variable bosonic gates."""
+
+    @staticmethod
+    def call_op(op_func, params, cutoffs):
+        """Call the operator function to build the array using the bound parameter values."""
+        # return self.op_func(*map(complex, self.params)).toarray()
+        values = []
+
+        # Add parameters for op_func call
+        for param in params:
+            if isinstance(param, qiskit.circuit.parameter.ParameterExpression):
+                # if param.is_real():
+                #     values.append(float(param))
+                # else:
+                #     values.append(complex(param))
+                values.append(
+                    complex(param)
+                )  # just cast everything to complex to avoid errors in Ubuntu/MacOS vs Windows
+            else:
+                values.append(param)
+
+        # Add cutoff for each parameter
+        values.extend(cutoffs)
+
+        # Conver array to tupple
+        values = tuple(values)
+
+        return op_func(*values).toarray()
 
     def get_a(self, cutoff: int):
         """Annihilation operator"""
