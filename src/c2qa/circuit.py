@@ -1170,7 +1170,7 @@ class CVCircuit(QuantumCircuit):
 
 # Monkey patch Qiskit QuantumCircuit to support parameterizing unitary gates
 def __requires_transpile(self):
-    return self._force_parameterized_unitary_gate or any(
+    return getattr(self, "_force_parameterized_unitary_gate", False) or any(
         isinstance(gate, ParameterizedUnitaryGate) or gate.is_parameterized()
         for gate in self.data
     ) or (hasattr(self, "_has_parameterized_gate") and self._has_parameterized_gate)
