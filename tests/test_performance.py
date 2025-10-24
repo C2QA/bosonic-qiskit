@@ -83,21 +83,7 @@ def _matrix(q1=None, q2=None):
 
 def test_cvcircuit_wo_transpile(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
-        qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=False)
-
-        dist = 3
-
-        circuit.initialize([1, 0], qr[0])
-        circuit.cv_initialize(0, qmr[0])
-
-        circuit.h(qr[0])
-        circuit.cv_c_d(dist, qmr[0], qr[0])
-        circuit.cv_d(1j * dist, qmr[0])
-        circuit.cv_c_d(-dist, qmr[0], qr[0])
-        circuit.cv_d(-1j * dist, qmr[0])
+        circuit = calibration_circuit(False)
 
         start = time.perf_counter()
         simulator = qiskit_aer.AerSimulator()
@@ -111,30 +97,50 @@ def test_cvcircuit_wo_transpile(capsys):
 
 def test_cvcircuit_util_simulate(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
-        qr = qiskit.QuantumRegister(size=1)
-        cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=False)
+        transpile_circuit = calibration_circuit(True)
+        transpile_avg, transpile_result_success = average_simulate(transpile_circuit)
 
-        dist = 3
+        no_transpile_circuit = calibration_circuit(False)
+        no_transpile_avg, no_transpile_result_success = average_simulate(no_transpile_circuit)
 
-        circuit.initialize([1, 0], qr[0])
-        circuit.cv_initialize(0, qmr[0])
+        assert transpile_result_success
+        assert no_transpile_result_success
 
-        circuit.h(qr[0])
-        circuit.cv_c_d(dist, qmr[0], qr[0])
-        circuit.cv_d(1j * dist, qmr[0])
-        circuit.cv_c_d(-dist, qmr[0], qr[0])
-        circuit.cv_d(-1j * dist, qmr[0])
+        print(f"Average with transpile {transpile_avg} sec and without {no_transpile_avg} sec")
 
-        count = 10
-        avg = 0
-        for _ in range(count):
-            start = time.perf_counter()
-            _, result, _ = c2qa.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
-            end = time.perf_counter()
-            print(f"[test_cvcircuit_util_simulate] {end - start}")
-            avg += (end - start)
-        print(f"[test_cvcircuit_util_simulate] average {avg / count}")
+        assert no_transpile_avg < transpile_avg
 
-        assert result.success
+
+def calibration_circuit(force_parameterized_unitary_gate: bool):
+    qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
+    qr = qiskit.QuantumRegister(size=1)
+    cr = qiskit.ClassicalRegister(size=1)
+    circuit = c2qa.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=force_parameterized_unitary_gate)
+
+    dist = 3
+
+    circuit.initialize([1, 0], qr[0])
+    circuit.cv_initialize(0, qmr[0])
+
+    circuit.h(qr[0])
+    circuit.cv_c_d(dist, qmr[0], qr[0])
+    circuit.cv_d(1j * dist, qmr[0])
+    circuit.cv_c_d(-dist, qmr[0], qr[0])
+    circuit.cv_d(-1j * dist, qmr[0])
+
+    return circuit
+
+
+def average_simulate(circuit, count: int = 10):
+    avg = 0
+    success = True
+    for i in range(count):
+        start = time.perf_counter()
+        _, result, _ = c2qa.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
+        end = time.perf_counter()
+        # print(f"[average_simulate] {i}: {end - start}")
+        avg += (end - start)
+        success = success and result.success
+    # print(f"[average_simulate] average {avg / count}")
+
+    return avg, success
