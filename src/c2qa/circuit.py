@@ -283,7 +283,6 @@ class CVCircuit(QuantumCircuit):
             and param.parameters
             for param in params
         )
-        # is_parameterized = True
 
         if is_parameterized:
             self._has_parameterized_gate = True
@@ -1170,13 +1169,13 @@ class CVCircuit(QuantumCircuit):
 
 
 # Monkey patch Qiskit QuantumCircuit to support parameterizing unitary gates
-def __is_parameterized(self):
-    return any(
+def __requires_transpile(self):
+    return self._force_parameterized_unitary_gate or any(
         isinstance(gate, ParameterizedUnitaryGate) or gate.is_parameterized()
         for gate in self.data
     ) or (hasattr(self, "_has_parameterized_gate") and self._has_parameterized_gate)
 
 
-CVCircuit.is_parameterized = __is_parameterized
+CVCircuit.requires_transpile = __requires_transpile
 
-qiskit.circuit.QuantumCircuit.is_parameterized = __is_parameterized
+qiskit.circuit.QuantumCircuit.requires_transpile = __requires_transpile

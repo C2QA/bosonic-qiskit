@@ -46,11 +46,11 @@ def test_parameterized_displacement(capsys):
         alpha = qiskit.circuit.Parameter("alpha")
         circuit.cv_d(alpha, qmr[0])
 
-        assert circuit.is_parameterized()
+        assert circuit.requires_transpile()
 
         bound_circuit = circuit.assign_parameters({alpha: 3.14})
 
-        assert bound_circuit.is_parameterized()
+        assert bound_circuit.requires_transpile()
 
         state, result, fock_counts = c2qa.util.simulate(bound_circuit)
         assert_changed(state, result)

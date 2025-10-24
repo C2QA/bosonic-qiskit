@@ -476,8 +476,7 @@ def simulate(
     # Transpile for simulator
     simulator = qiskit_aer.AerSimulator()
 
-    # FIXME also need to transpile if discretized?
-    if circuit_compiled.is_parameterized() or noise_pass_lst:
+    if circuit_compiled.requires_transpile() or noise_pass_lst:
         # TODO do we need more than the translation pass manager?
         # circuit_compiled = qiskit.transpile(circuit_compiled, simulator)
 
