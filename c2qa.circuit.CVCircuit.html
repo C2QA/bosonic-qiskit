@@ -7,7 +7,7 @@
   <head>
     
     <title>c2qa.circuit.CVCircuit</title>
-    <meta name="generator" content="pydoctor 25.4.0"> 
+    <meta name="generator" content="pydoctor 25.10.1"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -535,6 +535,16 @@
             </div>
         
 
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_new_gate" class="internal-link" title="c2qa.circuit.CVCircuit._new_gate">_new<wbr></wbr>_gate</a></code>
+            </div>
+        
+
     </li>
 </ul> 
 
@@ -710,6 +720,26 @@
         
 
         
+            <div class="itemName"><code><a href="#_force_parameterized_unitary_gate" class="internal-link" title="c2qa.circuit.CVCircuit._force_parameterized_unitary_gate">_force<wbr></wbr>_parameterized<wbr></wbr>_unitary<wbr></wbr>_gate</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="#_has_parameterized_gate" class="internal-link" title="c2qa.circuit.CVCircuit._has_parameterized_gate">_has<wbr></wbr>_parameterized<wbr></wbr>_gate</a></code>
+            </div>
+        
+
+    </li><li class="private">
+        
+        
+        
+
+        
             <div class="itemName"><code><a href="#_metadata" class="internal-link" title="c2qa.circuit.CVCircuit._metadata">_metadata</a></code>
             </div>
         
@@ -780,8 +810,21 @@
     </li>
 </ul>
 
+        <div class="childrenKindTitle">Functions</div>
+        <ul>
+    
+    <li class="private">
         
-         
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.circuit.html#__requires_transpile" class="internal-link" title="c2qa.circuit.__requires_transpile">__requires<wbr></wbr>_transpile</a></code>
+            </div>
+        
+
+    </li>
+</ul> 
 
         
          
@@ -797,7 +840,7 @@
 
 </nav>
         </div>
-        <div id="collapseSideBar">
+        <div id="collapse-sidebar">
           <a class="btn btn-link" onclick="toggleSideBarCollapse()" title="Toggle Sidebar Collapse">
           </a>
         </div> 
@@ -805,14 +848,14 @@
        
       </div>
 
-      <div id="main" class="">
+      <main class="">
         
 
         
 
         <div class="page-header">
           <h1 class="class"><code><code><a href="index.html" class="internal-link">c2qa</a></code><wbr></wbr>.<code><a href="c2qa.circuit.html" class="internal-link" title="c2qa.circuit">circuit</a></code><wbr></wbr>.<code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></code></h1>
-          <div id="showPrivate">
+          <div id="show-private">
             <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
           </div>
         </div>
@@ -822,15 +865,14 @@
         </div>
 
         <div class="extrasDocstring">
-          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">CVCircuit</span>(QuantumCircuit): <a href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L14" class="sourceLink">(source)</a></code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="c2qa.circuit.CVCircuit.__init__">CVCircuit(*regs, name, probe_measure)</a></code></p>
-          <p><a href="classIndex.html#c2qa.circuit.CVCircuit">View In Hierarchy</a></p>
+          <p class="class-signature"><code><span class="py-keyword">class</span> <span class="py-defname">CVCircuit</span>(QuantumCircuit): <a href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L15" class="sourceLink">(source)</a></code></p><p>Constructor: <code><a href="#__init__" class="internal-link" title="c2qa.circuit.CVCircuit.__init__">CVCircuit(*regs, name, probe_measure, force_parameterized_unitary_gate)</a></code></p><p><a href="classIndex.html#c2qa.circuit.CVCircuit">View In Hierarchy</a></p>
         </div>
 
         <div class="moduleDocstring">
           <div><p>Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations.</p></div>
         </div>
 
-        <div id="splitTables">
+        <div id="split-tables">
           <table class="children sortable" id="id4">
   
   
@@ -1094,6 +1136,11 @@
     <td>Property</td>
     <td><code><a href="#qumode_qubits_indices_grouped" class="internal-link" title="c2qa.circuit.CVCircuit.qumode_qubits_indices_grouped">qumode<wbr></wbr>_qubits<wbr></wbr>_indices<wbr></wbr>_grouped</a></code></td>
     <td>Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list.</td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><code><a href="#_new_gate" class="internal-link" title="c2qa.circuit.CVCircuit._new_gate">_new<wbr></wbr>_gate</a></code></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="instancevariable private">
     
     <td>Instance Variable</td>
@@ -1122,6 +1169,16 @@
   </tr><tr class="instancevariable private">
     
     <td>Instance Variable</td>
+    <td><code><a href="#_force_parameterized_unitary_gate" class="internal-link" title="c2qa.circuit.CVCircuit._force_parameterized_unitary_gate">_force<wbr></wbr>_parameterized<wbr></wbr>_unitary<wbr></wbr>_gate</a></code></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
+    <td><code><a href="#_has_parameterized_gate" class="internal-link" title="c2qa.circuit.CVCircuit._has_parameterized_gate">_has<wbr></wbr>_parameterized<wbr></wbr>_gate</a></code></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
+  </tr><tr class="instancevariable private">
+    
+    <td>Instance Variable</td>
     <td><code><a href="#_metadata" class="internal-link" title="c2qa.circuit.CVCircuit._metadata">_metadata</a></code></td>
     <td><span class="rst-undocumented">Undocumented</span></td>
   </tr><tr class="instancevariable private">
@@ -1146,7 +1203,7 @@
             
         </div>
 
-        <div id="childList">
+        <div id="child-list">
           <div class="basemethod">
   
   
@@ -1159,8 +1216,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span>&#160;<span class="py-defname">__init__</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">*regs, </span><span class="rst-sig-param">name: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">probe_measure: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L17">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">__init__</span><span class="function-signature long-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">*regs, </span><span class="rst-sig-param">name: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">probe_measure: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#False" class="intersphinx-link">False</a>, </span><span class="rst-sig-param">force_parameterized_unitary_gate: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> = <a href="https://docs.python.org/3/library/constants.html#True" class="intersphinx-link">True</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L18">
       
       (source)
     </a>
@@ -1172,7 +1229,7 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Initialize the registers (at least one must be QumodeRegister) and set the circuit name.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">*regs</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">name:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code>, <em>optional</em></td><td class="fieldArgDesc">circuit name. Defaults to None.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">probe<wbr></wbr>_measure:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code>, <em>optional</em></td><td class="fieldArgDesc">automatically support measurement with probe qubits. Defaults to False.</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Raises</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/exceptions.html#ValueError" class="intersphinx-link">ValueError</a></code></td><td>If no QumodeRegister is provided.</td></tr></table></div>
+    <div><p>Initialize the registers (at least one must be QumodeRegister) and set the circuit name.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">*regs</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">name:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a>, <em>optional</em></code></td><td class="fieldArgDesc">circuit name. Defaults to None.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">probe<wbr></wbr>_measure:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a>, <em>optional</em></code></td><td class="fieldArgDesc">automatically support measurement with probe qubits. Defaults to False.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">force<wbr></wbr>_parameterized<wbr></wbr>_unitary<wbr></wbr>_gate:</span><code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a>, <em>optional</em></code></td><td class="fieldArgDesc">if set to False, improve performance by creating Qiskit UnitaryGate instead of bosonic-qiskit ParamaterizedUnitaryGate and skip transpilation in the util module's simulate() function. Note that bosonic-qiskit ParameterizedUnitaryGate are required for Qiskit parameterized circuits, circuits using photon loss noise passes, and cicruits animated with discretized gates. Defaults to True.</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Raises</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/exceptions.html#ValueError" class="intersphinx-link">ValueError</a></code></td><td>If no QumodeRegister is provided.</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1187,7 +1244,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">add_qubit_register</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">*regs</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L195">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L199">
       
       (source)
     </a>
@@ -1214,7 +1271,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_ajc</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">phi, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L872">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L913">
       
       (source)
     </a>
@@ -1241,7 +1298,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_bs</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L392">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L433">
       
       (source)
     </a>
@@ -1253,7 +1310,7 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Two-mode beam splitter gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">beamsplitter phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Two-mode beam splitter gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">beamsplitter phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1268,7 +1325,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_bs</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L543">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L584">
       
       (source)
     </a>
@@ -1280,7 +1337,7 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Controlled phase two-mode beam splitter</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit control Qubit</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Controlled phase two-mode beam splitter</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit<wbr></wbr>_ancilla:</span><code>Qubit</code></td><td class="fieldArgDesc">QisKit control Qubit</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1295,7 +1352,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_d</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">beta=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L491">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L532">
       
       (source)
     </a>
@@ -1322,7 +1379,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_multiboson_sampling</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">max, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=1, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">us</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L1036">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L1077">
       
       (source)
     </a>
@@ -1349,7 +1406,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_pnr</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">max, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L704">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L745">
       
       (source)
     </a>
@@ -1376,7 +1433,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_r</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L419">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L460">
       
       (source)
     </a>
@@ -1403,7 +1460,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_rx</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L443">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L484">
       
       (source)
     </a>
@@ -1430,7 +1487,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_ry</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L467">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L508">
       
       (source)
     </a>
@@ -1457,7 +1514,7 @@
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_schwinger</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">params, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L571">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L612">
       
       (source)
     </a>
@@ -1494,7 +1551,7 @@ Sz = (bdag*b - adag*a)/2,</p>
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_sq</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L753">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L794">
       
       (source)
     </a>
@@ -1506,7 +1563,7 @@ Sz = (bdag*b - adag*a)/2,</p>
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Conditional squeezing gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeezing ampltiude</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control Qubit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Conditional squeezing gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeezing ampltiude</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control Qubit</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1521,7 +1578,7 @@ Sz = (bdag*b - adag*a)/2,</p>
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_c_sum</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">scale, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L818">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L859">
       
       (source)
     </a>
@@ -1548,7 +1605,7 @@ Sz = (bdag*b - adag*a)/2,</p>
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_d</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">alpha, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L289">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L330">
       
       (source)
     </a>
@@ -1560,7 +1617,7 @@ Sz = (bdag*b - adag*a)/2,</p>
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Displacement gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">alpha:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">displacement</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">qumode cutoff</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Displacement gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">alpha:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">displacement</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">qumode cutoff</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1575,7 +1632,7 @@ Sz = (bdag*b - adag*a)/2,</p>
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_delay</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">duration, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L1012">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L1053">
       
       (source)
     </a>
@@ -1603,7 +1660,7 @@ This is particularly useful for the implementation of a noise pass.</p><table cl
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_ecd</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L520">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L561">
       
       (source)
     </a>
@@ -1630,7 +1687,7 @@ This is particularly useful for the implementation of a noise pass.</p><table cl
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_eswap</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L726">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L767">
       
       (source)
     </a>
@@ -1657,7 +1714,7 @@ This is particularly useful for the implementation of a noise pass.</p><table cl
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_gate_from_matrix</span><span class="function-signature long-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">matrix, </span><span class="rst-sig-param">qumodes=[], </span><span class="rst-sig-param">qubits=[], </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>, </span><span class="rst-sig-param">label: <code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code> = <span class="rst-variable-quote">'</span><span class="rst-variable-string">cv_gate_from_matrix</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L1058">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L1099">
       
       (source)
     </a>
@@ -1671,7 +1728,7 @@ This is particularly useful for the implementation of a noise pass.</p><table cl
     
     <div><p>Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically
 implemented by multiple successive gate operations, PhotonLossNoisePass, simulate(discretize=True), and animate may
-not be applied in a way that is physical.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">matrix:</span>np.array/nested list</td><td class="fieldArgDesc">Matrix for conversion into gate</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumodes:</span>QumodeRegister/list</td><td class="fieldArgDesc">Qumodes initialized by QumodeRegister</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubits:</span>QuantumRegister/list</td><td class="fieldArgDesc">Qubits initialized by QuantumRegister</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">label:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+not be applied in a way that is physical.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">matrix:</span><code>np.array/nested list</code></td><td class="fieldArgDesc">Matrix for conversion into gate</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumodes:</span><code>QumodeRegister/list</code></td><td class="fieldArgDesc">Qumodes initialized by QumodeRegister</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubits:</span><code>QuantumRegister/list</code></td><td class="fieldArgDesc">Qubits initialized by QuantumRegister</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">label:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a></code></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1686,7 +1743,7 @@ not be applied in a way that is physical.</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_initialize</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">params, </span><span class="rst-sig-param">qumodes</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L210">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L214">
       
       (source)
     </a>
@@ -1698,7 +1755,7 @@ not be applied in a way that is physical.</p><table class="fieldTable"><tr class
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Initialize qumode (or qumodes) to a particular state specified by params</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> or <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">If an int, all specified qumodes will be initialized to the Fock state with n=params.
+    <div><p>Initialize qumode (or qumodes) to a particular state specified by params</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">params:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a> or <a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">If an int, all specified qumodes will be initialized to the Fock state with n=params.
 If a list, all specified qumodes will be initialized to a superposition of Fock states,
 with <tt class="rst-docutils rst-literal">params[n]</tt> the complex amplitude of Fock state <tt class="rst-docutils rst-literal">|n&gt;</tt>. The length of params must be less
 than or equal to the cutoff.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumodes:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing a single qumode, or list of multiple qumodes</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Raises</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/exceptions.html#ValueError" class="intersphinx-link">ValueError</a></code></td><td>If the Fock state is greater than the cutoff.</td></tr></table></div>
@@ -1716,7 +1773,7 @@ than or equal to the cutoff.</td></tr><tr><td class="fieldArgContainer"><span cl
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_jc</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">phi, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L846">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L887">
       
       (source)
     </a>
@@ -1743,7 +1800,7 @@ than or equal to the cutoff.</td></tr><tr><td class="fieldArgContainer"><span cl
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_measure</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubit_qumode_list, </span><span class="rst-sig-param">cbit_list</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L977">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L1018">
       
       (source)
     </a>
@@ -1777,7 +1834,7 @@ insufficient, an error will be thrown.</td></tr></table><table class="fieldTable
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_r</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L265">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L306">
       
       (source)
     </a>
@@ -1804,7 +1861,7 @@ insufficient, an error will be thrown.</td></tr></table><table class="fieldTable
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_rb</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L898">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L939">
       
       (source)
     </a>
@@ -1831,7 +1888,7 @@ insufficient, an error will be thrown.</td></tr></table><table class="fieldTable
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_snap</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">n, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">qubit=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L614">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L655">
       
       (source)
     </a>
@@ -1847,7 +1904,7 @@ insufficient, an error will be thrown.</td></tr></table><table class="fieldTable
 then phases are applied to each qumode Fock state specified in theta and n (without
 explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by
 sigma_z-dependent geometric phase (akin to the implementation of the SNAP gate
-as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[real]</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">n:</span><code>integer</code> or <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[integer]</code></td><td class="fieldArgDesc">Fock state in which the mode should acquire the phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control qubit. If no qubit is passed, the gate will implement for sigma^z = +1.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[real]</code></td><td class="fieldArgDesc">phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">n:</span><code>integer or <a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[integer]</code></td><td class="fieldArgDesc">Fock state in which the mode should acquire the phase</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qubit:</span><code>Qubit</code></td><td class="fieldArgDesc">control qubit. If no qubit is passed, the gate will implement for sigma^z = +1.</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1862,7 +1919,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_snapshot</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L190">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L194">
       
       (source)
     </a>
@@ -1889,7 +1946,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_sq</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L313">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L354">
       
       (source)
     </a>
@@ -1901,7 +1958,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Squeezing gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Squeezing gate.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1916,7 +1973,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_sq2</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L336">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L377">
       
       (source)
     </a>
@@ -1928,7 +1985,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Two-mode squeezing gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Two-mode squeezing gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1943,7 +2000,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_sq3</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">theta, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">qumode_c, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L363">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L404">
       
       (source)
     </a>
@@ -1955,7 +2012,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Three-mode squeezing gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real</code> or <code><a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_c:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing third qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
+    <div><p>Three-mode squeezing gate</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">theta:</span><code>real or <a href="https://docs.python.org/3/library/functions.html#complex" class="intersphinx-link">complex</a></code></td><td class="fieldArgDesc">squeeze</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_a:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing first qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_b:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing second qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_c:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></td><td class="fieldArgDesc">list of qubits representing third qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">duration</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">unit</span></td><td class="fieldArgDesc"><span class="undocumented">Undocumented</span></td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>Instruction</code></td><td class="fieldArgDesc">QisKit instruction</td></tr></table></div>
   </div>
 </div><div class="basemethod">
   
@@ -1970,7 +2027,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_sum</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">scale, </span><span class="rst-sig-param">qumode_a, </span><span class="rst-sig-param">qumode_b, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L791">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L832">
       
       (source)
     </a>
@@ -1997,7 +2054,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">cv_testqubitorderf</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">phi, </span><span class="rst-sig-param">qubit_1, </span><span class="rst-sig-param">qubit_2, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L777">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L818">
       
       (source)
     </a>
@@ -2024,7 +2081,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">get_qmr_cutoff</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qmr_index: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L91">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L95">
       
       (source)
     </a>
@@ -2051,7 +2108,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">get_qmr_index</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubit</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L171">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L175">
       
       (source)
     </a>
@@ -2078,7 +2135,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">get_qmr_num_qubits_per_qumode</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qmr_index: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L95">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L99">
       
       (source)
     </a>
@@ -2105,7 +2162,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">get_qubit_index</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubit</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L149">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L153">
       
       (source)
     </a>
@@ -2132,7 +2189,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">get_qubit_indices</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubits: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L156">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L160">
       
       (source)
     </a>
@@ -2159,7 +2216,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">measure_x</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">cbit</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L958">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L999">
       
       (source)
     </a>
@@ -2186,7 +2243,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">measure_y</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">cbit</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L938">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L979">
       
       (source)
     </a>
@@ -2213,7 +2270,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">measure_z</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">qubit, </span><span class="rst-sig-param">cbit, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L920">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L961">
       
       (source)
     </a>
@@ -2240,7 +2297,7 @@ as described in Heeres et al, PRL (2015).</p><table class="fieldTable"><tr class
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">merge</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">circuit: <code>QuantumCircuit</code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L60">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L64">
       
       (source)
     </a>
@@ -2272,7 +2329,7 @@ this instance.</p>
     
     
     <span class="py-keyword">def</span>&#160;<span class="py-defname">save_circuit</span><span class="function-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">conditional, </span><span class="rst-sig-param">pershot, </span><span class="rst-sig-param">label=<span class="rst-variable-quote">'</span><span class="rst-variable-string">statevector</span><span class="rst-variable-quote">'</span></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L259">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L263">
       
       (source)
     </a>
@@ -2298,7 +2355,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">cregs</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L72">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L76">
       
       (source)
     </a>
@@ -2325,7 +2382,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">cv_snapshot_id</span>: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L58">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L60">
       
       (source)
     </a>
@@ -2352,7 +2409,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">ops</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L57">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L59">
       
       (source)
     </a>
@@ -2379,7 +2436,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">probe</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L52">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L54">
       
       (source)
     </a>
@@ -2406,7 +2463,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">probe_measure</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L50">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L52">
       
       (source)
     </a>
@@ -2433,7 +2490,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">qmregs</span>: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L27">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L29">
       
       (source)
     </a>
@@ -2460,7 +2517,7 @@ this instance.</p>
   <div class="functionHeader">
     
     <span class="py-defname">qregs</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L71">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L75">
       
       (source)
     </a>
@@ -2487,7 +2544,7 @@ this instance.</p>
   <div class="functionHeader">
     <div><span class="decorator">@<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br /></span></div>
     <span class="py-defname">cv_gate_labels</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L178">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L182">
       
       (source)
     </a>
@@ -2515,7 +2572,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     <div><span class="decorator">@<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br /></span></div>
     <span class="py-defname">qumode_qubit_indices</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L107">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L111">
       
       (source)
     </a>
@@ -2542,7 +2599,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     <div><span class="decorator">@<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br /></span></div>
     <span class="py-defname">qumode_qubits</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L99">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L103">
       
       (source)
     </a>
@@ -2569,7 +2626,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     <div><span class="decorator">@<a href="https://docs.python.org/3/library/functions.html#property" class="intersphinx-link">property</a><br /></span></div>
     <span class="py-defname">qumode_qubits_indices_grouped</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L119">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L123">
       
       (source)
     </a>
@@ -2584,6 +2641,33 @@ instances of ParameterizedUnitaryGate.</p></div>
     <div><p>Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list.</p></div>
     
   </div>
+</div><div class="basemethod private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._new_gate">
+    
+  </a>
+  <a name="_new_gate">
+    
+  </a>
+  <div class="functionHeader">
+    
+    
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">_new_gate</span><span class="function-signature long-signature">(<span class="rst-sig-param"><span class="rst-undocumented">self</span>, </span><span class="rst-sig-param">op_func, </span><span class="rst-sig-param">params, </span><span class="rst-sig-param">num_qubits, </span><span class="rst-sig-param">cutoffs, </span><span class="rst-sig-param">label=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">duration=100, </span><span class="rst-sig-param">unit=<span class="rst-variable-quote">'</span><span class="rst-variable-string">ns</span><span class="rst-variable-quote">'</span>, </span><span class="rst-sig-param">discretized_param_indices: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> = []</span>):</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L269">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_new_gate" title="c2qa.circuit.CVCircuit._new_gate">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="docstring functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+  </div>
 </div><div class="baseinstancevariable private">
   
   
@@ -2596,7 +2680,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_ancillas</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L74">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L78">
       
       (source)
     </a>
@@ -2623,7 +2707,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_calibrations</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L88">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L92">
       
       (source)
     </a>
@@ -2650,7 +2734,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_clbit_indices</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L77">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L81">
       
       (source)
     </a>
@@ -2677,7 +2761,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_clbits</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L75">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L79">
       
       (source)
     </a>
@@ -2704,11 +2788,65 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_data</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L83">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L87">
       
       (source)
     </a>
     <a class="headerLink" href="#_data" title="c2qa.circuit.CVCircuit._data">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._force_parameterized_unitary_gate">
+    
+  </a>
+  <a name="_force_parameterized_unitary_gate">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_force_parameterized_unitary_gate</span> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L62">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_force_parameterized_unitary_gate" title="c2qa.circuit.CVCircuit._force_parameterized_unitary_gate">
+      
+      
+      ¶
+    </a>
+  </div>
+  <div class="functionBody">
+    
+    <div><p class="undocumented">Undocumented</p></div>
+    
+  </div>
+</div><div class="baseinstancevariable private">
+  
+  
+  <a name="c2qa.circuit.CVCircuit._has_parameterized_gate">
+    
+  </a>
+  <a name="_has_parameterized_gate">
+    
+  </a>
+  <div class="functionHeader">
+    
+    <span class="py-defname">_has_parameterized_gate</span>: <code><a href="https://docs.python.org/3/library/functions.html#bool" class="intersphinx-link">bool</a></code> =
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L61">
+      
+      (source)
+    </a>
+    <a class="headerLink" href="#_has_parameterized_gate" title="c2qa.circuit.CVCircuit._has_parameterized_gate">
       
       
       ¶
@@ -2731,7 +2869,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_metadata</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L89">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L93">
       
       (source)
     </a>
@@ -2758,7 +2896,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_qubit_indices</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L76">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L80">
       
       (source)
     </a>
@@ -2785,7 +2923,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_qubit_regs</span>: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L28">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L30">
       
       (source)
     </a>
@@ -2812,7 +2950,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="functionHeader">
     
     <span class="py-defname">_qubits</span> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/f4b1f9ae1575cb78a96201eeba99a87dc901404b/c2qa/circuit.py#L73">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/circuit.py#L77">
       
       (source)
     </a>
@@ -2830,7 +2968,7 @@ instances of ParameterizedUnitaryGate.</p></div>
 </div>
         </div>
       
-      </div>
+      </main>
     </div>
 
     <footer class="navbar navbar-default">
@@ -2839,7 +2977,7 @@ instances of ParameterizedUnitaryGate.</p></div>
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    25.4.0 at 2025-07-03 16:55:17.
+    25.10.1 at 2025-10-28 01:39:35.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
