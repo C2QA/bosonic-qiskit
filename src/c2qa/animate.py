@@ -3,13 +3,11 @@ import multiprocessing
 import os
 import pathlib
 
-
 import matplotlib
 import matplotlib.animation
 import matplotlib.pyplot as plt
 import numpy
 import qiskit
-
 
 from c2qa.circuit import CVCircuit
 from c2qa.discretize import discretize_circuits, discretize_single_circuit
