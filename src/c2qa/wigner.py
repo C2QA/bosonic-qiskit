@@ -221,7 +221,7 @@ def plot_wigner(
     state = (
         trace_out_qubits(circuit, state_vector)
         if trace
-        else DensityMatrix(state_statevector)
+        else DensityMatrix(state_vector)
     )
 
     w_fock = wigner(
