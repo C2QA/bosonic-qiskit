@@ -1,12 +1,14 @@
-from typing import Iterable
+from typing import Any, Callable, Iterable, Sequence, cast
 
-import c2qa
 import numpy
 import qiskit
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit import Gate
+from qiskit.circuit import Gate, Instruction
 from qiskit.circuit.library import UnitaryGate
 from qiskit.circuit.parameter import ParameterExpression
+from scipy.sparse import issparse, sparray, spmatrix
+
+from .operators import CVOperators, UnitaryFunc
 
 
 class ParameterizedUnitaryGate(Gate):
@@ -14,14 +16,14 @@ class ParameterizedUnitaryGate(Gate):
 
     def __init__(
         self,
-        op_func,
-        params,
-        num_qubits,
-        cutoffs,
-        label=None,
-        duration=100,
-        unit="ns",
-        discretized_param_indices: list = [],
+        op_func: UnitaryFunc,
+        params: Any,
+        num_qubits: int,
+        cutoffs: Sequence[int],
+        label: str | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+        discretized_param_indices: list | None = None,
     ):
         """Initialize ParameterizedUnitaryGate
 
@@ -34,7 +36,12 @@ class ParameterizedUnitaryGate(Gate):
             unit (string, optional): Unit of duration (only supports those allowed by Qiskit).
             discretized_param_indices (list): list of int indices into self.params for parameters to be discretized. An empty list will discretize all params.
         """
-        super().__init__(name=label, num_qubits=num_qubits, params=params, label=label)
+        super().__init__(
+            name=label or "parameterized_unitary",
+            num_qubits=num_qubits,
+            params=params,
+            label=label,
+        )
 
         self.op_func = op_func
 
@@ -45,14 +52,15 @@ class ParameterizedUnitaryGate(Gate):
 
         self.duration = duration
         self.unit = unit
-        self.discretized_param_indices = discretized_param_indices
+        # By default, discretize all parameters
+        self.discretized_param_indices = discretized_param_indices or list(
+            range(len(params))
+        )
         self.cutoffs = cutoffs
 
-    def __array__(self, dtype=None):
+    def __array__(self, dtype=None) -> numpy.ndarray | sparray | spmatrix:
         """Call the operator function to build the array using the bound parameter values."""
-        return c2qa.operators.CVOperators.call_op(
-            self.op_func, self.params, self.cutoffs
-        )
+        return CVOperators.call_op(self.op_func, self.params, self.cutoffs)
 
     def _define(self):
         try:
@@ -70,7 +78,12 @@ class ParameterizedUnitaryGate(Gate):
             # warnings.warn("Unable to define gate, setting definition to None to prevent serialization errors for parameterized unitary gates.")
             self.definition = None
 
-    def validate_parameter(self, parameter):
+    def validate_parameter(
+        self,
+        parameter: complex
+        | ParameterExpression
+        | Iterable[complex | ParameterExpression],
+    ) -> complex | ParameterExpression | Iterable[complex | ParameterExpression]:
         """Gate parameters should be int, float, complex, or ParameterExpression"""
         if numpy.iscomplexobj(parameter):
             # Turn all numpy complex values into native python complex objects so that
@@ -112,14 +125,20 @@ class ParameterizedUnitaryGate(Gate):
         #     result = self.op_func(*values)
         result = self.op_func(*values)
 
-        if hasattr(result, "toarray"):
-            result = result.toarray()
+        if issparse(result):
+            result = cast(spmatrix | sparray, result)
+            return (
+                result.todense() if isinstance(result, spmatrix) else result.toarray()
+            )
 
         return result
 
 
 def __calculate_segment_params(
-    self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
+    self: Instruction,
+    current_step: int = 1,
+    total_steps: int = 1,
+    keep_state: bool = False,
 ):
     """
     Calculate the parameters at the current step. Return a tuples of the values.
@@ -138,12 +157,9 @@ def __calculate_segment_params(
         param_fraction = current_step / total_steps
 
     values = []
+    discretized_params = getattr(self, "discretized_param_indices", [])
     for index, param in enumerate(self.params):
-        if (
-            not hasattr(self, "discretized_param_indices")
-            or len(self.discretized_param_indices) == 0
-            or index in self.discretized_param_indices
-        ):
+        if index in discretized_params:
             values.append(param * param_fraction)
         else:
             values.append(param)
@@ -152,26 +168,27 @@ def __calculate_segment_params(
 
 
 def __calculate_segment_duration(
-    self, current_step: int = 1, total_steps: int = 1, keep_state: bool = False
-):
+    self: Instruction,
+    current_step: int = 1,
+    total_steps: int = 1,
+    keep_state: bool = False,
+) -> tuple[float | None, str]:
     """Calculate the duration at the current step. Return a tuple of the (duration, unit)."""
     frame_duration = None
 
     # FIXME - Qiskit v2.0 removed Instruction duration & unit!
-    if hasattr(self, "duration") and self.duration:
+    if duration := getattr(self, "duration", None):
+        duration = cast(int, duration)
         if keep_state:
             fraction = 1 / total_steps
         else:
             fraction = current_step / total_steps
 
-        frame_duration = self.duration * fraction
+        frame_duration = duration * fraction
 
     # FIXME - Qiskit v2.0 removed Instruction duration & unit!
-    if hasattr(self, "unit"):
-        unit = self.unit
-    else:
-        unit = "s"
-    
+    unit = getattr(self, "unit", "s")
+
     return frame_duration, unit
 
 

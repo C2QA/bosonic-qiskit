@@ -1,9 +1,11 @@
-import c2qa
+import math
+import random
+
+import numpy
 import pytest
 import qiskit
-import math
-import numpy
-import random
+
+import c2qa
 
 
 def test_cv_c_d(capsys):
@@ -16,8 +18,7 @@ def test_cv_c_d(capsys):
         circuit = c2qa.CVCircuit(qmr, qr)
 
         theta = random.random()
-        beta = -theta
-        circuit.cv_c_d(theta=theta, beta=beta, qumode=qmr[0], qubit=qr[0])
+        circuit.cv_c_d(theta=theta, qumode=qmr[0], qubit=qr[0])
 
         gate = circuit.data[0].operation
         total_steps = 2
@@ -29,7 +30,7 @@ def test_cv_c_d(capsys):
         print(f"Discretized params {discretized_params}")
 
         assert discretized_params[0] == (theta / total_steps)
-        assert discretized_params[1] == (beta / total_steps)
+        assert discretized_params[1] == (-theta / total_steps)
 
 
 def test_cv_c_schwinger(capsys):

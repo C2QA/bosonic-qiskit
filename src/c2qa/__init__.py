@@ -2,16 +2,17 @@
 
 # flake8: noqa
 
-from c2qa.circuit import CVCircuit
-from c2qa.qumoderegister import QumodeRegister
-
-import c2qa.animate
-import c2qa.discretize
-import c2qa.kraus
-import c2qa.operators
-import c2qa.parameterized_unitary_gate
-import c2qa.util
-import c2qa.wigner
+from .circuit import CVCircuit
+from .qumoderegister import QumodeRegister
+from . import (
+    animate,
+    discretize,
+    kraus,
+    operators,
+    parameterized_unitary_gate,
+    util,
+    wigner,
+)
 
 import warnings
 
@@ -21,6 +22,18 @@ warnings.warn(
     "to 'bosonic-qiskit' in a future release of version 15.0 on November 16, 2025. "
     "Imports will need to be modified to `bosonic_qiskit`. Please update your imports accordingly. ",
     DeprecationWarning,
-    stacklevel=2 # This points the warning to the line that imports the package
+    stacklevel=2,  # This points the warning to the line that imports the package
 )
 # --- WARNING MESSAGE END ---
+
+__all__ = [
+    "CVCircuit",
+    "QumodeRegister",
+    "animate",
+    "discretize",
+    "kraus",
+    "operators",
+    "parameterized_unitary_gate",
+    "util",
+    "wigner",
+]
