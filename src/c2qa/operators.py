@@ -397,7 +397,7 @@ class CVOperators:
         thetas, ns = np.array_split(params, 2)
         ns = ns.astype(int)
 
-        diags = np.ones(cutoff)
+        diags = np.ones(cutoff, dtype=complex)
         diags[ns] = np.exp(1j * thetas)
         return cast(
             sp.csc_array,
@@ -423,7 +423,7 @@ class CVOperators:
         thetas, ns = np.array_split(params, 2)
         ns = ns.astype(int)
 
-        diags = np.ones(cutoff)
+        diags = np.ones(cutoff, dtype=complex)
         diags[ns] = np.exp(1j * thetas)
         diags = np.concatenate([diags, diags.conj()])
         return cast(
