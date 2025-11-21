@@ -232,12 +232,13 @@ class CVCircuit(QuantumCircuit):
             modes = [modes]
 
         modes = cast(Sequence[Qumode], modes)
-        if isinstance(params, int):
+        params = np.atleast_1d(params)
+        if params.size == 1:
             for qumode in modes:
                 qumode_index = self.get_qmr_index(qumode[0])
                 cutoff = self.get_qmr_cutoff(qumode_index)
 
-                if params >= cutoff:
+                if params[0] >= cutoff:
                     raise ValueError(
                         f"The given Fock state {params} is greater than the cutoff {cutoff}"
                     )
@@ -825,8 +826,60 @@ class CVCircuit(QuantumCircuit):
                 qargs=qargs,
             )
 
-    # def cv_c_sqr(self, theta, n, qumode, qubit, duration=100, unit="ns"):
-    #     """TODO"""
+    def cv_sqr(
+        self,
+        theta: ArrayLike,
+        phi: ArrayLike,
+        n: ArrayLike,
+        qumode: Qumode,
+        qubit: Qubit | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
+        """Selective Qubit Rotation (SQR) gate
+
+        This gate applies a qubit rotation conditioned on the Fock state(s) of the oscillator. See eq. 234 of arXiv:2407.10381.
+        """
+        cutoff = QumodeRegister.calculate_cutoff(len(qumode))
+        theta = np.atleast_1d(theta)
+        phi = np.atleast_1d(phi)
+        n = np.atleast_1d(n)
+
+        if not np.issubdtype(n.dtype, np.integer):
+            raise ValueError(f"Must provide integer fock levels, got dtype {n.dtype}")
+
+        out = np.broadcast(theta, phi, n)
+        if out.ndim != 1:
+            raise ValueError("Theta, phi, and n must be broadcastable to a 1D array")
+
+        if np.unique(n).size != out.size:
+            raise ValueError("Must specify different fock levels for each theta, phi")
+
+        if np.any(n >= cutoff):
+            raise ValueError("Received Fock level too high for the qumode cutoff")
+
+        # Flatten all the parameters to a single array like the other gates. This will
+        # promote the dtype of n -> float
+        params = np.concatenate(
+            [
+                np.broadcast_to(theta, out.shape),
+                np.broadcast_to(phi, out.shape),
+                np.broadcast_to(n, out.shape),
+            ]
+        )
+
+        return self.append(
+            self._new_gate(
+                self.ops.sqr,
+                params,
+                cutoffs=[cutoff],
+                num_qubits=len(qumode) + 1,
+                label="SQR",
+                duration=duration,
+                unit=unit,
+            ),
+            qargs=[*qumode, qubit],
+        )
 
     # def cv_multisnap(self, thetas, ns, qumode, duration=1, unit="us"):
     #     params = thetas + ns
