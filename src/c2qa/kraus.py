@@ -242,11 +242,17 @@ class PhotonLossNoisePass(LocalNoisePass):
     def applies_to_instruction(self, op: Instruction, qubits: Sequence[int]) -> bool:
         """Test if this PhotonLossNoisePass applies to the given instruction based on its name and qumodes (qubits)"""
         # FIXME Qiskit v2.0 measure fails in PhotonLossNoisePass, but not in <v1.x?
-        return (
+
+        inst_whitelisted = (
             op.name not in IGNORE_INSTRUCTIONS
-            and op.name in self._instructions
-            and any(x in qubits for x in self._qumode_qubit_indices)
+            and not self._instructions
+            or op.name in self._instructions
         )
+        intersects_qubits = not self._qumode_qubit_indices or any(
+            x in qubits for x in self._qumode_qubit_indices
+        )
+
+        return inst_whitelisted and intersects_qubits
 
     def duration_to_sec(self, op: Instruction) -> float:
         """Return the given Instruction's duration in seconds"""
