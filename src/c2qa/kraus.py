@@ -97,8 +97,8 @@ def __kraus_operators(
     photon_loss_rate: float,
     time: float,
     cutoff: int,
-    a: sp.csc_matrix,
-    n: sp.csc_matrix,
+    a: sp.csc_array,
+    n: sp.csc_array,
 ) -> list[np.ndarray]:
     """Calculates the Kraus operators for photon loss
 
@@ -122,8 +122,8 @@ def __kraus_operators(
             math.pow((1 - math.exp(-1 * photon_loss_rate * time)), photons)
             / math.factorial(photons)
         )
-        kraus = kraus * scipy.sparse.linalg.expm(-1 * (photon_loss_rate / 2) * time * n)
-        kraus = cast(sp.csc_matrix, kraus)
+        kraus = kraus * sp.linalg.expm(-1 * (photon_loss_rate / 2) * time * n)
+        kraus = cast(sp.csc_array, kraus)
         kraus = kraus.dot(a**photons)
         operators.append(kraus.todense())
 
