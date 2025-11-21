@@ -1,7 +1,8 @@
 import random
 
-from c2qa.operators import CVOperators
 import numpy
+
+from c2qa.operators import CVOperators
 
 
 def allclose(a, b) -> bool:
@@ -100,10 +101,7 @@ class TestMatrices:
         Actions a manual comparison can be made between Linux, MacOS, and Windows"""
         with capsys.disabled():
             op = self.ops.bs(numpy.pi / 4, self.cutoff, self.cutoff)
-            # print()
-            # print(op)
-
-            assert op.getnnz()
+            assert op.nnz
 
     def test_d(self, capsys):
         with capsys.disabled():

@@ -1,23 +1,31 @@
+import functools
+import re
 from collections.abc import Sequence
 from typing import Callable, cast
 
 import numpy as np
 import scipy.sparse as sp
 from numpy.typing import ArrayLike, NDArray
+from qiskit.circuit.library import XGate, YGate, ZGate
 from qiskit.circuit.parameterexpression import ParameterExpression
-from typing_extensions import TypeIs
 
 from .typing import is_int_type
 
-xQB = np.array([[0, 1], [1, 0]])
-yQB = np.array([[0, -1j], [1j, 0]])
-zQB = np.array([[1, 0], [0, -1]])
-idQB = np.array([[1, 0], [0, 1]])
-sigma_plus = np.array([[0, 1], [0, 0]])
-sigma_minus = np.array([[0, 0], [1, 0]])
+I = np.eye(2)
+X = XGate().to_matrix()
+Y = YGate().to_matrix()
+Z = ZGate().to_matrix()
+
+# Fixme: these imply that |g> = |1> and |e> = |0>. Is that correct?
+SPLUS = 0.5 * (X + 1j * Y)  # |1> -> |0>
+SMINUS = 0.5 * (X - 1j * Y)  # |0> -> |1>
+P0 = (I + Z) / 2  # |0><0|
+P1 = (I - Z) / 2  # |1><1|
 
 
-UnitaryFunc = Callable[..., np.ndarray | sp.spmatrix | sp.sparray]
+UnitaryFunc = Callable[..., np.ndarray | sp.sparray]
+
+EXPR_PATTERN = re.compile(r"(\w+)(\d+)")
 
 
 class CVOperators:
@@ -58,278 +66,233 @@ class CVOperators:
         result = cast(NDArray[np.complexfloating], result)
         return result
 
-    def get_a(self, cutoff: int) -> sp.csc_matrix:
+    def get_eye(self, cutoff: int) -> sp.csc_array:
+        """Identity matrix"""
+        return cast(sp.csc_array, sp.eye_array(cutoff, format="csc"))
+
+    def get_a(self, cutoff: int) -> sp.csc_array:
         """Annihilation operator"""
-        data = np.sqrt(range(cutoff))
-        return sp.spdiags(data=data, diags=[1], m=len(data), n=len(data)).tocsc()
-
-    def get_a1(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return sp.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b)).tocsc()
-
-    def get_a2(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return sp.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b)).tocsc()
-
-    def get_b1(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        kron_ab = sp.kron(self.get_a(cutoff_a), self.get_eye(cutoff_b))
-        return sp.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
-
-    def get_b2(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        kron_ab = sp.kron(self.get_eye(cutoff_a), self.get_a(cutoff_b))
-        return sp.kron(kron_ab, self.get_eye(cutoff_c)).tocsc()
-
-    def get_b3(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        kron_ab = sp.kron(self.get_eye(cutoff_a), self.get_eye(cutoff_b))
-        return sp.kron(kron_ab, self.get_a(cutoff_c)).tocsc()
-
-    def get_a12(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return self.get_a1(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
-
-    def get_b123(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        return (
-            self.get_b1(cutoff_a, cutoff_b, cutoff_c)
-            * self.get_b2(cutoff_a, cutoff_b, cutoff_c)
-            * self.get_b3(cutoff_a, cutoff_b, cutoff_c)
+        data = np.sqrt(np.arange(1, cutoff + 1))
+        return cast(
+            sp.csc_array,
+            sp.diags_array(data, offsets=1, shape=(cutoff, cutoff), format="csc"),
         )
 
-    def get_a_dag(self, cutoff: int) -> sp.csc_matrix:
+    def get_ad(self, cutoff: int) -> sp.csc_array:
         """Creation operator"""
         a = self.get_a(cutoff)
         return a.conjugate().transpose().tocsc()
 
-    def get_N(self, cutoff: int) -> sp.csc_matrix:
+    def get_N(self, cutoff: int) -> sp.csc_array:
         """Number operator"""
         a = self.get_a(cutoff)
-        a_dag = self.get_a_dag(cutoff)
-        return a_dag * a
+        a_dag = self.get_ad(cutoff)
+        return a_dag @ a
 
-    def get_a1_dag(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return self.get_a1(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
+    def get_projector(self, n: int, cutoff: int) -> sp.csc_array:
+        out = sp.dok_array((cutoff, cutoff))
+        out[n, n] = 1
+        return out.tocsc()
 
-    def get_a2_dag(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return self.get_a2(cutoff_a, cutoff_b).conjugate().transpose().tocsc()
+    def get_op(self, expr: str, *cutoffs: int) -> sp.csc_array:
+        """Helper function to construct creation/annihilation operators symbolically"""
+        matrices: dict[int, sp.csc_array] = {}
 
-    def get_b1_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        return self.get_b1(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
+        for subexpr in expr.split(" "):
+            if re_match := EXPR_PATTERN.match(subexpr):
+                op = re_match.group(1)
+                qumode_idx = int(re_match.group(2))
 
-    def get_b2_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        return self.get_b2(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
+                if qumode_idx >= len(cutoffs):
+                    raise ValueError(
+                        f"Expected a qumode index < len(cutoffs), got {qumode_idx}"
+                    )
 
-    def get_b3_dag(self, cutoff_a: int, cutoff_b: int, cutoff_c: int) -> sp.csc_matrix:
-        return self.get_b3(cutoff_a, cutoff_b, cutoff_c).conjugate().transpose().tocsc()
+                match op:
+                    case "a":
+                        matrices[qumode_idx] = self.get_a(cutoffs[qumode_idx])
+                    case "ad":
+                        matrices[qumode_idx] = self.get_ad(cutoffs[qumode_idx])
+                    case "n":
+                        matrices[qumode_idx] = self.get_N(cutoffs[qumode_idx])
+                    case _:
+                        raise ValueError(f"Unrecognized symbol: {op}")
 
-    def get_a12_dag(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
+        ordered_mats: list[sp.csc_array] = []
+        for i, cutoff in enumerate(cutoffs):
+            if (mat := matrices.get(i)) is not None:
+                ordered_mats.append(mat)
+            else:
+                ordered_mats.append(self.get_eye(cutoff))
 
-    def get_b123_dag(
-        self, cutoff_a: int, cutoff_b: int, cutoff_c: int
-    ) -> sp.csc_matrix:
-        return (
-            self.get_b1_dag(cutoff_a, cutoff_b, cutoff_c)
-            * self.get_b2_dag(cutoff_a, cutoff_b, cutoff_c)
-            * self.get_b3_dag(cutoff_a, cutoff_b, cutoff_c)
-        )
+        return functools.reduce(sp.kron, ordered_mats).tocsc()
 
-    def get_a12dag(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
-
-    def get_a1dag2(self, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
-        return self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
-
-    def get_eye(self, cutoff: int) -> sp.csc_matrix:
-        """Identity matrix"""
-        return cast(sp.csc_matrix, sp.eye(cutoff, format="csc"))
-
-    def r(self, theta: float, cutoff: int) -> sp.csc_matrix:
+    def r(self, theta: float, cutoff: int) -> sp.csc_array:
         """Phase space rotation operator
 
         Args:
             theta (real): rotation
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
         arg = 1j * theta * self.get_N(cutoff)
-
         return sp.linalg.expm(arg)
 
-    def d(self, alpha: complex, cutoff: int) -> sp.csc_matrix:
+    def d(self, alpha: complex, cutoff: int) -> sp.csc_array:
         """Displacement operator
 
         Args:
             alpha (complex): displacement
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        arg = (alpha * self.get_a_dag(cutoff)) - (
-            np.conjugate(alpha) * self.get_a(cutoff)
-        )
+        arg = alpha * self.get_ad(cutoff)
+        hc = arg.conjugate().transpose()
+        return sp.linalg.expm(arg - hc)
 
-        return sp.linalg.expm(arg)
-
-    def s(self, theta: complex, cutoff: int) -> sp.csc_matrix:
+    def s(self, theta: complex, cutoff: int) -> sp.csc_array:
         """Single-mode squeezing operator
 
         Args:
             theta (complex): squeeze
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        a = self.get_a(cutoff)
-        a_dag = self.get_a_dag(cutoff)
-        a_sqr = a * a
-        a_dag_sqr = a_dag * a_dag
-        arg = 0.5 * ((np.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))
+        ad = self.get_ad(cutoff)
+        ad2 = ad @ ad
+        arg = 0.5 * np.conjugate(theta) * ad2
+        hc = arg.conjugate().transpose()
+        return sp.linalg.expm(arg - hc)
 
-        return sp.linalg.expm(arg)
-
-    def s2(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
+    def s2(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Two-mode squeezing operator
 
         Args:
             theta (complex): squeezing factor
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
         r, phi = np.abs(theta), np.angle(theta)
 
         # eq. 183 in arXiv:2407.10381
-        arg = (np.exp(1j * phi) * self.get_a12_dag(cutoff_a, cutoff_b)) - (
-            np.exp(-1j * phi) * self.get_a12(cutoff_a, cutoff_b)
-        )
-
-        return sp.linalg.expm(r * arg)
+        arg = r * np.exp(1j * phi) * self.get_op("ad0 ad1", cutoff_a, cutoff_b)
+        hc = arg.conjugate().transpose()
+        return sp.linalg.expm(arg - hc)
 
     def s3(
         self, theta: complex, cutoff_a: int, cutoff_b: int, cutoff_c: int
-    ) -> sp.csc_matrix:
+    ) -> sp.csc_array:
         """Three-mode squeezing operator
 
         Args:
             theta: squeezing amount
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
         r, phi = np.abs(theta), np.angle(theta)
 
-        arg = np.exp(1j * phi) * self.get_b123_dag(
-            cutoff_a, cutoff_b, cutoff_c
-        ) - np.exp(-1j * phi) * self.get_b123(cutoff_a, cutoff_b, cutoff_c)
+        arg = (
+            r
+            * np.exp(1j * phi)
+            * self.get_op("ad0 ad1 ad2", cutoff_a, cutoff_b, cutoff_c)
+        )
+        hc = arg.conjugate().transpose()
+        return sp.linalg.expm(arg - hc)
 
-        return sp.linalg.expm(r * arg)
-
-    def bs(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
+    def bs(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Two-mode beam splitter operator
 
         Args:
             theta: phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
 
-        arg = theta * self.get_a1dag2(cutoff_a, cutoff_b) - np.conj(
-            theta
-        ) * self.get_a12dag(cutoff_a, cutoff_b)
+        arg = theta * self.get_op("ad0 a1", cutoff_a, cutoff_b)
+        hc = arg.conjugate().transpose()
+        return sp.linalg.expm(arg - hc)
 
-        return sp.linalg.expm(arg)
-
-    def cr(self, theta: float, cutoff: int) -> sp.csc_matrix:
+    def cr(self, theta: float, cutoff: int) -> sp.csc_array:
         """Controlled phase space rotation operator
 
         Args:
             theta (real): phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        arg = theta * 1j * sp.kron(zQB, self.get_N(cutoff)).tocsc()
-
+        arg = theta * 1j * sp.kron(Z, self.get_N(cutoff), format="csc")
         return sp.linalg.expm(arg)
 
-    def crx(self, theta: float, cutoff: int) -> sp.csc_matrix:
+    def crx(self, theta: float, cutoff: int) -> sp.csc_array:
         """Controlled phase space rotation operator around sigma^x
 
         Args:
             theta (real): phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        arg = theta * 1j * sp.kron(xQB, self.get_N(cutoff)).tocsc()
-
+        arg = theta * 1j * sp.kron(X, self.get_N(cutoff), format="csc")
         return sp.linalg.expm(arg)
 
-    def cry(self, theta: float, cutoff: int) -> sp.csc_matrix:
+    def cry(self, theta: float, cutoff: int) -> sp.csc_array:
         """Controlled phase space rotation operator around sigma^x
 
         Args:
             theta (real): phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        arg = theta * 1j * sp.kron(yQB, self.get_N(cutoff)).tocsc()
-
+        arg = theta * 1j * sp.kron(Y, self.get_N(cutoff), format="csc")
         return sp.linalg.expm(arg)
 
-    def cd(self, theta: float, beta: float | None, cutoff: int) -> sp.csc_matrix:
+    def cd(self, alpha: complex, beta: complex | None, cutoff: int) -> sp.csc_array:
         """Controlled displacement operator
 
         Args:
-            theta (real): displacement for qubit state 0
-            beta (real): displacement for qubit state 1. If None, use -alpha.
+            alpha (complex): displacement for qubit state 0
+            beta (complex): displacement for qubit state 1. If None, use -alpha.
 
         Returns:
-            bsr_matrix: operator matrix
+            csc_array: operator matrix
         """
-        displace0 = (theta * self.get_a_dag(cutoff)) - (
-            np.conjugate(theta) * self.get_a(cutoff)
-        )
-        beta = beta or -theta
-        displace1 = (beta * self.get_a_dag(cutoff)) - (
-            np.conjugate(beta) * self.get_a(cutoff)
-        )
+        displace0 = self.d(alpha, cutoff)
+        displace1 = self.d(beta or -alpha, cutoff)
+        res = sp.kron(P0, displace0) + sp.kron(P1, displace1)
+        return res.tocsc()
 
-        return sp.kron((idQB + zQB) / 2, sp.linalg.expm(displace0)) + sp.kron(
-            (idQB - zQB) / 2, sp.linalg.expm(displace1)
-        )
-
-    def ecd(self, theta: complex, cutoff: int) -> sp.csc_matrix:
+    def ecd(self, theta: complex, cutoff: int) -> sp.csc_array:
         """Echoed controlled displacement operator
 
         Args:
             theta (complex): displacement
 
         Returns:
-            csr_matrix: operator matrix
+            csc_array: operator matrix
         """
-        argm = (theta * self.get_a_dag(cutoff)) - (
-            np.conjugate(theta) * self.get_a(cutoff)
-        )
-        arg = sp.kron(zQB, argm)
+        return self.cd(theta, -theta, cutoff)
 
-        return sp.linalg.expm(arg)
-
-    def cbs(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
+    def cbs(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Controlled phase two-mode beam splitter operator
 
         Args:
             theta (complex): beamsplitter phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
 
-        argm = theta * self.get_a1dag2(cutoff_a, cutoff_b) - np.conjugate(
-            theta
-        ) * self.get_a12dag(cutoff_a, cutoff_b)
-        arg = sp.kron(zQB, argm).tocsc()
-
-        return sp.linalg.expm(arg)
+        arg = self.bs(theta, cutoff_a, cutoff_b)
+        res = sp.kron(P0, arg) + sp.kron(P1, arg.conjugate().transpose())
+        return res.tocsc()
 
     def cschwinger(
         self,
@@ -340,33 +303,43 @@ class CVOperators:
         phi_2: float,
         cutoff_a: int,
         cutoff_b: int,
-    ) -> sp.csc_matrix:
+    ) -> sp.csc_array:
         """General form of a controlled Schwinger gate
 
         Args:
             params (real): [beta, theta_1, phi_1, theta_2, phi_2]
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
 
-        Sx = (
-            self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
-            + self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
-        ) / 2
-        Sy = (
-            self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
-            - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
-        ) / (2 * 1j)
+        # Sx = (
+        #     self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
+        #     + self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
+        # ) / 2
+        Sx = self.get_op("a0 ad1", cutoff_a, cutoff_b)
+        Sx = (Sx + Sx.conjugate().transpose()) / 2
+
+        # Sy = (
+        #     self.get_a1(cutoff_a, cutoff_b) * self.get_a2_dag(cutoff_a, cutoff_b)
+        #     - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
+        # ) / (2 * 1j)
+        Sy = self.get_op("a0 ad1", cutoff_a, cutoff_b)
+        Sy = (Sy - Sy.conjugate().transpose()) / 2j
+
+        # Sz = (
+        #     self.get_a2_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
+        #     - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a1(cutoff_a, cutoff_b)
+        # ) / 2
         Sz = (
-            self.get_a2_dag(cutoff_a, cutoff_b) * self.get_a2(cutoff_a, cutoff_b)
-            - self.get_a1_dag(cutoff_a, cutoff_b) * self.get_a1(cutoff_a, cutoff_b)
+            self.get_op("n1", cutoff_a, cutoff_b)
+            - self.get_op("n0", cutoff_a, cutoff_b)
         ) / 2
 
         sigma = (
-            np.sin(theta_1) * np.cos(phi_1) * xQB
-            + np.sin(theta_1) * np.sin(phi_1) * yQB
-            + np.cos(theta_1) * zQB
+            np.sin(theta_1) * np.cos(phi_1) * X
+            + np.sin(theta_1) * np.sin(phi_1) * Y
+            + np.cos(theta_1) * Z
         )
         S = (
             np.sin(theta_2) * np.cos(phi_2) * Sx
@@ -375,9 +348,9 @@ class CVOperators:
         )
         arg = sp.kron(sigma, S).tocsc()
 
-        return sp.linalg.expm(-1j * beta * arg)
+        return sp.linalg.expm(-1j * beta * arg).tocsc()
 
-    def snap(self, theta: float, n: int, cutoff: int) -> sp.csc_matrix:
+    def snap(self, theta: float, n: int, cutoff: int) -> sp.csc_array:
         """SNAP (Selective Number-dependent Arbitrary Phase) operator
 
         Args:
@@ -385,17 +358,12 @@ class CVOperators:
             n (integer): Fock state in which the mode should acquire the phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
 
-        ket_n = np.zeros(cutoff)
-        ket_n[n] = 1
-        projector = np.outer(ket_n, ket_n)
-        sparse_projector = sp.csr_matrix(projector)
-        arg = theta * 1j * sparse_projector.tocsc()
-        return sp.linalg.expm(arg)
+        return self.multisnap(theta, n, cutoff)
 
-    def csnap(self, theta: float, n: int, cutoff: int) -> sp.csc_matrix:
+    def csnap(self, theta: float, n: int, cutoff: int) -> sp.csc_array:
         """SNAP (Selective Number-dependent Arbitrary Phase) operator,
         with explicit sigma_z in exponential. Can be used to generate
         fock-number selective qubit rotations.
@@ -405,17 +373,12 @@ class CVOperators:
             n (integer): Fock state in which the mode should acquire the phase
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
 
-        ket_n = np.zeros(cutoff)
-        ket_n[n] = 1
-        projector = np.outer(ket_n, ket_n)
-        # sparse_projector = sp.csc_matrix(projector)
-        arg = theta * 1j * sp.kron(zQB, projector).tocsc()
-        return sp.linalg.expm(arg)
+        return self.multicsnap(theta, n, cutoff)
 
-    def multisnap(self, *args: int | float | np.integer | np.floating) -> sp.csr_matrix:
+    def multisnap(self, *args: int | float | np.integer | np.floating) -> sp.csc_array:
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations.
 
@@ -425,36 +388,23 @@ class CVOperators:
         Returns:
             csr_matrix: operator matrix
         """
-        # Divide list in two because thetas and ns must be sent in as a single list
-        *args, cutoff = args
+        *params, cutoff = args
+        params = np.atleast_1d(params)
 
         if not is_int_type(cutoff):
             raise ValueError(f"Expected integer cutoff, got {cutoff}")
 
-        midpoint = len(args) // 2
-        thetas, ns = args[:midpoint], args[:midpoint]
+        thetas, ns = np.array_split(params, 2)
+        ns = ns.astype(int)
 
-        if len(thetas) != len(ns):  # one theta per Fock state to apply it to
-            raise Exception("len(theta) must be equal to len(n)")
+        diags = np.ones(cutoff, dtype=complex)
+        diags[ns] = np.exp(1j * thetas)
+        return cast(
+            sp.csc_array,
+            sp.diags_array(diags, format="csc"),
+        )
 
-        id = np.eye(cutoff)
-        gate = sp.csr_matrix(id)
-        for theta, n in zip(thetas, ns):
-            if not is_int_type(n):
-                raise ValueError(f"Got non-integer fock state {n}")
-
-            ket_n = np.zeros(cutoff)
-            ket_n[n] = 1
-            projector = np.outer(ket_n, ket_n)
-            coeff = np.exp(1j * theta) - 1
-            mat = sp.csr_matrix(coeff * projector)
-            gate = gate + mat
-
-        return sp.csr_matrix(gate)
-
-    def multicsnap(
-        self, *args: int | float | np.integer | np.floating
-    ) -> sp.csr_matrix:
+    def multicsnap(self, *args: int | float | np.integer | np.floating) -> sp.csc_array:
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
         Generates an arbitrary number of fock-number selective qubit rotations, with the qubit that accrues the geometric phase explicit.
 
@@ -464,34 +414,24 @@ class CVOperators:
         Returns:
             csr_matrix: operator matrix
         """
-        # Divide list in two because thetas and ns must be sent in as a single list
-        *args, cutoff = args
+        *params, cutoff = args
+        params = np.atleast_1d(params)
 
         if not is_int_type(cutoff):
             raise ValueError(f"Expected integer cutoff, got {cutoff}")
 
-        midpoint = len(args) // 2
-        thetas, ns = args[:midpoint], args[:midpoint]
+        thetas, ns = np.array_split(params, 2)
+        ns = ns.astype(int)
 
-        if len(thetas) != len(ns):  # one theta per Fock state to apply it to
-            raise Exception("len(theta) must be equal to len(n)")
+        diags = np.ones(cutoff, dtype=complex)
+        diags[ns] = np.exp(1j * thetas)
+        diags = np.concatenate([diags, diags.conj()])
+        return cast(
+            sp.csc_array,
+            sp.diags_array(diags, format="csc"),
+        )
 
-        id = np.eye(cutoff)
-        gate = sp.csr_matrix(sp.kron(idQB, id))
-        for theta, n in zip(thetas, ns):
-            if not is_int_type(n):
-                raise ValueError(f"Got non-integer fock state {n}")
-
-            ket_n = np.zeros(cutoff)
-            ket_n[n] = 1
-            projector = np.outer(ket_n, ket_n)
-            coeff = sp.linalg.expm(1j * theta * zQB) - idQB
-            mat = sp.kron(coeff, projector).tocsr()
-            gate = gate + mat
-
-        return sp.csr_matrix(gate)
-
-    def sqr(self, *args: float) -> sp.csc_matrix:
+    def sqr(self, *args: float) -> sp.csc_array:
         """SQR gate (Liu et al, arXiv 2024)
 
         This function assumes that the parameters (minus the cutoff) are concatenated, so it should
@@ -501,7 +441,7 @@ class CVOperators:
             params: Gate parameters and cutoff, see `CVCircuit.cv_sqr` for the parameter structure
 
         Returns
-            csc_matrix: The operator matrix
+            csc_array: The operator matrix
         """
         from qiskit.circuit.library import RGate
 
@@ -512,140 +452,130 @@ class CVOperators:
         theta, phi, fock_states = np.array_split(params, 3)
         fock_states = fock_states.astype(int)  # guaranteed by cv_sqr
 
-        blocks = [idQB] * cutoff
+        blocks = [sp.eye_array(2)] * cutoff
         for t, p, n in zip(theta, phi, fock_states):
-            blocks[n] = RGate(t, p).to_matrix()
+            blocks[n] = sp.csc_array(RGate(t, p).to_matrix())
 
-        # Can cast because spmatrix is returned if no block is a sparray. This
-        # matrix acts on the space Qumode x Qubit, but we need to put qubit first
-        # to match qiskit
-        out = cast(sp.csc_matrix, sp.block_diag(blocks, format="csc"))
+        # This matrix acts on the space Qumode x Qubit
+        out = cast(sp.csc_array, sp.block_diag(blocks, format="csc"))
+
+        # Rearrange to act on Qubit x Qumode for qiskit
         perm = np.arange(2 * cutoff).reshape(cutoff, 2).T.flatten()
-        return out[perm, :][:, perm]
+        return out[perm, :][:, perm].tocsc()
 
-    def pnr(self, max: int, cutoff: int) -> sp.csc_matrix:
+    def pnr(self, max: int, cutoff: int) -> sp.csc_array:
         """Support gate for photon number readout (see Curtis et al., PRA (2021) and Wang et al., PRX (2020))
 
         Args:
             max (int): the period of the mapping
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        ket_n = np.zeros(cutoff)
-        projector = np.outer(ket_n, ket_n)
+        projector = sp.dok_array((cutoff, cutoff))
         # binary search
-        for j in range(int(max / 2)):
+        for j in range(max // 2):
             for i in range(j, cutoff, max):
-                ket_n = np.zeros(cutoff)
                 # fill from right to left
-                ket_n[-(i + 1)] = 1
-                projector += np.outer(ket_n, ket_n)
+                projector += self.get_projector(cutoff - (i + 1), cutoff)
 
         # Flip qubit if there is a boson present in any of the modes addressed by the projector
-        arg = 1j * (-np.pi / 2) * sp.kron(xQB, projector).tocsc()
+        arg = 1j * (-np.pi / 2) * sp.kron(X, projector).tocsc()
         return sp.linalg.expm(arg)
 
-    def eswap(self, theta, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
+    def eswap(self, theta, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Exponential SWAP operator
 
         Args:
             theta (real): rotation
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
 
-        # Todo: why does this store data in self?
-        self.mat = np.zeros([cutoff_a * cutoff_b, cutoff_a * cutoff_b])
-        for j in range(cutoff_a):
-            for i in range(cutoff_b):
-                self.mat[i + (j * cutoff_a)][i * cutoff_b + j] = 1
-        self.sparse_mat = sp.csr_matrix(self.mat).tocsc()
+        dim = cutoff_a * cutoff_b
+        m = np.arange(cutoff_a)[:, None]
+        n = np.arange(cutoff_b)[None, :]
 
-        arg = 1j * theta * self.sparse_mat
+        row_indices = n + (m * cutoff_a)
+        col_indices = (n * cutoff_b) + m
 
-        return sp.linalg.expm(arg)
+        data = np.ones(dim)
+        swap = sp.coo_array(
+            (data, (row_indices.flatten(), col_indices.flatten())), shape=(dim, dim)
+        )
+        return sp.linalg.expm(1j * theta * swap.tocsc())
 
-    def csq(self, theta: complex, cutoff: int) -> sp.csc_matrix:
+    def csq(self, theta: complex, cutoff: int) -> sp.csc_array:
         """Single-mode squeezing operator
 
         Args:
             theta (complex): squeeze
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        a_sqr = self.get_a(cutoff) * self.get_a(cutoff)
-        a_dag_sqr = self.get_a_dag(cutoff) * self.get_a_dag(cutoff)
-        arg = sp.kron(
-            zQB, 0.5 * ((np.conjugate(theta) * a_sqr) - (theta * a_dag_sqr))
-        ).tocsc()
+        a = self.get_a(cutoff)
+        a2 = a @ a
+        arg = 0.5 * np.conj(theta) * a2
+        hc = arg.conjugate().transpose()
+        arg = sp.kron(Z, arg - hc)
 
-        return sp.linalg.expm(arg)
+        return sp.linalg.expm(arg).tocsc()
 
-    def c_multiboson_sampling(self, max: int, cutoff: int) -> sp.csc_matrix:
+    def c_multiboson_sampling(self, max: int, cutoff: int) -> sp.csc_array:
         """SNAP gate creation for multiboson sampling purposes.
 
         Args:
             max (int): the period of the mapping
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
+        # Todo: is this correct?
         return self.get_eye(cutoff)
 
-    def gate_from_matrix(self, matrix: ArrayLike) -> sp.csc_matrix:
+    def gate_from_matrix(self, matrix: ArrayLike) -> sp.csc_array:
         """Converts matrix into gate. Called using ParameterizedUnitaryGate.
 
         Args:
             matrix (list): the (unitary) matrix that you wish to convert into a gate
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        return sp.csc_matrix(matrix)
+        return sp.csc_array(matrix)
 
-    def sum(self, scale: float, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
+    def sum(self, scale: float, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Two-qumode sum gate
 
         Args:
             scale (real): arbitrary scale factor
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        # TODO verify below implementation
-        #     equation 205 from https://arxiv.org/pdf/2407.10381
-        #     vs equation 4 from https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.88.097904
-        #   Equation 205 with matrix multiplication is not unitary, how to handle different cutoffs
-        a_mat = self.get_a(cutoff_a) + self.get_a_dag(cutoff_a)
-        b_mat = self.get_a_dag(cutoff_b) - self.get_a(cutoff_b)
-        arg = (scale / 2) * (sp.kron(a_mat, b_mat))
-
+        a_mat = self.get_a(cutoff_a) + self.get_ad(cutoff_a)
+        b_mat = self.get_ad(cutoff_b) - self.get_a(cutoff_b)
+        arg = (scale / 2) * sp.kron(a_mat, b_mat)
         return sp.linalg.expm(arg)
 
-    def csum(self, scale: float, cutoff_a: int, cutoff_b: int) -> sp.csc_matrix:
+    def csum(self, scale: float, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Conditional two-qumode sum gate
 
         Args:
             scale (real): arbitrary scale factor
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        # TODO verify below implementation
-        #     equation 205 from https://arxiv.org/pdf/2407.10381
-        #     vs equation 4 from https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.88.097904
-        #   Equation 205 with matrix multiplication is not unitary, how to handle different cutoffs
-        a_mat = self.get_a(cutoff_a) + self.get_a_dag(cutoff_a)
-        b_mat = self.get_a_dag(cutoff_b) - self.get_a(cutoff_b)
-        arg = (scale / 2) * (sp.kron(a_mat, b_mat))
-        arg = sp.kron(zQB, arg)
-
+        a_mat = self.get_a(cutoff_a) + self.get_ad(cutoff_a)
+        b_mat = self.get_ad(cutoff_b) - self.get_a(cutoff_b)
+        arg = (scale / 2) * sp.kron(a_mat, b_mat)
+        arg = sp.kron(Z, arg)
         return sp.linalg.expm(arg)
 
-    def jc(self, theta: float, phi: float, cutoff: int) -> sp.csc_matrix:
+    def jc(self, theta: float, phi: float, cutoff: int) -> sp.csc_array:
         """Jaynes-Cummings gate
 
         Args:
@@ -653,16 +583,14 @@ class CVOperators:
             phi (real): [0, 2pi)
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        # TODO -- verify use of sp.kron vs Table III.3 from https://arxiv.org/pdf/2407.10381
-        arg = np.exp(1j * phi) * sp.kron(sigma_minus, self.get_a_dag(cutoff))
-        arg += np.exp(-1j * phi) * sp.kron(sigma_plus, self.get_a(cutoff))
-        arg = -1j * theta * arg
-
+        arg = np.exp(1j * phi) * sp.kron(SMINUS, self.get_ad(cutoff))
+        hc = arg.conjugate().transpose()
+        arg = -1j * theta * (arg + hc)
         return sp.linalg.expm(arg)
 
-    def ajc(self, theta: float, phi: float, cutoff: int) -> sp.csc_matrix:
+    def ajc(self, theta: float, phi: float, cutoff: int) -> sp.csc_array:
         """Anti-Jaynes-Cummings gate
 
         Args:
@@ -670,13 +598,11 @@ class CVOperators:
             phi (real): [0, 2pi)
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        # TODO -- verify use of sp.kron vs Table III.3 from https://arxiv.org/pdf/2407.10381
-        arg = np.exp(1j * phi) * sp.kron(sigma_plus, self.get_a_dag(cutoff))
-        arg += np.exp(-1j * phi) * sp.kron(sigma_minus, self.get_a(cutoff))
-        arg = -1j * theta * arg
-
+        arg = np.exp(1j * phi) * sp.kron(SPLUS, self.get_ad(cutoff))
+        hc = arg.conjugate().transpose()
+        arg = -1j * theta * (arg + hc)
         return sp.linalg.expm(arg)
 
     def rb(self, theta: complex, cutoff: int):
@@ -686,12 +612,9 @@ class CVOperators:
             theta (complex): arbitrary scale factor
 
         Returns:
-            csc_matrix: operator matrix
+            csc_array: operator matrix
         """
-        # TODO -- verify use of sp.kron vs Table III.3 from https://arxiv.org/pdf/2407.10381
-        arg = -1j * sp.kron(
-            xQB,
-            (theta * self.get_a_dag(cutoff) + np.conjugate(theta) * self.get_a(cutoff)),
-        )
-
+        arg = theta * self.get_ad(cutoff)
+        hc = arg.conjugate().transpose()
+        arg = sp.kron(X, -1j * (arg + hc)).tocsc()
         return sp.linalg.expm(arg)
