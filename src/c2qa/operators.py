@@ -361,9 +361,7 @@ class CVOperators:
             csc_array: operator matrix
         """
 
-        projector = sp.dok_array((cutoff, cutoff))
-        projector[n, n] = np.exp(1j * theta)
-        return projector.tocsc()
+        return self.multisnap(theta, n, cutoff)
 
     def csnap(self, theta: float, n: int, cutoff: int) -> sp.csc_array:
         """SNAP (Selective Number-dependent Arbitrary Phase) operator,
@@ -378,9 +376,7 @@ class CVOperators:
             csc_array: operator matrix
         """
 
-        projector = self.get_projector(n, cutoff)
-        arg = theta * 1j * sp.kron(Z, projector).tocsc()
-        return sp.linalg.expm(arg)
+        return self.multicsnap(theta, n, cutoff)
 
     def multisnap(self, *args: int | float | np.integer | np.floating) -> sp.csc_array:
         """SNAP (Selective Number-dependent Arbitrary Phase) operator for multiple Fock states.
