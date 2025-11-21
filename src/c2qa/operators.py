@@ -491,6 +491,38 @@ class CVOperators:
 
         return sp.csr_matrix(gate)
 
+    def sqr(self, *args: float) -> sp.csc_matrix:
+        """SQR gate (Liu et al, arXiv 2024)
+
+        This function assumes that the parameters (minus the cutoff) are concatenated, so it should
+        have length 3*n, where n is the number of distinct fock states to condition on.
+
+        Args:
+            params: Gate parameters and cutoff, see `CVCircuit.cv_sqr` for the parameter structure
+
+        Returns
+            csc_matrix: The operator matrix
+        """
+        from qiskit.circuit.library import RGate
+
+        *params, cutoff = args
+        cutoff = int(cutoff)
+
+        params = np.atleast_1d(params)
+        theta, phi, fock_states = np.array_split(params, 3)
+        fock_states = fock_states.astype(int)  # guaranteed by cv_sqr
+
+        blocks = [idQB] * cutoff
+        for t, p, n in zip(theta, phi, fock_states):
+            blocks[n] = RGate(t, p).to_matrix()
+
+        # Can cast because spmatrix is returned if no block is a sparray. This
+        # matrix acts on the space Qumode x Qubit, but we need to put qubit first
+        # to match qiskit
+        out = cast(sp.csc_matrix, sp.block_diag(blocks, format="csc"))
+        perm = np.arange(2 * cutoff).reshape(cutoff, 2).T.flatten()
+        return out[perm, :][:, perm]
+
     def pnr(self, max: int, cutoff: int) -> sp.csc_matrix:
         """Support gate for photon number readout (see Curtis et al., PRA (2021) and Wang et al., PRX (2020))
 
