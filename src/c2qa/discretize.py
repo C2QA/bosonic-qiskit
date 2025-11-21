@@ -1,5 +1,6 @@
 import math
-from typing import Sequence, overload
+from collections.abc import Sequence
+from typing import overload
 
 from qiskit.circuit import Instruction, QuantumCircuit
 from qiskit.circuit.quantumcircuit import ClbitSpecifier, QubitSpecifier
@@ -8,6 +9,7 @@ from qiskit_aer.noise import LocalNoisePass
 from c2qa.circuit import CVCircuit
 from c2qa.kraus import PhotonLossNoisePass
 from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
+from c2qa.typing import NoisePassLike
 
 
 def discretize_circuits(
@@ -75,7 +77,7 @@ def discretize_single_circuit(
     sequential_subcircuit: bool = False,
     statevector_per_segment: bool = False,
     statevector_label: str = "segment_",
-    noise_passes: LocalNoisePass | Sequence[LocalNoisePass] | None = None,
+    noise_passes: NoisePassLike | None = None,
 ) -> tuple[CVCircuit, int]:
     """
     Discretize gates into a circuit into segments within a single output circuit. Useful for incrementally applying noise or animating the circuit.

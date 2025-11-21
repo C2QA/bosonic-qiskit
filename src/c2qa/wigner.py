@@ -6,8 +6,8 @@ import matplotlib.ticker as tick
 import numpy as np
 import qutip
 import scipy.stats
+from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-from matplotlib.pyplot import Axes
 from numpy.typing import ArrayLike
 from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
@@ -16,7 +16,7 @@ from qiskit_aer.noise import LocalNoisePass
 from c2qa.circuit import CVCircuit
 from c2qa.util import simulate, trace_out_qubits
 
-from .typing import Qubit
+from .typing import NoisePassLike, Qubit
 
 # Available method names in Qutip
 WignerMethods = Literal["clenshaw", "iterative", "laguerre", "fft"]
@@ -27,7 +27,7 @@ def simulate_wigner(
     circuit: CVCircuit,
     xvec: np.ndarray,
     shots: int,
-    noise_passes: LocalNoisePass | Sequence[LocalNoisePass] | None = None,
+    noise_passes: NoisePassLike | None = None,
     conditional_state: str | None = None,
     trace: bool = False,
     method: WignerMethods = "clenshaw",
@@ -77,7 +77,7 @@ def simulate_wigner_multiple_statevectors(
     shots: int,
     statevector_label: str,
     num_statevectors: int,
-    noise_passes: LocalNoisePass | Sequence[LocalNoisePass] | None = None,
+    noise_passes: NoisePassLike | None = None,
     trace: bool = False,
     g: float = np.sqrt(2),
     method: WignerMethods = "clenshaw",

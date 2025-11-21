@@ -1,8 +1,8 @@
-import functools
 import math
 import warnings
 from collections import Counter
-from typing import Sequence, cast
+from collections.abc import Sequence
+from typing import cast
 
 import numpy as np
 import scipy

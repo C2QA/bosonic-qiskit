@@ -16,7 +16,7 @@ from qiskit_aer.noise import LocalNoisePass, NoiseModel
 from c2qa import CVCircuit
 from c2qa.discretize import discretize_circuits
 
-from .typing import Clbit, Qubit, Qumode
+from .typing import Clbit, NoisePassLike, Qubit, Qumode
 
 
 def flatten(l: Sequence[Sequence[Any]]) -> Sequence[Any]:
@@ -445,7 +445,7 @@ def simulate(
     conditional_state_vector: bool = False,
     per_shot_state_vector: bool = False,
     noise_model: NoiseModel | None = None,
-    noise_passes: LocalNoisePass | Sequence[LocalNoisePass] | None = None,
+    noise_passes: NoisePassLike | None = None,
     max_parallel_threads: int = 0,
     discretize: bool = False,
 ) -> SimulateResult:
