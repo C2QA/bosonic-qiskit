@@ -124,7 +124,11 @@ def __kraus_operators(
         )
         kraus = kraus * sp.linalg.expm(-1 * (photon_loss_rate / 2) * time * n)
         kraus = cast(sp.csc_array, kraus)
-        kraus = kraus.dot(a**photons)
+
+        # a^0 is identity which has no effect and will throw an error
+        if photons > 0:
+            kraus = kraus @ sp.linalg.matrix_power(a, photons)
+
         operators.append(kraus.todense())
 
     return operators

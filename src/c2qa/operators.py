@@ -292,9 +292,9 @@ class CVOperators:
             csc_array: operator matrix
         """
 
-        argm = self.bs(theta, cutoff_a, cutoff_b)
-        arg = sp.kron(Z, argm)
-        return sp.linalg.expm(arg).tocsc()
+        arg = self.bs(theta, cutoff_a, cutoff_b)
+        res = sp.kron(P0, arg) + sp.kron(P1, arg.conjugate().transpose())
+        return res.tocsc()
 
     def cschwinger(
         self,
