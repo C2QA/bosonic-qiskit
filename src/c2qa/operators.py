@@ -254,18 +254,18 @@ class CVOperators:
         arg = theta * 1j * sp.kron(Y, self.get_N(cutoff), format="csc")
         return sp.linalg.expm(arg)
 
-    def cd(self, theta: float, beta: float | None, cutoff: int) -> sp.csc_array:
+    def cd(self, alpha: complex, beta: complex | None, cutoff: int) -> sp.csc_array:
         """Controlled displacement operator
 
         Args:
-            theta (real): displacement for qubit state 0
-            beta (real): displacement for qubit state 1. If None, use -alpha.
+            alpha (complex): displacement for qubit state 0
+            beta (complex): displacement for qubit state 1. If None, use -alpha.
 
         Returns:
             csc_array: operator matrix
         """
-        displace0 = self.d(theta, cutoff)
-        displace1 = self.d(beta or -theta, cutoff)
+        displace0 = self.d(alpha, cutoff)
+        displace1 = self.d(beta or -alpha, cutoff)
         res = sp.kron(P0, displace0) + sp.kron(P1, displace1)
         return res.tocsc()
 
@@ -278,9 +278,7 @@ class CVOperators:
         Returns:
             csc_array: operator matrix
         """
-        argm = self.d(theta, cutoff)
-        arg = sp.kron(Z, argm)
-        return sp.linalg.expm(arg)
+        return self.cd(theta, -theta, cutoff)
 
     def cbs(self, theta: complex, cutoff_a: int, cutoff_b: int) -> sp.csc_array:
         """Controlled phase two-mode beam splitter operator
