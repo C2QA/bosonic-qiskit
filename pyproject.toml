@@ -4,11 +4,10 @@ dynamic = ["version"]
 authors = [{ name = "Tim Stavenger", email = "timothy.stavenger@pnnl.gov" }]
 description = "National Quantum Initiative Co-design Center for Quantum Advantage bosonic Qiskit simulator"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
