@@ -832,7 +832,7 @@ class CVCircuit(QuantumCircuit):
         phi: ArrayLike,
         n: ArrayLike,
         qumode: Qumode,
-        qubit: Qubit | None = None,
+        qubit: Qubit,
         duration: int = 100,
         unit: str = "ns",
     ) -> InstructionSet:

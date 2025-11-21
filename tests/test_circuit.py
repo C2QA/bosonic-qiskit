@@ -319,6 +319,10 @@ class TestSQR:
         with pytest.raises(ValueError):
             qc.cv_sqr([0.5, 0.5], 0, 1, m[0], q[0])
 
+        # Not fine, float type given for fock state
+        with pytest.raises(ValueError):
+            qc.cv_sqr([0.5, 0.5], 0, [1.0, 2], m[0], q[0])
+
     def test_action(self):
         m = c2qa.QumodeRegister(1, 4)
         q = qiskit.QuantumRegister(1)
