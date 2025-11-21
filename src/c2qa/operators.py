@@ -266,10 +266,7 @@ class CVOperators:
         """
         displace0 = self.d(theta, cutoff)
         displace1 = self.d(beta or -theta, cutoff)
-
-        res = sp.kron(P0, sp.linalg.expm(displace0)) + sp.kron(
-            P1, sp.linalg.expm(displace1)
-        )
+        res = sp.kron(P0, displace0) + sp.kron(P1, displace1)
         return res.tocsc()
 
     def ecd(self, theta: complex, cutoff: int) -> sp.csc_array:
