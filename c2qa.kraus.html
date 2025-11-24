@@ -283,6 +283,16 @@
         
 
         
+            <div class="itemName"><code><a href="c2qa.typing.html" class="internal-link" title="c2qa.typing">typing</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
             <div class="itemName"><code><a href="c2qa.util.html" class="internal-link" title="c2qa.util">util</a></code>
             </div>
         
@@ -300,8 +310,31 @@
     </li>
 </ul> 
 
+        <div class="childrenKindTitle">Classes</div>
+        <ul>
+    
+    <li class="">
         
         
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.CVCircuit.html" class="internal-link" title="c2qa.CVCircuit"><wbr></wbr>CVCircuit</a></code>
+            </div>
+        
+
+    </li><li class="">
+        
+        
+        
+
+        
+            <div class="itemName"><code><a href="c2qa.QumodeRegister.html" class="internal-link" title="c2qa.QumodeRegister"><wbr></wbr>Qumode<wbr></wbr>Register</a></code>
+            </div>
+        
+
+    </li>
+</ul>
 
         
          
@@ -345,7 +378,7 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/kraus.py" class="sourceLink">(source)</a>
+          <a href="https://github.com/C2QA/bosonic-qiskit/tree/3e58e3735892aa291f0535d95553d5aeb06fd5f7/src/c2qa/kraus.py" class="sourceLink">(source)</a>
         </div>
 
         <div class="moduleDocstring">
@@ -375,7 +408,7 @@
     
     <td>Function</td>
     <td><code><a href="#__kraus_operators" class="internal-link" title="c2qa.kraus.__kraus_operators">__kraus<wbr></wbr>_operators</a></code></td>
-    <td><span class="rst-undocumented">Undocumented</span></td>
+    <td>Calculates the Kraus operators for photon loss</td>
   </tr><tr class="function private">
     
     <td>Function</td>
@@ -401,8 +434,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span>&#160;<span class="py-defname">calculate_kraus</span><span class="function-signature long-signature">(<span class="rst-sig-param">photon_loss_rates: <code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>]</code>, </span><span class="rst-sig-param">time: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">circuit: <code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">c2qa.CVCircuit</a></code>, </span><span class="rst-sig-param">op_qubits: <code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code>, </span><span class="rst-sig-param">qumode_qubit_indices: <code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/kraus.py#L19">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">calculate_kraus</span><span class="function-signature long-signature">(<span class="rst-sig-param">photon_loss_rates: <code><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>]</code>, </span><span class="rst-sig-param">time: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">circuit: <code><a href="c2qa.CVCircuit.html" class="internal-link" title="c2qa.CVCircuit">c2qa.CVCircuit</a></code>, </span><span class="rst-sig-param">op_qubits: <code><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code>, </span><span class="rst-sig-param">qumode_qubit_indices: <code><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" class="intersphinx-link">Sequence</a>[<wbr></wbr><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></span>) -&gt; <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code>:</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/3e58e3735892aa291f0535d95553d5aeb06fd5f7/src/c2qa/kraus.py#L21">
       
       (source)
     </a>
@@ -417,7 +450,7 @@
     <div><p>Calculate Kraus operator given number of photons and photon loss rate over specified time.</p>
 <p>Apply Kraus operator to provided qubit_indices only, tensor product with identity for remaining qubits.</p>
 <p>Following equation 44 from Bosonic Oprations and Measurements, Girvin</p>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">photon<wbr></wbr>_loss<wbr></wbr>_rates:</span><code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>]</code></td><td class="fieldArgDesc">kappas, the rate of photon loss per second for each qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">time:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">current duration of time in seconds</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.circuit.CVCircuit.html" class="internal-link" title="c2qa.circuit.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">cq2a.CVCircuit with ops for N and a</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op<wbr></wbr>_qubits:</span><code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></td><td class="fieldArgDesc">qubit int indices in the given CVCircuit used by the current instruction</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_qubit<wbr></wbr>_indices:</span><code><a href="https://docs.python.org/3/library/typing.html#typing.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></td><td class="fieldArgDesc">qumode int indices in the given CVCircuit to test if qubits from instruction are a part of a qumode</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td colspan="2">List of Kraus operators</td></tr></table></div>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">photon<wbr></wbr>_loss<wbr></wbr>_rates:</span><code><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>]</code></td><td class="fieldArgDesc">kappas, the rate of photon loss per second for each qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">time:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">current duration of time in seconds</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">circuit:</span><code><a href="c2qa.CVCircuit.html" class="internal-link" title="c2qa.CVCircuit">CVCircuit</a></code></td><td class="fieldArgDesc">cq2a.CVCircuit with ops for N and a</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">op<wbr></wbr>_qubits:</span><code><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></td><td class="fieldArgDesc">qubit int indices in the given CVCircuit used by the current instruction</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">qumode<wbr></wbr>_qubit<wbr></wbr>_indices:</span><code><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" class="intersphinx-link">Sequence</a>[<a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>]</code></td><td class="fieldArgDesc">qumode int indices in the given CVCircuit to test if qubits from instruction are a part of a qumode</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code></td><td class="fieldArgDesc">List of Kraus operators</td></tr></table></div>
   </div>
 </div><div class="baseconstant">
   
@@ -431,7 +464,7 @@
   <div class="functionHeader">
     
     <span class="py-defname">IGNORE_INSTRUCTIONS</span>: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr><a href="https://docs.python.org/3/library/stdtypes.html#str" class="intersphinx-link">str</a>]</code> =
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/kraus.py#L16">
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/3e58e3735892aa291f0535d95553d5aeb06fd5f7/src/c2qa/kraus.py#L18">
       
       (source)
     </a>
@@ -458,8 +491,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span>&#160;<span class="py-defname">__kraus_operators</span><span class="function-signature">(<span class="rst-sig-param">photon_loss_rate: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">time: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, </span><span class="rst-sig-param">a, </span><span class="rst-sig-param">n</span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/kraus.py#L92">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">__kraus_operators</span><span class="function-signature long-signature">(<span class="rst-sig-param">photon_loss_rate: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">time: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, </span><span class="rst-sig-param">cutoff: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, </span><span class="rst-sig-param">a: <code>sp.csc_array</code>, </span><span class="rst-sig-param">n: <code>sp.csc_array</code></span>) -&gt; <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code>:</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/3e58e3735892aa291f0535d95553d5aeb06fd5f7/src/c2qa/kraus.py#L96">
       
       (source)
     </a>
@@ -471,7 +504,7 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p class="undocumented">Undocumented</p></div>
+    <div><p>Calculates the Kraus operators for photon loss</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">photon<wbr></wbr>_loss<wbr></wbr>_rate:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">The rate of photon loss in the qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">time:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code></td><td class="fieldArgDesc">The duration of the noise channel</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">cutoff:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code></td><td class="fieldArgDesc">The maximum fock level of the qumode</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">a:</span><code>sp.csc_array</code></td><td class="fieldArgDesc">The annihilation operator</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">n:</span><code>sp.csc_array</code></td><td class="fieldArgDesc">The photon number operator</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code></td><td class="fieldArgDesc">A list of Kraus operators, where operator i corresponds to losing i photons</td></tr></table></div>
   </div>
 </div><div class="basefunction private">
   
@@ -485,8 +518,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span>&#160;<span class="py-defname">__tensor_operators</span><span class="function-signature">(<span class="rst-sig-param">current: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code>, </span><span class="rst-sig-param">new: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a></code></span>):</span>
-    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/cee0d932e5dd7855dd1eeefc33a488c4c35e9ef0/src/c2qa/kraus.py#L80">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">__tensor_operators</span><span class="function-signature">(<span class="rst-sig-param">current: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code>, </span><span class="rst-sig-param">new: <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code></span>) -&gt; <code><a href="https://docs.python.org/3/library/stdtypes.html#list" class="intersphinx-link">list</a>[<wbr></wbr>np.ndarray]</code>:</span>
+    <a class="sourceLink" href="https://github.com/C2QA/bosonic-qiskit/tree/3e58e3735892aa291f0535d95553d5aeb06fd5f7/src/c2qa/kraus.py#L82">
       
       (source)
     </a>
@@ -512,7 +545,7 @@
   <div class="container-fluid">
     <a href="index.html">API Documentation</a> for <a href="https://github.com/C2QA/bosonic-qiskit" class="projecthome">bosonic-qiskit</a>,
   generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-    25.10.1 at 2025-10-29 14:37:10.
+    25.10.1 at 2025-11-24 17:18:43.
   </div>
 
   <!-- Search related scripts needs to be loaded at the end of HTML 
