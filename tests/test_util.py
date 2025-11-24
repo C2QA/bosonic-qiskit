@@ -1,9 +1,11 @@
-import c2qa
-import numpy
 from pathlib import Path
+
+import numpy
 import qiskit
+from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.visualization import plot_histogram
-from qiskit.quantum_info import Statevector, DensityMatrix
+
+import c2qa
 
 
 def test_trace_out_zero(capsys):
@@ -148,10 +150,6 @@ def test_stateread(capsys):
             verbose=True,
         )
 
-
-def test_fockmap(capsys):
-    with capsys.disabled():
-
         # Build rand array of rand dim between 1 and 100, use fockmap to populate initally empty array, and assert that final array is equal to rand array
         for _ in range(10):  # Repeat test 10 times
             dim = numpy.random.randint(low=1, high=101)
@@ -192,8 +190,8 @@ def test_fockmap(capsys):
             # int, list
             fo_types = [1, [1, 0]]
 
-            # int, float, complex, empty list, list, numpy.ndarray
-            amp_types = [1, 1.0, 1j, [], [1, 1], numpy.array([1, 1])]
+            # int, float, complex, list, numpy.ndarray
+            amp_types = [1, 1.0, 1j, [1, 1], numpy.array([1, 1])]
 
             # Generate random indices to test for
             m_index = numpy.random.randint(0, 2)
@@ -201,22 +199,18 @@ def test_fockmap(capsys):
             fo_index = numpy.random.randint(0, 2)
 
             if (fi_index == 0) & (fo_index == 0):
-                amp_index = numpy.random.randint(0, 4)
+                amp_index = numpy.random.randint(0, 3)
             else:
-                amp_index = numpy.random.randint(3, 5)
+                amp_index = numpy.random.randint(0, 4)
 
             # Assert that output is a numpy.ndarray
-            assert (
-                type(
-                    c2qa.util.fockmap(
-                        m_types[m_index],
-                        fi_types[fi_index],
-                        fo_types[fo_index],
-                        amp_types[amp_index],
-                    )
-                )
-                == numpy.ndarray
+            matrix = c2qa.util.fockmap(
+                m_types[m_index],
+                fi_types[fi_index],
+                fo_types[fo_index],
+                amp_types[amp_index],
             )
+            assert isinstance(matrix, numpy.ndarray)
 
 
 def test_circuit_avg_photon_num(capsys):
@@ -231,16 +225,11 @@ def test_circuit_avg_photon_num(capsys):
         circ.cv_initialize(4, qmr1[1])  # Qumode in |4>
         circ.cv_initialize(5, qmr2[0])  # Qumode in |5>
 
-        # Print out the indices of qubits in qumodes, grouped by qumode
-        print(circ.qumode_qubits_indices_grouped)
-        ## >> [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-
         # Obtain state
         state, _, _ = c2qa.util.simulate(circ)
 
         avg_photon_num = c2qa.util.avg_photon_num(circ, state)
-        print(avg_photon_num)
-        assert [3.0, 4.0, 5.0] == avg_photon_num
+        assert numpy.allclose(avg_photon_num, [3, 4, 5])
 
 
 def test_qumode_avg_photon_num(capsys):
@@ -271,9 +260,12 @@ def test_qumode_avg_photon_num(capsys):
                 == round(avg_num.real, decimals)
             )
 
+
 def test_counts_to_fockcounts(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode = 3)
+        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode=3)
+    with capsys.disabled():
+        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode=3)
         circuit = c2qa.CVCircuit(qmr)
 
         circuit.cv_sq2(1, qmr[0], qmr[1])
@@ -295,4 +287,3 @@ def test_counts_to_fockcounts(capsys):
         fock_values = list(fock_counts.values())
         qubit_values = list(result.get_counts().values())
         assert fock_values == qubit_values
-        

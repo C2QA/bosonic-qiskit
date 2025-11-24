@@ -1,21 +1,34 @@
 import copy
+import itertools
 import warnings
+from collections.abc import Sequence
+from typing import Any, cast, overload
 
 import numpy as np
 import qiskit
-from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 import qiskit_aer.library.save_instructions as save
+from numpy.typing import ArrayLike
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+from qiskit.circuit import InstructionSet, ParameterExpression
+from qiskit.circuit.library import UnitaryGate
+from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 
 from c2qa.operators import CVOperators
-from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
+from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate, UnitaryFunc
 from c2qa.qumoderegister import QumodeRegister
+from c2qa.typing import Clbit, Qubit, Qumode
 
 
 class CVCircuit(QuantumCircuit):
     """Extension of QisKit QuantumCircuit to add continuous variable (bosonic) gate support to simulations."""
 
-    def __init__(self, *regs, name: str = None, probe_measure: bool = False, force_parameterized_unitary_gate: bool = True):
+    def __init__(
+        self,
+        *regs,
+        name: str | None = None,
+        probe_measure: bool = False,
+        force_parameterized_unitary_gate: bool = True,
+    ):
         """Initialize the registers (at least one must be QumodeRegister) and set the circuit name.
 
         Args:
@@ -26,10 +39,11 @@ class CVCircuit(QuantumCircuit):
         Raises:
             ValueError: If no QumodeRegister is provided.
         """
-        self.qmregs = []
-        self._qubit_regs = []  # This needs to be unique from qregs[] in the superclass
+        self.qmregs: list[QumodeRegister] = []
+        # This needs to be unique from qregs[] in the superclass
+        self._qubit_regs: list[QuantumRegister] = []
 
-        registers = []
+        registers: list[QuantumRegister] = []
 
         num_qubits = 0
 
@@ -50,6 +64,7 @@ class CVCircuit(QuantumCircuit):
 
         # Support measurement using probe qubits
         self.probe_measure = probe_measure
+        self.probe: QuantumRegister | None = None
         if probe_measure:
             self.probe = QuantumRegister(size=num_qubits, name="probe")
             registers.append(self.probe)
@@ -57,7 +72,7 @@ class CVCircuit(QuantumCircuit):
         super().__init__(*registers, name=name)
 
         self.ops = CVOperators()
-        self.cv_snapshot_id = 0
+        self.cv_snapshot_id: int = 0
         self._has_parameterized_gate = False
         self._force_parameterized_unitary_gate = force_parameterized_unitary_gate
 
@@ -92,27 +107,27 @@ class CVCircuit(QuantumCircuit):
         self._calibrations = copy.deepcopy(circuit._calibrations)
         self._metadata = copy.deepcopy(circuit._metadata)
 
-    def get_qmr_cutoff(self, qmr_index: int):
+    def get_qmr_cutoff(self, qmr_index: int) -> int:
         """Return the qumode cutoff at the given index"""
         return self.qmregs[qmr_index].cutoff
 
-    def get_qmr_num_qubits_per_qumode(self, qmr_index: int):
+    def get_qmr_num_qubits_per_qumode(self, qmr_index: int) -> int:
         """Return the number of qubits in the qumode register at the given index"""
         return self.qmregs[qmr_index].num_qubits_per_qumode
 
     @property
-    def qumode_qubits(self):
+    def qumode_qubits(self) -> list[Qubit]:
         """All the qubits representing the qumode registers on the circuit"""
-        qubits = []
+        qubits: list[Qubit] = []
         for reg in self.qmregs:
-            qubits += reg[::]
+            qubits.extend(reg.qubits)
         return qubits
 
     @property
-    def qumode_qubit_indices(self):
+    def qumode_qubit_indices(self) -> list[int]:
         """A qubit index list of the qubits representing the qumode registers on the circuit"""
-        qmodes = self.qumode_qubits
-        indices = []
+        qmodes = set(self.qumode_qubits)
+        indices: list[int] = []
 
         for index, qubit in enumerate(self.qubits):
             if qubit in qmodes:
@@ -121,47 +136,30 @@ class CVCircuit(QuantumCircuit):
         return indices
 
     @property
-    def qumode_qubits_indices_grouped(self):
+    def qumode_qubits_indices_grouped(self) -> list[list[int]]:
         """Same as qumode_qubit_indices but it groups qubits representing the same qumode together. Returns a nested list."""
+
         grouped_indices = []
-
-        # Iterate through all qmregs
-        for _, qmreg in enumerate(self.qmregs):
-            num_qumodes_in_reg = qmreg.num_qumodes
-            num_qubits_per_qumode = qmreg.num_qubits_per_qumode
-
-            qmreg_qubit_indices = []
-
-            # For every qubit in circuit, append index of qubit to list if qubit is in qmreg
-            for qubit_index, qubit in enumerate(self.qubits):
-                if qubit in qmreg[:]:
-                    qmreg_qubit_indices.append(qubit_index)
-
-            # Split list according to no. of qumodes in qmreg
-            qmreg_qubit_indices = [
-                qmreg_qubit_indices[
-                    i * num_qubits_per_qumode : (i + 1) * num_qubits_per_qumode
-                ]
-                for i in range(num_qumodes_in_reg)
-            ]
-
-            # Extend final list
-            grouped_indices.extend(qmreg_qubit_indices)
+        qubit_indices = {q: i for i, q in enumerate(self.qubits)}
+        for qmreg in self.qmregs:
+            for qumode in qmreg:
+                idx = [qubit_indices[q] for q in qumode]
+                grouped_indices.append(idx)
 
         return grouped_indices
 
-    def get_qubit_index(self, qubit):
+    def get_qubit_index(self, qubit: Qubit) -> int | None:
         """Return the index of the given Qubit"""
         for i, q in enumerate(self.qubits):
             if q == qubit:
                 return i
         return None
 
-    def get_qubit_indices(self, qubits: list):
+    def get_qubit_indices(self, qubits: Sequence[Qubit | Sequence[Qubit]]) -> list[int]:
         """Return the indices of the given Qubits"""
         flat_list = []
         for el in qubits:
-            if isinstance(el, list):
+            if isinstance(el, Sequence):
                 flat_list += el
             else:
                 flat_list += [el]
@@ -172,15 +170,15 @@ class CVCircuit(QuantumCircuit):
                 indices.append(i)
         return indices
 
-    def get_qmr_index(self, qubit):
-        """Return the qumode index for the given qubit. If not found, return -1."""
+    def get_qmr_index(self, qubit: Qubit) -> int:
+        """Return the qumode index for the given qubit. If not found, raises ValueError"""
         for index, qmr in enumerate(self.qmregs):
             if qubit in qmr:
                 return index
         raise ValueError(f"Bit {qubit} not found in circuit.")
 
     @property
-    def cv_gate_labels(self):
+    def cv_gate_labels(self) -> list[str]:
         """
         All the CV gate names on the current circuit. These will be
         instances of ParameterizedUnitaryGate.
@@ -211,7 +209,9 @@ class CVCircuit(QuantumCircuit):
                 )
         super().add_register(*regs)
 
-    def cv_initialize(self, params, qumodes):
+    def cv_initialize(
+        self, params: int | Sequence[complex], qumodes: Qumode | Sequence[Qumode]
+    ):
         """Initialize qumode (or qumodes) to a particular state specified by params
 
         Args:
@@ -228,65 +228,70 @@ class CVCircuit(QuantumCircuit):
         # Qumodes are already represented as arrays of qubits,
         # but if this is an array of arrays, then we are initializing multiple qumodes.
         modes = qumodes
-        if not isinstance(qumodes[0], list):
-            modes = [qumodes]
+        if isinstance(modes[0], Qubit):
+            modes = [modes]
 
+        modes = cast(Sequence[Qumode], modes)
         if isinstance(params, int):
             for qumode in modes:
                 qumode_index = self.get_qmr_index(qumode[0])
+                cutoff = self.get_qmr_cutoff(qumode_index)
 
-                if params >= self.get_qmr_cutoff(qumode_index):
-                    raise ValueError("The given Fock state is greater than the cutoff.")
+                if params >= cutoff:
+                    raise ValueError(
+                        f"The given Fock state {params} is greater than the cutoff {cutoff}"
+                    )
 
-                value = np.zeros(
-                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex128
-                )
-                value[params] = 1 + 0j
+                value = np.zeros(cutoff, dtype=complex)
+                value[params] = 1
 
                 super().initialize(value, qumode)
         else:
             for qumode in modes:
                 qumode_index = self.get_qmr_index(qumode[0])
+                cutoff = self.get_qmr_cutoff(qumode_index)
 
-                if len(params) > self.get_qmr_cutoff(qumode_index):
-                    raise ValueError("len(params) exceeds the cutoff.")
+                if len(params) > cutoff:
+                    raise ValueError(
+                        f"More parameters provided ({len(params)}) than available Fock states ({cutoff})"
+                    )
 
-                params = np.array(params) / np.linalg.norm(np.array(params))
-                amplitudes = np.zeros(
-                    (self.get_qmr_cutoff(qumode_index),), dtype=np.complex128
-                )
-                for ind in range(len(params)):
-                    amplitudes[ind] = complex(params[ind])
-
+                amplitudes = np.zeros(cutoff, dtype=complex)
+                amplitudes[: len(params)] = params
+                amplitudes /= np.linalg.norm(amplitudes)
                 super().initialize(amplitudes, qumode)
 
-    def save_circuit(self, conditional, pershot, label="statevector"):
+    def save_circuit(
+        self,
+        label: str = "statevector",
+        conditional: bool = False,
+        pershot: bool = False,
+    ):
         """Save the simulator statevector using a qiskit class"""
-        return save.save_statevector(
+        return save.save_statevector(  # pyright: ignore[reportCallIssue]
             label=label, conditional=conditional, pershot=pershot
         )
 
     def _new_gate(
         self,
-        op_func,
-        params,
-        num_qubits,
-        cutoffs,
-        label=None,
-        duration=100,
-        unit="ns",
-        discretized_param_indices: list = [],
-    ):
+        op_func: UnitaryFunc,
+        params: Any,
+        num_qubits: int,
+        cutoffs: Sequence[int],
+        label: str | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+        discretized_param_indices: list[int] | None = None,
+    ) -> UnitaryGate | ParameterizedUnitaryGate:
         # If parameters contain compile-time parameters
         is_parameterized = self._force_parameterized_unitary_gate or any(
-            isinstance(param, qiskit.circuit.parameterexpression.ParameterExpression)
-            and param.parameters
+            isinstance(param, ParameterExpression) and len(param.parameters) > 0
             for param in params
         )
 
         if is_parameterized:
             self._has_parameterized_gate = True
-            return ParameterizedUnitaryGate(
+            gate = ParameterizedUnitaryGate(
                 op_func,
                 params,
                 cutoffs=cutoffs,
@@ -294,16 +299,17 @@ class CVCircuit(QuantumCircuit):
                 label=label,
                 duration=duration,
                 unit=unit,
-                discretized_param_indices=discretized_param_indices,
+                discretized_param_indices=discretized_param_indices or [],
             )
         else:
             data = CVOperators.call_op(op_func, params, cutoffs)
-            gate = qiskit.circuit.library.UnitaryGate(
-                data=data, label=label, num_qubits=num_qubits
-            )
-            return gate
+            gate = UnitaryGate(data=data, label=label, num_qubits=num_qubits)
 
-    def cv_r(self, theta, qumode, duration=100, unit="ns"):
+        return gate
+
+    def cv_r(
+        self, theta: float, qumode: Qumode, duration: int = 100, unit: str = "ns"
+    ) -> InstructionSet:
         """Phase space rotation gate.
 
         Args:
@@ -327,7 +333,9 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_d(self, alpha, qumode, duration=100, unit="ns"):
+    def cv_d(
+        self, alpha: complex, qumode: Qumode, duration: int = 100, unit: str = "ns"
+    ) -> InstructionSet:
         """Displacement gate.
 
         Args:
@@ -351,7 +359,9 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_sq(self, theta, qumode, duration=100, unit="ns"):
+    def cv_sq(
+        self, theta: complex, qumode: Qumode, duration: int = 100, unit: str = "ns"
+    ) -> InstructionSet:
         """Squeezing gate.
 
         Args:
@@ -374,34 +384,47 @@ class CVCircuit(QuantumCircuit):
             qargs=qumode,
         )
 
-    def cv_sq2(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
+    def cv_sq2(
+        self,
+        theta: complex,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Two-mode squeezing gate
 
         Args:
-            theta (real or complex): squeeze
+            theta (complex): squeeze
             qumode_a (list): list of qubits representing first qumode
             qumode_b (list): list of qubits representing second qumode
 
         Returns:
             Instruction: QisKit instruction
         """
+        qumodes = (qumode_a, qumode_b)
         return self.append(
             self._new_gate(
                 self.ops.s2,
                 [theta],
-                cutoffs=[
-                    QumodeRegister.calculate_cutoff(len(qumode_a)),
-                    QumodeRegister.calculate_cutoff(len(qumode_b)),
-                ],
-                num_qubits=len(qumode_a) + len(qumode_b),
+                cutoffs=[QumodeRegister.calculate_cutoff(len(m)) for m in qumodes],
+                num_qubits=sum(map(len, qumodes)),
                 label="S2",
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b,
+            qargs=[*qumode_a, *qumode_b],
         )
 
-    def cv_sq3(self, theta, qumode_a, qumode_b, qumode_c, duration=100, unit="ns"):
+    def cv_sq3(
+        self,
+        theta: complex,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        qumode_c: Qumode,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Three-mode squeezing gate
 
         Args:
@@ -413,24 +436,28 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
+        qumodes = (qumode_a, qumode_b, qumode_c)
         return self.append(
             self._new_gate(
                 self.ops.s3,
                 [theta],
-                cutoffs=[
-                    QumodeRegister.calculate_cutoff(len(qumode_a)),
-                    QumodeRegister.calculate_cutoff(len(qumode_b)),
-                    QumodeRegister.calculate_cutoff(len(qumode_c)),
-                ],
-                num_qubits=len(qumode_a) + len(qumode_b) + len(qumode_c),
+                cutoffs=[QumodeRegister.calculate_cutoff(len(m)) for m in qumodes],
+                num_qubits=sum(map(len, qumodes)),
                 label="S3",
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b + qumode_c,
+            qargs=list(itertools.chain(*qumodes)),
         )
 
-    def cv_bs(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
+    def cv_bs(
+        self,
+        theta: complex,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Two-mode beam splitter gate.
 
         Args:
@@ -454,10 +481,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b,
+            qargs=[*qumode_a, *qumode_b],
         )
 
-    def cv_c_r(self, theta, qumode, qubit, duration=100, unit="ns"):
+    def cv_c_r(
+        self,
+        theta: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Qubit dependent phase-space rotation gate (i.e., dispersive interaction).
 
         Args:
@@ -468,7 +502,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             self._new_gate(
                 self.ops.cr,
                 [theta],
@@ -478,10 +512,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_c_rx(self, theta, qumode, qubit, duration=100, unit="ns"):
+    def cv_c_rx(
+        self,
+        theta: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Qubit dependent phase-space rotation around sigma^x gate.
 
         Args:
@@ -502,10 +543,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_c_ry(self, theta, qumode, qubit, duration=100, unit="ns"):
+    def cv_c_ry(
+        self,
+        theta: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Qubit dependent phase-space rotation around sigma^y gate.
 
         Args:
@@ -526,10 +574,18 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_c_d(self, theta, qumode, qubit, beta=None, duration=100, unit="ns"):
+    def cv_c_d(
+        self,
+        theta: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        beta: float | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Conditional displacement gate.
 
         Args:
@@ -555,10 +611,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_ecd(self, theta, qumode, qubit, duration=100, unit="ns"):
+    def cv_ecd(
+        self,
+        theta: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Echoed controlled displacement gate.
 
         Args:
@@ -578,10 +641,18 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_c_bs(self, theta, qumode_a, qumode_b, qubit, duration=100, unit="ns"):
+    def cv_c_bs(
+        self,
+        theta: complex,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Controlled phase two-mode beam splitter
 
         Args:
@@ -593,7 +664,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             self._new_gate(
                 self.ops.cbs,
                 [theta],
@@ -606,12 +677,18 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b + [qubit],
+            qargs=[*qumode_a, *qumode_b, qubit],
         )
 
     def cv_c_schwinger(
-        self, params, qumode_a, qumode_b, qubit, duration=100, unit="ns"
-    ):
+        self,
+        params: Sequence[float],
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """General form of a controlled 'Schwinger' gate, containing both the controlled phase beamsplitter
         and pairs of controlled phase space rotations as special cases.
 
@@ -635,7 +712,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             self._new_gate(
                 self.ops.cschwinger,
                 params,
@@ -649,10 +726,40 @@ class CVCircuit(QuantumCircuit):
                 unit=unit,
                 discretized_param_indices=[0],
             ),
-            qargs=qumode_a + qumode_b + [qubit],
+            qargs=[*qumode_a, *qumode_b, qubit],
         )
 
-    def cv_snap(self, theta, n, qumode, qubit=None, duration=100, unit="ns"):
+    @overload
+    def cv_snap(
+        self,
+        theta: float,
+        n: int,
+        qumode: Qumode,
+        qubit: Qubit | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet: ...
+
+    @overload
+    def cv_snap(
+        self,
+        theta: Sequence[float],
+        n: Sequence[int],
+        qumode: Qumode,
+        qubit: Qubit | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet: ...
+
+    def cv_snap(
+        self,
+        theta: float | Sequence[float],
+        n: int | Sequence[int],
+        qumode: Qumode,
+        qubit: Qubit | None = None,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """SNAP (Selective Number-dependent Arbitrary Phase) gate. If no qubit is passed,
         then phases are applied to each qumode Fock state specified in theta and n (without
         explicit rotation of the qubit). If a qubit is passed, the phase will be multiplied by
@@ -669,65 +776,53 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit instruction
         """
         cutoff = QumodeRegister.calculate_cutoff(len(qumode))
-        if isinstance(n, int):
-            if n > cutoff:
-                ValueError("Fock state specified by n exceeds the cutoff.")
-            if qubit is None:
-                self.append(
-                    self._new_gate(
-                        self.ops.snap,
-                        [theta, n],
-                        cutoffs=[cutoff],
-                        num_qubits=len(qumode),
-                        label="SNAP",
-                        duration=duration,
-                        unit=unit,
-                    ),
-                    qargs=qumode,
+        label = "cSNAP" if qubit else "SNAP"
+        num_qubits = len(qumode) + int(qubit is not None)
+        qargs = [*qumode, qubit] if qubit else qumode
+
+        if isinstance(n, Sequence):
+            if not isinstance(theta, Sequence) or len(theta) != len(n):
+                raise ValueError("Must provide as many parameters as Fock levels")
+
+            if any(x > cutoff for x in n):
+                raise ValueError(f"Fock level {max(n)} exceeds the cutoff {cutoff}")
+
+            op_func = self.ops.multicsnap if qubit else self.ops.multisnap
+
+            return self.append(
+                self._new_gate(
+                    op_func,
+                    list(theta) + list(n),
+                    cutoffs=[cutoff],
+                    num_qubits=num_qubits,
+                    label=label,
+                    duration=duration,
+                    unit=unit,
                 )
-            else:
-                self.append(
-                    self._new_gate(
-                        self.ops.csnap,
-                        [theta, n],
-                        cutoffs=[cutoff],
-                        num_qubits=len(qumode) + 1,
-                        label="cSNAP",
-                        duration=duration,
-                        unit=unit,
-                    ),
-                    qargs=qumode + [qubit],
-                )
-        elif isinstance(n, list) and isinstance(theta, list):
-            if qubit is None:
-                self.append(
-                    self._new_gate(
-                        self.ops.multisnap,
-                        theta + n,
-                        cutoffs=[cutoff],
-                        num_qubits=len(qumode),
-                        label="SNAP",
-                        duration=duration,
-                        unit=unit,
-                    ),
-                    qargs=qumode,
-                )
-            else:
-                self.append(
-                    self._new_gate(
-                        self.ops.multicsnap,
-                        theta + n,
-                        cutoffs=[cutoff],
-                        num_qubits=len(qumode) + 1,
-                        label="cSNAP",
-                        duration=duration,
-                        unit=unit,
-                    ),
-                    qargs=qumode + [qubit],
-                )
+            )
+
         else:
-            raise ValueError(
-                "if theta is passed as a list, then n must also be a list of equal length (and vice versa)."
+            if n > cutoff:
+                ValueError(f"Fock state {n} exceeds the cutoff {cutoff}")
+
+            if isinstance(theta, Sequence):
+                raise ValueError(
+                    "Must provide a scalar parameter for a single fock level"
+                )
+
+            op_func = self.ops.csnap if qubit else self.ops.snap
+
+            return self.append(
+                self._new_gate(
+                    op_func,
+                    [theta, n],
+                    cutoffs=[cutoff],
+                    num_qubits=num_qubits,
+                    label=label,
+                    duration=duration,
+                    unit=unit,
+                ),
+                qargs=qargs,
             )
 
     # def cv_c_sqr(self, theta, n, qumode, qubit, duration=100, unit="ns"):
@@ -742,7 +837,14 @@ class CVCircuit(QuantumCircuit):
     #         qargs=qumode,
     #     )
 
-    def cv_c_pnr(self, max, qumode, qubit, duration=100, unit="ns"):
+    def cv_c_pnr(
+        self,
+        max: int,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """PNR (Photon number readout) TODO: Needs comments/explanation/citation!
         Args:
             max (int): the period of the mapping
@@ -751,7 +853,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             self._new_gate(
                 self.ops.pnr,
                 [max],
@@ -761,10 +863,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_eswap(self, theta, qumode_a, qumode_b, duration=100, unit="ns"):
+    def cv_eswap(
+        self,
+        theta: float,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Exponential SWAP gate.
 
         Args:
@@ -775,7 +884,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             self._new_gate(
                 self.ops.eswap,
                 [theta],
@@ -788,10 +897,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b,
+            qargs=[*qumode_a, *qumode_b],
         )
 
-    def cv_c_sq(self, theta, qumode, qubit, duration=100, unit="ns"):
+    def cv_c_sq(
+        self,
+        theta: complex,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Conditional squeezing gate.
 
         Args:
@@ -812,24 +928,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_testqubitorderf(self, phi, qubit_1, qubit_2, duration=100, unit="ns"):
-        return self.append(
-            self._new_gate(
-                self.ops.testqubitorderf,
-                [phi],
-                label="testqubitorderf",
-                cutoffs=[],
-                num_qubits=2,
-                duration=duration,
-                unit=unit,
-            ),
-            qargs=[qubit_1] + [qubit_2],
-        )
-
-    def cv_sum(self, scale, qumode_a, qumode_b, duration=100, unit="ns"):
+    def cv_sum(
+        self,
+        scale: float,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Two-mode sum gate.
 
         Args:
@@ -853,10 +962,18 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b,
+            qargs=[*qumode_a, *qumode_b],
         )
 
-    def cv_c_sum(self, scale, qumode_a, qumode_b, qubit, duration=100, unit="ns"):
+    def cv_c_sum(
+        self,
+        scale: float,
+        qumode_a: Qumode,
+        qumode_b: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Conditional two-mode sum gate.
 
         Args:
@@ -881,10 +998,18 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode_a + qumode_b + [qubit],
+            qargs=[*qumode_a, *qumode_b, qubit],
         )
 
-    def cv_jc(self, theta, phi, qumode, qubit, duration=100, unit="ns"):
+    def cv_jc(
+        self,
+        theta: float,
+        phi: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Jaynes-Cummings gate
 
         Args:
@@ -907,10 +1032,18 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_ajc(self, theta, phi, qumode, qubit, duration=100, unit="ns"):
+    def cv_ajc(
+        self,
+        theta: float,
+        phi: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Anti-Jaynes-Cummings gate
 
         Args:
@@ -933,10 +1066,17 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def cv_rb(self, theta, qumode, qubit, duration=100, unit="ns"):
+    def cv_rb(
+        self,
+        theta: float,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "ns",
+    ) -> InstructionSet:
         """Rabi interaction gate
 
         Args:
@@ -955,10 +1095,10 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
-    def measure_z(self, qubit, cbit, duration=100, unit="ns"):
+    def measure_z(self, qubit: Qubit, cbit: Clbit) -> InstructionSet:
         """Measure qubit in z using probe qubits
 
         Args:
@@ -974,9 +1114,9 @@ class CVCircuit(QuantumCircuit):
                 UserWarning,
             )
 
-        return super.measure(qubit, cbit)
+        return self.measure(qubit, cbit)
 
-    def measure_y(self, qubit, cbit):
+    def measure_y(self, qubit: Qubit, cbit: Clbit) -> InstructionSet:
         """Measure qubit in y using probe qubits
 
         Args:
@@ -996,7 +1136,7 @@ class CVCircuit(QuantumCircuit):
         self.h(qubit)
         return self.measure(qubit, cbit)
 
-    def measure_x(self, qubit, cbit):
+    def measure_x(self, qubit: Qubit, cbit: Clbit) -> InstructionSet:
         """Measure qubit in x using probe qubits
 
         Args:
@@ -1015,7 +1155,15 @@ class CVCircuit(QuantumCircuit):
         self.h(qubit)
         return self.measure(qubit, cbit)
 
-    def cv_measure(self, qubit_qumode_list, cbit_list):
+    def cv_measure(
+        self,
+        qargs: Qubit
+        | Qumode
+        | Sequence[Qubit | Qumode]
+        | QuantumRegister
+        | QumodeRegister,
+        cargs: Clbit | Sequence[Clbit] | ClassicalRegister,
+    ) -> InstructionSet:
         """Measure Qumodes and Qubits in qubit_qumode_list and map onto
         classical bits specified in cbit_list.
 
@@ -1033,24 +1181,29 @@ class CVCircuit(QuantumCircuit):
             Instruction: QisKit measure instruction
         """
 
-        # Flattens the list (if necessary)
-        flat_list = []
-        for el in qubit_qumode_list:
-            if isinstance(el, list):
-                flat_list += el
+        if isinstance(qargs, Qubit):
+            qargs = [qargs]
+        elif isinstance(qargs, QuantumRegister):
+            qargs = qargs[:]
+        elif isinstance(qargs, QumodeRegister):
+            qargs = list(qargs)
+
+        qargs_flat = []
+        for arg in qargs:
+            if isinstance(arg, Qubit):
+                qargs_flat.append(arg)
             else:
-                flat_list += [el]
+                qargs_flat.extend(arg)
 
-        # Check to see if too many classical registers were passed in.
-        # If not, only use those needed (starting with least significant bit).
-        # This piece is useful so that the user doesn't need to think about
-        # how many bits are needed to read out a list of qumodes, qubits, etc.
-        if len(flat_list) < len(cbit_list):
-            self.measure(flat_list, cbit_list[0 : len(flat_list)])
-        else:
-            self.measure(flat_list, cbit_list)
+        if isinstance(cargs, Clbit):
+            cargs = [cargs]
 
-    def cv_delay(self, duration, qumode, unit="ns"):
+        # Discards unnecessary clbits so the user doesn't need to think about how many clbits are needed
+        return self.measure(qargs_flat, cargs[: len(qargs_flat)])
+
+    def cv_delay(
+        self, duration: int, qumode: Qumode, unit: str = "ns"
+    ) -> InstructionSet:
         """CV_delay. Implements an identity gate of the specified duration.
         This is particularly useful for the implementation of a noise pass.
 
@@ -1067,14 +1220,21 @@ class CVCircuit(QuantumCircuit):
                 [],
                 cutoffs=[QumodeRegister.calculate_cutoff(len(qumode))],
                 num_qubits=len(qumode),
-                label="cv_delay(" + str(duration) + " " + unit + ")",
+                label=f"cv_delay({duration} {unit})",
                 duration=duration,
                 unit=unit,
             ),
             qargs=qumode,
         )
 
-    def cv_c_multiboson_sampling(self, max, qumode, qubit, duration=1, unit="us"):
+    def cv_c_multiboson_sampling(
+        self,
+        max: int,
+        qumode: Qumode,
+        qubit: Qubit,
+        duration: int = 100,
+        unit: str = "us",
+    ) -> InstructionSet:
         """SNAP (Selective Number-dependent Arbitrary Phase) gates for multiboson sampling.
         Args:
             max (int): the period of the mapping
@@ -1083,7 +1243,7 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        self.append(
+        return self.append(
             self._new_gate(
                 self.ops.c_multiboson_sampling,
                 [max],
@@ -1093,16 +1253,14 @@ class CVCircuit(QuantumCircuit):
                 duration=duration,
                 unit=unit,
             ),
-            qargs=qumode + [qubit],
+            qargs=[*qumode, qubit],
         )
 
     def cv_gate_from_matrix(
         self,
-        matrix,
-        qumodes=[],
-        qubits=[],
-        duration=100,
-        unit="ns",
+        matrix: ArrayLike,
+        qumodes: Qumode | Sequence[Qumode] | QumodeRegister | None = None,
+        qubits: Qubit | Sequence[Qubit] | QuantumRegister | None = None,
         label: str = "cv_gate_from_matrix",
     ):
         """Converts matrix to gate. Note that if you choose to input some complex gate that would typically be physically
@@ -1117,27 +1275,27 @@ class CVCircuit(QuantumCircuit):
         Returns:
             Instruction: QisKit instruction
         """
-        # If multiple qubits are given, slice to get list of qubits. Otherwise, encase QuantumRegister for single qubit in list.
-        try:
-            qubits = qubits[:]
-        except:
+        qubits = qubits or []
+        if isinstance(qubits, Qubit):
             qubits = [qubits]
+        qubits = list(qubits)
 
-        # Slice QumodeRegister to get list of qumodes
-        if isinstance(qumodes, QumodeRegister):
-            qumodes = qumodes[:]
+        qumodes = qumodes or []
+        # Check if the user passed a single qumode
+        if len(qumodes) > 0 and isinstance(qumodes[0], Qubit):
+            qumodes = [qumodes]
+        qumodes = list(qumodes)
 
-        # Convert matrix to np.ndarray so that we can compute error flags easier
-        matrix = np.array(matrix)
+        # Flatten everything into a list of qubits
+        qargs = list(itertools.chain(*qumodes, qubits))
 
-        ## Error flags
-        # Matrix needs to be square
+        matrix = np.atleast_2d(matrix)
         n, m = matrix.shape
         if n != m:
             raise ValueError("Matrix given is not square")
 
         # Determine if input matrix is same dimension as input qumodes+qubits
-        if n != 2 ** (len(qumodes) + len(qubits)):
+        if n != 2 ** len(qargs):
             raise ValueError("Matrix is of different dimension from qumodes + qubits")
 
         # Checks if input matrix is unitary
@@ -1145,11 +1303,10 @@ class CVCircuit(QuantumCircuit):
             raise ValueError("The mapping provided is not unitary!")
 
         # Make sure that np.ndarray doesn't get fed into PUG
-        if isinstance(matrix, np.ndarray):
-            matrix = matrix.tolist()
+        matrix = matrix.tolist()
 
         # TODO Is it safe to ignore cutoff, assuming provided matrix is correct?
-        cutoffs = []
+        # cutoffs = []
         # for qumode in qumodes:
         #     cutoffs.append(QumodeRegister.calculate_cutoff(len(qumode)))
 
@@ -1165,15 +1322,19 @@ class CVCircuit(QuantumCircuit):
         #     ),
         #     qargs=qumodes + qubits,
         # )
-        return self.unitary(matrix, qubits=qumodes + qubits, label=label)
+        return self.unitary(matrix, qubits=qargs, label=label)  # pyright: ignore[reportArgumentType]
 
 
 # Monkey patch Qiskit QuantumCircuit to support parameterizing unitary gates
 def __requires_transpile(self):
-    return getattr(self, "_force_parameterized_unitary_gate", False) or any(
-        isinstance(gate, ParameterizedUnitaryGate) or gate.is_parameterized()
-        for gate in self.data
-    ) or (hasattr(self, "_has_parameterized_gate") and self._has_parameterized_gate)
+    return (
+        getattr(self, "_force_parameterized_unitary_gate", False)
+        or any(
+            isinstance(gate, ParameterizedUnitaryGate) or gate.is_parameterized()
+            for gate in self.data
+        )
+        or (hasattr(self, "_has_parameterized_gate") and self._has_parameterized_gate)
+    )
 
 
 CVCircuit.requires_transpile = __requires_transpile

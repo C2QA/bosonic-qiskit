@@ -1,9 +1,11 @@
-import c2qa
 import json
+
 import numpy
 import pytest
 import qiskit
 from qiskit_ibm_runtime.utils import RuntimeEncoder
+
+import c2qa
 
 
 def test_no_registers():
