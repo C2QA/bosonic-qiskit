@@ -3,6 +3,7 @@ import json
 import numpy
 import pytest
 import qiskit
+from qiskit.quantum_info import Pauli
 from qiskit_ibm_runtime.utils import RuntimeEncoder
 
 import c2qa
@@ -287,3 +288,60 @@ def test_cv_initialize(capsys):
             circuit, add_save_statevector=False, return_fockcounts=False
         )
         assert result.success
+
+
+class TestSQR:
+    def test_inputs(self):
+        m = c2qa.QumodeRegister(1, 4)
+        q = qiskit.QuantumRegister(1)
+        qc = c2qa.CVCircuit(m, q)
+
+        # Fine, all scalars
+        qc.cv_sqr(0.5, 0, 1, m[0], q[0])
+
+        # Fine, broadcasting over fock states
+        qc.cv_sqr(0.5, 0, [1, 3], m[0], q[0])
+
+        # Not fine, repeated fock mode 1
+        with pytest.raises(ValueError):
+            qc.cv_sqr(0.5, 0, [1, 1], m[0], q[0])
+
+        # Not fine, mismatching shapes
+        with pytest.raises(ValueError):
+            qc.cv_sqr(0.5, [0, 0, 0], [1, 2], m[0], q[0])
+
+        # Fine, all compatible shapes
+        qc.cv_sqr(0.5, [0, 0], [1, 2], m[0], q[0])
+        qc.cv_sqr([0.5, 0.5], [0, 0], [1, 2], m[0], q[0])
+        qc.cv_sqr([0.5, 0.5], 0, [1, 2], m[0], q[0])
+
+        # Not fine, not enough fock modes given
+        with pytest.raises(ValueError):
+            qc.cv_sqr([0.5, 0.5], 0, 1, m[0], q[0])
+
+        # Not fine, float type given for fock state
+        with pytest.raises(ValueError):
+            qc.cv_sqr([0.5, 0.5], 0, [1.0, 2], m[0], q[0])
+
+    def test_action(self):
+        m = c2qa.QumodeRegister(1, 4)
+        q = qiskit.QuantumRegister(1)
+        base = c2qa.CVCircuit(m, q)
+
+        # Make a circuit where <Z> = cos(theta_n) and theta_n = nπ/cutoff,
+        # then try preparing each eigenstate |n> on the qumode and verify that
+        # we get the correct Z value on the qubit
+        ns = numpy.arange(m.cutoff)
+        theta = numpy.pi / m.cutoff * ns
+        phi = numpy.pi / 2  # Ry gate
+
+        for n in ns:
+            qc = base.copy()
+            qc.cv_initialize(n, m[0])
+            qc.cv_sqr(theta, phi, ns, m[0], q[0])
+
+            state, *_ = c2qa.util.simulate(qc, return_fockcounts=False)
+            dm = c2qa.util.trace_out_qumodes(qc, state)
+            actual = dm.expectation_value(Pauli("Z"))
+            expected = numpy.cos(theta[n])
+            assert numpy.isclose(actual, expected)
