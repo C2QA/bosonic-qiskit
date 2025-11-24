@@ -1136,7 +1136,7 @@ class CVCircuit(QuantumCircuit):
             theta (real): arbitrary scale factor
 
         Returns:
-            csc_matrix: operator matrix
+            InstructionSet: The qiskit instruction
         """
         return self.append(
             self._new_gate(
