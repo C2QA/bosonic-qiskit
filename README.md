@@ -1,6 +1,6 @@
 # PACKAGE DEPRECIATION WARNING
 The way to import `bosonic-qiskit` will be changing from `import c2qa` to `import bosonic_qiskit`.
-This change will occur on release of version 15.0 on November 16, 2025.
+This change will occur on release of version 15.0.
 
 Please update any use of `c2qa` in your code accordingly
 
