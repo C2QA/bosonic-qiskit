@@ -34,7 +34,7 @@ jobs:
             --project-base-dir="$(pwd)" \
             --docformat=google \
             --intersphinx=https://docs.python.org/3/objects.inv \
-            ./src/c2qa
+            ./src/bosonic_qiskit
 
     - name: Push API documentation to Github Pages
       uses: peaceiris/actions-gh-pages@v4
