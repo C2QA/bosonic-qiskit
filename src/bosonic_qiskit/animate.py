@@ -15,10 +15,10 @@ from matplotlib.figure import Figure
 from qiskit.circuit.quantumcircuit import ClbitSpecifier, QubitSpecifier
 from qiskit.quantum_info import Statevector
 
-from c2qa.circuit import CVCircuit
-from c2qa.discretize import discretize_circuits, discretize_single_circuit
-from c2qa.typing import NoisePassLike
-from c2qa.wigner import (
+from bosonic_qiskit.circuit import CVCircuit
+from bosonic_qiskit.discretize import discretize_circuits, discretize_single_circuit
+from bosonic_qiskit.typing import NoisePassLike
+from bosonic_qiskit.wigner import (
     WignerResult,
     simulate_wigner,
     simulate_wigner_multiple_statevectors,

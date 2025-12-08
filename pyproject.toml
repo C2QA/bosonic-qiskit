@@ -35,7 +35,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["c2qa"]
+packages = ["bosonic_qiskit"]
 
 [tool.setuptools-git-versioning]
 enabled = true

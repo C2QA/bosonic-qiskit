@@ -6,7 +6,7 @@ import pytest
 import qiskit
 
 
-import c2qa
+import bosonic_qiskit
 
 
 def __build_subcircuit():
@@ -25,11 +25,11 @@ def __build_subcircuit():
     total_time = 1 * 2 * numpy.pi / omega_R
 
     # Create new circuit
-    qmr = c2qa.QumodeRegister(
+    qmr = bosonic_qiskit.QumodeRegister(
         num_qumodes=1, num_qubits_per_qumode=num_qubits_per_qumode
     )
     qbr = qiskit.QuantumRegister(1)
-    U_JC = c2qa.CVCircuit(qmr, qbr)
+    U_JC = bosonic_qiskit.CVCircuit(qmr, qbr)
 
     # Append U_R
     U_JC.cv_r(-omega_R * total_time, qmr[0])
@@ -41,7 +41,7 @@ def __build_subcircuit():
     U_JC = U_JC.to_gate(label="U_JC")
 
     # Instantiate the circuit and initialize the qubit to the '0' state.
-    circuit_0 = c2qa.CVCircuit(qmr, qbr)
+    circuit_0 = bosonic_qiskit.CVCircuit(qmr, qbr)
     circuit_0.initialize([1, 0], qbr)
 
     # Squeeze so we can visually see rotation
@@ -68,7 +68,7 @@ def __build_subcircuit():
     # U_JC = U_JC.to_gate(label='U_JC')
 
     # # Now repeat the above steps for a qubit initialized to the '1' state:
-    # circuit_1 = c2qa.CVCircuit(qmr,qbr)
+    # circuit_1 = bosonic_qiskit.CVCircuit(qmr,qbr)
     # circuit_1.initialize([0,1], qbr)
     # circuit_1.cv_d(alpha,qmr[0])
     # circuit_1.append(U_JC,qmr[0] + [qbr[0]])
@@ -85,7 +85,7 @@ def test_animate_subcircuit_one_gate(capsys):
         circuit = __build_subcircuit()
 
         # Animate wigner function of each circuit
-        c2qa.animate.animate_wigner(
+        bosonic_qiskit.animate.animate_wigner(
             circuit, file="tests/composite_gate.gif", animation_segments=20
         )
 
@@ -98,7 +98,7 @@ def test_animate_subcircuit_sequential(capsys):
         circuit = __build_subcircuit()
 
         # Animate wigner function of each circuit
-        c2qa.animate.animate_wigner(
+        bosonic_qiskit.animate.animate_wigner(
             circuit,
             file="tests/sequential_subcircuit.gif",
             animation_segments=20,
@@ -110,11 +110,11 @@ def test_animate_parameterized(capsys):
     with capsys.disabled():
         a = qiskit.circuit.Parameter("𝛼")
 
-        qmr = c2qa.QumodeRegister(1, num_qubits_per_qumode=4)
+        qmr = bosonic_qiskit.QumodeRegister(1, num_qubits_per_qumode=4)
         qbr = qiskit.QuantumRegister(1)
         cbr = qiskit.ClassicalRegister(1)
 
-        minimal_circuit = c2qa.CVCircuit(qmr, qbr, cbr)
+        minimal_circuit = bosonic_qiskit.CVCircuit(qmr, qbr, cbr)
 
         minimal_circuit.h(qbr[0])
 
@@ -123,7 +123,7 @@ def test_animate_parameterized(capsys):
         bound_circuit = minimal_circuit.assign_parameters({a: 2})
 
         wigner_filename = "tests/animate_parameterized.apng"
-        c2qa.animate.animate_wigner(
+        bosonic_qiskit.animate.animate_wigner(
             bound_circuit,
             qubit=qbr[0],
             cbit=cbr[0],
@@ -148,10 +148,10 @@ def test_animate_apng(capsys):
 
 
 def __animate_with_cbit(filename: str):
-    qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+    qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
     qr = qiskit.QuantumRegister(size=1)
     cr = qiskit.ClassicalRegister(size=1)
-    circuit = c2qa.CVCircuit(qmr, qr, cr)
+    circuit = bosonic_qiskit.CVCircuit(qmr, qr, cr)
 
     dist = 3
 
@@ -161,7 +161,7 @@ def __animate_with_cbit(filename: str):
     circuit.h(qr[0])
     circuit.cv_c_d(dist, qmr[0], qr[0])
 
-    c2qa.animate.animate_wigner(
+    bosonic_qiskit.animate.animate_wigner(
         circuit,
         qubit=qr[0],
         cbit=cr[0],
@@ -176,9 +176,9 @@ def __animate_with_cbit(filename: str):
 
 
 def __animate_without_cbit(filename: str, trace: bool = False):
-    qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+    qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
     qr = qiskit.QuantumRegister(size=1)
-    circuit = c2qa.CVCircuit(qmr, qr)
+    circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
     dist = 3
 
@@ -188,7 +188,7 @@ def __animate_without_cbit(filename: str, trace: bool = False):
     circuit.h(qr[0])
     circuit.cv_c_d(dist, qmr[0], qr[0])
 
-    c2qa.animate.animate_wigner(
+    bosonic_qiskit.animate.animate_wigner(
         circuit,
         qubit=qr[0],
         file=filename,
@@ -214,10 +214,10 @@ def test_animate_without_trace(capsys):
 
 def test_calibration_animate_mp4(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
         qr = qiskit.QuantumRegister(size=1)
         cr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr, cr)
 
         dist = 3
 
@@ -230,7 +230,7 @@ def test_calibration_animate_mp4(capsys):
         circuit.cv_c_d(-dist, qmr[0], qr[0])
         circuit.cv_d(-1j * dist, qmr[0])
 
-        c2qa.animate.animate_wigner(
+        bosonic_qiskit.animate.animate_wigner(
             circuit,
             qubit=qr[0],
             cbit=cr[0],

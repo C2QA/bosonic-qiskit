@@ -13,7 +13,7 @@ from qiskit_aer.noise import QuantumError, kraus_error
 from qiskit_aer.noise.noiseerror import NoiseError
 from qiskit_aer.noise.passes.local_noise_pass import LocalNoisePass
 
-import c2qa
+import bosonic_qiskit
 
 IGNORE_INSTRUCTIONS = ["measure"]
 
@@ -21,7 +21,7 @@ IGNORE_INSTRUCTIONS = ["measure"]
 def calculate_kraus(
     photon_loss_rates: Sequence[float],
     time: float,
-    circuit: c2qa.CVCircuit,
+    circuit: bosonic_qiskit.CVCircuit,
     op_qubits: Sequence[int],
     qumode_qubit_indices: Sequence[int],
 ) -> list[np.ndarray]:
@@ -140,7 +140,7 @@ class PhotonLossNoisePass(LocalNoisePass):
     def __init__(
         self,
         photon_loss_rates: float | Sequence[float],
-        circuit: c2qa.CVCircuit,
+        circuit: bosonic_qiskit.CVCircuit,
         instructions: str | Sequence[str] | None = None,
         qumodes: Qubit | Sequence[Qubit] | None = None,
         time_unit: str = "s",
@@ -278,7 +278,7 @@ class PhotonLossNoisePass(LocalNoisePass):
         return 0.000_000_1  # 100ns
 
     def _calculate_num_qumodes(
-        self, circuit: c2qa.CVCircuit, qumodes: Sequence[Qubit]
+        self, circuit: bosonic_qiskit.CVCircuit, qumodes: Sequence[Qubit]
     ) -> int:
         # Calculate the number of qumodes based on the number of times the QumodeRegister index changes for the given qumode qubits
         qmr_to_num_qubits: Counter[int] = Counter()

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from qiskit.circuit import Qubit
 
-from c2qa import QumodeRegister
+from bosonic_qiskit import QumodeRegister
 
 
 class TestQumodeRegister:

@@ -1,6 +1,6 @@
 import time
 
-import c2qa
+import bosonic_qiskit
 import pytest
 import scipy
 import qiskit
@@ -16,7 +16,7 @@ def test_custom_unitary(capsys):
         gate = qiskit.circuit.library.UnitaryGate(_matrix().toarray(), label="foo")
 
         # Fails with `AerError: unknown instruction: foo`
-        # gate = c2qa.parameterized_unitary_gate.ParameterizedUnitaryGate(_matrix, [0,1], 2, [], label="foo")
+        # gate = bosonic_qiskit.parameterized_unitary_gate.ParameterizedUnitaryGate(_matrix, [0,1], 2, [], label="foo")
 
         print("gate name", gate.name, "label", gate.label)
         circuit.append(gate, [0, 1])
@@ -41,7 +41,7 @@ def test_custom_unitary(capsys):
         #     aer_circuits, idx_maps = assemble_circuits(circuits, self.configuration().basis_gates)
         # else:
         #     aer_circuits, idx_maps = assemble_circuits(circuits)
-        # target = c2qa.BosonicQiskitTarget()
+        # target = bosonic_qiskit.BosonicQiskitTarget()
         target = {}
 
         # aerbackend.py lines 214-217
@@ -112,10 +112,10 @@ def test_cvcircuit_util_simulate(capsys):
 
 
 def calibration_circuit(force_parameterized_unitary_gate: bool):
-    qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
+    qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=6)
     qr = qiskit.QuantumRegister(size=1)
     cr = qiskit.ClassicalRegister(size=1)
-    circuit = c2qa.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=force_parameterized_unitary_gate)
+    circuit = bosonic_qiskit.CVCircuit(qmr, qr, cr, force_parameterized_unitary_gate=force_parameterized_unitary_gate)
 
     dist = 3
 
@@ -136,7 +136,7 @@ def average_simulate(circuit, count: int = 10):
     success = True
     for i in range(count):
         start = time.perf_counter()
-        _, result, _ = c2qa.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
+        _, result, _ = bosonic_qiskit.util.simulate(circuit, return_fockcounts=False, add_save_statevector=False)
         end = time.perf_counter()
         # print(f"[average_simulate] {i}: {end - start}")
         avg += (end - start)

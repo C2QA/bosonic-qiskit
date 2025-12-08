@@ -5,20 +5,20 @@ import qiskit
 from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.visualization import plot_histogram
 
-import c2qa
+import bosonic_qiskit
 
 
 def test_trace_out_zero(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
         circuit.initialize([0, 1], qr[0])
         circuit.cv_initialize(0, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
-        trace = c2qa.util.trace_out_qubits(circuit, state)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
+        trace = bosonic_qiskit.util.trace_out_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -32,15 +32,15 @@ def test_trace_out_zero(capsys):
 
 def test_trace_out_one(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qr = qiskit.QuantumRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
         circuit.initialize([1, 0], qr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
-        trace = c2qa.util.trace_out_qubits(circuit, state)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
+        trace = bosonic_qiskit.util.trace_out_qubits(circuit, state)
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -54,15 +54,15 @@ def test_trace_out_one(capsys):
 
 def test_trace_out_qubit(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qbr = qiskit.QuantumRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qbr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qbr)
 
         circuit.initialize([1, 0], qbr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace(circuit, state, qbr[0])
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
+        trace = bosonic_qiskit.util.cv_partial_trace(circuit, state, qbr[0])
 
         assert state.dims() == (2, 2, 2)
         assert trace.dims() == (2, 2)
@@ -76,22 +76,22 @@ def test_trace_out_qubit(capsys):
 
 def test_trace_out_qumode(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=2)
         qbr = qiskit.QuantumRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qbr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qbr)
 
         circuit.initialize([1, 0], qbr[0])
         circuit.cv_initialize(1, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
-        trace = c2qa.util.cv_partial_trace(circuit, state, qmr[0])
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
+        trace = bosonic_qiskit.util.cv_partial_trace(circuit, state, qmr[0])
 
 
 def test_measure_all_xyz(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes=1, num_qubits_per_qumode=4)
         qr = qiskit.QuantumRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
         # dist = numpy.sqrt(numpy.pi) / numpy.sqrt(2)
         dist = numpy.sqrt(2)
@@ -106,13 +106,13 @@ def test_measure_all_xyz(capsys):
             (state_x, result_x, _),
             (state_y, result_y, _),
             (state_z, result_z, _),
-        ) = c2qa.util.measure_all_xyz(circuit)
+        ) = bosonic_qiskit.util.measure_all_xyz(circuit)
 
         print("state_x.probabilities_dict()")
         print(state_x.probabilities_dict())
 
         print("result_x.get_counts() calculated probabilities")
-        print(c2qa.util.get_probabilities(result_x))
+        print(bosonic_qiskit.util.get_probabilities(result_x))
 
         print("result_x.to_dict()")
         print(result_x.to_dict())
@@ -133,16 +133,16 @@ def test_stateread(capsys):
         num_qumodes = 2
         qubits_per_mode = 3
 
-        qmr = c2qa.QumodeRegister(
+        qmr = bosonic_qiskit.QumodeRegister(
             num_qumodes=num_qumodes, num_qubits_per_qumode=qubits_per_mode, name="qmr"
         )
 
-        circuit = c2qa.CVCircuit(qmr)
+        circuit = bosonic_qiskit.CVCircuit(qmr)
 
         circuit.cv_initialize(2, qmr[0])
         circuit.cv_initialize(0, qmr[1])
-        state, result, fock_counts = c2qa.util.simulate(circuit)
-        c2qa.util.stateread(
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
+        bosonic_qiskit.util.stateread(
             state,
             numberofqubits=0,
             numberofmodes=num_qumodes,
@@ -158,25 +158,25 @@ def test_stateread(capsys):
             testmatrix = numpy.zeros((dim, dim))
             for i in range(dim):
                 for j in range(dim):
-                    testmatrix = c2qa.util.fockmap(testmatrix, j, i, randarray[i, j])
+                    testmatrix = bosonic_qiskit.util.fockmap(testmatrix, j, i, randarray[i, j])
 
             assert (testmatrix == randarray).all()
 
         # Check fockmap using numpy.outer
         matrix = numpy.zeros((4, 4))
         assert (
-            c2qa.util.fockmap(matrix, 0, 0) == numpy.outer([1, 0, 0, 0], [1, 0, 0, 0])
+            bosonic_qiskit.util.fockmap(matrix, 0, 0) == numpy.outer([1, 0, 0, 0], [1, 0, 0, 0])
         ).all()  # |0><0|
         assert (
-            c2qa.util.fockmap(matrix, 1, [3, 2], [1, 0.5])
+            bosonic_qiskit.util.fockmap(matrix, 1, [3, 2], [1, 0.5])
             == (
                 numpy.outer([0, 0, 0, 1], [0, 1, 0, 0])
                 + 0.5 * numpy.outer([0, 0, 1, 0], [0, 1, 0, 0])
             )
         ).all()  # |3><1| + 0.5|2><1|
         assert (
-            c2qa.util.fockmap(matrix, 1, [3, 2, 1])
-            == c2qa.util.fockmap(matrix, [1, 1, 1], [3, 2, 1])
+            bosonic_qiskit.util.fockmap(matrix, 1, [3, 2, 1])
+            == bosonic_qiskit.util.fockmap(matrix, [1, 1, 1], [3, 2, 1])
         ).all()  # |3><1| + |2><1| + |1><1|
 
         # Check the types which are accepted for each arg.
@@ -204,7 +204,7 @@ def test_stateread(capsys):
                 amp_index = numpy.random.randint(0, 4)
 
             # Assert that output is a numpy.ndarray
-            matrix = c2qa.util.fockmap(
+            matrix = bosonic_qiskit.util.fockmap(
                 m_types[m_index],
                 fi_types[fi_index],
                 fo_types[fo_index],
@@ -216,9 +216,9 @@ def test_stateread(capsys):
 def test_circuit_avg_photon_num(capsys):
     with capsys.disabled():
         # Create two qumode registers containing 2 qumodes and 1 qumode respectively.
-        qmr1 = c2qa.QumodeRegister(2, 3)
-        qmr2 = c2qa.QumodeRegister(1, 3)
-        circ = c2qa.CVCircuit(qmr1, qmr2)
+        qmr1 = bosonic_qiskit.QumodeRegister(2, 3)
+        qmr2 = bosonic_qiskit.QumodeRegister(1, 3)
+        circ = bosonic_qiskit.CVCircuit(qmr1, qmr2)
 
         # Initialize the three qumodes to |3>, |4>, |5> Fock states.
         circ.cv_initialize(3, qmr1[0])  # Qumode in |3>
@@ -226,9 +226,9 @@ def test_circuit_avg_photon_num(capsys):
         circ.cv_initialize(5, qmr2[0])  # Qumode in |5>
 
         # Obtain state
-        state, _, _ = c2qa.util.simulate(circ)
+        state, _, _ = bosonic_qiskit.util.simulate(circ)
 
-        avg_photon_num = c2qa.util.avg_photon_num(circ, state)
+        avg_photon_num = bosonic_qiskit.util.avg_photon_num(circ, state)
         assert numpy.allclose(avg_photon_num, [3, 4, 5])
 
 
@@ -255,22 +255,22 @@ def test_qumode_avg_photon_num(capsys):
 
             # Average photon number of statevector, density matrix, and random vector must all match
             assert (
-                c2qa.util.qumode_avg_photon_num(Statevector(vector), decimals)
-                == c2qa.util.qumode_avg_photon_num(DensityMatrix(vector), decimals)
+                bosonic_qiskit.util.qumode_avg_photon_num(Statevector(vector), decimals)
+                == bosonic_qiskit.util.qumode_avg_photon_num(DensityMatrix(vector), decimals)
                 == round(avg_num.real, decimals)
             )
 
 
 def test_counts_to_fockcounts(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode=3)
+        qmr = bosonic_qiskit.QumodeRegister(2, num_qubits_per_qumode=3)
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(2, num_qubits_per_qumode=3)
-        circuit = c2qa.CVCircuit(qmr)
+        qmr = bosonic_qiskit.QumodeRegister(2, num_qubits_per_qumode=3)
+        circuit = bosonic_qiskit.CVCircuit(qmr)
 
         circuit.cv_sq2(1, qmr[0], qmr[1])
 
-        _, result, fock_counts = c2qa.util.simulate(circuit)
+        _, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
         assert len(fock_counts) == 8
 

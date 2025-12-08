@@ -4,7 +4,7 @@ import qiskit_aer
 import scipy.linalg
 
 
-import c2qa
+import bosonic_qiskit
 
 
 # Define parameters
