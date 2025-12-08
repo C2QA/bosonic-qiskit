@@ -6,32 +6,32 @@ import qiskit
 from qiskit.quantum_info import Pauli
 from qiskit_ibm_runtime.utils import RuntimeEncoder
 
-import c2qa
+import bosonic_qiskit
 
 
 def test_no_registers():
     with pytest.raises(ValueError):
-        c2qa.CVCircuit()
+        bosonic_qiskit.CVCircuit()
 
 
 def test_only_quantumregister():
     with pytest.raises(ValueError):
         qr = qiskit.QuantumRegister(1)
-        c2qa.CVCircuit(qr)
+        bosonic_qiskit.CVCircuit(qr)
 
 
 def test_only_qumoderegister():
-    c2qa.CVCircuit(c2qa.QumodeRegister(1, 1))
+    bosonic_qiskit.CVCircuit(bosonic_qiskit.QumodeRegister(1, 1))
 
 
 def test_correct():
-    c2qa.CVCircuit(qiskit.QuantumRegister(1), c2qa.QumodeRegister(1, 1))
+    bosonic_qiskit.CVCircuit(qiskit.QuantumRegister(1), bosonic_qiskit.QumodeRegister(1, 1))
 
 
 def test_with_classical():
-    c2qa.CVCircuit(
+    bosonic_qiskit.CVCircuit(
         qiskit.QuantumRegister(1),
-        c2qa.QumodeRegister(1, 1),
+        bosonic_qiskit.QumodeRegister(1, 1),
         qiskit.ClassicalRegister(1),
     )
 
@@ -41,12 +41,12 @@ def test_with_initialize():
     number_of_qubits = number_of_modes
     number_of_qubits_per_mode = 2
 
-    qmr = c2qa.QumodeRegister(
+    qmr = bosonic_qiskit.QumodeRegister(
         num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
     )
     qbr = qiskit.QuantumRegister(size=number_of_qubits)
     cbr = qiskit.ClassicalRegister(size=1)
-    circuit = c2qa.CVCircuit(qmr, qbr, cbr)
+    circuit = bosonic_qiskit.CVCircuit(qmr, qbr, cbr)
 
     sm = [0, 0, 1, 0, 0]
     for i in range(qmr.num_qumodes):
@@ -54,7 +54,7 @@ def test_with_initialize():
 
     circuit.initialize(numpy.array([0, 1]), qbr[0])
 
-    state, result, _ = c2qa.util.simulate(circuit)
+    state, result, _ = bosonic_qiskit.util.simulate(circuit)
     assert result.success
 
 
@@ -64,16 +64,16 @@ def test_with_delay(capsys):
         number_of_qubits = 1
         number_of_qubits_per_mode = 2
 
-        qmr = c2qa.QumodeRegister(
+        qmr = bosonic_qiskit.QumodeRegister(
             num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
         )
         qbr = qiskit.QuantumRegister(size=number_of_qubits)
-        circuit = c2qa.CVCircuit(qmr, qbr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qbr)
 
         circuit.delay(100)
         circuit.cv_d(1, qmr[0])
 
-        state, result, _ = c2qa.util.simulate(circuit)
+        state, result, _ = bosonic_qiskit.util.simulate(circuit)
         assert result.success
 
 
@@ -83,12 +83,12 @@ def test_get_qubit_indices(capsys):
         number_of_qubits = 2
         number_of_qubits_per_mode = 2
 
-        qmr = c2qa.QumodeRegister(
+        qmr = bosonic_qiskit.QumodeRegister(
             num_qumodes=number_of_modes, num_qubits_per_qumode=number_of_qubits_per_mode
         )
         qbr = qiskit.QuantumRegister(size=number_of_qubits)
         cbr = qiskit.ClassicalRegister(size=1)
-        circuit = c2qa.CVCircuit(qmr, qbr, cbr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qbr, cbr)
 
         indices = circuit.get_qubit_indices([qmr[1]])
         print(f"qmr[1] indices = {indices}")
@@ -115,14 +115,14 @@ def test_initialize_qubit_values(capsys):
         number_of_qubits_per_mode = 4
 
         for fock in range(pow(2, number_of_qubits_per_mode)):
-            qmr = c2qa.QumodeRegister(
+            qmr = bosonic_qiskit.QumodeRegister(
                 num_qumodes=number_of_modes,
                 num_qubits_per_qumode=number_of_qubits_per_mode,
             )
-            circuit = c2qa.CVCircuit(qmr)
+            circuit = bosonic_qiskit.CVCircuit(qmr)
             circuit.cv_initialize(fock, qmr[0])
 
-            state, result, _ = c2qa.util.simulate(circuit)
+            state, result, _ = bosonic_qiskit.util.simulate(circuit)
             assert result.success
 
             print(f"fock {fock} qubits {list(result.get_counts().keys())[0]}")
@@ -132,8 +132,8 @@ def test_serialize(capsys):
     with capsys.disabled():
         print()
 
-        qumodes = c2qa.QumodeRegister(2)
-        bosonic_circuit = c2qa.CVCircuit(qumodes)
+        qumodes = bosonic_qiskit.QumodeRegister(2)
+        bosonic_circuit = bosonic_qiskit.CVCircuit(qumodes)
 
         init_state = [0, 2]
         for i in range(qumodes.num_qumodes):
@@ -168,13 +168,13 @@ def test_cv_gate_from_matrix(capsys):
         )
         for i in range(10):  # Repeat test 10 times
             # Two qumode registers, One quantum register, One classical register. Hilbert space dimension = 2**(2 * 2 * 1 + 3) = 128
-            qmr1 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
-            qmr2 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+            qmr1 = bosonic_qiskit.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+            qmr2 = bosonic_qiskit.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
             q = qiskit.QuantumRegister(num_qubits)
             creg = qiskit.ClassicalRegister(total_qubits)
 
             # Initialize all qumodes to fock |1> and all qubits to |1> state
-            circuit = c2qa.CVCircuit(qmr1, qmr2, q, creg)
+            circuit = bosonic_qiskit.CVCircuit(qmr1, qmr2, q, creg)
             circuit.cv_initialize([0, 1], qmr1)
             circuit.cv_initialize([0, 1], qmr2)
 
@@ -209,7 +209,7 @@ def test_cv_gate_from_matrix(capsys):
 
                 circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
 
-                _, result, fock_counts = c2qa.util.simulate(circuit)
+                _, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
                 # There should only be 1 result
                 if len(list(fock_counts.keys())) > 1:
@@ -223,7 +223,7 @@ def test_cv_gate_from_matrix(capsys):
 
                 circuit.cv_measure(qmr1[:] + qmr2[:] + q[:], creg)
 
-                _, result, fock_counts = c2qa.util.simulate(circuit)
+                _, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
                 # There should only be 1 result
                 if len(list(fock_counts.keys())) > 1:
@@ -252,29 +252,29 @@ def test_discretize_cv_gate_from_matrix(capsys):
         )
 
         # Two qumode registers, One quantum register, One classical register. Hilbert space dimension = 2**(2 * 2 * 1 + 3) = 128
-        qmr1 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
-        qmr2 = c2qa.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+        qmr1 = bosonic_qiskit.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
+        qmr2 = bosonic_qiskit.QumodeRegister(num_qumodes_per_register, num_qubits_per_qumode)
         q = qiskit.QuantumRegister(num_qubits)
         creg = qiskit.ClassicalRegister(total_qubits)
 
         # Initialize all qumodes to fock |1> and all qubits to |1> state
-        circuit = c2qa.CVCircuit(qmr1, qmr2, q, creg)
+        circuit = bosonic_qiskit.CVCircuit(qmr1, qmr2, q, creg)
 
         circuit.cv_gate_from_matrix(xgate, qumodes=qmr1[0])
 
-        discretized = c2qa.discretize.discretize_circuits(circuit)
+        discretized = bosonic_qiskit.discretize.discretize_circuits(circuit)
         assert len(circuit.data) == len(discretized)
 
 
 def test_cv_initialize(capsys):
     with capsys.disabled():
-        qmr1 = c2qa.QumodeRegister(1, 2)
-        qmr2 = c2qa.QumodeRegister(2, 2)
-        qmr3 = c2qa.QumodeRegister(2, 3)  # <----- change to (2, 2) for no error
-        qmr4 = c2qa.QumodeRegister(1, 2)
-        qmr5 = c2qa.QumodeRegister(3, 2)
-        qmr6 = c2qa.QumodeRegister(3, 2)
-        circuit = c2qa.CVCircuit(qmr1, qmr2, qmr3, qmr4, qmr5, qmr6)
+        qmr1 = bosonic_qiskit.QumodeRegister(1, 2)
+        qmr2 = bosonic_qiskit.QumodeRegister(2, 2)
+        qmr3 = bosonic_qiskit.QumodeRegister(2, 3)  # <----- change to (2, 2) for no error
+        qmr4 = bosonic_qiskit.QumodeRegister(1, 2)
+        qmr5 = bosonic_qiskit.QumodeRegister(3, 2)
+        qmr6 = bosonic_qiskit.QumodeRegister(3, 2)
+        circuit = bosonic_qiskit.CVCircuit(qmr1, qmr2, qmr3, qmr4, qmr5, qmr6)
 
         circuit.cv_initialize([0, 1], qmr1[0])
         circuit.cv_initialize([0, 1], qmr2[0])
@@ -284,7 +284,7 @@ def test_cv_initialize(capsys):
         circuit.cv_initialize([0, 1], qmr6[0])
 
         # saving a state vector for all the registers takes a considerable amount of time
-        state, result, fock_counts = c2qa.util.simulate(
+        state, result, fock_counts = bosonic_qiskit.util.simulate(
             circuit, add_save_statevector=False, return_fockcounts=False
         )
         assert result.success
@@ -292,9 +292,9 @@ def test_cv_initialize(capsys):
 
 class TestSQR:
     def test_inputs(self):
-        m = c2qa.QumodeRegister(1, 4)
+        m = bosonic_qiskit.QumodeRegister(1, 4)
         q = qiskit.QuantumRegister(1)
-        qc = c2qa.CVCircuit(m, q)
+        qc = bosonic_qiskit.CVCircuit(m, q)
 
         # Fine, all scalars
         qc.cv_sqr(0.5, 0, 1, m[0], q[0])
@@ -324,9 +324,9 @@ class TestSQR:
             qc.cv_sqr([0.5, 0.5], 0, [1.0, 2], m[0], q[0])
 
     def test_action(self):
-        m = c2qa.QumodeRegister(1, 4)
+        m = bosonic_qiskit.QumodeRegister(1, 4)
         q = qiskit.QuantumRegister(1)
-        base = c2qa.CVCircuit(m, q)
+        base = bosonic_qiskit.CVCircuit(m, q)
 
         # Make a circuit where <Z> = cos(theta_n) and theta_n = nπ/cutoff,
         # then try preparing each eigenstate |n> on the qumode and verify that
@@ -340,8 +340,8 @@ class TestSQR:
             qc.cv_initialize(n, m[0])
             qc.cv_sqr(theta, phi, ns, m[0], q[0])
 
-            state, *_ = c2qa.util.simulate(qc, return_fockcounts=False)
-            dm = c2qa.util.trace_out_qumodes(qc, state)
+            state, *_ = bosonic_qiskit.util.simulate(qc, return_fockcounts=False)
+            dm = bosonic_qiskit.util.trace_out_qumodes(qc, state)
             actual = dm.expectation_value(Pauli("Z"))
             expected = numpy.cos(theta[n])
             assert numpy.isclose(actual, expected)

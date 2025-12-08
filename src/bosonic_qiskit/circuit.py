@@ -13,10 +13,10 @@ from qiskit.circuit import InstructionSet, ParameterExpression
 from qiskit.circuit.library import UnitaryGate
 from qiskit.quantum_info.operators.predicates import is_unitary_matrix
 
-from c2qa.operators import CVOperators
-from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate, UnitaryFunc
-from c2qa.qumoderegister import QumodeRegister
-from c2qa.typing import Clbit, Qubit, Qumode
+from bosonic_qiskit.operators import CVOperators
+from bosonic_qiskit.parameterized_unitary_gate import ParameterizedUnitaryGate, UnitaryFunc
+from bosonic_qiskit.qumoderegister import QumodeRegister
+from bosonic_qiskit.typing import Clbit, Qubit, Qumode
 
 
 class CVCircuit(QuantumCircuit):

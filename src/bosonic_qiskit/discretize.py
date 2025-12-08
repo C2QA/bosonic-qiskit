@@ -6,10 +6,10 @@ from qiskit.circuit import Instruction, QuantumCircuit
 from qiskit.circuit.quantumcircuit import ClbitSpecifier, QubitSpecifier
 from qiskit_aer.noise import LocalNoisePass
 
-from c2qa.circuit import CVCircuit
-from c2qa.kraus import PhotonLossNoisePass
-from c2qa.parameterized_unitary_gate import ParameterizedUnitaryGate
-from c2qa.typing import NoisePassLike
+from bosonic_qiskit.circuit import CVCircuit
+from bosonic_qiskit.kraus import PhotonLossNoisePass
+from bosonic_qiskit.parameterized_unitary_gate import ParameterizedUnitaryGate
+from bosonic_qiskit.typing import NoisePassLike
 
 
 def discretize_circuits(

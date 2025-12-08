@@ -13,8 +13,8 @@ from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
 from qiskit_aer.noise import LocalNoisePass, NoiseModel
 
-from c2qa import CVCircuit
-from c2qa.discretize import discretize_circuits
+from bosonic_qiskit import CVCircuit
+from bosonic_qiskit.discretize import discretize_circuits
 
 from .typing import Clbit, NoisePassLike, Qubit, Qumode
 
@@ -95,7 +95,7 @@ def stateread(
     little_endian: bool = False,
 ):
     """Print values for states of qubits and qumodes using the result of a
-    simulation of the statevector, e.g. using stateop, _, _, _ = c2qa.util.simulate(circuit).
+    simulation of the statevector, e.g. using stateop, _, _, _ = bosonic_qiskit.util.simulate(circuit).
 
     Returns the states of the qubits and the Fock states of the qumodes with respective amplitudes.
     """

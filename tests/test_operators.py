@@ -2,7 +2,7 @@ import random
 
 import numpy
 
-from c2qa.operators import CVOperators
+from bosonic_qiskit.operators import CVOperators
 
 
 def allclose(a, b) -> bool:

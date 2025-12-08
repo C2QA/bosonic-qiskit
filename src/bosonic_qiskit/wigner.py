@@ -13,8 +13,8 @@ from qiskit.quantum_info import DensityMatrix, Statevector
 from qiskit.result import Result
 from qiskit_aer.noise import LocalNoisePass
 
-from c2qa.circuit import CVCircuit
-from c2qa.util import simulate, trace_out_qubits
+from bosonic_qiskit.circuit import CVCircuit
+from bosonic_qiskit.util import simulate, trace_out_qubits
 
 from .typing import NoisePassLike, Qubit
 

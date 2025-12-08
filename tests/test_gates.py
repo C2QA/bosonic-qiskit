@@ -1,5 +1,5 @@
 import random
-import c2qa
+import bosonic_qiskit
 import numpy
 import qiskit
 
@@ -15,9 +15,9 @@ def count_nonzero(statevector: qiskit.quantum_info.Statevector):
 
 
 def create_conditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 2):
-    qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+    qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
     qr = qiskit.QuantumRegister(2)
-    circuit = c2qa.CVCircuit(qmr, qr)
+    circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
     for qumode in range(num_qumodes):
         circuit.cv_initialize(0, qmr[qumode])
@@ -28,8 +28,8 @@ def create_conditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 2):
 
 
 def create_unconditional(num_qumodes: int = 2, num_qubits_per_qumode: int = 3):
-    qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
-    circuit = c2qa.CVCircuit(qmr)
+    qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+    circuit = bosonic_qiskit.CVCircuit(qmr)
     for qumode in range(num_qumodes):
         circuit.cv_initialize(0, qmr[qumode])
 
@@ -58,7 +58,7 @@ def assert_unchanged(state, result):
 
 def test_no_gates():
     circuit, qmr = create_unconditional()
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -68,7 +68,7 @@ def test_beamsplitter_once():
     phi = random.random()
     circuit.cv_bs(phi, qmr[0], qmr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
     # TODO - Beam splitter gate does not change state vector
     #        Both Strawberry Fields & FockWits are the same, too.
@@ -82,7 +82,7 @@ def test_conditional_beamsplitter():
     theta = random.random()
     circuit.cv_c_bs(theta, qmr[0], qmr[1], qr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
     # TODO - Beam splitter gate does not change state vector
     #        Both Strawberry Fields & FockWits are the same, too.
@@ -102,7 +102,7 @@ def test_conditional_schwinger():
         [beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0]
     )
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
     assert_unchanged(state, result)
 
@@ -114,7 +114,7 @@ def test_beamsplitter_twice():
         circuit.cv_bs(phi, qmr[0], qmr[1])
         circuit.cv_bs(-phi, qmr[0], qmr[1])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_unchanged(state, result)
 
 
@@ -128,7 +128,7 @@ def test_conditonal_displacement():
         circuit.cv_c_d(-alpha, qmr[0], qr[1])
         circuit.cv_c_d(alpha, qmr[0], qr[1])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_unchanged(state, result)
 
 
@@ -142,7 +142,7 @@ def test_conditonal_squeezing():
         circuit.cv_c_sq(-alpha, qmr[0], qr[1])
         circuit.cv_c_sq(alpha, qmr[0], qr[1])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_unchanged(state, result)
 
 
@@ -154,7 +154,7 @@ def test_displacement_once(capsys):
         alpha = 1
         circuit.cv_d(alpha, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_changed(state, result)
 
 
@@ -163,7 +163,7 @@ def test_cv_delay():
 
     circuit.cv_delay(100, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
 
 def test_displacement_twice():
@@ -173,16 +173,16 @@ def test_displacement_twice():
     circuit.cv_d(alpha, qmr[0])
     circuit.cv_d(-alpha, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
 def test_displacement_calibration(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(1, 2)
+        qmr = bosonic_qiskit.QumodeRegister(1, 2)
         qr = qiskit.QuantumRegister(1)
         cr = qiskit.ClassicalRegister(1)
-        circuit = c2qa.CVCircuit(qmr, qr, cr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr, cr)
 
         # qr[0] and cr[0] will init to zero
         circuit.cv_initialize(0, qmr[0])
@@ -197,7 +197,7 @@ def test_displacement_calibration(capsys):
         circuit.h(qr[0])
         circuit.measure(qr[0], cr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert result.success
 
         state = result.get_statevector(circuit)
@@ -218,7 +218,7 @@ def test_rotation_once():
     theta = random.random()
     circuit.cv_r(theta, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
     # TODO - Rotation gate does not change state vector.
     #        Both Strawberry Fields & FockWits are the same, too.
@@ -233,7 +233,7 @@ def test_rotation_twice():
     circuit.cv_r(theta, qmr[0])
     circuit.cv_r(-theta, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -243,7 +243,7 @@ def test_squeezing_once():
     for z in random_real_and_complex():
         circuit.cv_sq(z, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_changed(state, result)
 
 
@@ -254,7 +254,7 @@ def test_squeezing_twice():
         circuit.cv_sq(z, qmr[0])
         circuit.cv_sq(-z, qmr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_unchanged(state, result)
 
 
@@ -264,7 +264,7 @@ def test_two_mode_squeezing_once():
     for z in random_real_and_complex():
         circuit.cv_sq2(z, qmr[0], qmr[1])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_changed(state, result)
 
 
@@ -275,7 +275,7 @@ def test_two_mode_squeezing_twice():
         circuit.cv_sq2(z, qmr[0], qmr[1])
         circuit.cv_sq2(-z, qmr[0], qmr[1])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_unchanged(state, result)
 
 
@@ -285,7 +285,7 @@ def test_three_mode_squeezing_once():
     for z in random_real_and_complex():
         circuit.cv_sq3(z, qmr[0], qmr[1], qmr[2])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert_changed(state, result)
 
 
@@ -312,7 +312,7 @@ def test_gates():
     circuit.cv_c_sq(z, qmr[0], qr[0])
     circuit.cv_c_sq(z, qmr[1], qr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
     assert result.success
 
@@ -324,7 +324,7 @@ def test_snap():
     n = 1
     circuit.cv_snap(phi, n, qmr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
 
 def test_eswap():
@@ -333,7 +333,7 @@ def test_eswap():
     phi = random.random()
     circuit.cv_eswap(phi, qmr[0], qmr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
 
 
 def test_multiboson_sampling(capsys):
@@ -341,21 +341,21 @@ def test_multiboson_sampling(capsys):
         num_qubits = 1
         num_qumodes = 2
         num_qubits_per_qumode = 2
-        qmrA = c2qa.QumodeRegister(
+        qmrA = bosonic_qiskit.QumodeRegister(
             num_qumodes=num_qumodes,
             num_qubits_per_qumode=num_qubits_per_qumode,
             name="qmrA_initial",
         )
-        qmrB = c2qa.QumodeRegister(
+        qmrB = bosonic_qiskit.QumodeRegister(
             num_qumodes=num_qumodes,
             num_qubits_per_qumode=num_qubits_per_qumode,
             name="qmrB_initial",
         )
         qbr = qiskit.QuantumRegister(size=num_qubits, name="qbr_initial")
-        circuit = c2qa.CVCircuit(qmrA, qmrB, qbr)
+        circuit = bosonic_qiskit.CVCircuit(qmrA, qmrB, qbr)
         circuit.cv_c_multiboson_sampling([0, 1, 2, 3], qmrA[0], qbr[0])
 
-        state, result, fock_counts = c2qa.util.simulate(circuit)
+        state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
         assert result.success
 
 
@@ -365,7 +365,7 @@ def test_two_mode_sum():
     z = random.random()
     circuit.cv_sum(z, qmr[0], qmr[1])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_changed(state, result)
 
 
@@ -375,7 +375,7 @@ def test_conditional_two_mode_sum():
     z = random.random()
     circuit.cv_c_sum(z, qmr[0], qmr[1], qbr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_changed(state, result)
 
 
@@ -386,7 +386,7 @@ def test_jc():
     phi = random.random()
     circuit.cv_jc(theta, phi, qmr[0], qbr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_changed(state, result)
 
 
@@ -397,7 +397,7 @@ def test_ajc():
     phi = random.random()
     circuit.cv_ajc(theta, phi, qmr[0], qbr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_unchanged(state, result)
 
 
@@ -407,7 +407,7 @@ def test_rb():
     z = random.random()
     circuit.cv_rb(z, qmr[0], qbr[0])
 
-    state, result, fock_counts = c2qa.util.simulate(circuit)
+    state, result, fock_counts = bosonic_qiskit.util.simulate(circuit)
     assert_changed(state, result)
 
 

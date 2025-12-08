@@ -5,7 +5,7 @@ import numpy
 import pytest
 import qiskit
 
-import c2qa
+import bosonic_qiskit
 
 
 def test_cv_c_d(capsys):
@@ -13,9 +13,9 @@ def test_cv_c_d(capsys):
     with capsys.disabled():
         num_qumodes = 2
         num_qubits_per_qumode = 2
-        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
         theta = random.random()
         circuit.cv_c_d(theta=theta, qumode=qmr[0], qubit=qr[0])
@@ -38,9 +38,9 @@ def test_cv_c_schwinger(capsys):
     with capsys.disabled():
         num_qumodes = 2
         num_qubits_per_qumode = 2
-        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
         beta = random.random()
         theta_1 = random.random()
@@ -75,9 +75,9 @@ def test_cv_c_schwinger_animate(capsys):
     with capsys.disabled():
         num_qumodes = 2
         num_qubits_per_qumode = 2
-        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
         qr = qiskit.QuantumRegister(2)
-        circuit = c2qa.CVCircuit(qmr, qr)
+        circuit = bosonic_qiskit.CVCircuit(qmr, qr)
 
         beta = random.random()
         theta_1 = random.random()
@@ -88,7 +88,7 @@ def test_cv_c_schwinger_animate(capsys):
             [beta, theta_1, phi_1, theta_2, phi_2], qmr[0], qmr[1], qr[0]
         )
 
-        c2qa.animate.animate_wigner(
+        bosonic_qiskit.animate.animate_wigner(
             circuit,
             file="tests/test_cv_c_schwinger_animate.gif",
             axes_min=-8,
@@ -100,18 +100,18 @@ def test_cv_c_schwinger_animate(capsys):
 
 def test_discretize_with_pershot_statevector(capsys):
     with capsys.disabled():
-        qmr = c2qa.QumodeRegister(1, 3)
+        qmr = bosonic_qiskit.QumodeRegister(1, 3)
         creg = qiskit.ClassicalRegister(3)
-        circ = c2qa.CVCircuit(qmr, creg)
+        circ = bosonic_qiskit.CVCircuit(qmr, creg)
         circ.cv_initialize(7, qmr[0])
 
         circ.cv_delay(duration=100, qumode=qmr[0], unit="ns")
         circ.cv_measure(qmr[0], creg)
 
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+        noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass(
             photon_loss_rates=0.02, circuit=circ, time_unit="ns"
         )
-        state, result, fock_counts = c2qa.util.simulate(
+        state, result, fock_counts = bosonic_qiskit.util.simulate(
             circ,
             noise_passes=noise_pass,
             discretize=True,
@@ -124,10 +124,10 @@ def test_discretize_with_pershot_statevector(capsys):
 
 def test_accumulated_counts_cv_c_r(capsys):
     def simulate_test(discretize: bool):
-        qmr = c2qa.QumodeRegister(1, 3)
+        qmr = bosonic_qiskit.QumodeRegister(1, 3)
         anc = qiskit.circuit.AncillaRegister(1)
         cr = qiskit.circuit.ClassicalRegister(1)
-        circ = c2qa.CVCircuit(qmr, anc, cr)
+        circ = bosonic_qiskit.CVCircuit(qmr, anc, cr)
 
         circ.initialize([1, 0], anc[0])  # Ancilla in |g>
         circ.cv_initialize(3, qmr[0])  # Qumode in |3>
@@ -139,11 +139,11 @@ def test_accumulated_counts_cv_c_r(capsys):
         circ.measure(anc[0], cr[0])
 
         # Simulate
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+        noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass(
             photon_loss_rates=0.1, circuit=circ, time_unit="µs"
         )
 
-        state, result, fock_counts = c2qa.util.simulate(
+        state, result, fock_counts = bosonic_qiskit.util.simulate(
             circ, noise_passes=noise_pass, discretize=discretize, shots=3000
         )
         print("##############")
@@ -164,8 +164,8 @@ def test_accumulated_counts_cv_d(capsys):
     def simulate_test(discretize: bool):
         num_qumodes = 1
         num_qubits_per_qumode = 4
-        qmr = c2qa.QumodeRegister(num_qumodes, num_qubits_per_qumode)
-        circuit = c2qa.CVCircuit(qmr)
+        qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+        circuit = bosonic_qiskit.CVCircuit(qmr)
 
         circuit.cv_initialize(3, qmr[0])
 
@@ -173,11 +173,11 @@ def test_accumulated_counts_cv_d(capsys):
 
         photon_loss_rate = 0.02
         time_unit = "ns"
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+        noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass(
             photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit=time_unit
         )
 
-        state, result, fock_counts = c2qa.util.simulate(
+        state, result, fock_counts = bosonic_qiskit.util.simulate(
             circuit, noise_passes=noise_pass, discretize=discretize, shots=200
         )
         print("##############")
@@ -196,10 +196,10 @@ def test_accumulated_counts_cv_d(capsys):
 
 def test_manual_vs_auto_discretize(capsys):
     def simulate_test(manually_discretize: bool):
-        qmr = c2qa.QumodeRegister(1, 3)
+        qmr = bosonic_qiskit.QumodeRegister(1, 3)
         anc = qiskit.circuit.AncillaRegister(1)
         cr = qiskit.circuit.ClassicalRegister(1)
-        circ = c2qa.CVCircuit(qmr, anc, cr)
+        circ = bosonic_qiskit.CVCircuit(qmr, anc, cr)
 
         circ.initialize([1, 0], anc[0])  # Ancilla in |g>
         circ.cv_initialize(3, qmr[0])  # Qumode in |3>
@@ -215,10 +215,10 @@ def test_manual_vs_auto_discretize(capsys):
         circ.measure(anc[0], cr[0])
 
         # Simulate
-        noise_pass = c2qa.kraus.PhotonLossNoisePass(
+        noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass(
             photon_loss_rates=0.1, circuit=circ, time_unit="µs"
         )
-        return c2qa.util.simulate(
+        return bosonic_qiskit.util.simulate(
             circ,
             noise_passes=noise_pass,
             shots=3000,
