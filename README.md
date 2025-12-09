@@ -64,4 +64,4 @@ See examples of software building new gates in the previously mentioned [operato
 
 ## Available Gates
 
-Current gates available for simulation are documented at https://c2qa.github.io/bosonic-qiskit/c2qa.circuit.CVCircuit.html
+Current gates available for simulation are documented at https://c2qa.github.io/bosonic-qiskit/bosonic_qiskit.CVCircuit.html
