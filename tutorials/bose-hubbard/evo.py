@@ -1,4 +1,4 @@
-import c2qa
+import bosonic_qiskit
 import numpy as np
 
 
@@ -19,7 +19,7 @@ def trotterise_Z2LGT(
             qbr[i]
         )  # Inititialises the qubit to a plus state (so that pauli Z flips it)
     # print("initial state ")
-    # stateop, _ = c2qa.util.simulate(circuit)
+    # stateop, _ = bosonic_qiskit.util.simulate(circuit)
     # util.stateread(stateop, qbr.size, numberofmodes, cutoff)
 
     # Trotterise. i*dt corresponds to the timestep i of length from the previous timestep dt.
@@ -32,8 +32,8 @@ def trotterise_Z2LGT(
             eiht(circuit, qmr[j + 1], qmr[j], qbr[j], m, g, dt)
         for j in range(1, numberofmodes - 1, 2):
             eiht(circuit, qmr[j + 1], qmr[j], qbr[j], m, g, dt)
-        stateop, result = c2qa.util.simulate(circuit)
-        occupation = c2qa.util.stateread(stateop, qbr.size, numberofmodes, 4)
+        stateop, result = bosonic_qiskit.util.simulate(circuit)
+        occupation = bosonic_qiskit.util.stateread(stateop, qbr.size, numberofmodes, 4)
         occs[0][i] = np.array(list(occupation[0]))
         occs[1][i] = np.array(list(occupation[1]))
 
