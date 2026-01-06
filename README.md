@@ -6,7 +6,8 @@ NQI C2QA project to simulate hybrid boson-qubit systems within QisKit.
 
 ### Virtual Environment
 
-It is recommended to install bosonic-qiskit in a virtual environment:
+We recommend installing bosonic-qiskit in a virtual environment. If using the `uv`
+package manager, skip this step as `uv` will automatically make the environment for you.
 
 ```bash
 python3 -m venv venv
@@ -23,18 +24,28 @@ pip install bosonic-qiskit
 
 ### Development
 
-Source code installation of bosonic-qiskit for development is possible with the `install-dependencies.sh` convenience script:
+Source code installation of bosonic-qiskit for development is possible
 
 ```bash
 git clone https://github.com/C2QA/bosonic-qiskit.git
 cd bosonic-qiskit
-./install-dependencies.sh
+pip install --group dev -e .
+pre-commit install
 ```
 
 The above script does the following:
-1. Creates a virtual environment with the name `venv` and activates it.
-2. The bosonic-qiskit library is installed in editable mode with developer requirements from `requirements_dev.txt` which include tools such as `flake8`, `black`, and `pre-commit` to aid in satisfying code style and format requirements.
-3. The tool `pre-commit` is installed which automatically runs `flake8` and `black` upon the `git commit` command.
+1. The bosonic-qiskit library is installed in editable mode with developer requirements from `pyproject.toml`, which includes tools such as `pytest`, `flake8`, `black`, and `pre-commit` to aid in satisfying code style and format requirements.
+2. The tool `pre-commit` is installed which automatically runs `flake8` and `black` upon the `git commit` command.
+
+If using the `uv` package manager, instead run
+
+```bash
+uv tool install pre-commit
+git clone https://github.com/C2QA/bosonic-qiskit.git
+cd bosonic-qiskit
+uv sync --dev
+pre-commit install
+```
 
 #### Code Style Requirements
 
@@ -44,11 +55,11 @@ If `black` shows non-compliant code formatting, changes must be be manually made
 
 ### Dependency Version Compatibility
 
-The Bosonic Qiskit software has not been extensively tested with different versions of its [dependencies](requirements.txt); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoundError` at runtime.
+The Bosonic Qiskit software has not been extensively tested with different versions of its [dependencies](pyproject.toml); however, some success has been achieved with both newer and older versions of Qiskit. Do note that some features require newer versions. For example, the noise modelling requires Qiskit v0.34.2+. Using older versions will cause `ModuleNotFoundError` at runtime.
 
 ## Tutorials
 
-Jupyter Notebook tutorials can be found in the [tutorials](tutorials) folder. JupyterLab is a dependency found in [requirements.txt](requirements.txt), so after installing and activating the virtual environment, to run the tutorials simply start Jupyter with `jupyter lab` and then navigate to the desired tutorial.
+Jupyter Notebook tutorials can be found in the [tutorials](tutorials) folder. JupyterLab is a dependency found in the dev dependencies of [pyproject.toml](pyproject.toml), so after installing and activating the virtual environment, to run the tutorials simply start Jupyter with `jupyter lab` and then navigate to the desired tutorial.
 
 See our paper presented at IEEE HPEC 2022 on [arXiv](https://arxiv.org/abs/2209.11153) for more information on using bosonic-qiskit.
 
@@ -64,4 +75,4 @@ See examples of software building new gates in the previously mentioned [operato
 
 ## Available Gates
 
-Current gates available for simulation are documented at https://c2qa.github.io/bosonic-qiskit/bosonic_qiskit.CVCircuit.html
+Current gates available for simulation are documented at [Github pages](https://c2qa.github.io/bosonic-qiskit/bosonic_qiskit.CVCircuit.html)
