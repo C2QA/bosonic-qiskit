@@ -1,44 +1,42 @@
 name: apidocs
 
 on:
-  release:
-    types: [published]
+    release:
+        types: [published]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@master
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.13'
-        # check-latest: true
+        steps:
+            - uses: actions/checkout@master
+            - name: Install the latest version of uv
+              uses: astral-sh/setup-uv@v7
+              with:
+                  python-version: "3.13"
 
-    - name: Install requirements for documentation generation
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        python -m pip install docutils pydoctor
+            - name: Install requirements for documentation generation
+              run: |
+                  uv sync --all-groups
 
-    - name: Generate API documentation with pydoctor
-      run: |
+            - name: Generate API documentation with pydoctor
+              run: |
 
-        # Run pydoctor build
-        pydoctor \
-            --project-name=bosonic-qiskit \
-            --project-url=https://github.com/$GITHUB_REPOSITORY \
-            --html-viewsource-base=https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_SHA \
-            --make-html \
-            --html-output=./apidocs \
-            --project-base-dir="$(pwd)" \
-            --docformat=google \
-            --intersphinx=https://docs.python.org/3/objects.inv \
-            ./src/bosonic_qiskit
+                  # Run pydoctor build
+                  uv run pydoctor \
+                      --project-name=bosonic-qiskit \
+                      --project-url=https://github.com/$GITHUB_REPOSITORY \
+                      --html-viewsource-base=https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_SHA \
+                      --make-html \
+                      --html-output=./apidocs \
+                      --project-base-dir="$(pwd)" \
+                      --docformat=google \
+                      --intersphinx=https://docs.python.org/3/objects.inv \
+                      ./src/bosonic_qiskit
 
-    - name: Push API documentation to Github Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./apidocs
-        commit_message: "Generate API documentation"
+            - name: Push API documentation to Github Pages
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./apidocs
+                  commit_message: "Generate API documentation"
