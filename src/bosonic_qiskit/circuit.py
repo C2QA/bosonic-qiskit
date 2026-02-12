@@ -799,7 +799,8 @@ class CVCircuit(QuantumCircuit):
                     label=label,
                     duration=duration,
                     unit=unit,
-                )
+                ),
+                qargs=qargs,
             )
 
         else:
