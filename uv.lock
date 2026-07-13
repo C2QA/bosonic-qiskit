@@ -271,7 +271,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.0.2" },
     { name = "pylatexenc", specifier = ">=2.10" },
     { name = "qiskit", specifier = ">=2.1.0,<2.2.0" },
-    { name = "qiskit-aer", specifier = ">=0.17.0" },
+    { name = "qiskit-aer", specifier = ">=0.17.2" },
     { name = "qiskit-ibm-runtime", specifier = ">=0.38.0" },
     { name = "qutip", specifier = ">=5.0.4" },
     { name = "scipy", specifier = ">=1.13.1" },
