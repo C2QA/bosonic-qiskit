@@ -1,6 +1,4 @@
-import stat
 from typing import cast
-import math
 from pathlib import Path
 import pytest
 import random
@@ -863,7 +861,9 @@ def test_multi_qumode_loss_probability():
     assert actual_probs[0] == pytest.approx(0)  # |2,0> or |0,2> should be impossible
 
     # Test the remaining outcomes using a chi-square test
-    res = stats.chisquare(actual_probs[1:], expected_probs[1:])
+    f_obs = (actual_probs[1:] * shots).astype(int)
+    f_exp = (expected_probs[1:] * shots).astype(int)
+    res = stats.chisquare(f_obs, f_exp)
     assert res.pvalue > 0.05, (
         f"Chi-squre test failed with actual_probs={actual_probs}, expected_probs={expected_probs}, pvalue={res.pvalue}"
     )
