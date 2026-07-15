@@ -780,8 +780,6 @@ def test_multi_qumode_loss_probability(capsys):
         noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass([photon_loss_rate], circuit)
 
         fifty_fifty = False
-        probabilities = []
-        tolerance = 0.075
         print()
         for i in range(40):
             print("----------------------")
@@ -798,19 +796,16 @@ def test_multi_qumode_loss_probability(capsys):
                 qumode1 = qumode_state[0]
                 qumode2 = qumode_state[1]
                 probability = amplitude.real**2
-                probabilities.append(probability)
 
                 # print(type(qumode1), qumode1, type(qumode2), qumode2, type(amplitude), amplitude, type(probability), probability)
 
                 if (
                     (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode2 == 1)
-                ) and math.isclose(probability, 0.5, abs_tol=tolerance):
+                ) and math.isclose(probability, 0.5, abs_tol=0.075):
                     fifty_fifty = True
                     break  # we found photon loss as expected, break out of the simulation loops
 
             if fifty_fifty:
                 break  # we found photon loss as expected, break out of the simulation loops
 
-        if not fifty_fifty:
-            print(f"Not 50/50 within {tolerance} tolerance {probabilities}")
         assert fifty_fifty
