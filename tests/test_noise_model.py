@@ -1,4 +1,4 @@
-import math
+from typing import cast
 from pathlib import Path
 import pytest
 import random
@@ -6,13 +6,12 @@ import random
 
 import bosonic_qiskit
 import numpy as np
+from scipy import stats
 
 
 import qiskit
 import qiskit_aer.noise as noise
-from qiskit_aer.noise.noiseerror import NoiseError
 from qiskit_aer.noise.passes.relaxation_noise_pass import RelaxationNoisePass
-from qiskit.visualization import plot_histogram
 
 
 def test_noise_model(capsys):
@@ -675,7 +674,9 @@ def _build_photon_loss_and_amp_damping_circuit(amp_damp=0.3, photon_loss_rate=0.
         photon_loss_rates=photon_loss_rate, circuit=circuit, time_unit="ns"
     )
 
-    return bosonic_qiskit.util.simulate(circuit, noise_model=noise_model, noise_passes=noise_pass)
+    return bosonic_qiskit.util.simulate(
+        circuit, noise_model=noise_model, noise_passes=noise_pass
+    )
 
 
 def allclose(a, b) -> bool:
@@ -760,52 +761,109 @@ def test_relaxation_and_photon_loss_noise_passes(capsys):
         assert Path(filename).is_file()
 
 
-def test_multi_qumode_loss_probability(capsys):
-    with capsys.disabled():
-        num_qumodes = 2
-        num_qubits_per_qumode = 2
-        qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
-        circuit = bosonic_qiskit.CVCircuit(qmr)
+def test_multi_qumode_loss_probability():
+    t = 100  # gate duration in ns
+    kappa = 10_000_000 / 3  # photon loss rate per second
 
-        circuit.cv_initialize(1, qmr[0])
-        circuit.cv_initialize(1, qmr[1])
-        circuit.cv_bs(np.pi / 4, qmr[0], qmr[1], duration=100, unit="ns")
-        circuit.cv_bs(-np.pi / 4, qmr[0], qmr[1], duration=100, unit="ns")
+    num_qumodes = 2
+    num_qubits_per_qumode = 2
+    qmr = bosonic_qiskit.QumodeRegister(num_qumodes, num_qubits_per_qumode)
+    circuit = bosonic_qiskit.CVCircuit(qmr)
 
+    # This circuit applies a 50/50 beamsplitter followed by its inverse to realize a no-op,
+    # starting from the |1,1> state, the first BS gate puts us in state |2,0> + |0,2> / sqrt(2),
+    # and the second BS gate returns us to |1,1> if no photons have been lost.
+    circuit.cv_initialize(1, qmr[0])
+    circuit.cv_initialize(1, qmr[1])
+    circuit.cv_bs(np.pi / 4, qmr[0], qmr[1], duration=t, unit="ns")
+    circuit.cv_bs(-np.pi / 4, qmr[0], qmr[1], duration=t, unit="ns")
 
-        # FIXME Did a Qiskit upgrade & the removal of gate delays break the photon loss noise pass?
-        #       This used to pass consistently with a photon_loss_rate = 10000000, but now it nearly always has photon loss in both qumodes.
-        #       We also used to have the if check below for fifty_fifty wrong ... so it may never have worked the way we thought.
-        photon_loss_rate = 10000000 / 3
-        noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass([photon_loss_rate], circuit)
+    # Note that we return the state vector for each shot, because at the end of the circuit
+    # otherwise, qiskit will randomly return us one of the possible outcomes and we would prefer
+    # to average over all of them
+    noise_pass = bosonic_qiskit.kraus.PhotonLossNoisePass([kappa], circuit)
+    shots = 4000
+    state_vectors, *_ = bosonic_qiskit.util.simulate(
+        circuit,
+        noise_passes=noise_pass,
+        per_shot_state_vector=True,
+        shots=shots,
+        return_fockcounts=False,
+    )
 
-        fifty_fifty = False
-        print()
-        for i in range(40):
-            print("----------------------")
-            print(f"Iteration {i}")
-            state_vector, result, fock_counts = bosonic_qiskit.util.simulate(
-                circuit, noise_passes=noise_pass
-            )
-            # plot_histogram(result.get_counts(circuit), filename=f"tests/test_manual_validate_beamsplitter-{i}.png")
-            occupation, fock_states = bosonic_qiskit.util.stateread(
-                state_vector, 0, num_qumodes, 2**num_qubits_per_qumode, verbose=True
-            )
+    # Read off the resulting state probabilities per shot and aggregate
+    probs_dict = {}
+    for state_vector in state_vectors:  # ty:ignore[not-iterable]
+        _, fock_states = bosonic_qiskit.util.stateread(
+            state_vector, 0, num_qumodes, 2**num_qubits_per_qumode, verbose=False
+        )
+        for qumode_state, _, amplitude in fock_states:
+            n_a = cast(int, qumode_state[0])
+            n_b = cast(int, qumode_state[1])
+            if (n_a, n_b) not in probs_dict:
+                probs_dict[(n_a, n_b)] = 0.0
 
-            for qumode_state, qubit_state, amplitude in fock_states:
-                qumode1 = qumode_state[0]
-                qumode2 = qumode_state[1]
-                probability = amplitude.real**2
+            prob = cast(float, amplitude.real**2)
+            probs_dict[(n_a, n_b)] += prob / shots
 
-                # print(type(qumode1), qumode1, type(qumode2), qumode2, type(amplitude), amplitude, type(probability), probability)
+            # BS preserves total excitation number (2), and photon loss can only decrease it
+            if n_a + n_b > 2:
+                assert prob == pytest.approx(0), (
+                    "This process shouldn't generate photons"
+                )
 
-                if (
-                    (qumode1 == 1 and qumode2 == 0) or (qumode1 == 0 and qumode2 == 1)
-                ) and math.isclose(probability, 0.5, abs_tol=0.075):
-                    fifty_fifty = True
-                    break  # we found photon loss as expected, break out of the simulation loops
+    # Now we'll model what we _expect_ to happen using a markov chain:
+    # Let eta be the transmission efficiency, the probability a single photon survives a gate.
+    eta = np.exp(-kappa / 1e9 * t)
+    rv2 = stats.binom(n=2, p=eta)
+    rv1 = stats.binom(n=1, p=eta)
 
-            if fifty_fifty:
-                break  # we found photon loss as expected, break out of the simulation loops
+    # Represent the population in the basis {|2,0> or |0,2>, |1,1>, |1,0> or |0,1>, |0,0>}, with
+    # our initial state being |1,1>
+    initial_probs = np.array([0, 1, 0, 0], dtype=float)
 
-        assert fifty_fifty
+    # The action of the first bs gate will rotate in the subspaces preserving particle number
+    u_bs = np.array(
+        [
+            [0, 1, 0, 0],
+            [1, 0, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+        ]
+    )
+    new_probs = u_bs @ initial_probs
+
+    # The dissipation step is applied after each gate discretely.
+    dissipation = np.array(
+        [
+            [rv2.pmf(2), 0, 0, 0],
+            [0, rv2.pmf(2), 0, 0],
+            [rv2.pmf(1), rv2.pmf(1), rv1.pmf(1), 0],
+            [rv2.pmf(0), rv2.pmf(0), rv1.pmf(0), 1],
+        ]
+    )
+    new_probs = dissipation @ new_probs
+
+    # Second beamsplitter gate is the inverse of the first, and then we apply dissipation again
+    new_probs = u_bs.T @ new_probs
+    expected_probs = dissipation @ new_probs
+
+    # Put the dict above from the simulation in the same basis:
+    actual_probs = np.array(
+        [
+            probs_dict.get((2, 0), 0) + probs_dict.get((0, 2), 0),
+            probs_dict.get((1, 1), 0),
+            probs_dict.get((1, 0), 0) + probs_dict.get((0, 1), 0),
+            probs_dict.get((0, 0), 0),
+        ]
+    )
+
+    assert actual_probs[0] == pytest.approx(0)  # |2,0> or |0,2> should be impossible
+
+    # Test the remaining outcomes using a chi-square test
+    f_obs = (actual_probs[1:] * shots).astype(int)
+    f_exp = (expected_probs[1:] * shots).astype(int)
+    res = stats.chisquare(f_obs, f_exp)
+    assert res.pvalue > 0.05, (
+        f"Chi-squre test failed with actual_probs={actual_probs}, expected_probs={expected_probs}, pvalue={res.pvalue}"
+    )
